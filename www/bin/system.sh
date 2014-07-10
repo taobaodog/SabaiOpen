@@ -13,7 +13,7 @@ _reboot(){
 }
 
 _shutdown(){
-	shutdown -P now
+	poweroff
 	_return 1 "Shut Down Complete"
 }
 
