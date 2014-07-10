@@ -8,3 +8,5 @@ opkg install openvpn pptp
 #php.ini needs to be updated as well as /etc/config/uhttpd
 /etc/init.d/php5-fastcgi enable
 /etc/init.d/php5-fastcgi start
+#install privoxy
+opkg install privoxy
