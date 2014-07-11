@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/ash
 act=$1
 _u=$2
 _p=$3
 _s=$4
 vpn_command="$1 $2 $3 $4"
 pidf="/var/run/ppp7.pid"
-opts="/var/www/usr/pptp.options"
+opts="/www/usr/pptp.options"
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };";
@@ -21,16 +21,10 @@ ip-up-script /var/www/vpn/pptp.up\nip-down-script /var/www/vpn/pptp.dn" > $opts
 }
 
 _stop(){
-	timeout=15
-	[ -e $pidf ] && pid=$(cat $pidf) && kill $pid && while [ -n "$(ps --no-heading $pid)" ] && [ $timeout -gt 0 ]; do (( timeout-- )); sleep 1; done
-	if [ -n "$_s" ]; then
-		lastroute="$(ip route show $_s)"
-		[ -n "$lastroute" ] && ip route del $lastroute
-	fi
-	echo -e "#!/bin/bash\nlogger no VPN initiated on startup" > /var/www/stat/vpn.command
-	if [ -f /var/www/stat/pptp.connected ]; then
-		rm /var/www/stat/pptp.connected
-	fi
+	uci delete network.vpn
+	uci commit
+	/etc/init.d/network restart
+	rm /www/stat/pptp.connected
 	[ "$act" == "stop" ] && _return 1 "PPTP stopped."
 }
 
@@ -38,16 +32,23 @@ _start(){
 	_stop;
 	([ -z "$_u" ] || [ -z "$_p" ] || [ -z "$_s" ] ) && _badarg
 	_setup;
-	./l2tp.sh stop
-	./ovpn.sh stop
-	pppd file $opts &
-	timeout=15
-	while [ ! -e /var/www/stat/pptp.connected ] && [ $timeout -gt 0 ]; do (( timeout-- )); sleep 1; done
-	echo -e "#!/bin/bash\nsh /var/www/bin/pptp.sh $vpn_command\nlogger PPTP initiated on startup" > /var/www/stat/vpn.command
+	/etc/init.d/openvpn stop
+	rm /www/stat/ovpn.connected
+        uci set network.vpn=interface
+        uci set network.vpn.ifname=pptp-vpn
+        uci set network.vpn.proto=pptp
+        uci set network.vpn.username=$_u
+        uci set network.vpn.password=$_p
+        uci set network.vpn.server=$_s
+        uci set network.vpn.buffering=1
+        uci commit
+        /etc/init.d/network restart
+        touch /www/stat/pptp.connected
+#	while [ ! -e /www/stat/pptp.connected ] && [ $timeout -gt 0 ]; do (( timeout-- )); sleep 1; done
 	_return 1 "PPTP started.";
 }
 
-sudo -n ls >/dev/null 2>/dev/null || _return 0 "Need Sudo powers."
+ls >/dev/null 2>/dev/null || _return 0 "Need Sudo powers."
 
 case $act in
 	start)	_start	;;

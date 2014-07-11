@@ -9,7 +9,7 @@
 	var hidden, hide, f,oldip='',limit=10,info=null,ini=false;
 
 	pptp = {<?php
-		$inf=trim(file_get_contents("/var/www/usr/pptp"));
+		$inf=trim(file_get_contents("/www/usr/pptp"));
 	 	if( $inf!=false ) $inf=explode(" ",$inf);
 		if( count($inf)==3 ) echo "\n\tuser: '". $inf[0] ."',\n\tpass: '". $inf[1] ."',\n\tserver: '". $inf[2] ."'\n";
 		else echo " user: '', pass: '', server: '' ";

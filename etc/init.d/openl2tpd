@@ -1,0 +1,133 @@
+#!/bin/sh /etc/rc.common
+ 
+ 
+START=90
+STOP=10
+ 
+USER='login'
+# Next line L2TP server domain name or IP
+L2TPSERVER=''
+ 
+L2TP='openl2tpd'
+OPTS='-u 1701'
+CONF='l2tpconfig'
+RPC='portmap'
+MOD='pppol2tp'
+export L2TP_HISTFILE='/dev/null'
+ 
+ 
+start() {
+  echo -n "Checking for $L2TP... "
+  L2TP_PROG=`which $L2TP`
+  if [ -n "$L2TP_PROG" ] && [ -x $L2TP_PROG ]; then
+    echo "yes"
+  else
+    echo "no"
+    return 1
+  fi
+ 
+  echo -n "Checking for $CONF... "
+  CONF_PROG=`which $CONF`
+  if [ -n "$CONF_PROG" ] && [ -x $CONF_PROG ]; then
+    echo "yes"
+  else
+    echo "no"
+    return 1
+  fi
+ 
+  if ! pidof $RPC 1> /dev/null 2> /dev/null; then
+    echo -n "Starting $RPC... "
+    RPC_PROG=`which $RPC`
+    if [ -n "$RPC_PROG" ] && [ -x $RPC_PROG ] && start-stop-daemon -q -S -x $RPC_PROG; then
+      echo "done"
+    else
+      echo "failed"
+      return 1
+    fi
+  fi
+ 
+  echo -n "Checking WAN status..."
+  while [ -z "$(uci_get_state network wan up)" ] ; do
+    	  sleep 1
+  done
+  echo "done"
+ 
+  echo -n "Starting $L2TP... "
+  if ! start-stop-daemon -q -S -x $L2TP_PROG -- $OPTS; then
+    start-stop-daemon -q -K -x $L2TP_PROG
+  fi
+  echo "done"
+ 
+  echo -n "Establishing tunnel... "
+  ( echo "peer profile modify profile_name=default lac_lns=lac"
+    echo "ppp profile modify profile_name=default mtu=1460 auth_pap=no auth_eap=no default_route=yes auth_none=no lcp_echo_interval=10"
+    echo "tunnel create tunnel_name=corbina dest_ipaddr=$L2TPSERVER framing_caps=sync"
+    echo "quit" ) | $CONF_PROG 1> /dev/null 2> /dev/null
+  if [ $? -ne 0 ]; then
+    echo "failed"
+    rm -f /var/run/$L2TP.pid
+    return 1
+  fi
+  ( echo "session create tunnel_name=corbina session_name=corbina user_name=$USER"
+    echo "quit" ) | $CONF_PROG 1> /dev/null 2> /dev/null
+  if [ $? -ne 0 ]; then
+    echo "failed"
+    rm -f /var/run/$L2TP.pid
+    return 1
+  fi
+  echo "done"
+ 
+}
+ 
+stop() {
+  echo -n "Checking for $L2TP... "
+  L2TP_PROG=`which $L2TP`
+  if [ -n "$L2TP_PROG" ] && [ -x $L2TP_PROG ]; then
+    echo "yes"
+  else
+    echo "no"
+    return 1
+  fi
+ 
+  echo -n "Checking for $CONF... "
+  CONF_PROG=`which $CONF`
+  if [ -n "$CONF_PROG" ] && [ -x $CONF_PROG ]; then
+    echo "yes"
+  else
+    echo "no"
+    return 1
+  fi
+ 
+  echo -n "Deleting tunnel... "
+  ( echo "session delete tunnel_name=corbina session_name=corbina"
+    echo "quit" ) | $CONF_PROG 1> /dev/null 2> /dev/null
+  if [ $? -ne 0 ]; then
+    echo "failed"
+  else
+ 
+    ( echo "tunnel delete tunnel_name=corbina"
+      echo "quit" ) | $CONF_PROG 1> /dev/null 2> /dev/null
+    if [ $? -ne 0 ]; then
+      echo "failed"
+    else
+ 
+      echo "done"
+    fi
+  fi
+ 
+  echo -n "Stopping $L2TP... "
+  if ! start-stop-daemon -q -K -x $L2TP_PROG; then
+    echo "not running"
+    return 1
+  else
+    rm -f /var/run/$L2TP.pid
+    echo "done"
+  fi
+ 
+}
+ 
+restart() {
+  stop
+  sleep 10
+  start
+}

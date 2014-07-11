@@ -16,7 +16,7 @@
 
 		var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
 
-		ovpn=<?php if(!readfile("/var/www/usr/ovpn")) echo 'false'; ?>;
+		ovpn=<?php if(!readfile("/www/usr/ovpn")) echo 'false'; ?>;
 
 		function setLog(res){ 
 			E('response').value = res; 
@@ -34,7 +34,7 @@
 		 E('edit').className='';
 		 E('editButton').style.display='none';
 <?php
-  if ($authpass = file('/var/www/usr/auth-pass')) {
+  if ($authpass = file('/www/usr/auth-pass')) {
   echo "uname =  '";
   echo rtrim($authpass[0]);
   echo "'\npass = '" . $authpass[1] . "'";
@@ -189,7 +189,7 @@
 						 
 						 <br>
 						 <textarea id='conf' class='tall' name='conf'>
-						 	<?php readfile('/var/www/usr/ovpn.current'); ?>
+						 	<?php readfile('/www/usr/ovpn.current'); ?>
 						 </textarea> <br>
 						 <input type='button' value='Save' onclick='saveEdit();'>
 						 <input type='button' value='Cancel' onclick='window.location.reload();'>
