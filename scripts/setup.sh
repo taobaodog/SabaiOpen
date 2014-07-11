@@ -12,3 +12,5 @@ opkg install openvpn pptp
 opkg install privoxy
 #install syslog-nd3
 opkg install syslog-ng3
+/etc/init.d/syslog-ng enable
+/etc/init.d/syslog-ng start
