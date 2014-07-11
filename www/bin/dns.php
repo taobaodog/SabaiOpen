@@ -3,7 +3,7 @@ $prim=$_REQUEST['primaryDNS'];
 $sec=$_REQUEST['secDNS'];
 
 
-$toShell= exec("sudo ./dns.sh $prim $sec",$out);
+$toShell= exec("sh dns.sh $prim $sec",$out);
 
 echo $toShell;
 ?>

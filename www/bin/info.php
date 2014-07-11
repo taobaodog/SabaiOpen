@@ -10,8 +10,8 @@ $wan = " wan: {
 
 unset($out);
 
-if (file_exists ("/var/www/stat/proxy.connected")) {
-  $proxy_status = rtrim (file_get_contents ("/var/www/stat/proxy.connected"));
+if (file_exists ("/www/stat/proxy.connected")) {
+  $proxy_status = rtrim (file_get_contents ("/www/stat/proxy.connected"));
 } else {
   $proxy_status = "Proxy Stopped";
 }
@@ -21,7 +21,7 @@ $proxy = " proxy: {
 }";
 
 $vo=array('pptp','l2tp','ovpn');
-foreach($vo as &$v){ $v=file_exists("/var/www/stat/$v.connected")?$v:''; }
+foreach($vo as &$v){ $v=file_exists("/www/stat/$v.connected")?$v:''; }
 $vo=implode($vo);
 
 switch($vo){
@@ -35,7 +35,7 @@ switch($vo){
 $vpn = ",\n vpn: {\n type: '". $vpn_type ."',
   status: '". (($vpn_type=='-')?'-':'Connected') ."'\n },";
 
-//if( (array_key_exists('do',$_REQUEST) && $_REQUEST['do']=='ip') || !file_exists("/var/www/stat/ip")){ exec("php get_remote_ip.php"); }
+//if( (array_key_exists('do',$_REQUEST) && $_REQUEST['do']=='ip') || !file_exists("/www/stat/ip")){ exec("php get_remote_ip.php"); }
 
 echo "info = {\n"
 .$wan

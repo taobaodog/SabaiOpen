@@ -6,7 +6,7 @@
 <script type='text/javascript' src='jquery-1.11.1.min.js'></script>
 <script type='text/javascript' src='jquery.validate.min.js'></script>
 <script type='text/javascript' src='sabaivpn.js'></script>
-<script type="text/javascript">
+<script type='text/javascript'>
 var hidden, hide, settingsForm, settingsWindow, oldip='',limit=10,info=null,ini=false;
 
 
@@ -22,7 +22,7 @@ function proxysave(act){
   hideUi("Adjusting Proxy..."); 
   settingsForm.act.value=act;  
   que.drop("bin/proxy.php",Settingsresp, $("#_fom").serialize() ); 
-  <?php $proxystatus = file_get_contents('/var/www/stat/proxy.connected'); ?>
+  <?php $proxystatus = file_get_contents('/www/stat/proxy.connected'); ?>
   setTimeout("window.location.reload()",1000);
 }
 
@@ -31,6 +31,7 @@ function system(act){
 	hideUi("Processing Request..."); 
 	settingsForm.act.value=act; 
 	que.drop("bin/system.php",Settingsresp, $("#_fom").serialize() ); 
+	setTimeout("window.location.reload()",30000);
 }
 
 function DNSupdate() {
@@ -41,13 +42,13 @@ function DNSupdate() {
 }
 
 function DNSset() {
-	<?php
-  if ($dns = file('/var/www/stat/dns')) {
-  echo "primary =  '";
-  echo trim($dns[0]);
-  echo "';\nsecondary = '" . trim($dns[1]) . "';\n";
-	}
-	?> 	
+//	<?php
+//  if ($dns = file('/www/stat/dns')) {
+//  echo "primary =  '";
+//  echo trim($dns[0]);
+//  echo "';\nsecondary = '" . trim($dns[1]) . "';\n";
+//	}
+//	?> 	
 
 	typeof primary === 'undefined' || $('#primaryDNS').val(primary)		
 	typeof secondary === 'undefined' || $('#secDNS').val(secondary)
@@ -101,7 +102,6 @@ function username(){
 
 
 </script>
-
 <body onload='init();' id='topmost'>
 		<table id='container' cellspacing=0>
 			<tr id='body'>    
@@ -167,8 +167,8 @@ function username(){
 							<input type='button' id='usernameUpdate' class='firstButton' onclick='username()' value='Update' />
 							<div id='saveError'> Passwords must match.</div>
 						</div>
-					<br>
-					<span id='messages'>&nbsp;</span>
+					<br><b>
+					<span id='messages'>&nbsp;</span></b>
 					<pre class='noshow' id='response'></pre>
 					</form>
 				</td>

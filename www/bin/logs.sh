@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 case $1 in
  list) find /var/log/* -maxdepth 0 -type f ! -name '*.gz' | sed 's|/var/log/||g' ;;

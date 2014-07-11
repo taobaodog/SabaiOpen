@@ -22,10 +22,10 @@ EOF
 #dns-nameservers $dns1 $dns2
 #EOF
 
-touch /var/www/stat/dns
+touch /www/stat/dns
 
 #save for persistence 
-cat > /var/www/stat/dns << EOF
+cat > /www/stat/dns << EOF
 $dns1
 $dns2
 EOF
