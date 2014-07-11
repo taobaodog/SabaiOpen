@@ -14,3 +14,5 @@ opkg install privoxy
 opkg install syslog-ng3
 /etc/init.d/syslog-ng enable
 /etc/init.d/syslog-ng start
+#PPTP support
+opkg install ppp-mod-pptp
