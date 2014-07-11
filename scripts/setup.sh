@@ -16,3 +16,7 @@ opkg install syslog-ng3
 /etc/init.d/syslog-ng start
 #PPTP support
 opkg install ppp-mod-pptp
+#L2TP support
+opkg install openl2tp-full
+# Lot o' stuff needs to be done http://wiki.openwrt.org/doc/howto/connect_by_l2tp
+chmod 755 /etc/init.d/openl2tpd
