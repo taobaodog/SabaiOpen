@@ -10,7 +10,9 @@ _return(){
 }
 
 _erase(){
-	killall openvpn 2>/dev/null;
+	rm /www/usr/ovpn*
+	/etc/init.d/openvpn stop
+	/etc/init.d/openvpn disable
 }
 
 _stop(){
@@ -28,6 +30,7 @@ _start(){
 	rm /www/stat/pptp.connected
 	sleep 5
 	/etc/init.d/openvpn start
+	/etc/init.d/openvpn enable
 	touch /www/stat/ovpn.connected
 	sleep 10
         [ "$act" == "start" ] && _return 1 "OpenVPN started."
@@ -44,3 +47,4 @@ case $act in
 	stop)	_stop	;;
 	erase)	_erase	;;
 esac
+

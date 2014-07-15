@@ -14,6 +14,7 @@ function newfile(){
   case ".conf":
   case ".ovpn":
    file_put_contents("/www/usr/ovpn.current",$contents);
+   exec("touch /www/usr/auth-pass");
    file_put_contents("/www/usr/ovpn","{ file: '$file', res: { sabai: true, msg: 'OpenVPN $type file loaded.' } }");
   break;
   default:{
@@ -27,6 +28,7 @@ function savefile(){
 $name=$_REQUEST['VPNname'];
 $password=$_REQUEST['VPNpassword'];
  if(array_key_exists('conf',$_REQUEST)){
+  exec("touch /www/usr/auth-pass");
   file_put_contents("/www/usr/ovpn.current",$_REQUEST['conf']);
   file_put_contents("/www/usr/auth-pass",$name ."\n");
   file_put_contents("/www/usr/auth-pass",$password, FILE_APPEND);
@@ -50,10 +52,6 @@ switch ($act){
 		echo $line;
 	break;
 	case "erase":
-		unlink("/www/usr/ovpn.current");
-		unlink("/www/stat/ovpn.log");
-		unlink("/www/stat/ovpn.connected");
-		unlink("/www/usr/auth-pass");
 		exec("sh /www/bin/ovpn.sh erase 2>&1");
 		file_put_contents("/www/usr/ovpn","{ file: '' }");
 		echo "res={ sabai: true, msg: 'OpenVPN file removed.', reload: true };";
