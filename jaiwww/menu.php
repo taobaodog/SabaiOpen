@@ -59,6 +59,10 @@
 	 </li>
 
 	 <li>
+	<a id='menu_status' href='?panel=status' class='superMenuLink button'>Status</a>
+	 </li>
+
+	 <li>
 	<a id='menu_help' href='help.php' class='superMenuLink button'>Help</a>
 	 </li>
 
