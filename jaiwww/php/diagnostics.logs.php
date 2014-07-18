@@ -31,10 +31,7 @@ $detail=array_key_exists('detail', $_REQUEST) ? $_REQUEST['detail'] : null;
 
 $validPath = realpath($logPath . $log);
 
-if( (!empty($log)) && (strncmp($validPath, $logPath, 9) != 0) ){
-	echo "File not found.";
-	return;
-}
+
 
 $isZipped = ( pathinfo($validPath, PATHINFO_EXTENSION) == 'gz' );
 $detail = escapeshellarg($detail);
@@ -57,10 +54,9 @@ switch ($act) {
 
 	case 'list':
 	default:
-//		listFiles($logPath);
-		listFiles('/home/vaelyn/jairo/test/log/');
+		listFiles($logPath);
+//		listFiles('/home/vaelyn/jairo/test/log/');
 	break;
 }
 
 ?>
-

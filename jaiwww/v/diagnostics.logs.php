@@ -71,38 +71,23 @@
 	<span class='controlBoxTitle'>Logs</span>
 	<div class='controlBoxContent'>
 		<input id="log" name="log" type="hidden">
-<!-- ?php include("php/diagnostics.logs.php"); ? -->
+
+<?php include("php/diagnostics.logs.php"); ?>
 
 <div id="listContainer">
 
 <span id="currentLog" onclick='showLogSelect();'></span>
 
 <ul id="listRoot" class='dirlist'>
-	<li>alternatives.log</li>
-	<li>alternatives.log.1</li>
-	<li class='sublist'>
-	<span class='dir closed' id='title-var-log-apache2' rel='var-log-apache2'>/apache2/</span><ul class='dirlist directory' id='var-log-apache2'>
-		<li>access.log</li>
-		<li>error.log</li>
-		<li>error.log.1</li>
-	</ul>
-	</li>
-	<li>apport.log</li>
-	<li>auth.log</li>
-	<li>dmesg</li>
-	<li>dmesg.0</li>
-	<li>dpkg.log</li>
-	<li>jockey.log</li>
-	<li>kern.log</li>
-	<li>syslog</li>
+
 </ul>
 
 </div>
 	 	<select id='act' name='act' onchange="toggleDetail();">
 	 		<option value='all'>View all</option>
 	 		<option value='head'>View first</option>
-	 		<option value='tail'>View last</option>
-	 		<option value='grep' selected>Search for</option>
+	 		<option value='tail' selected>View last</option>
+	 		<option value='grep'>Search for</option>
 	 		<option value='download'>Download file</option>
 	 	</select>
 		<input type="text" name='detail' id='detail'><span id='detailSuffix'></span>
@@ -173,7 +158,7 @@ $(function(){
  $('#detail').on("keydown", catchEnter);
  $('.dir').on("click", toggleContentList);
  $('#listRoot li').not('.sublist').on("click", hideLogSelect);
- setLogValue('syslog');
+ setLogValue('messages');
  toggleDetail();
 });
 
