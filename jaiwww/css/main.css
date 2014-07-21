@@ -582,3 +582,14 @@ color: blue;
 	padding: 0.4em;
 	text-align: center;
 }
+
+#timezone-picker {
+  text-align: center;
+  margin: 10px -240px;
+}
+
+#timezone-picker div,
+#timezone-picker map {
+  margin: auto;
+}
+

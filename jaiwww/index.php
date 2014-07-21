@@ -9,8 +9,7 @@
 	We're making PHP give us a valid address for our server since this address will actually refer
 	 to the machine we're running on, which is different everywhere.
 -->
-<script src="http://<?php echo $_SERVER['HTTP_HOST']; ?>:31400/socket.io/socket.io.js"></script>
-<!-- <script src="/libs.php"></script> -->
+
 <?php include("libs.php"); ?>
 <script src="js/main.js"></script>
 <script>

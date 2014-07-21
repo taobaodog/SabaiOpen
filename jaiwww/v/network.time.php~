@@ -40,9 +40,7 @@
         $('#timezone-image').timezonePicker('detectLocation');
       });
     });
-function geoLocationSuccess(position){
-    alert('lat: ' + position.coords.latitude + ', lon: ' + position.coords.longitude);
-}
+
   </script>
 </head>
 

@@ -1,0 +1,2 @@
+rm: can't remove '/www/stat/ovpn.connected': No such file or directory
+res={ sabai: 1, msg: 'OpenVPN started.' };

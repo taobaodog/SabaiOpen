@@ -1,26 +1,27 @@
 <?php
  header('Content-type: text/ecmascript');
  
- function uciGet($q){
-	$q($action);
+ function getConf($q, $debug){
+  foreach($q as $i){
+	$q[$i](get);
 		
  }
 
 // Settings Functions
 function lan($in){
-  exec("uci $in network.lan.ipaddr");
-  exec("uci $in network.lan.netmask");
+  $lan_ipaddr=exec("uci $in network.lan.ipaddr");
+  $lan_netmask=exec("uci $in network.lan.netmask");
   if ( $in == "set" ) {
 	exec("uci commit");
 	network(restart);
 }
 
 function dhcp($in){
-  exec("uci $in network.lan.ipaddr");
-  exec("uci $in network.lan.netmask");
+  $lan_ipaddr=exec("uci $in network.lan.ipaddr");
+  $lan_netmask=exec("uci $in network.lan.netmask");
   if ( $in == "set" ) {
 	exec("uci commit");
-	dhcp(restart);
+	network(restart);
 }
 
 
