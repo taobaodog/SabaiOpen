@@ -1,3 +1,0 @@
-#!/bin/ash
-sh /www/bin/firewall.sh &
-touch /www/stat/ovpn.connected
