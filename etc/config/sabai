@@ -23,7 +23,9 @@ config interface 'vpn'
 	option username 'vpn115'
 	option password 'JeaCYEpAUQ'
 	option server 'vpn-in140.reliablehosting.com'
-	option status 'pptp'
+	option status 'none'
 
-config proxy
+config proxy 'privoxy'
+	option status 'connected'
+	option port '8080'
 
