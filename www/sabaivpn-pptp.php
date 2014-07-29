@@ -9,13 +9,14 @@
 	var hidden, hide, f,oldip='',limit=10,info=null,ini=false;
 
 	pptp = {<?php
-		$inf=trim(file_get_contents("/www/usr/pptp"));
-	 	if( $inf!=false ) $inf=explode(" ",$inf);
-		if( count($inf)==3 ) echo "\n\tuser: '". $inf[0] ."',\n\tpass: '". $inf[1] ."',\n\tserver: '". $inf[2] ."'\n";
+		$user=trim(exec("uci get sabai.vpn.username"));
+		$pass=trim(exec("uci get sabai.vpn.password"));
+		$server=trim(exec("uci get sabai.vpn.server"));
+		if( $user!="" ) echo "\n\tuser: '". $user ."',\n\tpass: '". $pass ."',\n\tserver: '". $server ."'\n";
 		else echo " user: '', pass: '', server: '' ";
 	?>}
 
-	function setUpdate(res){
+function setUpdate(res){
 			if(info) oldip = info.vpn.ip; 
 			eval(res); 
 			if(oldip!='' && info.vpn.ip==oldip){ 
@@ -48,7 +49,7 @@ function PPTPresp(res){
 }
 
 
-function PPTPsave(act){ 
+function PPTPcall(act){ 
 	hideUi("Adjusting PPTP..."); 
 	E("_act").value=act; 
 	que.drop("bin/pptp.php",PPTPresp, $("#_fom").serialize() ); 
@@ -70,13 +71,7 @@ function init(){
 	$('.active').removeClass('active')
 	$('#pptp').addClass('active')
 }
-
-function pptp_cancel() {
-	E("_act").value="cancel"; 
-	que.drop("bin/pptp.php",PPTPresp, $("#_fom").serialize() ); 
-        $("#server, #user, #pass").val('');
-}
-   
+  
 </script>
 
 </head>
@@ -127,10 +122,10 @@ function pptp_cancel() {
 					 </tr>
 					</tbody></table>
 					
-					<input type='button' class='firstButton' value='Start' onclick='PPTPsave("start")'>
-					<input type='button' value='Stop' onclick='PPTPsave("stop")'>
-					<input type='button' value='Save' onclick='PPTPsave("save")'>
-					<input type='button' value='Clear' onclick='pptp_cancel()'>
+					<input type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>
+					<input type='button' value='Stop' onclick='PPTPcall("stop")'>
+					<input type='button' value='Save' onclick='PPTPcall("save")'>
+					<input type='button' value='Clear' onclick='PPTPcall("clear")'>
 					<span id='messages'>&nbsp;</span><br>
 				</div>
 				</form>

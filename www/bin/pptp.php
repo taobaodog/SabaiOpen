@@ -6,23 +6,55 @@ $user=trim($_REQUEST['user']);
 $pass=trim($_REQUEST['pass']);
 $server=trim($_REQUEST['server']);
 $serverip=trim(gethostbyname($server));
+$blank="";
 
 
 switch ($act) {
-        case "cancel":
-                unlink("/www/usr/pptp");
-                echo "res={ sabai: true, msg : 'Settings cleared.' }";
-                break;
+    case "clear":
+    	$status="none";
+        exec("uci set sabai.vpn.username=$blank");
+		exec("uci set sabai.vpn.password=$blank");
+		exec("uci set sabai.vpn.password=$blank");
+		exec("uci set network.vpn.username=$blank");
+		exec("uci set network.vpn.password=$blank");
+		exec("uci set network.vpn.server=$blank");
+		exec("uci set sabai.vpn.status=$status");
+		exec("uci commit");
+		exec("/etc/init.d/network restart");
+        echo "res={ sabai: true, msg: 'Settings cleared.' }";
+        	break;
 	case "start":
+	    $status="PPTP_Started";
+	    exec("uci set network.vpn=interface");
+        exec("uci set network.vpn.ifname=pptp-vpn");
+        exec("uci set network.vpn.proto=pptp");
+		exec("uci set network.vpn.username=$user");
+		exec("uci set network.vpn.password=$pass");
+		exec("uci set network.vpn.server=$server");
+		exec("uci set network.vpn.buffering=1");
+		exec("uci set sabai.vpn.username=$user");
+		exec("uci set sabai.vpn.password=$pass");
+		exec("uci set sabai.vpn.server=$server");
+		exec("uci set sabai.vpn.status=$status");
+		exec("uci commit");
+		exec("/etc/init.d/network restart");
+		echo "res={ sabai: true, msg: 'PPTP starting.' }";
+			break;
 	case "stop":
-		$line=exec("sh /www/bin/pptp.sh $act $user $pass $serverip 2>&1",$out);
-		$i=count($out)-1;
-		while( substr($line,0,3)!="res" && $i>=0 ){ $line=$out[$i--]; }
-		file_put_contents("/var/log/php.pptp.log", implode("\n",$out) );
-		echo $line;
+	    $status="none";
+		exec("uci delete network.vpn");
+		exec("uci set sabai.vpn.status=$status");
+		exec("uci commit");
+		exec("/etc/init.d/network restart");
+		echo "res={ sabai: true, msg: 'PPTP stopped.' }";
+		    break;
 	case "save":
-		file_put_contents("/www/usr/pptp","$user $pass $server");
-		if($act=="save") echo "res={ sabai: true, msg: 'Settings saved.' }";
+		exec("uci set sabai.vpn.username=$user");
+		exec("uci set sabai.vpn.password=$pass");
+		exec("uci set sabai.vpn.server=$server");
+		exec("uci commit");
+		echo "res={ sabai: true, msg: 'Settings saved.' }";
+		   	break;
 }
 
 ?>

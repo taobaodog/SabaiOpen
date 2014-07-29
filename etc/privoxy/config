@@ -1,9 +1,9 @@
 confdir /etc/privoxy
 logdir /var/log
-#filterfile default.filter
+filterfile default.filter
 logfile privoxy
-#actionsfile match-all.action # Actions that are applied to all sites and maybe overruled later on.
-#actionsfile default.action   # Main actions file
+actionsfile match-all.action # Actions that are applied to all sites and maybe overruled later on.
+actionsfile default.action   # Main actions file
 #actionsfile user.action      # User customizations
 listen-address  :8080
 toggle  1
