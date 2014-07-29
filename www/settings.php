@@ -1,4 +1,4 @@
-<?php $proxystatus = file_get_contents('/www/stat/proxy.connected'); ?>
+<?php $proxystatus = exec("uci get sabai.privoxy.status"); ?>
 
 <!DOCTYPE html>
 <html><head><meta charset='UTF-8'>
@@ -22,7 +22,6 @@ function proxysave(act){
   hideUi("Adjusting Proxy..."); 
   settingsForm.act.value=act;  
   que.drop("bin/proxy.php",Settingsresp, $("#_fom").serialize() ); 
-  <?php $proxystatus = file_get_contents('/www/stat/proxy.connected'); ?>
   setTimeout("window.location.reload()",1000);
 }
 

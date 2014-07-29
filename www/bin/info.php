@@ -10,11 +10,8 @@ $wan = " wan: {
 
 unset($out);
 
-if (file_exists ("/www/stat/proxy.connected")) {
-  $proxy_status = rtrim (file_get_contents ("/www/stat/proxy.connected"));
-} else {
-  $proxy_status = "Proxy Stopped";
-}
+$proxy_status = exec("uci get sabai.privoxy.status");
+
   
 $proxy = " proxy: {
   status: '$proxy_status'

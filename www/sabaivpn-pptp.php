@@ -53,6 +53,9 @@ function PPTPcall(act){
 	hideUi("Adjusting PPTP..."); 
 	E("_act").value=act; 
 	que.drop("bin/pptp.php",PPTPresp, $("#_fom").serialize() ); 
+		if(act =='clear'){ 
+		setTimeout("window.location.reload()",5000);
+			}; 
 }
 
 function init(){ 
