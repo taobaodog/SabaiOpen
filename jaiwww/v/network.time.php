@@ -23,10 +23,10 @@
     <table class='controlTable'><tbody>
        <input type='hidden' id='ntp_zone' name='ntp_zone'>
        <span id='ntp_zone_text'></span>
-  <script type="text/javascript" src="libs/current/jquery-1.10.2.min.map"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
   <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
   <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
-  <script type="text/javascript" src="http://api.hostip.info/get_json.php">
+<script>
     $(document).ready(function() {
       // Set up the picker to update target timezone and country select lists.
       $('#timezone-image').timezonePicker({
