@@ -1,4 +1,6 @@
 <?php
+// written by William Haynes - Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology
 header('Content-Type: application/javascript');
 
 $act=$_REQUEST['act'];
@@ -7,22 +9,24 @@ $pass=trim($_REQUEST['pass']);
 $server=trim($_REQUEST['server']);
 $serverip=trim(gethostbyname($server));
 
-
 switch ($act) {
-        case "cancel":
-                unlink("/www/usr/pptp");
-                echo "res={ sabai: true, msg : 'Settings cleared.' }";
-                break;
 	case "start":
+        exec("sh pptp.sh $act $user $pass $server $user $pass $serverip");
+		echo "res={ sabai: true, msg: 'PPTP starting.' }";
+			break;
 	case "stop":
-		$line=exec("sh /www/bin/pptp.sh $act $user $pass $serverip 2>&1",$out);
-		$i=count($out)-1;
-		while( substr($line,0,3)!="res" && $i>=0 ){ $line=$out[$i--]; }
-		file_put_contents("/var/log/php.pptp.log", implode("\n",$out) );
-		echo $line;
+        exec("sh pptp.sh $act");
+		echo "res={ sabai: true, msg: 'PPTP stopped.' }";
+		    break;
 	case "save":
-		file_put_contents("/www/usr/pptp","$user $pass $server");
-		if($act=="save") echo "res={ sabai: true, msg: 'Settings saved.' }";
+        exec("sh pptp.sh $act $user $pass $server");
+		echo "res={ sabai: true, msg: 'PPTP settings saved.' }";
+		    break;	
+	case "clear":
+        exec("sh pptp.sh $act $user $pass $server");
+		echo "res={ sabai: true, msg: 'PPTP settings cleared.' }";
+		    break;
+
 }
 
 ?>

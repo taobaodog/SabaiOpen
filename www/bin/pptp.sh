@@ -12,28 +12,16 @@ _return(){
 	exit 0;
 }
 
-_badarg(){ _return 0 "Missing arguments: act=$act, user=$_u, pass=$_p, server=$_s."; }
-
-_setup(){
-	echo -e "pty \"pptp $_s --nolaunchpppd\"\nname $_u\npassword $_p
-unit 7\nlock\nrefuse-pap\nrefuse-eap\nrefuse-chap\nrefuse-mschap\nnobsdcomp\nnopcomp\nnoaccomp\nnovj\nnodeflate\nrequire-mppe-128\nrequire-mschap-v2\npersist\nmaxfail 0\ndefaultroute\nusepeerdns\nnoauth\ndefault-asyncmap\nlcp-echo-interval 15\nlcp-echo-failure 6\nlcp-echo-adaptive\nholdoff 20\nmtu 1400
-ip-up-script /var/www/vpn/pptp.up\nip-down-script /var/www/vpn/pptp.dn" > $opts
-}
-
 _stop(){
 	uci delete network.vpn
+	uci set sabai.vpn.status=none
 	uci commit
 	/etc/init.d/network restart
-	rm /www/stat/pptp.connected
-	[ "$act" == "stop" ] && _return 1 "PPTP stopped."
+	_return 1 "PPTP stopped."
 }
 
 _start(){
-	_stop;
-	([ -z "$_u" ] || [ -z "$_p" ] || [ -z "$_s" ] ) && _badarg
-	_setup;
 	/etc/init.d/openvpn stop
-	rm /www/stat/ovpn.connected
         uci set network.vpn=interface
         uci set network.vpn.ifname=pptp-vpn
         uci set network.vpn.proto=pptp
@@ -41,11 +29,30 @@ _start(){
         uci set network.vpn.password=$_p
         uci set network.vpn.server=$_s
         uci set network.vpn.buffering=1
+        uci set sabai.vpn.status=pptp
         uci commit
         /etc/init.d/network restart
-        touch /www/stat/pptp.connected
-#	while [ ! -e /www/stat/pptp.connected ] && [ $timeout -gt 0 ]; do (( timeout-- )); sleep 1; done
-	_return 1 "PPTP started.";
+		_return 1 "PPTP started.";
+}
+
+_save(){
+		uci set sabai.vpn.username=$_u
+		uci set sabai.vpn.password=$_p
+		uci set sabai.vpn.server=$_s
+        uci commit
+		_return 1 "PPTP settings saved.";
+}
+
+_clear(){
+	/etc/init.d/openvpn stop
+		uci delete network.vpn
+		uci delete sabai.vpn.username
+		uci delete sabai.vpn.password
+		uci delete sabai.vpn.server
+		uci set sabai.vpn.status=none
+        uci commit
+        /etc/init.d/network restart
+		_return 1 "PPTP settings cleared.";
 }
 
 ls >/dev/null 2>/dev/null || _return 0 "Need Sudo powers."
@@ -53,5 +60,6 @@ ls >/dev/null 2>/dev/null || _return 0 "Need Sudo powers."
 case $act in
 	start)	_start	;;
 	stop)	_stop	;;
-	*)	_badarg	;;
+	save)	_save	;;
+	clear)  _clear  ;;
 esac
