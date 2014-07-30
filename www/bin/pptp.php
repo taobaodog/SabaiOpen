@@ -1,5 +1,5 @@
 <?php
-// written by William Haynes - Sabai Technology - Apache v2 licence
+// Sabai Technology - Apache v2 licence
 // copyright 2014 Sabai Technology
 header('Content-Type: application/javascript');
 

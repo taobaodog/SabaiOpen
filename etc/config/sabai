@@ -26,6 +26,10 @@ config interface 'vpn'
 	option status 'none'
 
 config proxy 'privoxy'
-	option status 'connected'
 	option port '8080'
+	option status 'stopped'
+
+config settings 'general'
+	option ovpn_status 'stopped'
+	option ovpn_file '/etc/sabai/openvpn/ovpn.current'
 

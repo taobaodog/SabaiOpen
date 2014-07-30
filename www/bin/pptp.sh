@@ -1,11 +1,11 @@
 #!/bin/ash
+# Sabai Technology - Apache v2 licence
+# copyright 2014 Sabai Technology
+
 act=$1
 _u=$2
 _p=$3
 _s=$4
-vpn_command="$1 $2 $3 $4"
-pidf="/var/run/ppp7.pid"
-opts="/www/usr/pptp.options"
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };";
@@ -55,7 +55,7 @@ _clear(){
 		_return 1 "PPTP settings cleared.";
 }
 
-ls >/dev/null 2>/dev/null || _return 0 "Need Sudo powers."
+ls >/dev/null 2>/dev/null 
 
 case $act in
 	start)	_start	;;

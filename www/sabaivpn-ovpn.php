@@ -5,7 +5,7 @@
 	<meta charset='UTF-8'>
 	<meta name='robots' content='noindex,nofollow'>
 	<title>[VPNA] OpenVPN</title>
-	
+
 	<link rel='stylesheet' type='text/css' href='sabai.css'>
 	<script type='text/javascript' src='jquery-1.11.1.min.js'></script>
 	<script type='text/javascript' src='sabaivpn.js'></script>
@@ -15,8 +15,6 @@
 	<script type='text/javascript'>
 
 		var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
-
-		ovpn=<?php if(!readfile("/www/usr/ovpn")) echo 'false'; ?>;
 
 		function setLog(res){ 
 			E('response').value = res; 
@@ -34,10 +32,10 @@
 		 E('edit').className='';
 		 E('editButton').style.display='none';
 <?php
-  if ($authpass = file('/www/usr/auth-pass')) {
-  echo "uname =  '";
-  echo rtrim($authpass[0]);
-  echo "'\npass = '" . $authpass[1] . "'";
+  		if ($authpass = file('/etc/sabai/openvpn/auth-pass')) {
+  				echo "uname =  '";
+  				echo rtrim($authpass[0]);
+  				echo "'\npass = '" . $authpass[1] . "'";
 }
 ?> 
  	         typeof uname === 'undefined' || $('#VPNname').val(uname);
@@ -58,12 +56,10 @@
 		}
 
 		function load(){
-		 var y=( ovpn && ovpn.file != null && ovpn.file != '');
-		 E('ovpn_controls').style.display = (y?'':'none');
-		 E('upload').style.display = (y?'none':'');
-		 E('ovpn_file').innerHTML = (y?ovpn.file:'');
-		 E('ovpn_file').innerHTML = 'Current File: ' + (y?ovpn.file:'');
--		 msg(y?'':'Please supply a .conf/.ovpn complete configuration or a DD-WRT style .sh script.');
+		var ovpnfile='<?php $filename=exec('uci get openvpn.sabai.filename'); echo $filename; ?>';
+		document.getElementById('ovpn_file').innerHTML = ovpnfile;
+		E('ovpn_file').innerHTML = 'Current File: ' + ovpnfile;
+-		 msg('Please supply a .conf/.ovpn complete configuration or a DD-WRT style .sh script.');
 		}
 
 		function setUpdate(res){ 
@@ -157,11 +153,13 @@
 						<!-- <input type='button' class='fright' value='Help' onclick='window.open("http://www.sabaitechnology.com/v/sabaiHelp/vpnahelp.html#ovpn","_newtab");'> -->
 						<!-- <span id='instructions'>Please supply a .conf/.ovpn complete configuration or a DD-WRT style .sh script.</span><br> -->
 						<span id='ovpn_file'></span>
+						<p>
 						<span id='upload'>
 						<input type='file' id='file' name='file'>
 						<!-- <input type='button' id='browse' value='Browse...' onclick='browse();'> -->
 						<input type='button' value='Upload' onclick='submit()'></span>
 						<span id='messages'>&nbsp;</span>
+						</p>
 					</form>
 					<form id='_fom'>
 						<br>
@@ -170,11 +168,11 @@
 							<input type='hidden' id='_act' name='act' value=''>
 							<input type='button' value='Start' onclick='OVPNsave("start");'>
 							<input type='button' value='Stop' onclick='OVPNsave("stop");'>
-							<input type='button' value='Clear' onclick='OVPNsave("erase");'></span>
+							<input type='button' value='Clear' onclick='OVPNsave("clear");'></span>
 							<input type='button' value='Show Log' id='logButton' onclick='toggleLog();'>
 							<input type='button' value='Edit Config' id='editButton' onclick='toggleEdit();'>
 						</div>
-
+							
 						<textarea id='response' class='hiddenChildMenu'></textarea>
 						<div id='edit' class='hiddenChildMenu'>
 						 <table>
@@ -189,7 +187,7 @@
 						 
 						 <br>
 						 <textarea id='conf' class='tall' name='conf'>
-						 	<?php readfile('/www/usr/ovpn.current'); ?>
+						 	<?php readfile('/etc/sabai/openvpn/ovpn.current'); ?>
 						 </textarea> <br>
 						 <input type='button' value='Save' onclick='saveEdit();'>
 						 <input type='button' value='Cancel' onclick='window.location.reload();'>
@@ -213,4 +211,3 @@
 	<div id='footer'> Copyright © 2014 Sabai Technology, LLC </div>
 </body>
 </html>
-
