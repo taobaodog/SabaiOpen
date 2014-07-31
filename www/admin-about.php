@@ -8,7 +8,7 @@
 <script type='text/javascript'>
 
 vpna = {
- dist: '<?php echo (file_exists("/etc/lsb-release")?str_replace("Ubuntu","Ubuntu Server",exec("sudo grep 'DISTRIB_DESCRIPTION' /etc/lsb-release | cut -d '=' -f2 | tr -d '\"'")):"Ubuntu Server") ?>',
+ dist: '<?php echo (file_exists("/etc/lsb-release")?str_replace("OpenWRT","Barrier Breaker",exec("sudo grep 'DISTRIB_DESCRIPTION' /etc/lsb-release | cut -d '=' -f2 | tr -d '\"'")):"OpenWRT") ?>',
  kern: '<?php echo exec("uname -r -m"); ?>',
  vers: '<?php echo substr_replace(file_get_contents("sys/version"),'.',1,0); ?>'
 }
@@ -30,7 +30,7 @@ $('#about').addClass('active')
 <div class='section-title'>Sabai Technology</div><div class='section'>
 <div>
 
-Sabai VPN Accelerator v<span id='version'>0.01</span>Final beta on <span id='distro'>Ubuntu Server</span> (<span id='kernel'></span>)
+SabaiOpen v<span id='version'>1</span>  Alpha on <span id='distro'></span> Linux Kernel Version <span id='kernel'></span>
 
 <p>Thank you for being a Sabai Technology customer!
 <blockquote>Sabai Technology: <i>Technology for the People</i><br>
@@ -40,19 +40,24 @@ Simpsonville, SC 29681<br>
 <A HREF='mailto:info@sabaitechnology.com'>info@sabaitechnology.com</a><br>
 </blockquote>
 
+Sabai Technology and SabaiOpen are registered trademarks with all rights reserved.
+Software may not be distributed for business purposes, except by Sabai Technology.
+
 Copyright &copy; 2014 Sabai Technology, LLC<br>
 <a href='http://www.sabaitechnology.com'>http://www.sabaitechnology.com</a><br>
 VPN Client Interface - Sabai Technology US patent pending #13/292,509.
 
 <p>Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-<br>
+You may obtain a copy of the License at </p>
+<p>http://www.apache.org/licenses/LICENSE-2.0
+</p>
+<p>
 Unless required by applicable law or agreed to in writing, software distributed 
 under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
 OF ANY KIND, either express or implied. See the License for the specific language 
 governing permissions and limitations under the License.
-
+</p>
 </div></div>
 </td></tr>
 </table>
