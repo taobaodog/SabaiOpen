@@ -10,7 +10,7 @@
 vpna = {
  dist: '<?php echo (file_exists("/etc/lsb-release")?str_replace("OpenWRT","Barrier Breaker",exec("sudo grep 'DISTRIB_DESCRIPTION' /etc/lsb-release | cut -d '=' -f2 | tr -d '\"'")):"OpenWRT") ?>',
  kern: '<?php echo exec("uname -r -m"); ?>',
- vers: '<?php echo substr_replace(file_get_contents("sys/version"),'.',1,0); ?>'
+ vers: '<?php echo substr_replace(file_get_contents("etc/sabai/sys/version"),'.',1,0); ?>'
 }
 
 function init(){
