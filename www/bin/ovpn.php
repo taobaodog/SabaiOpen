@@ -25,7 +25,7 @@ function newfile(){
    file_put_contents("/etc/sabai/openvpn/ovpn", "{ file: '$file', res: { sabai: true, msg: 'OpenVPN $type file loaded.' } }");
   break;
   default:{
-   file_put_contents("/www/usr/ovpn","{ file: '', res: { sabai: false, msg: 'OpenVPN file failed.' } }");
+   file_put_contents("/etc/sabai/usr/ovpn","{ file: '', res: { sabai: false, msg: 'OpenVPN file failed.' } }");
   }
  }
  header("Location: /sabaivpn-ovpn.php");
@@ -38,7 +38,7 @@ $password=$_REQUEST['VPNpassword'];
   file_put_contents("/etc/sabai/openvpn/ovpn.current",$_REQUEST['conf']);
   file_put_contents("/etc/sabai/openvpn/auth-pass",$name ."\n");
   file_put_contents("/etc/sabai/openvpn/auth-pass",$password, FILE_APPEND);
-  exec("sed -ir 's\auth-user-pass.*$\auth-user-pass /etc/sabai/openvpn/auth-pass\g' /www/usr/ovpn.current");
+  exec("sed -ir 's\auth-user-pass.*$\auth-user-pass /etc/sabai/openvpn/auth-pass\g' /etc/sabai/openvpn/ovpn.current");
   echo "res={ sabai: true, msg: 'OpenVPN configuration saved.', reload: true };";
  }else{
   echo "res={ sabai: false, msg: 'Invalid configuration.' };";
@@ -54,7 +54,7 @@ switch ($act){
 		$line=exec("sh /www/bin/ovpn.sh $act 2>&1",$out);
 		$i=count($out)-1;
 		while( substr($line,0,3)!="res" && $i>=0 ){ $line=$out[$i--]; }
-		file_put_contents("/www/stat/php.ovpn.log", implode("\n",$out) );
+		file_put_contents("/etc/sabai/stat/php.ovpn.log", implode("\n",$out) );
 		echo $line;
 	break;
 	case "clear":

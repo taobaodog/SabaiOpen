@@ -109,8 +109,8 @@
 			hidden = E('hideme'); 
 			hide = E('hiddentext'); 
 			load(); 
-			<?php if (file_exists('stat/ip') && file_get_contents("stat/ip") != '') {
-	   echo "donde = $.parseJSON('" . strstr(file_get_contents("stat/ip"), "{") . "');\n";
+			<?php if (file_exists('stat/ip') && file_get_contents("/etc/sabai/stat/ip") != '') {
+	   echo "donde = $.parseJSON('" . strstr(file_get_contents("/etc/sabai/stat/ip"), "{") . "');\n";
 	   echo "for(i in donde){E('loc'+i).innerHTML = donde[i];}"; } ?>
 	   getUpdate();
 	   setInterval (getUpdate, 5000); 
