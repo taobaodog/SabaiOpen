@@ -1,6 +1,6 @@
 <?php
-// written by William Haynes - Sabai Technology - Apache v2 licence
-// copyright 2014 Sabai Technology
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
 
 header('Content-Type: application/javascript');
 

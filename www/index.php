@@ -1,4 +1,7 @@
-<?php if(!file_exists('bin/info.php')) header('Location: admin-register.php'); ?>
+<?php 
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
+if(!file_exists('bin/info.php')) header('Location: admin-register.php'); ?>
 
 <!DOCTYPE html>
 <html>

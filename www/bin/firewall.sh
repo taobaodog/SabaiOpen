@@ -1,4 +1,6 @@
 #!/bin/ash
+# Sabai Technology - Apache v2 licence
+# copyright 2014 Sabai Technology
 peekaboo='/www/sys/net.peekaboo'
 touch /www/stat/fw.run
 #sysctl net.ipv4.ip_forward=1

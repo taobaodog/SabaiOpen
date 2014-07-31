@@ -1,4 +1,6 @@
 <?php
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
  if(array_key_exists('reg',$_REQUEST) && $_REQUEST['reg']==0){
   header("Content-type: text/ecmascript; charset=utf-8;");
   $regURL='http://blog.sabaitechnology.com/grabs/vpnareg.php'; $pass='tihuovehe8482E31365'; $iv='80408020E0301030';

@@ -1,4 +1,7 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='robots' content='noindex,nofollow'>
+<!DOCTYPE html>
+<!--Sabai Technology - Apache v2 licence
+    copyright 2014 Sabai Technology -->
+<html><head><meta charset='UTF-8'><meta name='robots' content='noindex,nofollow'>
 <title>[VPNA] Tools: <?php $tool=ucfirst($_REQUEST['tool']); echo $tool; ?></title><link rel='stylesheet' type='text/css' href='sabai.css'>
 <script type='text/javascript' src='jquery-1.11.1.min.js'></script>
 <script type='text/javascript' src='sabaivpn.js'></script>

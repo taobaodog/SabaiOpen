@@ -1,4 +1,6 @@
 <?php
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
 header('Content-Type: application/javascript');
 
  exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);

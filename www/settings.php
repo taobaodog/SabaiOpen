@@ -1,6 +1,8 @@
 <?php $proxystatus = exec("uci get sabai.privoxy.status"); ?>
 
 <!DOCTYPE html>
+<!--Sabai Technology - Apache v2 licence
+    copyright 2014 Sabai Technology -->
 <html><head><meta charset='UTF-8'>
 <title>[VPNA] Settings</title><link rel='stylesheet' type='text/css' href='sabai.css'>
 <script type='text/javascript' src='jquery-1.11.1.min.js'></script>

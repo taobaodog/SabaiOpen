@@ -1,5 +1,6 @@
-#!/bin/sh
-
+#!/bin/ash
+# Sabai Technology - Apache v2 licence
+# copyright 2014 Sabai Technology
 act=$1
 
 _return(){

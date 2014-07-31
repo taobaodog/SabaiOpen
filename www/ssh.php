@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<!--Sabai Technology - Apache v2 licence
+    copyright 2014 Sabai Technology -->
 <html>
 <head>
 	<meta charset='UTF-8'><meta name='robots' content='noindex,nofollow'>

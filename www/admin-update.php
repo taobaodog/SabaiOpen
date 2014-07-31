@@ -1,4 +1,6 @@
 <?php
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
  if(array_key_exists('version',$_REQUEST)){
   if($_REQUEST['version']!='new'){
    header("Content-type: text/ecmascript; charset=utf-8;");

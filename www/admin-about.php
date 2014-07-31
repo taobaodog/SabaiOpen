@@ -1,4 +1,7 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='robots' content='noindex,nofollow'>
+<!DOCTYPE html>
+<!--Sabai Technology - Apache v2 licence
+    copyright 2014 Sabai Technology -->
+<html><head><meta charset='UTF-8'><meta name='robots' content='noindex,nofollow'>
 <title>[VPNA] About</title><link rel='stylesheet' type='text/css' href='sabai.css'>
 <script type='text/javascript' src='jquery-1.11.1.min.js'></script>
 <script type='text/javascript' src='sabaivpn.js'></script>
@@ -37,13 +40,18 @@ Simpsonville, SC 29681<br>
 <A HREF='mailto:info@sabaitechnology.com'>info@sabaitechnology.com</a><br>
 </blockquote>
 
-<p>VPN GUI and API<br>
 Copyright &copy; 2014 Sabai Technology, LLC<br>
 <a href='http://www.sabaitechnology.com'>http://www.sabaitechnology.com</a><br>
 VPN Client Interface - Sabai Technology US patent pending #13/292,509.
 
-<p>We support and appreciate the exceptional work done by many in the development of Ubuntu Server and Linux opensource software.
- Ubuntu linux and licenses used can be found at <a href='http://www.ubuntu.com'>http://www.ubuntu.com</a>.
+<p>Licensed under the Apache License, Version 2.0 (the "License"); 
+you may not use this file except in compliance with the License. 
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+<br>
+Unless required by applicable law or agreed to in writing, software distributed 
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+OF ANY KIND, either express or implied. See the License for the specific language 
+governing permissions and limitations under the License.
 
 </div></div>
 </td></tr>
