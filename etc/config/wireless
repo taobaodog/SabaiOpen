@@ -1,0 +1,31 @@
+
+config wifi-device 'radio0'
+	option type 'mac80211'
+	option channel '36'
+	option path 'virtual/mac80211_hwsim/hwsim0'
+	option htmode 'VHT80'
+	option disabled '0'
+	option hwmode '11ng'
+
+config wifi-iface
+	option device 'radio0'
+	option network 'lan'
+	option mode 'ap'
+	option ssid 'OpenWrt'
+	option encryption 'none'
+
+config wifi-device 'radio1'
+	option type 'mac80211'
+	option channel '36'
+	option path 'virtual/mac80211_hwsim/hwsim1'
+	option htmode 'VHT80'
+	option disabled '0'
+	option hwmode '11ng'
+
+config wifi-iface
+	option device 'radio1'
+	option network 'lan'
+	option mode 'ap'
+	option ssid 'OpenWrt'
+	option encryption 'none'
+

@@ -16,9 +16,15 @@ config interface 'wan'
 	option proto 'dhcp'
 	option ifname 'eth0'
 
+config interface 'vpn'
+	option ifname 'pptp-vpn'
+	option proto 'pptp'
+	option buffering '1'
+	option status 'none'
+
 config proxy 'privoxy'
 	option port '8080'
-	option status 'stopped'
+	option status 'started'
 
 config settings 'general'
 	option ovpn_status 'stopped'
