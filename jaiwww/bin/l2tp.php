@@ -1,5 +1,6 @@
 <?php
-header('Content-Type: application/javascript');
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
 
 $act=$_REQUEST['act'];
 $user=trim($_REQUEST['user']);

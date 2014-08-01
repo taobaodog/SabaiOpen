@@ -1,46 +1,66 @@
 #!/bin/ash
+# Sabai Technology - Apache v2 licence
+# copyright 2014 Sabai Technology
+
 act=$1
-vpn_command=$1
-sys='/www/bin/sys/ovpn'
-pidf='/www/stat/ovpn.pid'
+status=$(uci get sabai.vpn.status)
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };";
 	exit 0;
 }
 
-_erase(){
-	killall openvpn 2>/dev/null;
-}
-
 _stop(){
 	/etc/init.d/openvpn stop
-	rm /www/stat/ovpn.connected
-	[ "$act" == "stop" ] && _return 1 "OpenVPN stopped."
+	uci set sabai.vpn.status=none
+	uci commit sabai
+	sleep 5
+	_return 1 "OpenVPN stopped."
 }
 
 _start(){
-	_stop;
-	[ ! -e /www/usr/ovpn.current ] && _return 0 "No file loaded."
-	uci delete network.vpn
-	uci commit
-	/etc/init.d/network restart
-	rm /www/stat/pptp.connected
-	sleep 5
+	if [ ! -e /etc/sabai/openvpn/ovpn.current ]; then
+		_return 0 "No file loaded."
+		fi
+		# stop other vpn's if running
+	if [ $status != "none" ]; then
+		uci delete network.vpn
+		uci set sabai.vpn.status=none
+		uci commit
+		/etc/init.d/network restart
+		sleep 5
+		fi
+	uci set sabai.vpn.status=ovpn
+	uci set openvpn.sabai.enabled=1
+	uci commit sabai
 	/etc/init.d/openvpn start
-	touch /www/stat/ovpn.connected
 	sleep 10
-        [ "$act" == "start" ] && _return 1 "OpenVPN started."
+	_return 1 "OpenVPN started."
 }
 
-ls >/dev/null 2>/dev/null
-[ $? -eq 1 ] && _return 0 "Need Sudo powers."
-([ -z "$act" ] ) && _return 0 "Missing arguments: act=$act."
+_save(){
 
-echo "$# $*" > /tmp/ovpn.txt
+		_return 1 "OpenVPN settings saved.";
+}
+
+_clear(){
+		uci set openvpn.sabai.enabled=0
+		uci set openvpn.sabai.filename="none"
+		uci set sabai.vpn.status=none
+        uci commit
+		/etc/init.d/openvpn stop
+		echo "" > /etc/sabai/openvpn/open.current
+		echo "" > /etc/sabai/openvpn/ovpn
+		echo "" > /etc/sabai/openvpn/auth-pass
+		sleep 5
+		_return 1 "OpenVPN settings cleared.";
+}
+
+ls >/dev/null 2>/dev/null 
 
 case $act in
 	start)	_start	;;
 	stop)	_stop	;;
-	erase)	_erase	;;
+	save)	_save	;;
+	clear)  _clear  ;;
 esac

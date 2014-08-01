@@ -1,5 +1,6 @@
 <?php
-	header("Content-type: text/plain");
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
 		 
 	if(isset($_REQUEST['act']) && $_REQUEST['act']!="")
 	{

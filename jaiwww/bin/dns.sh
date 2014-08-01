@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/ash
+# Sabai Technology - Apache v2 licence
+# copyright 2014 Sabai Technology
 dns1=$1
 dns2=$2
 #change for now

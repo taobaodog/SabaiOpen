@@ -1,5 +1,6 @@
 <?php
-
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
 $act=$_REQUEST['act'];
 switch($act){
  case 1:{

@@ -1,21 +1,16 @@
-<!DOCTYPE html><meta charset="utf-8"><html><head>
+<!DOCTYPE html>
+<!--Sabai Technology - Apache v2 licence
+    copyright 2014 Sabai Technology -->
+<meta charset="utf-8"><html><head>
 <title id="mainTitle">Sabai Jai Ro</title>
 
 <link rel="stylesheet" type="text/css" href="/libs/jqueryui.css">
 <link rel="stylesheet" type="text/css" href="/libs/jai-widgets.css">
 <link rel="stylesheet" type="text/css" href="css/main.css">
 
-<!-- socket.io
-	We're making PHP give us a valid address for our server since this address will actually refer
-	 to the machine we're running on, which is different everywhere.
--->
-
 <?php include("libs.php"); ?>
 <script src="js/main.js"></script>
 <script>
-// noty settings -- moved to /libs/jquery.noty.jai.js
-// jainode definition -- moved to /libs/jai.js
-var ro = new jainode("http://<?php echo $_SERVER['HTTP_HOST']; ?>:31400");
 
 function toggleHelpSection() {
 	$( "#helpClose").show();
@@ -57,6 +52,18 @@ $(function(){
 	<div id="panelContainer">
 
 		<div id="helpArea">
+					<div class='fright' id='vpnstats'>
+					<div id='vpntype'></div>
+					<div id='vpnstatus'></div>
+				</div>
+
+				<div class='fright' id='locstats'>
+					<div id='locip'></div>
+					<div class='noshow' id='loccontinent'></div>
+					<div id='loccountry'></div>
+					<div class= 'noshow' id='locregion'></div>
+					<div id='loccity'></div>
+				</div>
 			<img id="helpButton" src="img/help.png">
 			<div id="helpSection" class="ui-widget-content ui-corner-al">
 		<!-- 		<a href="#" id="closeHelp" class="xsmallText fright">Close</a> -->

@@ -1,5 +1,4 @@
 <?php
-header('Content-Type: application/javascript');
 
 $lanIp=$_REQUEST['lanip'];
 $lanMask=trim($_REQUEST['lanmask']);

@@ -1,15 +1,20 @@
 <?php
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
 
-if(isset($_REQUEST['act']) && $_REQUEST['act']!="")
-{
-
+header('Content-Type: application/javascript');
 
 $act=$_REQUEST['act'];
 
-$toShell= exec("sh proxy.sh $act",$out);
-
-echo $toShell;
-
+switch ($act) {
+	case "start":
+        exec("sh proxy.sh $act");
+		echo "res={ sabai: true, msg: 'Proxy starting.' }";
+			break;
+	case "stop":
+        exec("sh proxy.sh $act");
+		echo "res={ sabai: true, msg: 'Proxy stopped.' }";
+		    break;
 }
 
 ?>

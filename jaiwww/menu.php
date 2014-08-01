@@ -25,9 +25,8 @@
 	 <li>
 	<a id='menu_vpn' class='superMenuLink button'>VPN</a>
 	<ul id='submenu_vpn' class='subMenu'>
-	 <li><a id='menu_vpn_clients' href='?panel=vpn&section=clients' class='subMenuLink button'>Clients</a></li>
-	 <li><a id='menu_vpn_pptpserver' href='?panel=vpn&section=pptpserver' class='subMenuLink button'>PPTP Server</a></li>
-	 <li><a id='menu_vpn_openvpnserver' href='?panel=vpn&section=openvpnserver' class='subMenuLink button'>OpenVPN Server</a></li>
+	 <li><a id='menu_vpn_pptpclient' href='?panel=vpn&section=pptpclient' class='subMenuLink button'>PPTP Client</a></li>
+	 <li><a id='menu_vpn_openvpnclient' href='?panel=vpn&section=openvpnclient' class='subMenuLink button'>OpenVPN Client</a></li>
 	 <li><a id='menu_vpn_gateways' href='?panel=vpn&section=gateways' class='subMenuLink button'>Gateways</a></li>
 	</ul>
 	 </li>

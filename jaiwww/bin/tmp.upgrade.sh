@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/ash
+# Sabai Technology - Apache v2 licence
+# copyright 2014 Sabai Technology
 
 # logFile=/tmp/update.$(head -c8 /dev/urandom | md5sum | tr -d " -" | head -c8).log
 

@@ -1,7 +1,8 @@
 <?php
-header('Content-Type: application/javascript');
+// Sabai Technology - Apache v2 licence
+// copyright 2014 Sabai Technology, LLC
 
- exec("/sbin/ifconfig eth1 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
+ exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
 $wan = " wan: {
   mac: '". strtoupper(str_replace("HWaddr ","", ( array_key_exists(0,$out)? "$out[0]" : "-" ) )) ."',
   ip: '". str_replace("inet addr:","", ( array_key_exists(1,$out)? "$out[1]" : "-" ) ) ."',
@@ -10,32 +11,30 @@ $wan = " wan: {
 
 unset($out);
 
-if (file_exists ("/www/stat/proxy.connected")) {
-  $proxy_status = rtrim (file_get_contents ("/www/stat/proxy.connected"));
-} else {
-  $proxy_status = "Proxy Stopped";
-}
+$proxy_status = exec("uci get sabai.privoxy.status");
+
   
 $proxy = " proxy: {
   status: '$proxy_status'
 }";
+$pptp_ifup=exec("ifconfig pptp-vpn | grep -e 'pptp-vpn' | awk -F: '{print $0}' | awk '{print $1}'");
+$ovpn_ifup=exec("ifconfig tun0 | grep -e 'tun0' | awk -F: '{print $0}' | awk '{print $1}'");
 
-$vo=array('pptp','l2tp','ovpn');
-foreach($vo as &$v){ $v=file_exists("/www/stat/$v.connected")?$v:''; }
-$vo=implode($vo);
+if($pptp_ifup == 'pptp-vpn' || $ovpn_ifup == 'tun0') {
+	$vo=exec("uci get sabai.vpn.status");
+} else {
+	$vo="none";
+}
 
 switch($vo){
- case '': $vpn_type='-'; break;
+ case 'none': $vpn_type='-'; break;
  case 'pptp': $vpn_type='PPTP'; break;
  case 'l2tp': $vpn_type='L2TP'; break;
  case 'ovpn': $vpn_type='OpenVPN'; break;
- default: $vpn_type='Too many.';
 }
 
 $vpn = ",\n vpn: {\n type: '". $vpn_type ."',
   status: '". (($vpn_type=='-')?'-':'Connected') ."'\n },";
-
-//if( (array_key_exists('do',$_REQUEST) && $_REQUEST['do']=='ip') || !file_exists("/www/stat/ip")){ exec("php get_remote_ip.php"); }
 
 echo "info = {\n"
 .$wan

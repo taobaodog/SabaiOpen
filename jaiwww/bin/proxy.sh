@@ -1,14 +1,17 @@
 #!/bin/sh
-# written by William Haynes - Sabai Technology - Apache v2 licence
+# Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
  
 # this script allows 2 variables to be passed to it, as documented below:
 # act variable is the action sent into the script
+
+# to do - change ip route to lan bridged route
+
 act=$1
 
 # the ip address and mask of the device
-iproute=$(ip route | grep -e "/24 dev eth1" | awk -F: '{print $0}' | awk '{print $1}')
+iproute=$(ip route | grep -e "/24 dev eth0" | awk -F: '{print $0}' | awk '{print $1}')
 
 
 # the proxy address and mask in the configuration file
@@ -22,7 +25,8 @@ _return(){
 }
 
 _stop(){
-   echo "Proxy Stopped" > /www/stat/proxy.connected;
+   uci set sabai.privoxy.status="stopped";
+   uci commit
    /etc/init.d/privoxy stop;
    _return 1 "Proxy Stopped.";
 }
@@ -33,8 +37,8 @@ _start(){
 	logger "Proxy setup: address not equal" $proxyroute $iproute;
 	sed -i "s#$proxyroute#$iproute#" /etc/privoxy/config
     fi
-
-    echo "Proxy Started" > /www/stat/proxy.connected;
+   uci set sabai.privoxy.status="started";
+   uci commit;
     /etc/init.d/privoxy start;
     _return 1 "Proxy Started.";
 }
