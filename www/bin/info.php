@@ -1,7 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // copyright 2014 Sabai Technology, LLC
-header('Content-Type: application/javascript');
 
  exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
 $wan = " wan: {
@@ -18,8 +17,14 @@ $proxy_status = exec("uci get sabai.privoxy.status");
 $proxy = " proxy: {
   status: '$proxy_status'
 }";
+$pptp_ifup=exec("ifconfig pptp-vpn | grep -e 'pptp-vpn' | awk -F: '{print $0}' | awk '{print $1}'");
+$ovpn_ifup=exec("ifconfig tun0 | grep -e 'tun0' | awk -F: '{print $0}' | awk '{print $1}'");
 
-$vo=exec("uci get sabai.vpn.status");
+if($pptp_ifup == 'pptp-vpn' || $ovpn_ifup == 'tun0') {
+	$vo=exec("uci get sabai.vpn.status");
+} else {
+	$vo="none";
+}
 
 switch($vo){
  case 'none': $vpn_type='-'; break;
