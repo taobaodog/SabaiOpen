@@ -1,7 +1,7 @@
 
 config openvpn 'sabai'
 	option config '/etc/sabai/openvpn/ovpn.current'
+	option enabled '0'
 	option filetype '.ovpn'
-	option enabled '1'
-	option filename 'WilliamAMS.ovpn'
+	option filename 'williamsabaiSF.ovpn'
 

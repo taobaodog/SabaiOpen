@@ -2,7 +2,7 @@
 <!--Sabai Technology - Apache v2 licence
     copyright 2014 Sabai Technology -->
 <meta charset="utf-8"><html><head>
-<title id="mainTitle">Sabai Jai Ro</title>
+<title id="mainTitle">SabaiOpen</title>
 
 <link rel="stylesheet" type="text/css" href="/libs/jqueryui.css">
 <link rel="stylesheet" type="text/css" href="/libs/jai-widgets.css">
@@ -75,11 +75,8 @@ $(function(){
 				<a id="goToWiki" href="#">Wiki Page</a>
 			</div>
 		</div>
-
 		<div id="panel">
-			<form id="fe">
 			<?php include($page); ?>
-			</form>
 		</div>
 	</div>
 </div>

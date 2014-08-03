@@ -1,7 +1,7 @@
 <div class='pageTitle'>Diagnostics: Ping</div>
 
 <!-- TODO: -->
-
+<form id='fe'>
 <div class='controlBox'><span class='controlBoxTitle'>Ping</span>
   <div class='controlBoxContent'>
     <table class='controlTable'><tbody>
@@ -27,8 +27,8 @@
   </div> <!--end control box content -->
 </div> <!--end control box  -->
 
-
 <script type='text/ecmascript' src='php/etc.php?q=ping'></script>
+</form>
 <script type='text/ecmascript'>
 
 function getResults(){

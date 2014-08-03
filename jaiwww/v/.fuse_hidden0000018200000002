@@ -1,7 +1,7 @@
+<html>
 <!--Sabai Technology - Apache v2 licence
     copyright 2014 Sabai Technology -->
-	<script type='text/javascript'>
-
+<script type='text/javascript'>
 		var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
 
 		function setLog(res){ 
@@ -87,7 +87,9 @@
 		function OVPNsave(act){ 
 			hideUi("Adjusting OpenVPN..."); 
 			E("_act").value=act; 
+			if (act == "newfile") {
 			que.drop( "bin/ovpn.php", OVPNresp, $("#fe").serialize() ); 
+			setInterval (getUpdate, 5000); 
 		}
 
 		function init(){ 
@@ -95,33 +97,28 @@
 			hidden = E('hideme'); 
 			hide = E('hiddentext'); 
 			load(); 
-			<?php if (file_exists('stat/ip') && file_get_contents("stat/ip") != '') {
-	   echo "donde = $.parseJSON('" . strstr(file_get_contents("stat/ip"), "{") . "');\n";
+			<?php if (file_exists('stat/ip') && file_get_contents("/etc/sabai/stat/ip") != '') {
+	   echo "donde = $.parseJSON('" . strstr(file_get_contents("/etc/sabai/stat/ip"), "{") . "');\n";
 	   echo "for(i in donde){E('loc'+i).innerHTML = donde[i];}"; } ?>
 	   getUpdate();
 	   setInterval (getUpdate, 5000); 
-			$('#VPNsub-menu').show(); 
-			$('.active').removeClass('active')
-			$('#ovpn').addClass('active')
 	}
 
-	</script>
+  
+</script>
 <div class='pageTitle'>VPN: OpenVPN Client</div>
 <div class='controlBox'><span class='controlBoxTitle'>OpenVPN Settings</span>
 	<div class='controlBoxContent'>
 <body onload='init();' id='topmost'>
-<form id='newfile' method='post' action='bin/ovpn.php' encType='multipart/form-data'>
-						<input type='hidden' name='act' value='newfile'>
 
 						<span id='ovpn_file'></span>
 						<p>
 						<span id='upload'>
 						<input type='file' id='file' name='file'>
-						<input type='button' value='Upload' onclick='submit()'></span>
+						<input type='button' value='Upload' onclick='OVPNsave("newfile");'></span>
 						<span id='messages'>&nbsp;</span>
 						</p>
-					</form>
-<form id='fe'>
+
 							<span id='ovpn_controls'>
 							<input type='hidden' id='_act' name='act' value=''>
 							<input type='button' value='Start' onclick='OVPNsave("start");'>
@@ -153,7 +150,6 @@
                 </tbody>
             </table>
         </div>
-        </form>
     <div id='hideme'>
         <div class='centercolumncontainer'>
             <div class='middlecontainer'>

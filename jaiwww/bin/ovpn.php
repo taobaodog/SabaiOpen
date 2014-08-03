@@ -1,6 +1,5 @@
 <?php
-// Sabai Technology - Apache v2 licence
-// copyright 2014 Sabai Technology, LLC
+header('Content-Type: application/javascript');
 
 function newfile(){
  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
@@ -27,7 +26,7 @@ function newfile(){
    file_put_contents("/etc/sabai/usr/ovpn","{ file: '', res: { sabai: false, msg: 'OpenVPN file failed.' } }");
   }
  }
- header("Location: /sabaivpn-ovpn.php");
+ header("Location: /?panel=vpn&section=openvpnclient");
 }
 
 function savefile(){
@@ -37,7 +36,7 @@ $password=$_REQUEST['VPNpassword'];
   file_put_contents("/etc/sabai/openvpn/ovpn.current",$_REQUEST['conf']);
   file_put_contents("/etc/sabai/openvpn/auth-pass",$name ."\n");
   file_put_contents("/etc/sabai/openvpn/auth-pass",$password, FILE_APPEND);
-  exec("sed -ir 's\auth-user-pass.*$\auth-user-pass /etc/sabai/openvpn/auth-pass\g' /etc/sabai/openvpn/ovpn.current");
+  exec("sed -ir 's\auth-user-pass.*$\auth-user-pass /etc/sabai/openvpn/auth-pass\g' /etc/sabai/usr/ovpn.current");
   echo "res={ sabai: true, msg: 'OpenVPN configuration saved.', reload: true };";
  }else{
   echo "res={ sabai: false, msg: 'Invalid configuration.' };";
