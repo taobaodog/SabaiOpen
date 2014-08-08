@@ -7,17 +7,11 @@ _u=$2
 _p=$3
 _s=$4
 
-_return(){
-	echo "res={ sabai: $1, msg: '$2' };";
-	exit 0;
-}
-
 _stop(){
 	uci delete network.vpn
 	uci set sabai.vpn.status=none
 	uci commit
 	/etc/init.d/network restart
-	_return 1 "PPTP stopped."
 }
 
 _start(){
@@ -32,7 +26,6 @@ _start(){
         uci set sabai.vpn.status=pptp
         uci commit
         /etc/init.d/network restart
-		_return 1 "PPTP started.";
 }
 
 _save(){
@@ -40,7 +33,6 @@ _save(){
 		uci set sabai.vpn.password=$_p
 		uci set sabai.vpn.server=$_s
         uci commit
-		_return 1 "PPTP settings saved.";
 }
 
 _clear(){
@@ -52,7 +44,6 @@ _clear(){
 		uci set sabai.vpn.status=none
         uci commit
         /etc/init.d/network restart
-		_return 1 "PPTP settings cleared.";
 }
 
 ls >/dev/null 2>/dev/null 

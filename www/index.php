@@ -1,161 +1,115 @@
-<?php 
-// Sabai Technology - Apache v2 licence
-// copyright 2014 Sabai Technology, LLC
-if(!file_exists('bin/info.php')) header('Location: admin-register.php'); ?>
-
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset='UTF-8'><meta name='robots' content='noindex,nofollow'>
-	<title>SabaiOpen Status</title>
-	<link rel='stylesheet' type='text/css' href='sabai.css'>
-	<script type='text/javascript' src='jquery-1.11.1.js'></script>
-	<script type='text/javascript' src='sabaivpn.js'></script>
-	<script type='text/javascript'>
+<!--Sabai Technology - Apache v2 licence
+    copyright 2014 Sabai Technology -->
+<meta charset="utf-8"><html><head>
+<title id="mainTitle">SabaiOpen</title>
 
-		function setUpdate(res){ 
-			eval(res);
-	    info.proxy.address = info.wan.ip;
-		 	for(i in info.wan){ 
-		 		E('wan'+i).innerHTML = info.wan[i]; 
-      }
-      for(i in info.proxy){ 
-        E('proxy'+i).innerHTML = info.proxy[i]; 
-      }
-		 	
-		 	for(i in info.vpn){ 
-		 		E('vpn'+i).innerHTML = info.vpn[i]; 
-		 	}
-	   		 				       
-		}
+<link rel="stylesheet" type="text/css" href="libs/jqueryui.css">
+<link rel="stylesheet" type="text/css" href="libs/jai-widgets.css">
+<link rel="stylesheet" type="text/css" href="libs/css/main.css">
 
+<?php include("php/libs.php"); ?>
+<script>
+var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
 
-	 function getUpdate(ipref){ 
-	   que.drop('bin/info.php',setUpdate,ipref?'do=ip':null); 
-	   $.get('bin/get_remote_ip.php', function( data ) {
+function getUpdate(ipref){ 
+	   que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
+	   $.get('php/get_remote_ip.php', function( data ) {
 	     donde = $.parseJSON(data.substring(6));
 	     console.log(donde);
 	     for(i in donde) E('loc'+i).innerHTML = donde[i];
 	   });
 	 }
 
-	 function init(){ 
-   <?php if (file_exists('stat/ip') && file_get_contents("stat/ip") != '') {
-	   echo "donde = $.parseJSON('" . strstr(file_get_contents("stat/ip"), "{") . "');\n";
+function setUpdate(res){ 
+			if(info) oldip = info.vpn.ip; 
+			eval(res); 
+			if(oldip!='' && info.vpn.ip==oldip){ 
+				limit--; 
+			}; 
+			if(limit<0) return; 
+
+			for(i in info.vpn){ 
+		 		E('vpn'+i).innerHTML = info.vpn[i]; 
+		 	} 
+		}
+
+function init(){ 
+   <?php if (file_exists('/etc/sabai/stat/ip') && file_get_contents("/etc/sabai/stat/ip") != '') {
+	   echo "donde = $.parseJSON('" . strstr(file_get_contents("/etc/sabai/stat/ip"), "{") . "');\n";
 	   echo "for(i in donde){E('loc'+i).innerHTML = donde[i];}"; } ?>
 	   getUpdate();
 	   setInterval (getUpdate, 5000); 
 	   $('#status').addClass('active')
 	 }
-	
-	</script>
-</head>
-<body onload='init()'>
-	<form>
-		<table id='container' cellspacing=0>
-<!-- 			<tr>
-				<td colspan=2 id='header'>
-					<a href='http://www.sabaitechnology.com'>
-						<img src='images/menuHeader.gif' id='headlogo'>
-					</a>
- 					<div class='title' id='SVPNstatus'>Sabai</div>
-					<div class='version' id='subversion'>Accelerator</div>
-				</td>
-			</tr> -->
-			<tr id='body'>
-				<td id='navi'>
-					<script type='text/javascript'>navi()</script>
-				</td>
-				<td id='content'>
-					<div class="pageTitle">Status</div>
-					<div class='section-title'>WAN</div>
-					<div class='section' id='wan-section'>
-						<table class="fields">
-							<tbody>
-								<tr>
-									<td class="title indent1">MAC Address</td>
-									<td class="content" id='wanmac'></td>
-								</tr>
-								<tr>
-									<td class="title indent1">IP Address</td>
-									<td class="content" id='wanip'></td>
-								</tr>
-								<tr>
-									<td class="title indent1">Status</td>
-									<td class="content" id='wanstatus'></td>
-								</tr>
 
-							</tbody>
-						</table>
-					</div>
+function toggleHelpSection() {
+	$( "#helpClose").show();
+	$( "#helpSection" ).toggle( "slide", { direction: "right" }, 500 );
+	$( "#helpButton" ).hide();
+	return false;
+};
 
-	      </div>
+function closeHelpSection() {
+	$( "#helpClose").hide();
+	$( "#helpSection" ).toggle( "slide", { direction: "right" }, 500 );
+	$( "#helpButton" ).show();
+	return false;
+}
 
-	      <div class='section-title'>Proxy</div>
-	      <div class='section' id='sabaiproxy-section'>
-          <table class="fields">
-            <tbody>
-              <tr>
-                <td class="title indent1">Status</td>
-                <td class="content" id='proxystatus'>-</td>
-              </tr>
-              <tr>
-                <td class="title indent1">HTTP Proxy</td>
-		<td class="content" id='proxyaddress'></td>
-	      </tr>
-	      <tr>
-		<td class="title indent1">Port</td>
-                <td class="content" id='proxyport'>8080</td>
-              </tr>
-            </tbody>
-          </table>
-	      </div>
+<?php
+ $template = array_key_exists('t',$_REQUEST);
+ $panel = ( array_key_exists('panel',$_REQUEST) ? preg_replace('/[^a-z\d]/i', '', $_REQUEST['panel']) : null );
+ $section = ( array_key_exists('section',$_REQUEST) ? preg_replace('/[^a-z\d]/i', '', $_REQUEST['section']) : null );
+ if( empty($panel) ){ $panel = 'network'; $section = 'wan'; }
+ $page = ( $template ?'m':'v') ."/$panel". ( empty($section) ? '' : ".$section") .".php";
+ if(!file_exists($page)) $page = 'v/lorem.php';
+ echo "var template = ". ($template?'true':'false') ."; var panel = '$panel'; var section = '$section';\n";
+?>
 
-					<div class='section-title'>VPN</div>
-					<div class='section' id='sabaivpn-section'>
-						<table class="fields">
-							<tbody>
-								<tr>
-									<td class="title indent1">Connection Type</td>
-									<td class="content" id='vpntype'></td>
-								</tr>
-								<tr>
-									<td class="title indent1">Status</td>
-									<td class="content" id='vpnstatus'></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+$(function(){
+	$("#goToHelp").attr("href", "http://wiki.jairoproject.com" + location.search);
+	$("#goToWiki").attr("href", "help.php" + location.search);
+	$( "#helpButton" ).click(toggleHelpSection);
+	$( "#helpClose").click(closeHelpSection)
+});
 
-					<div class='section-title'>Location</div>
-					<div class='section' id='sabaivpn-section'>
-						<table class="fields">
-							<tbody>
-							<tr>
-								<td class="title indent1">IP Address</td>
-								<td class="content" id='locip'>-</td>
-							</tr>
-							<tr>
-								<td class="title indent1">Continent</td>
-								<td class="content" id='loccontinent'>-</td>
-							<tr>
-								<td class="title indent1">Country</td>
-								<td class="content" id='loccountry'>-</td>
-							</tr>
-							<tr>
-								<td class="title indent1">Region</td>
-								<td class="content" id='locregion'>-</td>
-							<tr>
-								<td class="title indent1">City</td>
-								<td class="content" id='loccity'>-</td>
-							</tr>
-							</tbody>
-						</table>
-					</div>
+</script>
+</head><body onload='init()'>
 
-				</td> <!-- end content -->
-			</tr> <!-- end main stuffs -->
-		</table>
-		<div id='footer'> Copyright © 2014 Sabai Technology, LLC </div>
-</body>
+<div id="backdrop">
+	<?php include('php/menu.php'); ?>
 
+	<div id="panelContainer">
+
+		<div id="helpArea">
+					<div class='fright' id='vpnstats'>
+					<div id='vpntype'></div>
+					<div id='vpnstatus'></div>
+				</div>
+
+				<div class='fright' id='locstats'>
+					<div id='locip'></div>
+					<div class='noshow' id='loccontinent'></div>
+					<div id='loccountry'></div>
+					<div class= 'noshow' id='locregion'></div>
+					<div id='loccity'></div>
+				</div>
+			<img id="helpButton" src="libs/img/help.png">
+			<div id="helpSection" class="ui-widget-content ui-corner-al">
+		<!-- 		<a href="#" id="closeHelp" class="xsmallText fright">Close</a> -->
+				Display Inline Help
+				<a id="helpClose" class="noshow xsmallText" href="#">Close</a>
+				<input name="inlineHelp" id="inlineHelp" type="checkbox" checked="checked"><br><br>
+				<span style="text-decoration: underline">Links:</span><br>
+				<a id="goToHelp" href="#">Help Page</a><br>
+				<a id="goToWiki" href="#">Wiki Page</a>
+			</div>
+		</div>
+		<div id="panel">
+			<?php include($page); ?>
+		</div>
+	</div>
+</div>
+
+</body></html>
