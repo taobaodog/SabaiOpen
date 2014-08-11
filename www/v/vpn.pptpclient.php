@@ -38,7 +38,8 @@ function getUpdate(ipref){
 
 function PPTPresp(res){ 
 	eval(res); 
-	msg(res.msg); 
+	message=E("res.msg"); 
+	messages.value = message.join("\n");
 	showUi(); 
 	if(res.sabai){ 
 		limit=10; 

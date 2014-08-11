@@ -11,8 +11,6 @@
     </div> <!--end control box content -->
 </div> <!--end control box  -->
 
-
-
 <!-- COPIED FROM NETWORK: STATIC IP's, partially modified
 NEEDS LOTS OF WORK -->
 
@@ -26,7 +24,7 @@ function route(){
     'bFilter': false,
     'bSort': false,
     'sAjaxDataProp': 'routeResults',
-    'sAjaxSource': 'php/diagnostics.route.php',
+    'sAjaxSource': 'php/route.php',
     'aoColumns': [
      { 'sTitle': 'Destination',   'mData':'destination' },
      { 'sTitle': 'Gateway ',  'mData':'gateway' },

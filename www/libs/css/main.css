@@ -373,6 +373,7 @@ margin: 0em .6em;
 
 .listTable {
  vertical-align: middle;
+ width: 400px;
  border-collapse: collapse;
  text-align: center;
 }

@@ -64,7 +64,7 @@
 #goButton { float: right; }
 
 </style>
-
+<form id='fe'>
 <div class='pageTitle'>Diagnostics: Logs</div>
 
 <div class='controlBox'>
@@ -72,7 +72,7 @@
 	<div class='controlBoxContent'>
 		<input id="log" name="log" type="hidden">
 
-<?php include("php/diagnostics.logs.php"); ?>
+<?php include("php/logs.php"); ?>
 
 <div id="listContainer">
 
@@ -92,7 +92,7 @@
 	 	</select>
 		<input type="text" name='detail' id='detail'><span id='detailSuffix'></span>
 		<input id='goButton' type="button" value="Go" onclick="goLog();">
-
+</form>
 		<textarea id='logContents' readonly></textarea>
 	</div>
 </div>
@@ -106,7 +106,7 @@ function goLog(n){
 	if($("#act").val() == "download"){
 		alert("DOWNLOAD FILE");
 	}else{
-		$.ajax("php/diagnostics.logs.php", {
+		$.ajax("php/logs.php", {
 			success: function(o){ $('#logContents').html(o); },
 			dataType: "text",
 			data: $("#fe").serialize()

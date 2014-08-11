@@ -22,6 +22,7 @@ foreach(array(
 	"jquery.js",
 	"jqueryui.js",
 	"jquery.mousewheel.js",
+	"jquery.terminal-0.8.8.js",
 	"datatables.js",
 	"jeditable.js",
 	"noty.js",

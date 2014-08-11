@@ -1,3 +1,4 @@
+<form id='fe'>
 <div class='pageTitle'>Diagnostics: NS Lookup</div>
 <!-- 
 TODO:
@@ -15,7 +16,7 @@ TODO:
 			 	</td>
 			 </tr>
 		</tbody></table>
-		
+		</form>
 		<br>
 		<textarea id='dnstxtarea' style="width: 90%; height: 30em" readonly
 ></textarea>
@@ -30,7 +31,7 @@ TODO:
 	$('#ns_domain').val(nslookup.domain);
 
 	function lookup(){
-		$.ajax("php/diagnostics.nslookup.php", {
+		$.ajax("php/nslookup.php", {
 			success: function(o){
 				$('#dnstxtarea').html('');
 				$('#dnstxtarea').html(o);
