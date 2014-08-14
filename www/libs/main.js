@@ -45,8 +45,6 @@ function toggleChildMenu(){
   ch.className = (ch.className == 'shownChildMenu') ? 'hiddenChildMenu' : 'shownChildMenu'; 
 }
 
-var hidden;
-
 function requeue(){
   var queue = []; 
   var workingNow = false; 

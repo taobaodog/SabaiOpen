@@ -1,5 +1,8 @@
+<!--  TODO:
+-->
+<form id="fe">
 <div class='pageTitle'>Security: Firewall</div>
-
+<input type='hidden' id='act' name='act'>
 <div class='controlBox'><span class='controlBoxTitle'>Firewall</span>
 	<div class='controlBoxContent'>
 		<table>
@@ -48,16 +51,60 @@
 				</td>
 			</tr>
 		</table>
-	</div>
+    <div id='hideme'>
+        <div class='centercolumncontainer'>
+            <div class='middlecontainer'>
+                <div id='hiddentext' value-'Please wait...' ></div>
+                <br>
+            </div>
+        </div>
+    </div>
+    </div>
 </div>
+<input type='button' value='Save' onclick='FIREcall()'><span id='messages'>&nbsp;</span>
+<p>
+        <div id='footer'>Copyright © 2014 Sabai Technology, LLC</div>
+</p>
+</form>
+
+<script>
+var hidden, hide;
+var f = E('fe'); 
+var hidden = E('hideme'); 
+var hide = E('hiddentext');
+
+var firewall=$.parseJSON('{<?php
+          $icmp=exec("uci get sabai.firewall.icmp");
+          $multicast=trim(exec("uci get sabai.firewall.multicast"));
+          $cookies=trim(exec("uci get sabai.firewall.cookies"));
+          $wanroute=trim(exec("uci get sabai.firewall.wanroute"));
+          echo "\"icmp\": \"$icmp\",\"multicast\": \"$multicast\",\"cookies\": \"$cookies\",\"wanroute\": \"$wanroute\"";
+      ?>}');
+
+function FIREcall(){ 
+	hideUi("Adjusting Firewall settings..."); 
+// Pass the form values to the php file 
+	$.post('php/firewall.php', $("#fe").serialize(), function(res){
+// Detect if values have been passed back   
+    if(res!=""){
+      FIREresp(res);
+    };
+      showUi();
+});
+// Important stops the page refreshing
+	return false;
+} 
 
 
-<script type='text/ecmascript' src='php/etc.php?q=firewall'></script>
-<script type='text/ecmascript'>
+function FIREresp(res){ 
+  eval(res); 
+  msg(res.msg); 
+  showUi(); 
+  } 
 
 	$('#respondToggle').prop({'checked': firewall.icmp});
 	$('#multicastToggle').prop({'checked': firewall.multicast});
 	$('#synToggle').prop({'checked': firewall.cookies});
-	$('#wanToggle').prop({'checked':firewall.wan});
+	$('#wanToggle').prop({'checked':firewall.wanroute});
 
 </script>

@@ -28,10 +28,10 @@ foreach(array(
 	"noty.js",
 	"jquery.noty.jai.js",
 	"math.js",
-	"jai-widgets.js",
 	"jai.js",
 	"main.js",
-	"wallawalla.js"
+	"jai-widgets.js",
+	"migrate.js"
 ) as $libFile){
 	// dumpJavaScript("/libs/". $libFile,file_exists("libs/".$libFile));
 	insertJavascriptTag("/libs/". $libFile,file_exists($_SERVER['DOCUMENT_ROOT'] ."/libs/". $libFile));
