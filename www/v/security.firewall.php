@@ -39,7 +39,7 @@
 					 </label>
 				</td>
 			</tr>
-			<tr><td>Enable WAN route input</td>
+			<tr><td>Enable WAN access to router</td>
 				<td><input type="checkbox" id="wanToggle" name='wanToggle' class="slideToggle" /> 
 					<label class="slideToggleViewport" for="wanToggle">
 					 <div class="slideToggleSlider">

@@ -1,54 +1,44 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
-# to do: Move iptables rules to /etc/sabai/firewall.settings
+# iptables rules are stored in /etc/sabai/firewall.settings
 
 icmp=$1;
 multicast=$2;
 cookies=$3;
 wanroute=$4;
-wan=$(uci get network.wan.ifname);
+wanport=$(uci get network.wan.ifname);
 
 #set wan response to ping
-if [$icmp = "checked" ]; then
-	echo "iptables -A input_rule -i $WAN -p icmp -m icmp --icmp-type  echo-request -m limit --limit 10/s -m length --length 1:150 -j ACCEPT" >> /etc/sabai/firewall.settings
+if [ $icmp = "on" ]; then
+	#turn on icmp response on wan side
 else
-	grep -v "iptables -D input_rule -i $WAN -p icmp -m icmp --icmp-type  echo-request -m limit --limit 10/s -m length --length 1:150 -j ACCEPT" /etc/sabai/firewall/settings > /tmp/firewall.settings; 
-	mv /tmp/firewall.settings /etc/sabai/firewall.settings; 
-	rm /tmp/firewall.settings
+	#turn off icmp response on wan side
 fi
 
 #set ability to receive multicast
-if [ $multicast = "checked" ]; then
-	iptables -A INPUT -s 224.0.0.0/4 -j ACCEPT
-	iptables -A INPUT -d 224.0.0.0/4 -j ACCEPT
-	iptables -A INPUT -s 240.0.0.0/5 -j ACCEPT
-	iptables -A INPUT -m pkttype --pkt-type multicast -j ACCEPT
-	iptables -A INPUT -m pkttype --pkt-type broadcast -j ACCEPT
+if [ $multicast = "on" ]; then
+	#turn on multicast
 else
-	iptables -D INPUT -s 224.0.0.0/4 -j ACCEPT
-	iptables -D INPUT -d 224.0.0.0/4 -j ACCEPT
-	iptables -D INPUT -s 240.0.0.0/5 -j ACCEPT
-	iptables -D INPUT -m pkttype --pkt-type multicast -j ACCEPT
-	iptables -D INPUT -m pkttype --pkt-type broadcast -j ACCEPT
+	# turn off multicast
 fi
 
 #set syn cookie preference
-if [ $icmp = "checked" ]; then
-	iptables -A input_rule -i $WAN -p icmp -m icmp --icmp-type  echo-request -m limit --limit 10/s -m length --length 1:150 -j ACCEPT
+if [ $cookies = "on" ]; then
+	#allow syn cookies
 else
-	iptables -D input_rule -i $WAN -p icmp -m icmp --icmp-type  echo-request -m limit --limit 10/s -m length --length 1:150 -j ACCEPT
+	#turn off syn cookies
 fi
 
 #allow WAN route input
-if [ $icmp = "checked" ]; then
-	iptables -A input_rule -i $WAN -p icmp -m icmp --icmp-type  echo-request -m limit --limit 10/s -m length --length 1:150 -j ACCEPT
+if [ $wanroute = "on" ]; then
+	#turn on ability for wan input 
 else
-	iptables -D input_rule -i $WAN -p icmp -m icmp --icmp-type  echo-request -m limit --limit 10/s -m length --length 1:150 -j ACCEPT
+	#ensure wan input is turned off
 fi
 
 uci commit;
-/etc/init.d/firewall restart;
-/etc/init.d/network restart;
+# restart any services like firewall or network that need it.
+
 
 ls >/dev/null 2>/dev/null 
