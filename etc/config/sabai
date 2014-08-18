@@ -41,3 +41,13 @@ config interface 'dhcp'
 	option start '100'
 	option limit '199'
 
+config settings 'time'
+	option servers '0.openwrt.pool.ntp.org 1.openwrt.pool.ntp.org 2.openwrt.pool.ntp.org 3.openwrt.pool.ntp.org '
+
+config settings 'firewall'
+	option icmp 'on'
+	option cookies 'on'
+
+config settings 'dmz'
+	option destination '192.168.199.248'
+

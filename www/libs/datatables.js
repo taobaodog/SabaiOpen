@@ -1,1 +1,1 @@
-current/jquery.dataTables-1.9.4.min.js
+current/jquery.dataTables.1.10.2.js

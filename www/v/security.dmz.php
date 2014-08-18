@@ -1,3 +1,5 @@
+<form id="fe">
+<input type='hidden' id='act' name='act'>
 <div class='pageTitle'>Security: DMZ</div>
 <!-- TODO: -->
 
@@ -14,38 +16,66 @@
 		</label>
 		<table>
 		 	<tr><td>Destination Address</td> <td><input id='dmz_destination' name='dmz_destination'></input><td></tr>
-		 	<tr><td>Source Address Restriction</td> <td> <input name='dmz_drestriction' disabled></input> </td></tr>
 		</table>
 		<div><span class='xsmallText'>
 			(optional; ex: "1.1.1.1", "1.1.1.0/24", "1.1.1.1 - 2.2.2.2" or "me.example.com")
-		</span></div>
+    <div id='hideme'>
+        <div class='centercolumncontainer'>
+            <div class='middlecontainer'>
+                <div id='hiddentext' value-'Please wait...' ></div>
+                <br>
+            </div>
+        </div>
+        </div>
+        </span>
+        </div>
+        </td>
+        </td>
+        </tr>
+        </table>
+        </div>
+        </div>
+<input type='button' value='Save' onclick='DMZcall()'><span id='messages'>&nbsp;</span>
+<p>
+        <div id='footer'>Copyright © 2014 Sabai Technology, LLC</div>
+</p>
+</form>
 
-	</div>
-</div>
-
-
-<script type='text/ecmascript' src='php/etc.php?q=dmz'></script>
 <script type='text/ecmascript'>
+var hidden, hide;
+var f = E('fe'); 
+var hidden = E('hideme'); 
+var hide = E('hiddentext');
+var dmz=$.parseJSON('{<?php
+          $status=exec("uci get sabai.dmz.status");
+          $destination=trim(exec("uci get sabai.dmz.destination"));
+          echo "\"status\": \"$status\",\"destination\": \"$destination\"";
+      ?>}');
 
-	$('#destination').ipspinner().ipspinner('value',dmz.destination).spinner({
-    disabled: true
+function DMZcall(){ 
+	hideUi("Adjusting DMZ settings..."); 
+// Pass the form values to the php file 
+	$.post('php/dmz.php', $("#fe").serialize(), function(res){
+// Detect if values have been passed back   
+    if(res!=""){
+      DMZresp(res);
+    };
+      showUi();
+});
+// Important stops the page refreshing
+	return false;
+} 
+
+
+function DMZresp(res){ 
+  eval(res); 
+  msg(res.msg); 
+  showUi(); 
+  } 
+	$('#dmz_destination').ipspinner().ipspinner('value',dmz.destination).spinner({
+    disabled: false
    });
 
-	$("input[name=dmzToggle]").change(function(){
-
-		if( $("input[name=dmzToggle]").is(":checked") ) {
-	    $("input[name=destination]").attr("disabled", false).spinner({
-	      disabled: false
-	    });
-	    $("input[name=restriction]").attr("disabled", false);
-		} else {
-		$("input[name=destination]").attr("disabled", true).spinner({
-		  disabled: true
-		});
-		
-		$("input[name=restriction]").attr("disabled", true);
-		}
-
-	});
+	$('#dmzToggle').prop({'checked': dmz.status});
 
 </script>
