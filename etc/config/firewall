@@ -95,7 +95,4 @@ config rule
 	option proto 'tcp'
 	option dest_port '22'
 	option target 'ACCEPT'
-
-config rule
-	option name 'bob'
-
+	
