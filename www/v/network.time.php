@@ -515,6 +515,11 @@ var ntpraw='<?php
           $servers=exec("uci get sabai.time.servers");
           echo "$servers"; 
           ?>';
+var ntplocation='<?php
+          $location=exec("uci get sabai.time.location");
+          echo "$location"; 
+          ?>';  
+$('#edit-date-default-timezone').val(ntplocation);            
 var array = JSON.stringify(ntpraw.split(" "));
 var ntpfin= "{\"servers\"" + ":" + array + "}";
 var ntp = $.parseJSON(ntpfin);
