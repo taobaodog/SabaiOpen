@@ -61,10 +61,6 @@ $('#list tr').each(function(row, tr){
 });
 
 TableData = $.toJSON(TableData);
-//var json=JSON.parse(TableData);
-//alert(TableData);
-//$("#pftable").val(TableData);
-var json=$.parseJSON(TableData);
 $("#pftable").val(TableData);
 // Pass the form values to the php file 
   $.post('php/portforwarding.php', $("#fe").serialize(), function(pass){

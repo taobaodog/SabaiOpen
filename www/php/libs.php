@@ -28,6 +28,8 @@ foreach(array(
 	"noty.js",
 	"jquery.noty.jai.js",
 	"math.js",
+	"json.js",
+	"tabletojson.js",
 	"jai.js",
 	"main.js",
 	"jai-widgets.js",
