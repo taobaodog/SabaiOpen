@@ -1,9 +1,14 @@
 <?php 
   
-$json = json_decode($_REQUEST['pftable'], true);
-//$file = '/tmp/table';   
-//$pftable=json_decode($_REQUEST['pftable']); 
-file_put_contents($file, $json);
+$json = json_decode($_POST['pftable'], true);
+$file = '/tmp/table';  
+unset ($json[0]);
+$aaData=json_encode($json);
+$cleanup=exec("sed 's/\"1\"\:/\"aaData\"\:\[/g' $aaData | sed -E 's/\"([0-9])\"\://g' | sed 's/\}\}/\}\]\}/g'");
+exec("uci set sabai.pf.table=\"" . $aaData . "\"");
+exec("uci commit");
+ 
+//file_put_contents($file, $json);
 //$multicast=$_REQUEST['multicastToggle']; 
 //$cookies=$_REQUEST['synToggle']; 
 //$wanroute=$_REQUEST['wanToggle']; 
