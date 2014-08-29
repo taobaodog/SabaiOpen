@@ -1,3 +1,4 @@
+<form id="fe">
 <div class='pageTitle'>Wireless: Radio</div>
 <!--	TODO: align td widths-->
 
@@ -5,13 +6,83 @@
   <div class='controlBoxContent' id='wl_wl0'>
   </div>
 </div>
+<input type='button' value='Save' onclick='WLcall()'><span id='messages'>&nbsp;</span>
+    <div id='hideme'>
+        <div class='centercolumncontainer'>
+            <div class='middlecontainer'>
+                <div id='hiddentext'>Please wait...</div>
+                <br>
+            </div>
+        </div>
+    </div>
+    </div>
+    <p>
+        <div id='footer'>Copyright © 2014 Sabai Technology, LLC</div>
+</p>
+</form>
 
-<pre id="testing"></pre>
-
-<script type='text/ecmascript' src='php/etc.php?q=wl&n=0'></script>
 <script type='text/ecmascript'>
 
 var pForm = {}
+var hidden, hide;
+var f = E('fe'); 
+var hidden = E('hideme'); 
+var hide = E('hiddentext');
+
+var wl0=$.parseJSON('{<?php
+          $mode=exec("uci get sabai.wlradio0.mode");
+          $ssid=trim(exec("uci get sabai.wlradio0.ssid"));
+          $encryption=trim(exec("uci get sabai.wlradio0.encryption"));
+          $wpa_type=trim(exec("uci get sabai.wlradio0.wpa_type"));
+          $wpa_encryption=trim(exec("uci get sabai.wlradio0.wpa_encryption"));
+          $wpa_psk=trim(exec("uci get sabai.wlradio0.wpa_psk"));
+          $wpa_rekey=trim(exec("uci get sabai.wlradio0.wpa_rekey"));      
+          echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_type\": \"$wpa_type\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"wpa_rekey\": \"$wpa_rekey\"";
+      ?>}');
+var wl0_wepkeyraw='<?php
+          $servers=exec("uci get sabai.wlradio0.wepkeys");
+          echo "$servers"; 
+          ?>';         
+var wl0_array = JSON.stringify(wl0_wepkeyraw.split(" "));
+var wl0_wepkeyfin= "{\"keys\"" + ":" + wl0_array + "}";
+var wl0_wepkey = $.parseJSON(wl0_wepkeyfin);
+
+$('#wl_mode').val(wl0.mode);   
+$('#wl_ssid').val(wl0.ssid); 
+$('#wl_encryption').val(wl0.encryption); 
+$('#wl_wpa_type').val(wl0.wpa_type); 
+$('#wl_wpa_encryption').val(wl0.wpa_encryption); 
+$('#wl_wpa_psk').val(wl0.wpa_psk);  
+$('#wl_wpa_rekey').val(wl0.wpa_rekey);  
+
+function WLcall(){ 
+  hideUi("Adjusting Wireless settings..."); 
+$(document).ready( function(){
+// Pass the form values to the php file 
+$.post('php/wl.php', $("#fe").serialize(), function(res){
+  // Detect if values have been passed back   
+    if(res!=""){
+      WLresp(res);
+    }
+      showUi();
+});
+ 
+// Important stops the page refreshing
+return false;
+
+}); 
+
+}
+
+function WLresp(res){ 
+  eval(res); 
+  msg(res.msg); 
+  showUi(); 
+  if(res.sabai){ 
+    limit=10; 
+    getUpdate(); 
+  } 
+}
 
 $.widget("jai.wl_wl0", {
     
@@ -30,33 +101,45 @@ $.widget("jai.wl_wl0", {
           .append( $(document.createElement('td') ) 
             .append(
               $(document.createElement('select'))
-                .prop("id","wl_type")
-                .prop("name","wl_type")
+                .prop("id","wl_mode")
+                .prop("name","wl_mode")
                 .prop("class", "radioSwitchElement")
               .append( $(document.createElement('option'))
                 .prop("value", "off")
                 .prop("text", 'Off')
               )
               .append( $(document.createElement('option'))
-                .prop("value", "server")
+                .prop("value", "ap")
                 .prop("text", 'Wireless Server')
               )
               .append( $(document.createElement('option'))
-                .prop("value", "client")
+                .prop("value", "sta")
                 .prop("text", 'Wireless Client')
               )
             )
           )
         ) // end mode tr
 
-        .append( $(document.createElement('tr'))
+                .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('SSID') 
           )
           .append( $(document.createElement('td') ) 
             .append(
+              $(document.createElement('input'))
+                .prop("id","wl_ssid")
+                .prop("name","wl_ssid")
+            )
+          )
+        ) // end SSID tr
+
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td')).html('Encryption') 
+          )
+          .append( $(document.createElement('td') ) 
+            .append(
               $(document.createElement('select'))
-                .prop("id","wl_security")
-                .prop("name","wl_security")
+                .prop("id","wl_encryption")
+                .prop("name","wl_encryption")
                 .prop("class", "radioSwitchElement")
               .append( $(document.createElement('option'))
                 .prop("value", "none")
@@ -67,8 +150,16 @@ $.widget("jai.wl_wl0", {
                 .prop("text", 'WEP')
               )
               .append( $(document.createElement('option'))
-                .prop("value", "wpapersonal")
-                .prop("text", 'WPA Personal')
+                .prop("value", "psk")
+                .prop("text", 'WPA')
+              )
+              .append( $(document.createElement('option'))
+                .prop("value", "psk2")
+                .prop("text", 'WPA2')
+              )
+              .append( $(document.createElement('option'))
+                .prop("value", "mixed-psk")
+                .prop("text", 'WPA/WPA2')
               )
             )
           )
@@ -79,7 +170,7 @@ $.widget("jai.wl_wl0", {
     // LOWER TABLE, DEPENDS ON SECURITY SELECTION
     //wep table body
     .append( $(document.createElement('table')).addClass("controlTable indented")
-      .append( $(document.createElement('tbody')).addClass("wl_security wl_security-wep") 
+      .append( $(document.createElement('tbody')).addClass("wl_encryption wl_encryption-wep") 
         
         .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('WEP Keys') 
@@ -93,7 +184,8 @@ $.widget("jai.wl_wl0", {
       ) // end WEP tbody
 
       //wpa tbody
-      .append( $(document.createElement('tbody')).addClass("wl_security wl_security-wpapersonal") 
+      .append( $(document.createElement('tbody'))
+        .addClass("wl_encryption wl_encryption-psk wl_encryption-psk2 wl_encryption-mixed-psk") 
         
         .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('&nbsp') 
@@ -102,33 +194,10 @@ $.widget("jai.wl_wl0", {
           )
         ) // end empty tr
 
-        .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('WPA Type') 
-          )
-          .append( $(document.createElement('td') ) 
-            .append(
-              $(document.createElement('select'))
-                .prop("id","wl_wpa_type")
-                .prop("name","wl_wpa_type")
-                .prop("class", "radioSwitchElement")
-              .append( $(document.createElement('option'))
-                .prop("value", "1")
-                .prop("text", 'WPA')
-              )
-              .append( $(document.createElement('option'))
-                .prop("value", "2")
-                .prop("text", 'WPA2')
-              )
-              .append( $(document.createElement('option'))
-                .prop("value", "3")
-                .prop("text", 'WPA/WPA2')
-              )
-            )
-          )
-        ) // end WPA type tr
+
 
         .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('WPA Type') 
+          .append( $(document.createElement('td')).html('WPA Encryption') 
           )
           .append( $(document.createElement('td') ) 
             .append(
@@ -137,20 +206,20 @@ $.widget("jai.wl_wl0", {
                 .prop("name","wl_wpa_encryption")
                 .prop("class", "radioSwitchElement")
               .append( $(document.createElement('option'))
-                .prop("value", "1")
+                .prop("value", "aes")
                 .prop("text", 'AES')
               )
               .append( $(document.createElement('option'))
-                .prop("value", "2")
+                .prop("value", "tkip")
                 .prop("text", 'TKIP')
               )
               .append( $(document.createElement('option'))
-                .prop("value", "3")
+                .prop("value", "tkip+aes")
                 .prop("text", 'AES/TKIP')
               )
             )
           )
-        ) // end WPA type tr
+        ) // end WPA Encryption tr
 
         .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('PSK') 
@@ -177,47 +246,42 @@ $.widget("jai.wl_wl0", {
         ) // end PSK tr
       ) // end WPA tbody
     ) // end lower table
-    .append( $(document.createElement('input'))
-      .prop("type", "button")
-      .prop("id", "save")
-      .prop("value", "Save")
-    )
 
-	$('#wl_security').change(function(){
-		console.log('you clicked security')
-		$('.wl_security').hide(); 
-		$('.wl_security-'+ $('#wl_security').val() ).show(); 
+
+	$('#wl_encryption').change(function(){
+		$('.wl_encryption').hide(); 
+		$('.wl_encryption-'+ $('#wl_encryption').val() ).show(); 
 	})
 
-	$('#wl_type').radioswitch({
-		value: wl[0].type,
+	$('#wl_mode').radioswitch({
+		value: wl0.mode,
 		change: function(event,ui){ 
-			$('.wl_type').hide(); 
-			$('.wl_type-'+ wl[0].security ).show(); 
+			$('.wl_mode').hide(); 
+			$('.wl_mode-'+ wl0.encryption ).show(); 
 		}
 	});
 
-	$('#wl_ssid').val(wl[0].ssid);
+	$('#wl_ssid').val(wl0.ssid);
 
-	$('#wl_security').radioswitch({
-		value: wl[0].security
+	$('#wl_encryption').radioswitch({
+		value: wl0.encryption
 	});
 
 	$('#wl_wpa_type').radioswitch({
-	 value: wl[0].wpa.type
+	 value: wl0.wpa_type
 	});
 
 	$('#wl_wpa_encryption').radioswitch({
-	 value: wl[0].wpa.encryption
+	 value: wl0.wpa_encryption
 	});
 
-	$('#wl_wpa_psk').val(wl[0].wpa.psk);
+	$('#wl_wpa_psk').val(wl0.wpa_psk);
 
 	//$('#wl_wpa_rekey').val(wl[0].wpa.rekey);
 
-	$('#wl_wpa_rekey').spinner({ min: 0, max: 525600 }).spinner('value',wl[0].wpa.rekey);
+	$('#wl_wpa_rekey').spinner({ min: 0, max: 525600 }).spinner('value',wl0.wpa_rekey);
 
-	$('#wl_wep_keys').oldeditablelist({ list: wl[0].wep.keys, fixed: true });
+	$('#wl_wep_keys').oldeditablelist({ list: wl0_wepkey.keys, fixed: true });
 
     
     this._super();
@@ -250,7 +314,7 @@ $.widget("jai.wl_wl0", {
 
 $(function(){
   //instatiate widgets on document ready
-  $('#wl_wl0').wl_wl0({ conf: wl });
+  $('#wl_wl0').wl_wl0({ conf: wl0 });
 })
 
 $('#save').click( function() {
@@ -258,8 +322,5 @@ $('#save').click( function() {
   $('#wl_wl0').wl_wl0('saveWL0')
   toServer(pForm, 'save');
 });  
-
-
-
 
 </script>

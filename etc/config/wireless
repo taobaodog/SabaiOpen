@@ -1,26 +1,28 @@
 
 config wifi-device 'radio0'
 	option type 'mac80211'
-	option channel '36'
 	option path 'virtual/mac80211_hwsim/hwsim0'
-	option htmode 'VHT80'
 	option disabled '0'
-	option hwmode '11ng'
+	option country 'US'
+	option channel 'auto'
+	option htmode 'VHT80'
+	option hwmode '11na'
 
 config wifi-iface
 	option device 'radio0'
 	option network 'lan'
 	option mode 'ap'
-	option ssid 'OpenWrt'
-	option encryption 'none'
+	option ssid 'SabaiOpen'
+	option key 'sabaipass123'
+	option encryption 'psk+aes'
 
 config wifi-device 'radio1'
 	option type 'mac80211'
 	option channel '36'
+	option hwmode '11a'
 	option path 'virtual/mac80211_hwsim/hwsim1'
 	option htmode 'VHT80'
-	option disabled '0'
-	option hwmode '11ng'
+	option disabled '1'
 
 config wifi-iface
 	option device 'radio1'

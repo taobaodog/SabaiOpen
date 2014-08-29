@@ -1,12 +1,12 @@
 <?php 
   
 $json = json_decode($_POST['pftable'], true);
-$file = '/tmp/table1';  
+$file = '/tmp/table';  
 unset ($json[0]);
 $aaData=json_encode($json);
-file_put_contents($file, $aaData);
-$command="sh /www/bin/pftable.sh";
-exec($command);
+$cleanup=exec("sed -E 's/\"1\"\:/\"aaData\"\:\[/g' ".$aaData." | sed -E 's/\"([0-9])\"\://g' | sed 's/\}\}/\}\]\}/g'");
+exec("uci set sabai.pf.table=\"" . $aaData . "\"");
+exec("uci commit");
  
 //file_put_contents($file, $json);
 //$multicast=$_REQUEST['multicastToggle']; 

@@ -4,7 +4,6 @@ DDNS: { ip, interval, services }
 -->
 <form id="fe">
 <input type='hidden' id='act' name='act'>
-<input type='hidden' id='dns' name='dns'>
 <div class='pageTitle'>Network: WAN</div>
 <div class='controlBox'><span class='controlBoxTitle'>WAN</span>
   <!-- this div gets populated by widget -->

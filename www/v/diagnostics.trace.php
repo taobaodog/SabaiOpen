@@ -1,7 +1,7 @@
 <form id='fe'>
 <div class='pageTitle'>Diagnostics: Trace</div>
 
-<!-- TODO: -->
+<!-- TODO: Have aaData created at trace.php so that hideui gives message during trace time.-->
 
 <div class='controlBox'><span class='controlBoxTitle'>Traceroute</span>
   <div class='controlBoxContent'>
@@ -9,7 +9,7 @@
       <tr>
         <td>Address</td>
         <td><input id='traceAddress' name='traceAddress' value='google.com'></td>           
-        <td><input type='button' id='trace' value='Trace' onClick='getResults()'></td>
+        <td><input type='button' id='trace' value='Trace' onClick='TRACEcall()'></td>
       </tr>
       <tr>
         <td>Max Hops</td>
@@ -27,13 +27,36 @@
       <table id='resultTable' class='listTable'></table>
     </div>
 
+
+
+      <div id='hideme'><span id='messages'>&nbsp;</span>
+        <div class='centercolumncontainer'>
+          <div class='middlecontainer'>
+            <div id='hiddentext' value-'Please wait...' ></div>
+            <br>
+          </div>
+        </div>
+      </div>
+
   </div> <!--end control box content -->
 </div> <!--end control box  -->
 
 
 <script type='text/ecmascript'>
+  var hidden, hide,res;
+  var f = E('fe'); 
+  var hidden = E('hideme'); 
+  var hide = E('hiddentext');
 
-  function getResults(){
+  function TRACEcall(){
+   hideUi("Tracing the route settings...");
+   getResults();
+   showUi();
+// Important stops the page refreshing
+return false;
+  }
+
+  function getResults(){ 
     $('#results').show();
     $('#resultTable').dataTable({
       "bDestroy":true,
@@ -54,8 +77,8 @@
         { 'sTitle': 'Address 3', "mData":"Address3" },
         { 'sTitle': 'Time (ms)', "mData":"Time3 (ms)" }
         ]
+});
 
-     });
   };
 
 </script>
