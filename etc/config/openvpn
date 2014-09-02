@@ -3,5 +3,5 @@ config openvpn 'sabai'
 	option config '/etc/sabai/openvpn/ovpn.current'
 	option enabled '0'
 	option filetype '.ovpn'
-	option filename 'williamsabaiSF.ovpn'
+	option filename 'none'
 
