@@ -68,8 +68,8 @@ function closeHelpSection() {
 ?>
 
 $(function(){
-	$("#goToHelp").attr("href", "http://wiki.jairoproject.com" + location.search);
-	$("#goToWiki").attr("href", "help.php" + location.search);
+	$("#goToHelp").attr("href", "?panel=help#" + section);
+	$("#goToWiki").attr("href", "http://wiki.jairoproject.com" + location.search);
 	$( "#helpButton" ).click(toggleHelpSection);
 	$( "#helpClose").click(closeHelpSection)
 });

@@ -112,10 +112,6 @@ $.widget("jai.wl_wl0", {
                 .prop("value", "ap")
                 .prop("text", 'Wireless Server')
               )
-              .append( $(document.createElement('option'))
-                .prop("value", "sta")
-                .prop("text", 'Wireless Client')
-              )
             )
           )
         ) // end mode tr

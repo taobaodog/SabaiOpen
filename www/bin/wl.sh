@@ -5,8 +5,6 @@
 encryption=$1
 uci set wireless.radio0.country='US'
 uci set wireless.radio0.channel='auto'
-uci set wireless.radio0.htmode='VHT80'
-uci set wireless.radio0.hwmode='11na'
 wifi down
 
 if [ $(uci get sabai.wlradio0.mode) = "off" ]; then

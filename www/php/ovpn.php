@@ -63,7 +63,7 @@ switch ($act){
   break;
   case "newfile": newfile(); break;
   case "save": savefile(); break;
-  case "log": echo (file_exists("/etc/sabai/openvpn/ovpn.log") ? str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/etc/sabai/openvpn/ovpn.log")) : "No log."); break;
+  case "log": echo (file_exists("/tmp/ovpn.log") ? str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/tmp/ovpn.log")) : "No log."); break;
 }
 
 ?>

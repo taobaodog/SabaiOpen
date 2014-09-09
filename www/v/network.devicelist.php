@@ -2,7 +2,7 @@
 // include('../php/sys.php');
 ?>
 
-<div class='pageTitle'>Network: Device List</div>
+<div class='pageTitle'>Network: DHCP</div>
 <!--
  DHCP Leases
  ARP List
@@ -42,15 +42,10 @@ $.widget("jai.devicelist", {
 		"sAjaxDataProp": "devicelist",
 		"sAjaxSource": "php/network.devicelist.php",
 		"aoColumns": [
-			{ "sTitle": "Type",		"mData":"src" },
 			{ "sTitle": "Address",	"mData":"ip" },
 			{ "sTitle": "MAC",		"mData":"mac" },
-			{ "sTitle": "Link",		"mData":"device" },
 			{ "sTitle": "Name",		"mData":"hostname" },
-			{ "sTitle": "Lease State",	"mData":"state" },
-			{ "sTitle": "Lease Starts",	"mData":"start" },
-			{ "sTitle": "Lease Ends",	"mData":"end" },
-			{ "sTitle": "Last Contact",	"mData":"last" }
+			{ "sTitle": "Lease Ends",	"mData":"end" }
 		]
 		})
 

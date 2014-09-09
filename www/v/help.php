@@ -1,4 +1,4 @@
-<div class='pageTitle'>JaiRo Manual</div>
+<div class='pageTitle'>SabaiOpen Manual</div>
 <br>
 
 <div class='controlBox'>
@@ -59,15 +59,9 @@
   </div>
 </div>
 <div class='controlBox'>
-  <span class='controlBoxTitle'><a href='#' name='openvpn'></a>Open VPN</span>
+  <span class='controlBoxTitle'><a href='#' name='openvpnclient'></a>Open VPN</span>
   <div class='controlBoxContent'>
     OpenVPN, Configuration
-  </div>
-</div>
-<div class='controlBox'>
-  <span class='controlBoxTitle'><a href='#' name='l2tp'></a>L2TP</span>
-  <div class='controlBoxContent'>
-    <span class='smallText'><br><b>L2TP-</b> L2TP Layer 2 Tunneling Protocol, another form of VPN, L2TP is more secure and stable than PPTP and usually faster, although application effects this speed. L2TP uses encryption that, like OpenVPN, is based on OpenSSL and AES. Â This, like with OpenVPN, can be changed (but usually isn't). Learn more about Sabai and L2TP.</span>
   </div>
 </div>
 <div class='controlBox'>

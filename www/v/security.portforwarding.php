@@ -7,7 +7,7 @@
     <span class='controlBoxTitle'>Port Forwarding</span>
     <div class='controlBoxContent'> 
 
-      <table id='list' class='listTable clickable'></table>
+      <table id='list' class='listTable clickable' width='100%'></table>
 
       <input type='button' value='Add' id='add'>
       <input type='button' id="savebutton" name="savebutton" value='Save' onclick="PORTcall()">
