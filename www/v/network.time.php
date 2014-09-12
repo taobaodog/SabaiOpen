@@ -25,6 +25,11 @@ DDNS: { ip, interval, services }
     </div>
 	</div>
 
+<div class='controlBox'><span class='controlBoxTitle'>Current Computer Time</span>
+  <div onload=display_ct(); id='ct' class='controlBoxContent'>
+  </div>
+</div>
+
 <div class='controlBox'><span class='controlBoxTitle'>Time Zone</span>
   <div class='controlBoxContent'>
     <table class='controlTable'><tbody>
@@ -511,6 +516,18 @@ DDNS: { ip, interval, services }
 
 <script type='text/ecmascript'>
 
+function display_c(){
+var refresh=1000; // Refresh rate in milli seconds
+mytime=setTimeout('display_ct()',refresh)
+}
+
+function display_ct() {
+var strcount
+var x = Date();
+document.getElementById('ct').innerHTML = x;
+tt=display_c();
+ }
+
 var ntpraw='<?php
           $servers=exec("uci get sabai.time.servers");
           echo "$servers"; 
@@ -519,7 +536,8 @@ var ntplocation='<?php
           $location=exec("uci get sabai.time.location");
           echo "$location"; 
           ?>';  
-$('#edit-date-default-timezone').val(ntplocation);            
+$('#edit-date-default-timezone').val(ntplocation);  
+display_ct();       
 var array = JSON.stringify(ntpraw.split(" "));
 var ntpfin= "{\"servers\"" + ":" + array + "}";
 var ntp = $.parseJSON(ntpfin);

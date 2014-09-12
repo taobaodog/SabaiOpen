@@ -6,15 +6,15 @@
 
 <form id="fe">
 <input type='hidden' id='dhcptable' name='dhcptable'>
+<input type='hidden' id='act' name='act'>
 	<div class='pageTitle'>Network: DHCP</div>
 
 <div class='controlBox'>
 	<span class='controlBoxTitle'>Summary</span>
 	<div class='controlBoxContent' id='devicelist'>
-		<input type='button' id="savebutton" name="savebutton" value='Save' onclick="DHCPcall()">
-		<input type='button' id="cancelbutton" name="cancelbutton" value='Cancel' onclick='cancelDHCP();'>
-		<input type='button' id="deletebutton" name="deletebutton" value='Delete Lease' onclick="DELcall()">
-        <input type='button' id="refreshbutton" name="refreshbutton" value='refresh' onclick="REFcall()">
+		<input type='button' id="savebutton" name="savebutton" value='Save' onclick='DHCPcall("save")'>
+		<input type='button' id="cancelbutton" name="cancelbutton" value='Cancel' onclick='DHCPcall("get")'>
+    <input type='button' id="refreshbutton" name="refreshbutton" value='Refresh' onclick='DHCPcall("get")'>
 		<span id='messages'>&nbsp;</span>
 
 
@@ -45,7 +45,7 @@
 
 <script type='text/ecmascript'>
 
-<?php exec('sh /www/bin/dhcp.sh') ?>
+<?php exec('sh /www/bin/dhcp.sh get') ?>
 
 	$.widget("jai.devicelist", {
 
@@ -101,24 +101,29 @@ $(function(){
   var hidden = E('hideme'); 
   var hide = E('hiddentext');
 
-  function DHCPcall(){ 
-    $('input[type=search]').val("");
-    $('#example').dataTable().api().search("").draw();
-     hideUi("Adjusting DHCP settings..."); 
-//read the text values
-var TableData=new Array();
-$('#list tr').each(function(row, tr){
-  TableData[row] = {
-      "ip" : $(tr).find('td:eq(1)').text()
-    , "mac" : $(tr).find('td:eq(2)').text()
-    , "name" : $(tr).find('td:eq(3)').text()
-    , "time" : $(tr).find('td:eq(4)').text()
-  }
-});
+function DHCPcall(act){ 
+    E("act").value=act;
+    if ( act = "save") {
+      //delete any checked lines
+      DELcall();
+      //splash UI message
+      hideUi("Adjusting DHCP settings..."); 
+     //read the text values
+     var TableData=new Array();
+     $('#list tr').each(function(row, tr){
+      TableData[row] = {
+        "ip" : $(tr).find('td:eq(1)').text()
+        , "mac" : $(tr).find('td:eq(2)').text()
+        , "name" : $(tr).find('td:eq(3)').text()
+        , "time" : $(tr).find('td:eq(4)').text()
+      };
+    });
+     //create json data from table on screen
+     TableData = $.toJSON(TableData);
+      var json=$.parseJSON(TableData);
+      $("#dhcptable").val(TableData);
+   };
 
-TableData = $.toJSON(TableData);
-var json=$.parseJSON(TableData);
-$("#dhcptable").val(TableData);
 // Pass the form values to the php file 
 $.post('php/dhcp.php', $("#fe").serialize(), function(pass){
   res=$.parseJSON(pass);
