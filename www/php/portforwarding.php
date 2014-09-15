@@ -5,7 +5,11 @@ $file = '/tmp/table1';
 unset ($json[0]);
 $aaData=json_encode($json);
 file_put_contents($file, $aaData);
+#create the table and write to sabai uci
 $command="sh /www/bin/pftable.sh";
+exec($command);
+#implement the table
+$command="sh /www/bin/portforwarding.sh";
 exec($command);
  
 // Send completion message back to UI

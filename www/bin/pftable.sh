@@ -7,10 +7,11 @@ table=$(cat /tmp/table1)
 sed 's/\"1\"\:/\"aaData\"\:\[/g' /tmp/table1 > /tmp/table2
 sed -E 's/\"([0-9])\"\://g' /tmp/table2 > /tmp/table3
 sed 's/\}\}/\}\]\}/g' /tmp/table3 > /tmp/table4
-aaData=$(cat /tmp/table4)
+sed 's/Click to edit//g' /tmp/table4 > /tmp/table5
+aaData=$(cat /tmp/table5)
 
 #save table as single line json
-uci set sabai.pf.table="$(cat /tmp/table4)"
+uci set sabai.pf.table="$aaData"
 uci commit
 
 #cleanup
