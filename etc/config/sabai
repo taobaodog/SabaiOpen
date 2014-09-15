@@ -55,6 +55,16 @@ config settings 'firewall'
 
 config settings 'dmz'
 	option destination '192.168.199.248'
+	
+config settings 'upnp'
+        option enable 'on'
+        option clean 'on'
+        option secure 'on'
+        option intmin '1024'
+        option intmax '65535'
+        option extmin '1024'
+        option extmax '65535'
+        option show 'on'
 
 config settings 'pf'
 	option json 'test'
