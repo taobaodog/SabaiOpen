@@ -31,6 +31,7 @@ foreach(array(
 	"json.js",
 	"tabletojson.js",
 	"jai.js",
+	"current/jquery.validate.js",
 	"main.js",
 	"jai-widgets.js",
 	"migrate.js"

@@ -7,19 +7,19 @@
 uci get sabai.pf.table > /tmp/tmppftable
 
 num_items=$(/www/bin/jsawk 'return this.aaData.length' < /tmp/tmppftable);
-i=0
+i=1
 
-while [ $i -le $(($num_items-1)) ]
+while [ $i -le $num_items ]
 do	
 	echo "processing rule  #$i:"
-	pfenable=$(/www/bin/jsawk "return this.aaData[${i}].status" < /tmp/tmppftable);
-	protocol=$(/www/bin/jsawk "return this.aaData[${i}].protocol" < /tmp/tmppftable);
-	gateway=$(/www/bin/jsawk "return this.aaData[${i}].gateway" < /tmp/tmppftable);
-	src=$(/www/bin/jsawk "return this.aaData[${i}].src" < /tmp/tmppftable);
-	ext=$(/www/bin/jsawk "return this.aaData[${i}].ext" < /tmp/tmppftable);
-	int=$(/www/bin/jsawk "return this.aaData[${i}].int" < /tmp/tmppftable);
-	address=$(/www/bin/jsawk "return this.aaData[${i}].address" < /tmp/tmppftable);
-	description=$(/www/bin/jsawk "return this.aaData[${i}].description" < /tmp/tmppftable);
+	pfenable=$(/www/bin/jsawk 'return this.aaData[0].status' < /tmp/tmppftable);
+	protocol=$(/www/bin/jsawk 'return this.aaData[0].protocol' < /tmp/tmppftable);
+	gateway=$(/www/bin/jsawk 'return this.aaData[0].gateway' < /tmp/tmppftable);
+	src=$(/www/bin/jsawk 'return this.aaData[0].src' < /tmp/tmppftable);
+	ext=$(/www/bin/jsawk 'return this.aaData[0].ext' < /tmp/tmppftable);
+	int=$(/www/bin/jsawk 'return this.aaData[0].int' < /tmp/tmppftable);
+	address=$(/www/bin/jsawk 'return this.aaData[0].address' < /tmp/tmppftable);
+	description=$(/www/bin/jsawk 'return this.aaData[0].description' < /tmp/tmppftable);
 
 	echo "src=$src"
 	
@@ -45,20 +45,20 @@ do
 	if [ $pfenable = "on" ]; then
 		echo "condition 1" >> /tmp/portforwarding
       	uci add firewall redirect
-      	echo "uci add firewall redirect"
-      	uci set firewall.@redirect[${i}].name="pforwarding$i"
+      	#FIXME dummy name, generate correct name
+      	uci set firewall.@redirect[${i}].name='dummyname'
       	#FIXME 'tcpudp' or 'tcp udp'
-      	uci set firewall.@redirect[${i}].proto="${protocol}"
+      	uci set firewall.@redirect[${i}].proto='$protocol'
       	if [ $gateway == "wan" ]; then
-      		uci set firewall.@redirect[${i}].src="wan"
-      		uci set firewall.@redirect[${i}].dest="lan"
-      		uci set firewall.@redirect[${i}].target="DNAT"
-      		uci set firewall.@redirect[${i}].src_dport="${int}" #int port
+      		uci set firewall.@redirect[${i}].src='wan'
+      		uci set firewall.@redirect[${i}].dest='lan'
+      		uci set firewall.@redirect[${i}].target='DNAT'
+      		uci set firewall.@redirect[${i}].src_dport='$int' #int port
       	fi
       	if [ $gateway == "lan" ]; then
-      		uci set firewall.@redirect[${i}].src="lan"
-      		uci set firewall.@redirect[${i}].dest="wan"
-      		uci set firewall.@redirect[${i}].target="SNAT"
+      		uci set firewall.@redirect[${i}].src='lan'
+      		uci set firewall.@redirect[${i}].dest='wan'
+      		uci set firewall.@redirect[${i}].target='SNAT'
       	fi
       	if [ $gateway == "vpn" ]; then
       		echo "not implemented yet"
@@ -66,10 +66,10 @@ do
       		#uci set openvpn.sabai....
       	fi
 		if [ "$src" != "Click to edit" ]; then
-			uci set firewall.@redirect[${i}].src_ip="${src}" #optional parameters
+			uci set firewall.@redirect[${i}].src_ip='$src' #optional parameters
 		fi
-		uci set firewall.@redirect[${i}].dest_ip="${address}"
-		uci set firewall.@redirect[${i}].dest_port="${ext}" #ext port
+		uci set firewall.@redirect[${i}].dest_ip='$address'
+		uci set firewall.@redirect[${i}].dest_port='$ext' #ext port
 		
 	else
 		uci delete firewall.@redirect[${i}] 
@@ -82,7 +82,10 @@ done
 #cleanup
 rm /tmp/tmppftable
 
-uci commit firewall;
+echo "exiting"
+exit 0
+
+uci commit;
 /etc/init.d/firewall restart
 
 ls >/dev/null 2>/dev/null 

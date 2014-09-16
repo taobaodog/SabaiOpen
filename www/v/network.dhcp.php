@@ -158,6 +158,18 @@ $(function(){
   //refresh widgets on document 
   $('#devicelist').devicelist();
 })
-} 
+};
+
+//validate the fields
+$( "#fe" ).validate({
+  rules: {
+    ip: {
+      validip: true
+    },
+    mac: {
+      macchecker: true
+    }
+  }
+});
 
 </script>

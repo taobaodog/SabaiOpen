@@ -319,4 +319,25 @@ $('#save').click( function() {
   toServer(pForm, 'save');
 });  
 
+//validate the fields
+$( "#fe" ).validate({
+  rules: {
+    wl_ssid: {
+      required: true,
+    },
+    wl_encryption: {
+      required: true,
+    },
+    wl_wpa_psk : {
+      required: true,
+      minlength: 8,
+      maxlength: 63
+    },
+    wl_wpa_rekey: {
+      required: true,
+      range: [600, 7200]
+    }
+  }
+});
+
 </script>

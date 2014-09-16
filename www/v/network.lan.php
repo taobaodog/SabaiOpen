@@ -203,7 +203,7 @@ $.widget("jai.dhcpserver", {
       .append( $(document.createElement('tbody')) 
         
         .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('Lease') 
+          .append( $(document.createElement('td')).html('Lease Hours') 
           )
           .append( $(document.createElement('td') ) 
             .append(
@@ -240,9 +240,9 @@ $.widget("jai.dhcpserver", {
     var dhcpRangeMin = ip2long('0.0.0.1');
     var dhcpRangeMax = ip2long('255.255.255.254');
 
-    $('#dhcp_lease').spinner();
-    $('#dhcp_start').spinner();
-    $('#dhcp_limit').spinner();
+    $('#dhcp_lease').spinner({ min: 1, max: 72 });
+    $('#dhcp_start').spinner({ min: 2, max: 254 });
+    $('#dhcp_limit').spinner({ min: 2, max: 254 });
 
 
     $('#dhcp_start').spinner({
@@ -266,7 +266,7 @@ $.widget("jai.dhcpserver", {
     // TODO: Surely there's a better way! (insert infomercial here)
     //  $("#dhcpEdit").attr("checked", false)
     //set initial valies for lease/range inputs
-    $('#dhcp_lease').spinner({ min: 0, max: 2400 });
+    $('#dhcp_lease').spinner({ min: 1, max: 72 });
     $('#dhcp_lease').spinner('value',24);
     $('#dhcp_start').spinner('value', 100 );
     
@@ -309,5 +309,30 @@ $('#save').click( function() {
   toServer(pForm, 'save');
 });  
 
+//validate the fields
+$( "#fe" ).validate({
+  rules: {
+    lan_ip: {
+      required: true,
+      validip: true
+    },
+    lan_mask: {
+      required: true,
+      netmask: true
+    },
+    dhcp_lease: {
+      required: true,
+      range: [1, 72]
+    },
+    dhcp_start: {
+      required: true,
+      range: [2, 254]
+    },
+    dhcp_limit: {
+      required: true,
+      range: [2, 254]
+    }
+  }
+});
 
 </script>

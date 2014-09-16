@@ -3,10 +3,11 @@
 # copyright 2014 Sabai Technology
 
 #convert table to single line json aaData variable
-table=$(cat /tmp/table1)
+#calling program has already put table into /tmp/table1
 sed 's/\"1\"\:/\"aaData\"\:\[/g' /tmp/table1 > /tmp/table2
 sed -E 's/\"([0-9])\"\://g' /tmp/table2 > /tmp/table3
 sed 's/\}\}/\}\]\}/g' /tmp/table3 > /tmp/table4
+#remove blank field holders from GUI data
 sed 's/Click to edit//g' /tmp/table4 > /tmp/table5
 aaData=$(cat /tmp/table5)
 

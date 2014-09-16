@@ -2,15 +2,22 @@
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
-#!/bin/sh
+# send messages to log file but clear log file on each new setup of gw.sh
 rm /var/log/sabaigw.log; exec 2>&1; exec 1>/var/log/sabaigw.log;
-lan_prefix="$(nvram get lan_ipaddr | cut -d '.' -f1,2,3)"; default="$(nvram get gw_def)";
+
+#find our local network, minus last octet.  For example 192.168.199.1 becomes 192.168.199
+lan_prefix="$(uci get network.lan.ipaddr | cut -d '.' -f1,2,3)"; 
+
+#clear the old ip routes
 _fin(){ ip route flush cache; }
+
+#flush the tables on stopping gateways
 _stop(){
  for i in 1 2 3; do ip route flush table $i; done
  ip rule | grep "$lan_prefix" | cut -d':' -f2 | while read old_rule; do ip rule del $old_rule; done
  _fin
 }
+
 _start(){
  _stop
  for i in 1 2 3; do ip route add "$lan_prefix.0/24" dev br0 table $i; done

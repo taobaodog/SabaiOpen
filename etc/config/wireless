@@ -1,49 +1,18 @@
 
 config wifi-device 'radio0'
 	option type 'mac80211'
-	option channel '11'
-	option hwmode '11n'
-	option path 'virtual/mac80211_hwsim/hwsim0'
-	option htmode 'HT40-'
-	option disabled '0'
+	option hwmode '11g'
+	option path 'pci0000:00/0000:00:1c.5/0000:06:00.0'
+	option htmode 'HT20'
 	option country 'US'
+	option channel 'auto'
+	option disabled '0'
 
 config wifi-iface
 	option device 'radio0'
 	option network 'lan'
 	option mode 'ap'
-	option ssid 'SabaiOpen1'
-	option encryption 'none'
-
-config wifi-device 'radio1'
-	option type 'mac80211'
-	option channel '7'
-	option hwmode '11ng'
-	option path 'virtual/mac80211_hwsim/hwsim1'
-	option htmode 'HT40+'
-	option disabled '0'
-	option country 'US'
-
-config wifi-iface
-	option device 'radio1'
-	option network 'lan'
-	option mode 'ap'
-	option ssid 'SabaiOpen2'
-	option encryption 'none'
-
-config wifi-device 'radio2'
-	option type 'mac80211'
-	option channel '11'
-	option hwmode '11g'
-	option path 'pci0000:00/0000:00:15.1/0000:03:00.0'
-	option htmode 'HT20'
-	option disabled '1'
-	option country 'US'
-
-config wifi-iface
-	option device 'radio2'
-	option network 'lan'
-	option mode 'ap'
-	option ssid 'Bluetooth'
-	option encryption 'none'
+	option ssid 'SabaiOpen'
+	option key 'sabaipass123'
+	option encryption 'psk2+aes'
 

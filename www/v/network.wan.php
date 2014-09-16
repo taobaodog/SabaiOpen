@@ -234,12 +234,11 @@ $.widget("jai.wansetup", {
 
 
     $('#wan_mac').macspinner().macspinner('value',wan.mac);
-    $('#wan_mtu').spinner({ min: 0, max: 1500 }).spinner('value',wan.mtu);
+    $('#wan_mtu').spinner({ min: 576, max: 1500 }).spinner('value',wan.mtu);
     $('#wan_gateway').ipspinner().ipspinner('value',wan.gateway);
     $('#wan_mask').maskspinner().maskspinner('value',wan.mask);
     $('#wan_ip').ipspinner().ipspinner('value',wan.ip);
     $('#wan_proto').radioswitch({ value: wan.proto, hasChildren: true });
-
     
     this._super();
   },
@@ -251,5 +250,29 @@ $(function(){
   $('#dns_servers').oldeditablelist({ list: dns.servers, fixed: true })
 })
 
+//validate the fields
+$( "#fe" ).validate({
+  rules: {
+    wan_ip: {
+      validip: true
+    },
+    wan_mask: {
+      netmask: true
+    },
+    wan_mac: {
+      macchecker: true
+    },
+    wan_mtu: {
+      required: true,
+      range: [576, 1500]
+    },
+    wan_gateway: {
+      validIP: true
+    },
+    wan_proto: {
+      required: true
+    }
+  }
+});
 
 </script>

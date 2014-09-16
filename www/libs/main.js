@@ -152,3 +152,27 @@ $(function(){
  $("#menu_"+ panel +((section)?("_"+ section):"") ).addClass("buttonSelected");
  $.peekaboo();
 });
+
+//ipv4 address validation from https://gist.github.com/bcoughlan/2649187
+jQuery.validator.addMethod('validip', function(value) {
+    var split = value.split('.');
+    if (split.length != 4) 
+        return false;
+            
+    for (var i=0; i<split.length; i++) {
+        var s = split[i];
+        if (s.length==0 || isNaN(s) || s<0 || s>255)
+            return false;
+    }
+    return true;
+}, ' Invalid IP Address - please correct.....');
+
+// 'netmask': IPv4 Netmask Validator from code.google.com/p/browanxnms/source/browse/trunk/assets/js/validation/jquery.validate-ext.js
+jQuery.validator.addMethod("netmask", function(value, element) {
+    return this.optional(element) || /^(255\.)((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){2}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(value);
+}, 'Invalid IPv4 netmask - please correct.....');
+
+// mac address checker from code.google.com/p/browanxnms/source/browse/trunk/assets/js/validation/jquery.validate-ext.js
+jQuery.validator.addMethod("macchecker", function(value, element) {                                                                  
+    return this.optional(element) || (/[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}/i.test(value));
+  },'Invalid mac address - please correct.....');
