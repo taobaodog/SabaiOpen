@@ -89,7 +89,6 @@ showUi();
 return false;
 } 
 
-
 function PORTresp(){ 
   msg(res.rMessage); 
   showUi(); 
