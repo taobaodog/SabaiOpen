@@ -1,22 +1,31 @@
-From 4a8c07c85a090e52f0b8aa7a67cfd126ad2ff907 Mon Sep 17 00:00:00 2001
+From 0bdbe61f8aed9bc4b61aa38c01c6891e7ecdd3c1 Mon Sep 17 00:00:00 2001
 From: Alex Nikitenko <alex.nikitenko@sirinsoftware.com>
 Date: Tue, 30 Sep 2014 14:35:19 +0300
-Subject: [PATCH] Created script for generating backup kernel and rootfs
- partitions
+Subject: [PATCH] OpenWRT image build support for Sabai partitioning and
+ fallback
 
 
 Signed-off-by: Alex Nikitenko <alex.nikitenko@sirinsoftware.com>
 ---
- target/linux/x86_64/image/Makefile           |   13 +++---
- target/linux/x86_64/image/gen_image_sabai.sh |   59 ++++++++++++++++++++++++++
+ target/linux/x86_64/image/Makefile           |   21 +++++----
+ target/linux/x86_64/image/gen_image_sabai.sh |   61 ++++++++++++++++++++++++++
  tools/firmware-utils/src/ptgen.c             |    2 +-
- 3 files changed, 66 insertions(+), 8 deletions(-)
+ 3 files changed, 75 insertions(+), 9 deletions(-)
  create mode 100755 target/linux/x86_64/image/gen_image_sabai.sh
 
 diff --git a/target/linux/x86_64/image/Makefile b/target/linux/x86_64/image/Makefile
-index c2f1ce9..3dced58 100644
+index c2f1ce9..bf6de6e 100644
 --- a/target/linux/x86_64/image/Makefile
 +++ b/target/linux/x86_64/image/Makefile
+@@ -9,7 +9,7 @@ include $(INCLUDE_DIR)/image.mk
+ 
+ export PATH=$(TARGET_PATH):/sbin
+ 
+-GRUB2_MODULES = biosdisk boot chain configfile ext2 linux ls part_msdos reboot serial vga
++GRUB2_MODULES = biosdisk boot chain configfile ext2 linux ls part_msdos reboot serial echo test loadenv vga
+ GRUB2_MODULES_ISO = biosdisk boot chain configfile iso9660 linux ls part_msdos reboot serial vga
+ GRUB_TERMINALS =
+ GRUB_SERIAL_CONFIG =
 @@ -75,23 +75,22 @@ ifneq ($(CONFIG_GRUB_IMAGES),)
  		-c ./grub-early.cfg \
  		$(GRUB2_MODULES)
@@ -55,12 +64,32 @@ index c2f1ce9..3dced58 100644
  	gzip -f9 $(BIN_DIR)/$(IMG_PREFIX)-rootfs-$(1).img
  endef
  
+@@ -192,6 +191,11 @@ define Image/Build/Initramfs
+ 	$(CP) $(KDIR)/bzImage-initramfs $(BIN_DIR)/$(IMG_PREFIX)-ramfs.bzImage
+ endef
+ 
++define Image/Build/UpgradeImg
++        gzip -c $(BIN_DIR)/$(IMG_PREFIX)-rootfs-ext4.img > $(BIN_DIR)/rootfs-sabai-img.gz
++	tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle.tar rootfs-sabai-img.gz $(IMG_PREFIX)-vmlinuz
++endef
++
+ define Image/Build
+ 	$(call Image/Build/$(1))
+ 	$(call Image/Build/bootscript,$(1))
+@@ -209,6 +213,7 @@ define Image/Build
+ ifeq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),y)
+ 	$(call Image/Build/Initramfs)
+ endif
++	$(call Image/Build/UpgradeImg)
+ endef
+ 
+ $(eval $(call BuildImage))
 diff --git a/target/linux/x86_64/image/gen_image_sabai.sh b/target/linux/x86_64/image/gen_image_sabai.sh
 new file mode 100755
-index 0000000..661de81
+index 0000000..8dec3ee
 --- /dev/null
 +++ b/target/linux/x86_64/image/gen_image_sabai.sh
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,61 @@
 +#!/usr/bin/env bash
 +# Copyright (C) 2006-2012 OpenWrt.org
 +set -x
@@ -70,43 +99,45 @@ index 0000000..661de81
 +}
 +
 +#####################
-+#1 KERNEL1
++#1 KERNELS
 +#####################
 +#2 ROOTFS1
 +#####################
 +#3 ROOTFS2
 +#####################
-+#4 KERNEL2 - Extended
++#4 Extended
 +#####################
 +
 +
 +OUTPUT="$1"
-+KERNELSIZE1="$2"
++KERNELSIZE="$2"
 +KERNELDIR="$3"
 +ROOTFSSIZE1="$4"
 +ROOTFSIMAGE="$5"
 +ALIGN="$6"
 +
-+KERNELSIZE2="$KERNELSIZE1"
++echo "KERNELSIZE=$KERNELSIZE"
++KERNELSIZE="$(( $KERNELSIZE * 4))"
++echo "KERNELSIZE=$KERNELSIZE"
 +ROOTFSSIZE2="$ROOTFSSIZE1"
 +
 +rm -f "$OUTPUT"
 +
 +head=16
 +sect=63
-+cyl=$(( ($KERNELSIZE1 + $ROOTFSSIZE1 + $ROOTFSSIZE2) * 1024 * 1024 / ($head * $sect * 512)))
++cyl=$(( ($KERNELSIZE + $ROOTFSSIZE1 + $ROOTFSSIZE2) * 1024 * 1024 / ($head * $sect * 512)))
 +
 +# create partition table
-+set `ptgen -v -o "$OUTPUT" -h $head -s $sect -p ${KERNELSIZE1}m -p ${ROOTFSSIZE1}m -p ${ROOTFSSIZE2}m ${ALIGN:+-l $ALIGN}`
++set `ptgen -v -o "$OUTPUT" -h $head -s $sect -p ${KERNELSIZE}m -p ${ROOTFSSIZE1}m -p ${ROOTFSSIZE2}m ${ALIGN:+-l $ALIGN}`
 +
-+KERNELOFFSET1="$(($1 / 512))"
-+KERNELSIZE1="$(($2 / 512))"
++KERNELOFFSET="$(($1 / 512))"
++KERNELSIZE="$(($2 / 512))"
 +ROOTFSOFFSET1="$(($3 / 512))"
 +ROOTFSSIZE1="$(($4 / 512))"
 +ROOTFSOFFSET2="$(($5 / 512))"
 +ROOTFSSIZE2="$(($6 / 512))"
 +
-+BLOCKS_KERNEL1="$((($KERNELSIZE1 / 2) - 1))"
++BLOCKS_KERNEL="$((($KERNELSIZE / 2) - 1))"
 +BLOCKS_ROOTFS1="$((($ROOTFSSIZE1 / 2) - 1))"
 +BLOCKS_ROOTFS2="$((($ROOTFSSIZE2 / 2) - 1))"
 +
@@ -116,8 +147,8 @@ index 0000000..661de81
 +
 +[ -n "$NOGRUB" ] && exit 0
 +
-+genext2fs -d "$KERNELDIR" -b "$BLOCKS_KERNEL1" "$OUTPUT.kernel"
-+dd if="$OUTPUT.kernel" of="$OUTPUT" bs=512 seek="$KERNELOFFSET1" conv=notrunc
++genext2fs -d "$KERNELDIR" -b "$BLOCKS_KERNEL" "$OUTPUT.kernel"
++dd if="$OUTPUT.kernel" of="$OUTPUT" bs=512 seek="$KERNELOFFSET" conv=notrunc
 +rm -f "$OUTPUT.kernel"
 +
 diff --git a/tools/firmware-utils/src/ptgen.c b/tools/firmware-utils/src/ptgen.c

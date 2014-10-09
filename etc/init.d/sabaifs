@@ -2,19 +2,22 @@
 
 START=13
 
-PART_FILE=/etc/sabai/.partitions_created
-FS_FILE=/etc/sabai/.fs_created
-
 USE_PROCD=1
 
 create_partitions() {
-        echo "creating_partitions"
-        if [ -f $PART_FILE ]; then
-                echo "Found sabai partitions. Nothing to do"
+	CMD=$( ls /dev/sda5 )
+        if [ $? = 0 ]; then
+                echo "SABAI:> Found sabai partitions. Nothing to do"
                 return 0;
         fi
 
-        touch $PART_FILE
+        echo "+++++++++++++++++++++++++++++++++++++++++++++"
+        echo "Sabai Networks 1st boot. Creating filesystems"
+        echo "+++++++++++++++++++++++++++++++++++++++++++++"
+
+        /etc/init.d/fdisker
+
+	echo "SABAI:> partitions created"
 
         reboot
         exit 0
@@ -23,15 +26,69 @@ create_partitions() {
 
 make_filesystems() {
 
-        echo "making_filesystems"
-        if [[ -f $PART_FILE ]] && [ ! -f $FS_FILE ]; then
-                echo "Found sabai partitions. Creating filesystems"
-                mkfs.ext2 /dev/sda5
+        echo "SABAI:> making filesystems"
+	mount /dev/sda1 /mnt
+	CMD_FILE=$(ls /mnt/boot/vmlinuz2)
+	umount /dev/sda1
+        if [ -z "$CMD_FILE" ]; then
+                echo "SABAI:> Found sabai partitions. Creating filesystems"
+                mkfs.ext4 /dev/sda5
                 mkfs.ext4 /dev/sda6
                 mkfs.ext4 /dev/sda7
-                touch $FS_FILE
+                echo "SABAI:> Copying kernel partition"
+                mount /dev/sda1 /mnt
+                cp -f /mnt/boot/vmlinuz /mnt/boot/vmlinuz2
+		mv /mnt/boot/vmlinuz /mnt/boot/vmlinuz1
+
+                cp -f /etc/sabai/grub.cfg.sabai /mnt/boot/grub/grub.cfg
+                umount /dev/sda1
+
+                mount /dev/sda5 /mnt
+                grub-editenv /mnt/grubenv create
+                grub-editenv /mnt/grubenv set boot_entry=0
+		grub-editenv /mnt/grubenv set is_upgrade=0
+                umount /dev/sda5
         else
-                echo "Filesystems already created"
+		echo "SABAI:> Filesystems already created"
+		mount /dev/sda5 /mnt
+		UPGRADE_IN_PROGRESS=$(grub-editenv /mnt/grubenv list | grep is_upgrade | awk -F "=" '{print $2}')
+		PREV_KERNEL=$(grub-editenv /mnt/grubenv list | grep prev_kernel | awk -F "=" '{print $2}')
+		SAVE_DEFAULT=$(grub-editenv /mnt/grubenv list | grep save_default | awk -F "=" '{print $2}')
+		BOOT_ENTRY=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
+
+		if [ "$UPGRADE_IN_PROGRESS" = "1" ]; then
+			if [ "$SAVE_DEFAULT" = "1" ]; then
+				echo "SABAI:> Sucessfully booted into after firmware upgrade"
+				
+				# Sucessfully booted, so, cleanup savedefault entry
+               			if [ "$BOOT_ENTRY" = "1" ]; then
+                        		grub-editenv /mnt/grubenv set boot_entry=0
+                		else
+                        		grub-editenv /mnt/grubenv set boot_entry=1
+                		fi
+				grub-editenv /mnt/grubenv set save_default=0
+        		        grub-editenv /mnt/grubenv set is_upgrade=0
+				
+				umount /dev/sda5
+
+				mount /dev/sda1 /mnt
+				# switching between entries requires calling "savedefault" function
+				# on entry, which is going to be used after upgrade
+				sed -i "s/function savedefault/tempstring/g" /mnt/boot/grub/grub.cfg
+                        	sed -i "s/# savedefault/Savedefault/g" /mnt/boot/grub/grub.cfg
+                        	sed -i "s/savedefault/# savedefault/g" /mnt/boot/grub/grub.cfg
+                        	sed -i "s/Savedefault/savedefault/g" /mnt/boot/grub/grub.cfg
+				sed -i "s/tempstring/function savedefault/g" /mnt/boot/grub/grub.cfg
+                        	umount /dev/sda1
+			else
+				echo "SABAI:> Upgrade failed. Fallback to old kernel"
+				grub-editenv /mnt/grubenv set is_upgrade=0
+				umount /dev/sda5
+			fi
+		else
+			echo "SABAI:> Regular boot"
+			umount /dev/sda5
+		fi
         fi
 
 }
@@ -39,10 +96,8 @@ make_filesystems() {
 start_service() {
         exec 1>/dev/console  ;
         exec 2>/dev/console  ;
-        echo "+++++++++++++++++++++++++++++++++++++++++++++"
-        echo "Sabai Networks 1st boot. Creating filesystems"
-        echo "+++++++++++++++++++++++++++++++++++++++++++++"
         create_partitions
         make_filesystems
+        mount /dev/sda5 /mnt
 }
 
