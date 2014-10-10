@@ -56,6 +56,7 @@ _lan(){
 }
 
 ls >/dev/null 2>/dev/null 
+logger "wan script run and firewall restarted"
 
 case $proto in
 	dhcp)	_dhcp	;;

@@ -11,6 +11,7 @@ uci set system.ntp.server="$(uci get sabai.time.servers)";
 uci commit
 echo $(uci get sabai.time.timezone) > /etc/TZ
 /etc/init.d/ntpd restart
+logger "time script run and time client restarted"
 
 # Send completion message back to UI
 echo "res={ sabai: true, msg: 'Time settings applied' }"

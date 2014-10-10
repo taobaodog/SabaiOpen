@@ -10,6 +10,7 @@ uci set dhcp.lan.start=$(uci get sabai.dhcp.start);
 uci set dhcp.lan.limit=$(uci get sabai.dhcp.limit);
 uci commit;
 /etc/init.d/network restart
+logger "lan run and network restarted"
 
 # Send completion message back to UI
 echo "res={ sabai: true, msg: 'LAN settings applied' }";

@@ -11,6 +11,7 @@ _stop(){
 	uci commit
 	/etc/init.d/network restart
 	/etc/init.d/firewall restart
+    logger "pptp stopped and firewall restarted"
 }
 
 _start(){
@@ -43,6 +44,7 @@ _start(){
     #restart services
         /etc/init.d/network restart
     	/etc/init.d/firewall restart
+        logger "pptp run and firewall restarted"
 }
 
 _clear(){
@@ -55,6 +57,7 @@ _clear(){
         uci commit
         /etc/init.d/network restart
     	/etc/init.d/firewall restart
+        logger "pptp cleared and firewall restarted"
 }
 
 ls >/dev/null 2>/dev/null 

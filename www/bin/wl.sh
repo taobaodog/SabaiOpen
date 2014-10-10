@@ -50,5 +50,5 @@ case $encryption in
 	mixed-psk)	_psk	;;
 esac
 
-
 wifi up
+logger "wireless script run and wifi restarted"

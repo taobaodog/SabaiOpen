@@ -216,6 +216,7 @@ fi
 
 uci commit;
 /etc/init.d/firewall restart 
+logger "firewall run and restarted"
 # restart any services like firewall or network that need it.
 
 ls >/dev/null 2>/dev/null 

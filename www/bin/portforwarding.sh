@@ -87,6 +87,7 @@ exit 0
 
 uci commit;
 /etc/init.d/firewall restart
+logger "portforwarding set and firewall restarted"
 
 ls >/dev/null 2>/dev/null 
 

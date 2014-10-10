@@ -4,6 +4,7 @@
 
 // Bring over variables from the UPNP page
 $enable=trim($_POST['enableToggle']);
+$natpmp=trim($_POST['natpmpToggle']);
 $clean=trim($_POST['cleanToggle']);
 $secure=trim($_POST['secureToggle']);
 $intmin=trim($_POST['intmin']);
@@ -14,6 +15,7 @@ $command="sh /www/bin/upnp.sh";
 
 // Set the Sabai config to reflect latest settings
 exec("uci set sabai.upnp.enable=\"" . $enable . "\"");
+exec("uci set sabai.upnp.natpmp=\"" . $natpmp . "\"");
 exec("uci set sabai.upnp.clean=\"" . $clean . "\"");
 exec("uci set sabai.upnp.secure=\"" . $secure . "\"");
 exec("uci set sabai.upnp.intmin=\"" . $intmin . "\"");

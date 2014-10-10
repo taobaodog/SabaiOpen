@@ -19,6 +19,7 @@ if [ $status = "on" ] && [ $destination != "" ]; then
 
 uci commit firewall;
 /etc/init.d/firewall restart
+logger "dmz setup and firewall restarted"
 
 ls >/dev/null 2>/dev/null 
 

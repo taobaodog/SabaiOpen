@@ -14,6 +14,17 @@
 				 </label>
 			</td>
 		</tr>
+		<tr><td>Enable NAT-PMP</td>
+			<td><input type="checkbox" id="natpmpToggle" name='natpmpToggle' class="slideToggle" />
+				 <label class="slideToggleViewport" for="natpmpToggle">
+				 <div class="slideToggleSlider">
+				   <div class="slideToggleButton slideToggleButtonBackground">&nbsp;</div>
+				   <div class="slideToggleContent slideToggleLeft button buttonSelected"><span>On</span></div>
+				   <div class="slideToggleContent slideToggleRight button"><span>Off</span>
+				 </label></div>
+				  </div>				 
+			</td>
+		</tr>
 		<tr><td>Inactive Rules Cleaning</td>
 			<td><input type="checkbox" id="cleanToggle" name='cleanToggle' class="slideToggle" />
 			 	<label class="slideToggleViewport" for="cleanToggle">
@@ -39,7 +50,7 @@
 		<tr>
 			<td> </td>
 			<td><span class='xsmallText'>
-				When enabled, UPnP clients are allowed to add mappings only to their IP</span>
+				NAT-PMP requires UPnP to be on.</span>
 			</td>
 		</tr>
 	</tbody></table></div>
@@ -94,6 +105,7 @@ var hide = E('hiddentext');
 
 var upnp=$.parseJSON('{<?php
           	$enable=exec("uci get sabai.upnp.enable");
+          	$natpmp=exec("uci get sabai.upnp.natpmp");
 			$clean=exec("uci get sabai.upnp.clean");
 			$secure=exec("uci get sabai.upnp.secure");
 			$intmin=exec("uci get sabai.upnp.intmin");
@@ -104,6 +116,7 @@ var upnp=$.parseJSON('{<?php
       ?>}');
 
 	$('#enableToggle').prop({'checked': upnp.enable});
+	$('#natpmpToggle').prop({'checked': upnp.enable});
 	$('#cleanToggle').prop({'checked': upnp.clean});
 	$('#secureToggle').prop({'checked': upnp.secure});
 
