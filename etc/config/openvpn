@@ -1,7 +1,9 @@
 
 config openvpn 'sabai'
 	option config '/etc/sabai/openvpn/ovpn.current'
-	option enabled '0'
+	option dev 'tun199'
 	option filetype '.ovpn'
-	option filename 'none'
+	option log '/www/libs/data/stat/ovpn.log'
+	option filename 'RuthSabaiNY.ovpn'
+	option enabled '0'
 

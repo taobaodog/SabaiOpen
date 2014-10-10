@@ -21,7 +21,7 @@ config dhcp 'lan'
 	option dhcpv6 'server'
 	option ra 'server'
 	option leasetime '24'
-	option limit '199'
+	option limit '254'
 
 config dhcp 'wan'
 	option interface 'wan'

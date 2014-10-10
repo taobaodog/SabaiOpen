@@ -12,7 +12,7 @@ config wifi-iface
 	option device 'radio0'
 	option network 'lan'
 	option mode 'ap'
-	option ssid 'SabaiOpen'
-	option key 'sabaipass123'
+	option ssid 'WmSabaiOpen'
 	option encryption 'psk2+aes'
+	option key 'sabaipass123'
 

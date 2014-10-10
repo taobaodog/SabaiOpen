@@ -62,5 +62,22 @@ function getResults(){
   }); 
 }
 
+//validate the fields
+$( "#fe" ).validate({
+    rules: {
+    pingAddress: {
+      required: true,
+    },
+    pingCount: {
+      required: true,
+      range: [1, 50]
+    },
+    pingSize: {
+      required: true,
+      range: [4, 84]
+    }
+  }
+});
+
 </script>
 

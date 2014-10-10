@@ -79,7 +79,7 @@ $.widget( "jai.oldeditablelist", $.ui.sortable, {
   this.element.addClass('editableList');
   this.options.fid = this.element.attr('id');
   this.addItems(this.options.list);
-  if(!this.options.fixed) $(this.element).after("<br><input type='button' value='Add' onclick='$(\"#"+ this.options.fid +"\").editablelist(\"addItems\")'>");
+  if(!this.options.fixed) $(this.element).after("<br><input type='button' value='Add' onclick='$(\"#"+ this.options.fid +"\").oldeditablelist(\"addItems\")'>");
   this._super();
  },
  addItems: function(a){ if(a==null) a = false;
@@ -90,7 +90,7 @@ $.widget( "jai.oldeditablelist", $.ui.sortable, {
     return $(document.createElement('li'))
     .append( $(document.createElement('input')).addClass("editableFormComplement").prop("type","hidden").prop("name",fid+"[]").val(v) )
     .append( $(document.createElement('span')).addClass("editableListText").html(v) )
-    .append( (fixed ? null : $(document.createElement('a')).addClass("deleteX").html("X")) );
+    .append( (fixed ? null : $(document.createElement('a')).addClass("deleteX").html("&#10006")) );
   }));
   if(!fixed) $(this.element).find('.deleteX').click(function(event){ $(event.target).parent().remove(); });
   $(this.element).find('.editableListText').editable(function(value, settings){

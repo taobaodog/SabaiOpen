@@ -11,9 +11,9 @@ _return(){
 }
 
 _stop(){
-	/etc/init.d/openvpn stop
 	uci set sabai.vpn.status=none
-	uci commit sabai
+	uci commit
+	/etc/init.d/openvpn stop
 	sleep 5
 	_return 1 "OpenVPN stopped."
 }
@@ -30,9 +30,14 @@ _start(){
 		/etc/init.d/network restart
 		sleep 5
 		fi
+	uci delete network.openvpn
+	uci set openvpn.sabai.log='/www/libs/data/stat/ovpn.log'
 	uci set sabai.vpn.status=ovpn
 	uci set openvpn.sabai.enabled=1
-	uci commit sabai
+	uci set network.openvpn=interface
+	uci set network.openvpn.ifname='tun0'
+	uci set network.openvpn.proto='none'
+	uci commit
 	/etc/init.d/openvpn start
 	sleep 10
 	_return 1 "OpenVPN started."

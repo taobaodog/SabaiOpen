@@ -369,7 +369,7 @@ margin: 0em .6em;
 
 .rangeSlider { margin: 1em 0 0; }
 
-.deleteX { float: right; margin-left: .25em; border: 1px solid silver; line-height: 1em; }
+.deleteX { float: right; margin-left: .25em; border: 0px solid silver; line-height: 1em; }
 
 .listTable {
  vertical-align: middle;
@@ -773,7 +773,8 @@ color: blue;
 
 .error {
     font-weight: bold;
-    color: red;
+    color: #262262;
+    padding: 15px;
 }
 
 .fields {

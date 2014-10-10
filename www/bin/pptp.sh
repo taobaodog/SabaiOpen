@@ -29,7 +29,6 @@ _start(){
         uci set network.vpn.server="$server"
         uci set network.vpn.buffering=1
         uci set sabai.vpn.status=pptp
-        uci set sabai.vpn.status=on
     #set the firewall
         uci set firewall.vpn=zone
         uci set firewall.vpn.name=vpn

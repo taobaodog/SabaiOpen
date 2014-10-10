@@ -1,19 +1,21 @@
-<?php
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 header('Content-Type: application/javascript');
-// Sabai Technology - Apache v2 licence
-// copyright 2014 Sabai Technology
-
-// Bring over variables from the openVPN
-
-$act=trim($_POST['act']);
-$VPNname=trim($_POST['VPNname']);
-$VPNpassword=trim($_POST['VPNpassword']);
-$conf=trim($_POST['conf']);
-
-exec("uci set sabai.ovpn.VPNname=\"" . $VPNname . "\"");
-exec("uci set sabai.ovpn.VPNpassword=\"" . $VPNpassword . "\"");
-exec("uci set sabai.ovpn.conf=\"" . $conf . "\"");
-exec("uci commit sabai");
 
 function newfile(){
  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
@@ -41,6 +43,7 @@ function newfile(){
   default:{
    file_put_contents("/etc/sabai/usr/ovpn","{ file: '', res: { sabai: false, msg: 'OpenVPN file failed.' } }");
   }
+ <?php
  }
  header("Location: /?panel=vpn&section=openvpnclient");
 }
@@ -77,8 +80,5 @@ switch ($act){
   break;
   case "newfile": newfile(); break;
   case "save": savefile(); break;
-  case "log": echo (file_exists("/etc/sabai/openvpn/ovpn.log") ? str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/etc/sabai/openvpn/ovpn.log")) : "No log."); break;
+  case "log": echo (file_exists("/var/log/ovpn.log") ? str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/var/log/ovpn.log")) : "No log."); break;
 }
-
-?>
-

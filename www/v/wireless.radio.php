@@ -277,7 +277,7 @@ $.widget("jai.wl_wl0", {
 
 	$('#wl_wpa_rekey').spinner({ min: 0, max: 525600 }).spinner('value',wl0.wpa_rekey);
 
-	$('#wl_wep_keys').oldeditablelist({ list: wl0_wepkey.keys, fixed: true });
+	$('#wl_wep_keys').oldeditablelist({ list: wl0_wepkey.keys, fixed: false });
 
     
     this._super();

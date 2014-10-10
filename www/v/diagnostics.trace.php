@@ -81,4 +81,21 @@ return false;
 
   };
 
+//validate the fields
+$( "#fe" ).validate({
+    rules: {
+    traceAddress: {
+      required: true
+    },
+    maxHops: {
+      required: true,
+      range: [1, 100]
+    },
+    maxWait: {
+      required: true,
+      range: [1, 60]
+    }
+  }
+});
+
 </script>

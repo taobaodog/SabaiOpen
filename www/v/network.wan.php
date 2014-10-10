@@ -19,10 +19,9 @@ DDNS: { ip, interval, services }
       <tr>
         <td>DNS Servers</td>
         <td><div><ul id='dns_servers'></ul></div></td>
-        <td class="description">
-          <div id='editableListDescription'>
+          <div id="editableListDescription">
             <span class ='xsmallText'>(These are the DNS servers the DHCP server will provide for devices also on the LAN)
-            </span>
+            </span><br><br>
           </div>
         </td>
       </tr>
@@ -67,7 +66,7 @@ var wan=$.parseJSON('{<?php
         echo "\"proto\": \"$proto\",\"ip\": \"$ip\",\"mask\": \"$mask\",\"gateway\": \"$gateway\",\"mac\": \"$mac\",\"mtu\": \"$mtu\"";
       ?>}');
 var dnsraw='<?php
-          $servers=exec("uci get sabai.dns.servers");
+          $servers=exec("uci get sabai.wan.dns");
           echo "$servers"; 
           ?>';
 var array = JSON.stringify(dnsraw.split(" "));
@@ -93,8 +92,6 @@ return false;
 }); 
 
 
-//  E("_act").value=act; 
-//  que.drop("php/wan.php",WANresp, $("fe").serialize() ); 
     if(act =='clear'){ 
     setTimeout("window.location.reload()",5000);
       }; 
@@ -247,32 +244,9 @@ $.widget("jai.wansetup", {
 $(function(){
   //instatiate widgets on document ready
   $('#wansetup').wansetup({ conf: wan });
-  $('#dns_servers').oldeditablelist({ list: dns.servers, fixed: true })
+  $('#dns_servers').oldeditablelist({ list: dns.servers, fixed: false })
 })
 
-//validate the fields
-$( "#fe" ).validate({
-  rules: {
-    wan_ip: {
-      validip: true
-    },
-    wan_mask: {
-      netmask: true
-    },
-    wan_mac: {
-      macchecker: true
-    },
-    wan_mtu: {
-      required: true,
-      range: [576, 1500]
-    },
-    wan_gateway: {
-      validIP: true
-    },
-    wan_proto: {
-      required: true
-    }
-  }
-});
+
 
 </script>

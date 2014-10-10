@@ -8,7 +8,7 @@ uci set network.lan.netmask=$(uci get sabai.lan.netmask);
 uci set dhcp.lan.leasetime=$(uci get sabai.dhcp.leasetime);
 uci set dhcp.lan.start=$(uci get sabai.dhcp.start);
 uci set dhcp.lan.limit=$(uci get sabai.dhcp.limit);
-uci commit sabai;
+uci commit;
 /etc/init.d/network restart
 
 # Send completion message back to UI
