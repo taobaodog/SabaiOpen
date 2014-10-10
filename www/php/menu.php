@@ -49,7 +49,6 @@
 	 <li><a id='menu_security_firewall' href='?panel=security&section=firewall' class='subMenuLink button'>Firewall</a></li>
 	 <li><a id='menu_security_portforwarding' href='?panel=security&section=portforwarding' class='subMenuLink button'>Port Forwarding</a></li>
 	 <li><a id='menu_security_dmz' href='?panel=security&section=dmz' class='subMenuLink button'>DMZ</a></li>
-	 <li><a id='menu_security_conntrack' href='?panel=security&section=conntrack' class='subMenuLink button'>Conntrack</a></li>
 	 <li><a id='menu_security_upnp' href='?panel=security&section=upnp' class='subMenuLink button'>UPnP</a></li>
 	</ul>
 	 </li>

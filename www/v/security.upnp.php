@@ -1,10 +1,11 @@
+<form id="fe">
 <div class='pageTitle'>Security: UPnP</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Settings</span>
 	<div class='controlBoxContent'><table><tbody>
 		<tr><td>Enable UPnP</td>
-			<td><input type="checkbox" id="dmzToggle" name='dmzToggle' class="slideToggle" />
-				 <label class="slideToggleViewport" for="dmzToggle">
+			<td><input type="checkbox" id="enableToggle" name='enableToggle' class="slideToggle" />
+				 <label class="slideToggleViewport" for="enableToggle">
 				 <div class="slideToggleSlider">
 				   <div class="slideToggleButton slideToggleButtonBackground">&nbsp;</div>
 				   <div class="slideToggleContent slideToggleLeft button buttonSelected"><span>On</span></div>
@@ -14,8 +15,8 @@
 			</td>
 		</tr>
 		<tr><td>Inactive Rules Cleaning</td>
-			<td><input type="checkbox" id="rulesToggle" name='rulesToggle' class="slideToggle" />
-			 	<label class="slideToggleViewport" for="rulesToggle">
+			<td><input type="checkbox" id="cleanToggle" name='cleanToggle' class="slideToggle" />
+			 	<label class="slideToggleViewport" for="cleanToggle">
 				 <div class="slideToggleSlider">
 				   <div class="slideToggleButton slideToggleButtonBackground">&nbsp;</div>
 				   <div class="slideToggleContent slideToggleLeft button buttonSelected"><span>On</span></div>
@@ -47,7 +48,7 @@
 <div class='controlBox'><span class='controlBoxTitle'>Allowed UPnP Ports*</span>
 	<div class='controlBoxContent'>
 		<table><tbody>
-			<tr><td>Internal Ports</td><td><input id='internalLB' name='internalLB' class='shortinput'/> - <input id='internalUB' name='internalUB' class='shortinput'/>
+			<tr><td>Internal Ports</td><td><input id='intmin' name='intmin' class='shortinput'/> - <input id='intmax' name='intmax' class='shortinput'/>
 			</tr>
 			<tr>
 				<td> </td>
@@ -56,7 +57,7 @@
 				</td>
 			</tr>
 			<tr><td><br> </td><td><br> </td></tr>
-			<tr><td>External Ports</td><td><input id='externalLB' name='externalLB' class='shortinput'/> - <input id='externalUB' name='externalUB' class='shortinput'/>
+			<tr><td>External Ports</td><td><input id='extmin' name='extmin' class='shortinput'/> - <input id='extmax' name='extmax' class='shortinput'/>
 			</tr>
 			<tr>
 				<td> </td>
@@ -66,22 +67,6 @@
 			</tr>
 			<tr>
 				<td> </td>
-				<td>
-					<span class='xsmallText'><input type='checkbox' id='advanced' name='advanced' onChange='changeRange();'>Allow advanced settings</span>
-				</td>
-			</tr>
-			<tr><td><br> </td><td><br> </td></tr>
-			<tr><td>Show In My Network Places</td>
-				<td><input type="checkbox" id="showToggle" name='showToggle' class="slideToggle" /> 
-					<label class="slideToggleViewport" for="showToggle">
-					 <div class="slideToggleSlider">
-					   <div class="slideToggleButton slideToggleButtonBackground">&nbsp;</div>
-					   <div class="slideToggleContent slideToggleLeft button buttonSelected"><span>On</span></div>
-					   <div class="slideToggleContent slideToggleRight button"><span>Off</span></div>
-					  </div>
-					 </label>
-					
-				</td>
 			</tr>
 		</tbody></table>
 		<br>
@@ -89,27 +74,86 @@
 
 	</div>
 </div>
-
-
-<script type='text/ecmascript' src='php/etc.php?q=upnp'></script>
+<input type='button' value='Save' onclick='UPNPcall()'><span id='messages'>&nbsp;</span>
+    <div id='hideme'>
+        <div class='centercolumncontainer'>
+            <div class='middlecontainer'>
+                <div id='hiddentext'>Please wait...</div>
+                <br>
+            </div>
+        </div>
+    </div>
+    </td></tr></td></tr></tbody></table></div></div></form>
 <script type='text/javascript'>
 
-	$('#internalLB').spinner({ min: 1024, max: 65534 }).spinner('value',upnp.internalLB);
-		$('#internalUB').spinner({ min: 1025, max: 65535}).spinner('value',upnp.internalUB);
-		$('#externalLB').spinner({ min: 1024, max: 65534 }).spinner('value',upnp.externalLB);
-		$('#externalUB').spinner({ min: 1025, max: 65535 }).spinner('value',upnp.externalUB);
+var hidden, hide, pForm = {}; pForm2 = {}
+
+var f = E('fe'); 
+var hidden = E('hideme'); 
+var hide = E('hiddentext');
+
+var upnp=$.parseJSON('{<?php
+          	$enable=exec("uci get sabai.upnp.enable");
+			$clean=exec("uci get sabai.upnp.clean");
+			$secure=exec("uci get sabai.upnp.secure");
+			$intmin=exec("uci get sabai.upnp.intmin");
+			$intmax=exec("uci get sabai.upnp.intmax");
+			$extmin=exec("uci get sabai.upnp.extmin");
+			$extmax=exec("uci get sabai.upnp.extmax");
+        echo "\"enable\": \"$enable\",\"clean\": \"$clean\",\"secure\": \"$secure\",\"intmin\": \"$intmin\",\"intmax\": \"$intmax\",\"extmin\": \"$extmin\",\"extmax\": \"$extmax\"";
+      ?>}');
+
+	$('#enableToggle').prop({'checked': upnp.enable});
+	$('#cleanToggle').prop({'checked': upnp.clean});
+	$('#secureToggle').prop({'checked': upnp.secure});
+
+function UPNPcall(){ 
+  hideUi("Adjusting UPNP settings..."); 
+$(document).ready( function(){
+// Pass the form values to the php file 
+$.post('php/upnp.php', $("#fe").serialize(), function(res){
+  // Detect if values have been passed back   
+    if(res!=""){
+      UPNPresp(res);
+    }
+      showUi();
+});
+ 
+// Important stops the page refreshing
+return false;
+
+}); 
+
+}
+
+function UPNPresp(res){ 
+  eval(res); 
+  msg(res.msg); 
+  showUi(); 
+  if(res.sabai){ 
+    limit=10; 
+    getUpdate(); 
+  } 
+}
+
+//end of wm add
+
+	$('#intmin').spinner({ min: 1024, max: 65534 }).spinner('value',upnp.intmin);
+		$('#intmax').spinner({ min: 1025, max: 65535}).spinner('value',upnp.intmax);
+		$('#extmin').spinner({ min: 1024, max: 65534 }).spinner('value',upnp.extmin);
+		$('#extmax').spinner({ min: 1025, max: 65535 }).spinner('value',upnp.extmax);
 
 	function changeRange(){
 		if($('#advanced').is(':checked')){
-			$('#internalLB').spinner({ min: 2, max: 65534 });
-			$('#internalUB').spinner({ min: 3, max: 65535});
-			$('#externalLB').spinner({ min: 2, max: 65534 });
-			$('#externalUB').spinner({ min: 3, max: 65535 });
+			$('#intmin').spinner({ min: 2, max: 65534 });
+			$('#intmax').spinner({ min: 3, max: 65535});
+			$('#extmin').spinner({ min: 2, max: 65534 });
+			$('#extmax').spinner({ min: 3, max: 65535 });
 		} else {
-			$('#internalLB').spinner({ min: 1024, max: 65534 });
-			$('#internalUB').spinner({ min: 1025, max: 65535});
-			$('#externalLB').spinner({ min: 1024, max: 65534 });
-			$('#externalUB').spinner({ min: 1025, max: 65535 });
+			$('#intmin').spinner({ min: 1024, max: 65534 });
+			$('#intmax').spinner({ min: 1025, max: 65535});
+			$('#extmin').spinner({ min: 1024, max: 65534 });
+			$('#extmax').spinner({ min: 1025, max: 65535 });
 		}
 
 	};
