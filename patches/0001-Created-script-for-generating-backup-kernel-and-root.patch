@@ -1,0 +1,138 @@
+From 4a8c07c85a090e52f0b8aa7a67cfd126ad2ff907 Mon Sep 17 00:00:00 2001
+From: Alex Nikitenko <alex.nikitenko@sirinsoftware.com>
+Date: Tue, 30 Sep 2014 14:35:19 +0300
+Subject: [PATCH] Created script for generating backup kernel and rootfs
+ partitions
+
+
+Signed-off-by: Alex Nikitenko <alex.nikitenko@sirinsoftware.com>
+---
+ target/linux/x86_64/image/Makefile           |   13 +++---
+ target/linux/x86_64/image/gen_image_sabai.sh |   59 ++++++++++++++++++++++++++
+ tools/firmware-utils/src/ptgen.c             |    2 +-
+ 3 files changed, 66 insertions(+), 8 deletions(-)
+ create mode 100755 target/linux/x86_64/image/gen_image_sabai.sh
+
+diff --git a/target/linux/x86_64/image/Makefile b/target/linux/x86_64/image/Makefile
+index c2f1ce9..3dced58 100644
+--- a/target/linux/x86_64/image/Makefile
++++ b/target/linux/x86_64/image/Makefile
+@@ -75,23 +75,22 @@ ifneq ($(CONFIG_GRUB_IMAGES),)
+ 		-c ./grub-early.cfg \
+ 		$(GRUB2_MODULES)
+ 	$(CP) $(STAGING_DIR_HOST)/lib/grub/i386-pc/*.img $(KDIR)/grub2/
+-	echo '(hd0) $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img' > $(KDIR)/grub2/device.map
++	echo '(hd0) $(BIN_DIR)/$(IMG_PREFIX)-sabai-$(1).img' > $(KDIR)/grub2/device.map
+ 	sed \
+ 		-e 's#@SERIAL_CONFIG@#$(strip $(GRUB_SERIAL_CONFIG))#g' \
+ 		-e 's#@TERMINAL_CONFIG@#$(strip $(GRUB_TERMINAL_CONFIG))#g' \
+ 		-e 's#@CMDLINE@#$(strip $(call Image/cmdline/$(1)) $(BOOTOPTS) $(GRUB_CONSOLE_CMDLINE))#g' \
+ 		-e 's#@TIMEOUT@#$(GRUB_TIMEOUT)#g' \
+ 		./grub.cfg > $(KDIR)/root.grub/boot/grub/grub.cfg
+-	PADDING="$(CONFIG_TARGET_IMAGES_PAD)" PATH="$(TARGET_PATH)" ./gen_image_generic.sh \
+-		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
++	PADDING="$(CONFIG_TARGET_IMAGES_PAD)" PATH="$(TARGET_PATH)" ./gen_image_sabai.sh \
++		$(BIN_DIR)/$(IMG_PREFIX)-sabai-$(1).img \
+ 		$(CONFIG_TARGET_KERNEL_PARTSIZE) $(KDIR)/root.grub \
+-		$(CONFIG_TARGET_ROOTFS_PARTSIZE) $(KDIR)/root.$(1) \
+-		256
++		$(CONFIG_TARGET_ROOTFS_PARTSIZE) $(KDIR)/root.$(1) 256
+ 	grub-bios-setup \
+ 		--device-map="$(KDIR)/grub2/device.map" \
+ 		-d "$(KDIR)/grub2" \
+ 		-r "hd0,msdos1" \
+-		"$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img"
++		"$(BIN_DIR)/$(IMG_PREFIX)-sabai-$(1).img"
+ 	$(call Image/Build/grub/$(1))
+   endef
+ endif
+@@ -157,7 +156,7 @@ ifneq ($(CONFIG_VMDK_IMAGES),)
+ endif
+ 
+ define Image/Build/gzip
+-	gzip -f9 $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img
++	gzip -f9 $(BIN_DIR)/$(IMG_PREFIX)-sabai-$(1).img
+ 	gzip -f9 $(BIN_DIR)/$(IMG_PREFIX)-rootfs-$(1).img
+ endef
+ 
+diff --git a/target/linux/x86_64/image/gen_image_sabai.sh b/target/linux/x86_64/image/gen_image_sabai.sh
+new file mode 100755
+index 0000000..661de81
+--- /dev/null
++++ b/target/linux/x86_64/image/gen_image_sabai.sh
+@@ -0,0 +1,59 @@
++#!/usr/bin/env bash
++# Copyright (C) 2006-2012 OpenWrt.org
++set -x
++[ $# == 5 -o $# == 6 ] || {
++    echo "SYNTAX: $0 <file> <kernel size> <kernel directory> <rootfs size> <rootfs image> [<align>]"
++    exit 1
++}
++
++#####################
++#1 KERNEL1
++#####################
++#2 ROOTFS1
++#####################
++#3 ROOTFS2
++#####################
++#4 KERNEL2 - Extended
++#####################
++
++
++OUTPUT="$1"
++KERNELSIZE1="$2"
++KERNELDIR="$3"
++ROOTFSSIZE1="$4"
++ROOTFSIMAGE="$5"
++ALIGN="$6"
++
++KERNELSIZE2="$KERNELSIZE1"
++ROOTFSSIZE2="$ROOTFSSIZE1"
++
++rm -f "$OUTPUT"
++
++head=16
++sect=63
++cyl=$(( ($KERNELSIZE1 + $ROOTFSSIZE1 + $ROOTFSSIZE2) * 1024 * 1024 / ($head * $sect * 512)))
++
++# create partition table
++set `ptgen -v -o "$OUTPUT" -h $head -s $sect -p ${KERNELSIZE1}m -p ${ROOTFSSIZE1}m -p ${ROOTFSSIZE2}m ${ALIGN:+-l $ALIGN}`
++
++KERNELOFFSET1="$(($1 / 512))"
++KERNELSIZE1="$(($2 / 512))"
++ROOTFSOFFSET1="$(($3 / 512))"
++ROOTFSSIZE1="$(($4 / 512))"
++ROOTFSOFFSET2="$(($5 / 512))"
++ROOTFSSIZE2="$(($6 / 512))"
++
++BLOCKS_KERNEL1="$((($KERNELSIZE1 / 2) - 1))"
++BLOCKS_ROOTFS1="$((($ROOTFSSIZE1 / 2) - 1))"
++BLOCKS_ROOTFS2="$((($ROOTFSSIZE2 / 2) - 1))"
++
++#[ -n "$PADDING" ] && dd if=/dev/zero of="$OUTPUT" bs=512 seek="$ROOTFSOFFSET1" conv=notrunc count="$ROOTFSSIZE1"
++dd if="$ROOTFSIMAGE" of="$OUTPUT" bs=512 seek="$ROOTFSOFFSET1" conv=notrunc
++dd if="$ROOTFSIMAGE" of="$OUTPUT" bs=512 seek="$ROOTFSOFFSET2" conv=notrunc
++
++[ -n "$NOGRUB" ] && exit 0
++
++genext2fs -d "$KERNELDIR" -b "$BLOCKS_KERNEL1" "$OUTPUT.kernel"
++dd if="$OUTPUT.kernel" of="$OUTPUT" bs=512 seek="$KERNELOFFSET1" conv=notrunc
++rm -f "$OUTPUT.kernel"
++
+diff --git a/tools/firmware-utils/src/ptgen.c b/tools/firmware-utils/src/ptgen.c
+index 0247fd0..8546428 100644
+--- a/tools/firmware-utils/src/ptgen.c
++++ b/tools/firmware-utils/src/ptgen.c
+@@ -203,7 +203,7 @@ int main (int argc, char **argv)
+ 			sectors = (int) strtoul(optarg, NULL, 0);
+ 			break;
+ 		case 'p':
+-			if (part > 3) {
++			if (part > 4) {
+ 				fprintf(stderr, "Too many partitions\n");
+ 				exit(1);
+ 			}
+-- 
+1.7.9.5
+

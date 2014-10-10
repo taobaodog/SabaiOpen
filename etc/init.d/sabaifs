@@ -1,0 +1,48 @@
+#!/bin/sh /etc/rc.common
+
+START=13
+
+PART_FILE=/etc/sabai/.partitions_created
+FS_FILE=/etc/sabai/.fs_created
+
+USE_PROCD=1
+
+create_partitions() {
+        echo "creating_partitions"
+        if [ -f $PART_FILE ]; then
+                echo "Found sabai partitions. Nothing to do"
+                return 0;
+        fi
+
+        touch $PART_FILE
+
+        reboot
+        exit 0
+
+}
+
+make_filesystems() {
+
+        echo "making_filesystems"
+        if [[ -f $PART_FILE ]] && [ ! -f $FS_FILE ]; then
+                echo "Found sabai partitions. Creating filesystems"
+                mkfs.ext2 /dev/sda5
+                mkfs.ext4 /dev/sda6
+                mkfs.ext4 /dev/sda7
+                touch $FS_FILE
+        else
+                echo "Filesystems already created"
+        fi
+
+}
+
+start_service() {
+        exec 1>/dev/console  ;
+        exec 2>/dev/console  ;
+        echo "+++++++++++++++++++++++++++++++++++++++++++++"
+        echo "Sabai Networks 1st boot. Creating filesystems"
+        echo "+++++++++++++++++++++++++++++++++++++++++++++"
+        create_partitions
+        make_filesystems
+}
+
