@@ -11,7 +11,7 @@ $wpa_encryption=trim($_POST['wl_wpa_encryption']);
 $wpa_psk=trim($_POST['wl_wpa_psk']);
 $wpa_rekey=trim($_POST['wl_wpa_rekey']);
 $wepkeys=implode(" ", $_POST["wl_wep_keys"]);
-$command="sh /www/bin/wl.sh " . $encryption;
+$command="sh /www/bin/wl.sh ";
 // Set the Sabai config to reflect latest settings
 exec("uci set sabai.wlradio0.mode=\"" . $mode . "\"");
 exec("uci set sabai.wlradio0.ssid=\"" . $ssid . "\"");

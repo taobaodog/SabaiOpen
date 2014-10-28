@@ -8,6 +8,8 @@ _stop(){
 	uci delete network.vpn
 	uci delete firewall.vpn
 	uci set sabai.vpn.status=none
+    uci set sabai.vpn.proto=none
+    uci set network.vpn.proto=none
 	uci commit
 	/etc/init.d/network restart
 	/etc/init.d/firewall restart
@@ -17,10 +19,14 @@ _stop(){
 _start(){
 	#ensure that openvpn is stopped
 		/etc/init.d/openvpn stop
+        /etc/init.d/openvpn disable
 	#get the pptp settings
 		user=$(uci get sabai.vpn.username)
 		pass=$(uci get sabai.vpn.password)
 		server=$(uci get sabai.vpn.server)
+    #set sabai vpn settings
+        uci set sabai.vpn.proto=pptp
+        uci set sabai.vpn.status=Starting
 	#set the network vpn settings
         uci set network.vpn=interface
         uci set network.vpn.ifname=pptp-vpn
@@ -45,6 +51,11 @@ _start(){
         /etc/init.d/network restart
     	/etc/init.d/firewall restart
         logger "pptp run and firewall restarted"
+    if [ $(ifconfig pptp-vpn | grep not) != "" ]; then
+        uci set sabai.vpn.status=Disconnected
+    else
+        uci set sabai.vpn.status=Connected
+        fi
 }
 
 _clear(){
@@ -54,6 +65,8 @@ _clear(){
 		uci delete sabai.vpn.password
 		uci delete sabai.vpn.server
 		uci set sabai.vpn.status=none
+        uci set sabai.vpn.proto=none
+        uci set network.vpn.proto=none
         uci commit
         /etc/init.d/network restart
     	/etc/init.d/firewall restart

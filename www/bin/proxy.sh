@@ -24,23 +24,23 @@ _return(){
    exit 0;
 }
 
-_stop(){
-   uci set sabai.privoxy.status="stopped";
+_proxystop(){
+   uci set sabai.proxy.status="Off";
    uci commit
    /etc/init.d/privoxy stop;
-   _return 1 "Proxy Stopped.";
+   _return 1 "Proxy Stopped";
 }
 
-_start(){
+_proxystart(){
     # replace the ip address and mask if necessary
     if [ "$iproute" != "$proxyroute" ]; then
 	logger "Proxy setup: address not equal" $proxyroute $iproute;
 	sed -i "s#$proxyroute#$iproute#" /etc/privoxy/config
     fi
-   uci set sabai.privoxy.status="started";
+   uci set sabai.proxy.status="On";
    uci commit;
     /etc/init.d/privoxy start;
-    _return 1 "Proxy Started.";
+    _return 1 "Proxy Started";
 }
 
 sudo -n ls >/dev/null 2>/dev/null
@@ -48,7 +48,7 @@ sudo -n ls >/dev/null 2>/dev/null
 ([ -z "$act" ] ) && _return 0 "Missing arguments: act=$act."
 
 case $act in
-   start)  _start  ;;
-   stop)   _stop   ;;
+   proxystart)  _proxystart  ;;
+   proxystop)   _proxystop   ;;
 esac
 

@@ -7,13 +7,13 @@ header('Content-Type: application/javascript');
 $act=$_REQUEST['act'];
 
 switch ($act) {
-	case "start":
-        exec("sh proxy.sh $act");
-		echo "res={ sabai: true, msg: 'Proxy starting.' }";
+	case "proxystart":
+        exec("sh /www/bin/proxy.sh $act");
+		echo "res={ sabai: true, msg: 'Proxy starting' }";
 			break;
-	case "stop":
-        exec("sh proxy.sh $act");
-		echo "res={ sabai: true, msg: 'Proxy stopped.' }";
+	case "proxystop":
+        exec("sh /www/bin/proxy.sh $act");
+		echo "res={ sabai: true, msg: 'Proxy stopped' }";
 		    break;
 }
 

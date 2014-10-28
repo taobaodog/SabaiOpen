@@ -80,7 +80,7 @@ do
 done
 
 #cleanup
-rm /tmp/tmppftable
+#rm /tmp/tmppftable
 
 echo "exiting"
 exit 0

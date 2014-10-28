@@ -1,1 +1,1 @@
-{"aaData": [{"ip": "192.168.200.254", "mac": "00:30:18:AF:3A:24", "name": "", "time": "----"}]}
+{"aaData": [{"static": "WAN PORT", "ip": "192.168.200.254", "mac": "00:07:32:2C:FF:B8", "name": "WAN PORT", "time": "----"}, {"static": "off", "ip": "192.168.199.137", "mac": "8c:3a:e3:73:73:80", "name": "android-995ed86a74557780", "time": "Tue Oct 28 13:04:16 EDT 2014"}]}

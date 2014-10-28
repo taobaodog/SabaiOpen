@@ -28,9 +28,7 @@
 		</div>
 
 		<div class="smallText">
-			<br><b>Save</b>- Choose any DHCP leases which you would like to delete. </li>
-			<br><b>Cancel</b>- Choose any DHCP leases which you would like to delete. </li>
-			<br><b>Delete Lease</b>- Choose any DHCP leases which you would like to delete. </li>
+			<br><b>Make Static</b>- Choose any DHCP leases which you would like to remain permanent. </li>
 			<br><b>Address</b> - The IP address assigned to the device.  You can click in this field and change the IP address. </li>
 			<br><b>MAC Address</b> - The hardware address of the unit This is hardcoded into the device. </li>
 			<br><b>Name</b> - The name that the device reported for itself when requesting an address. </li>
@@ -67,10 +65,10 @@
     	'bFilter': false,
     	"sAjaxSource": 'libs/data/dhcp.json',
     	"aoColumns": [
-    	{ 'sTitle': 'Delete Lease', 'mData': null, "sDefaultContent": '<input type="checkbox" />' },
+    	{ "sTitle": "Make Static", "mData":"static", 'sClass':'staticDrop' },
     	{ "sTitle": "Address", "mData":"ip", 'sClass':'plainText'  },
     	{ "sTitle": "MAC", "mData":"mac" },
-    	{ "sTitle": "Name", "mData":"name" },
+    	{ "sTitle": "Name", "mData":"name", "sClass":"plainText"},
     	{ "sTitle": "Lease Ends", "mData":"time" }
     	],
 
@@ -83,6 +81,17 @@
     				'placeholder' : 'Click to edit'
     			}
     			);
+
+        $(nRow).find('.staticDrop').editable(
+          function(value, settings){ return value; },
+          {
+          'data': " {'on':'on','off':'off'}",
+          'type':'select',
+          'onblur':'submit',
+          'placeholder':'off',
+          'event': 'click'
+          }
+          );
 
     	} /* end fnRowCallback*/
     })
@@ -104,15 +113,16 @@ $(function(){
 function DHCPcall(act){ 
     E("act").value=act;
     if ( act = "save") {
-      //delete any checked lines
-      DELcall();
+      //Save any Static DHCP
+      STATICcall();
       //splash UI message
       hideUi("Adjusting DHCP settings..."); 
      //read the text values
      var TableData=new Array();
      $('#list tr').each(function(row, tr){
       TableData[row] = {
-        "ip" : $(tr).find('td:eq(1)').text()
+          "static" : $(tr).find('td:eq(0)').text()
+        , "ip" : $(tr).find('td:eq(1)').text()
         , "mac" : $(tr).find('td:eq(2)').text()
         , "name" : $(tr).find('td:eq(3)').text()
         , "time" : $(tr).find('td:eq(4)').text()
@@ -143,11 +153,10 @@ function PORTresp(){
   showUi(); 
 } 
 
-function DELcall(){ 
+function STATICcall(){ 
   var datatable = $('#list').DataTable();
   datatable
     .rows(':has(:checkbox:checked)')
-    .remove()
     .draw();
 //$('#rowclick2 tr').filter(':has(:checkbox:checked)').find('td');
 } 

@@ -113,7 +113,7 @@ var lt =  $('#list').dataTable({
   { 'sTitle': 'Select',       'mData': null,      "sDefaultContent": '<input type="checkbox" />' },
   { 'sTitle': 'On/Off',       'mData':'status',     'sClass':'statusDrop'},  
   { 'sTitle': 'Proto',        'mData':'protocol',   'sClass':'protoDrop' },
-  { 'sTitle': 'VPN',          'mData':'gateway',    'sClass':'vpnDrop' },
+  { 'sTitle': 'Gateway',          'mData':'gateway',    'sClass':'vpnDrop' },
   { 'sTitle': 'Src Address',  'mData':'src',        'sClass':'plainText'  },
   { 'sTitle': 'Ext Port',     'mData':'ext',        'sClass':'plainText'   }, 
   { 'sTitle': 'Int Port',     'mData':'int',        'sClass':'plainText' },

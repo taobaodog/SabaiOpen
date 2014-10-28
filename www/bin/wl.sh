@@ -2,7 +2,7 @@
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
-encryption=$1
+encryption=$(uci get sabai.wlradio0.encryption)
 uci set wireless.radio0.country='US'
 uci set wireless.radio0.channel='auto'
 wifi down

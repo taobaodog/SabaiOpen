@@ -38,7 +38,7 @@ Sync time and zone with computer time/zone
   <div class='controlBoxContent'>
     <table class='controlTable'><tbody>
       <div id="timezone-picker">
-      <img id="timezone-image" src="libs/images/custom.php?w=600&base=blue-marble" width="600" height="300" usemap="#timezone-map" />
+      <img id="timezone-image" src="libs/images/world.jpg" width="600" height="300" usemap="#timezone-map" />
       <img class="timezone-pin" src="libs/images/pin.png" style="padding-top: 4px;" />
 
 <?php include 'libs/php/mapdata.php'; ?>
@@ -67,7 +67,7 @@ Sync time and zone with computer time/zone
 </p>
 </form>
 
-<script type='text/ecmascript'>
+<script>
 
 function display_computertime() {
 var strcount
@@ -82,12 +82,10 @@ document.getElementById('rt').innerHTML = rx;
  }
 
 var ntpraw='<?php
-          $servers=exec("uci get sabai.time.servers");
-          echo "$servers"; 
+          echo exec("uci get sabai.time.servers");
           ?>';
 var ntplocation='<?php
-          $location=exec("uci get sabai.time.location");
-          echo "$location"; 
+          echo exec("uci get sabai.time.location");
           ?>';  
 $('#edit-date-default-timezone').val(ntplocation);  
 display_routertime();     

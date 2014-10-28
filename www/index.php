@@ -21,14 +21,8 @@ function getUpdate(ipref){
 	   });
 	 }
 
-function setUpdate(res){ 
-			if(info) oldip = info.vpn.ip; 
-			eval(res); 
-			if(oldip!='' && info.vpn.ip==oldip){ 
-				limit--; 
-			}; 
-			if(limit<0) return; 
-
+function setUpdate(res){
+	//removed test before set
 			for(i in info.vpn){ 
 		 		E('vpn'+i).innerHTML = info.vpn[i]; 
 		 	} 

@@ -20,12 +20,7 @@ $proxy = " proxy: {
 $pptp_ifup=exec("ifconfig pptp-vpn | grep -e 'pptp-vpn' | awk -F: '{print $0}' | awk '{print $1}'");
 $ovpn_ifup=exec("ifconfig tun0 | grep -e 'tun0' | awk -F: '{print $0}' | awk '{print $1}'");
 
-if($pptp_ifup == 'pptp-vpn' || $ovpn_ifup == 'tun0') {
-	$vo=exec("uci get sabai.vpn.status");
-} else {
-	$vo="none";
-}
-
+$vo=exec("uci get sabai.vpn.proto");
 switch($vo){
  case 'none': $vpn_type='-'; break;
  case 'pptp': $vpn_type='PPTP'; break;

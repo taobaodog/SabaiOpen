@@ -24,8 +24,13 @@ if ($act == "save") {
 	//save and commit modified json 
 	exec("uci set sabai.dhcp.table=\"" . $aaData . "\"");
 	exec("uci commit");
+
+	//save changes in static
+	exec("sh /www/bin/dhcp.sh save");
+
 	//cleanup workspace
-	exec("rm /tmp/table*");
+	//exec("rm /tmp/table*");
+
 }
 
 if ($act == "get") {
