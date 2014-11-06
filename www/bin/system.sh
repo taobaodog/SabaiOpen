@@ -23,7 +23,6 @@ _dhcp(){
 	_return 1 "Lease Reset"
 }
 
-
 case $act in
 	reboot)	_reboot	;;
 	shutdown)	_shutdown	;;

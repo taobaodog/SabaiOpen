@@ -20,8 +20,8 @@ config dhcp 'lan'
 	option start '100'
 	option dhcpv6 'server'
 	option ra 'server'
-	option leasetime '24'
 	option limit '254'
+	option leasetime '7200s'
 
 config dhcp 'wan'
 	option interface 'wan'
@@ -31,4 +31,14 @@ config odhcpd 'odhcpd'
 	option maindhcp '0'
 	option leasefile '/tmp/hosts/odhcpd'
 	option leasetrigger '/usr/sbin/odhcpd-update'
+
+config host
+	option ip '192.168.199.124'
+	option mac '08:10:76:2a:5c:6e'
+	option name 'wmofficedesktop'
+
+config host
+	option ip '192.168.199.199'
+	option mac '8c:3a:e3:73:73:80'
+	option name 'wmphone'
 

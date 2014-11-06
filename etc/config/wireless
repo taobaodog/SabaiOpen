@@ -2,11 +2,11 @@
 config wifi-device 'radio0'
 	option type 'mac80211'
 	option hwmode '11g'
-	option path 'pci0000:00/0000:00:1c.5/0000:06:00.0'
+	option path 'pci0000:00/0000:00:1c.3/0000:04:00.0/0000:05:02.0/0000:07:00.0'
 	option htmode 'HT20'
+	option disabled '0'
 	option country 'US'
 	option channel 'auto'
-	option disabled '0'
 
 config wifi-iface
 	option device 'radio0'

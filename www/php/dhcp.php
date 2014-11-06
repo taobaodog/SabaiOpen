@@ -16,7 +16,7 @@ if ($act == "save") {
 	file_put_contents($file, $aaData);
 
 	//rework data into datatables ready json format
-	exec("sh /www/bin/dhcpcreate.sh");
+	exec("sh /www/bin/dhcp.sh json");
 
 	//receive reworked datatables ready json data
 	file_get_contents("/tmp/table4", $aaData);

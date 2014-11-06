@@ -10,6 +10,8 @@ $VPNname=trim($_POST['VPNname']);
 $VPNpassword=trim($_POST['VPNpassword']);
 $conf=trim($_POST['conf']);
 
+exec("uci delete sabai.ovpn");
+exec("uci add sabai.ovpn=interface");
 exec("uci set sabai.ovpn.VPNname=\"" . $VPNname . "\"");
 exec("uci set sabai.ovpn.VPNpassword=\"" . $VPNpassword . "\"");
 exec("uci set sabai.ovpn.conf=\"" . $conf . "\"");
@@ -81,4 +83,3 @@ switch ($act){
 }
 
 ?>
-

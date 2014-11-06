@@ -25,12 +25,12 @@ Sync time and zone with computer time/zone
 	</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Current Router Time and Timezone</span>
-  <div onload=display_rt(); id='rt' class='controlBoxContent'>
+  <div id='rt' class='controlBoxContent'>
   </div>
 </div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Current Computer Time and Timezone</span>
-  <div onload=display_ct(); id='ct' class='controlBoxContent'>
+  <div id='ct' class='controlBoxContent'>
   </div>
 </div>
 

@@ -1,7 +1,7 @@
 
 config system
-	option hostname 'OpenWrt'
 	option timezone 'EST5EDT,M3.2.0,M11.1.0'
+	option hostname 'SabaiOpen'
 
 config timeserver 'ntp'
 	option enable_server '0'

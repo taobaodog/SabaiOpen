@@ -2,11 +2,25 @@
 <form id="fe">
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>Settings</div>
+
+<div class='controlBox'><span class='controlBoxTitle'>Router Name</span>
+	<div class='controlBoxContent'>
+		<table class='fields'>
+			<tr>
+				<td class='title'>Name</td>
+				<td><input type='text' name = 'host' id='host'></td>
+			</tr>
+		</table>
+		<input type='button' id='nameupdate' class='firstButton' onclick='system("hostname")' value='Update' />
+	</div>
+	</div>
+
+
 <div class='controlBox'><span class='controlBoxTitle'>Proxy</span>
 	<div class='controlBoxContent'>
 			<table class='fields'>
 				<tr>
-					<td class='title'>Proxy Status</td><td><div id='proxy'><?php echo exec("uci get sabai.proxy.status"); ?></div></td>
+					<td class='title'>Proxy Status</td><td><div name='proxy' id='proxy'></div></td>
 				</tr>
 			</table>
 			<input type='button' id='proxyStart' class='firstButton'value='Start' onclick='proxysave("proxystart")'>
@@ -58,15 +72,12 @@ var f = E('fe');
 var hidden = E('hideme'); 
 var hide = E('hiddentext');
 var settingsWindow, oldip='',limit=10,info=null,ini=false;
-init();
 
-$(document).ready(
-            function() {
-                setInterval(function() {
-                    que.drop('php/info.php',setUpdate);
-                    $("#proxy").text(info.proxy.status);
-                }, 3000);
-                   });
+var hostname='<?php
+          echo exec("uci get sabai.general.hostname");
+          ?>';
+
+$("#host").val(hostname);
 
 	function Settingsresp(res){ 
 		eval(res); 
@@ -90,6 +101,7 @@ $(document).ready(
 		hideUi("Processing Request..."); 
 		E("act").value=act;
 		$.post('php/settings.php', $("#fe").serialize(), function(res){
+				$("#proxy").val(info.proxy.status);
 				// Detect if values have been passed back   
     			if(res!=""){
       			Settingsresp(res);

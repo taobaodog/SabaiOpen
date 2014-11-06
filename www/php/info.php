@@ -15,7 +15,7 @@ $proxy_status = exec("uci get sabai.privoxy.status");
 
   
 $proxy = " proxy: {
-  status: '$proxy_status'
+  \"status\": \"". exec("uci get sabai.proxy.status") ."\"
 }";
 $pptp_ifup=exec("ifconfig pptp-vpn | grep -e 'pptp-vpn' | awk -F: '{print $0}' | awk '{print $1}'");
 $ovpn_ifup=exec("ifconfig tun0 | grep -e 'tun0' | awk -F: '{print $0}' | awk '{print $1}'");

@@ -45,7 +45,8 @@ echo -n ']}' >> /www/libs/data/dhcp.json
 #save table as single line json
 uci set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
 uci commit
-} #end _get
+}
+#end _get
 
 _static_on(){
 	uci add dhcp host
@@ -99,7 +100,7 @@ num_items=$(/www/bin/jsawk 'return this.aaData.length' < /tmp/tmpdhcptable);
 echo "num items is $num_items" > /tmp/feedback
 i=0
 
-while [ $i -lt $num_items ]
+while [ $i -le $num_items ]
 do	
 	echo "processing rule  #$i:"
 	static=$(/www/bin/jsawk "return this.aaData["$i"].static" < /tmp/tmpdhcptable);
@@ -108,9 +109,13 @@ do
 	mac=$(/www/bin/jsawk "return this.aaData["$i"].mac" < /tmp/tmpdhcptable);
 	name=$(/www/bin/jsawk "return this.aaData["$i"].name" < /tmp/tmpdhcptable);
 	leasetime=$(/www/bin/jsawk "return this.aaData["$i"].time" < /tmp/tmpdhcptable);
-	if [ "$route" = "internet" ] || [ "$route" = "vpn_fallback" ] || [ "$route" = "vpn_only" ] || [ "$static" = "on" ]; then
-		_static_on;
+	if [ "$route" != "default"]; then
+		$static="on";
 	fi
+	if [ "$static" = "on" ]; then
+               _static_on;
+     fi
+
 	i=$(( $i + 1 ))
 done
 
@@ -121,7 +126,6 @@ echo "exiting"
 exit 0
 
 uci commit;
-# /www/bin/gw.sh start
 /etc/init.d/dnsmasq restart
 /etc/init.d/firewall restart
 logger "portforwarding set and firewall restarted"

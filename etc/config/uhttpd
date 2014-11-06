@@ -1,6 +1,5 @@
 
 config uhttpd 'main'
-	list listen_http '0.0.0.0:80'
 	list listen_https '0.0.0.0:443'
 	option home '/www'
 	option rfc1918_filter '1'
@@ -13,6 +12,7 @@ config uhttpd 'main'
 	option network_timeout '30'
 	option tcp_keepalive '1'
 	option index_page 'index.html index.htm default.html default.htm index.php'
+	option ubus_prefix '/ubus'
 
 config cert 'px5g'
 	option days '730'

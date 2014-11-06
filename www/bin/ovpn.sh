@@ -11,6 +11,9 @@ _return(){
 }
 
 _stop(){
+	uci delete network.openvpn
+	forward=$(uci show firewall | grep =sabai | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	uci delete firewall.@forwarding["$forward"]
 	uci set sabai.vpn.status=none
 	uci set sabai.vpn.proto=none
 	uci commit
@@ -36,15 +39,21 @@ _start(){
 		sleep 5
 		fi
 	uci delete network.openvpn
+	forward=$(uci show firewall | grep =sabai | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	uci delete firewall.@forwarding["$forward"]
 	uci set openvpn.sabai.log='/www/libs/data/stat/ovpn.log'
 	uci set sabai.vpn.status=Started
 	uci set openvpn.sabai.enabled=1
 	uci set network.openvpn=interface
 	uci set network.openvpn.ifname='tun0'
 	uci set network.openvpn.proto='ovpn'
+	uci add firewall forwarding
+	uci add firewall@forwarding[-1].src=lan
+	uci add firewall@forwarding[-1].dest=sabai
 	uci commit
 	/etc/init.d/openvpn start
 	/etc/init.d/openvpn enable
+	/etc/init.d/firewall restart
 	logger "openvpn started"
 	sleep 10
 	if [ $(ifconfig tun0 | grep not) != "" ]; then

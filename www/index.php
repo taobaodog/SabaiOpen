@@ -10,23 +10,25 @@
 
 <?php include("php/libs.php"); ?>
 <script>
-var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
+var hidden,hide,f,oldip='',logon=false,info=null;
+
+function setUpdate(res){
+			if(info) oldip = info.vpn.ip; 
+			eval(res); 
+			for(i in info.vpn){ 
+		 		E('vpn'+i).innerHTML = info.vpn[i]; 
+		 	}
+		 	$('#proxy').text(info.proxy.status);
+}
 
 function getUpdate(ipref){ 
-	   que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
+			que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
 	   $.get('php/get_remote_ip.php', function( data ) {
 	     donde = $.parseJSON(data.substring(6));
 	     console.log(donde);
 	     for(i in donde) E('loc'+i).innerHTML = donde[i];
 	   });
-	 }
-
-function setUpdate(res){
-	//removed test before set
-			for(i in info.vpn){ 
-		 		E('vpn'+i).innerHTML = info.vpn[i]; 
-		 	} 
-		}
+}
 
 function init(){ 
    <?php if (file_exists('/etc/sabai/stat/ip') && file_get_contents("/etc/sabai/stat/ip") != '') {
@@ -34,6 +36,7 @@ function init(){
 	   echo "for(i in donde){E('loc'+i).innerHTML = donde[i];}"; } ?>
 	   getUpdate();
 	   setInterval (getUpdate, 5000); 
+	   setInterval (setUpdate, 5000);
 	   $('#status').addClass('active')
 	 }
 

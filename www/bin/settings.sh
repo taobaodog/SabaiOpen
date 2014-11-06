@@ -3,6 +3,13 @@
 # copyright 2014 Sabai Technology
 act=$1
 
+_hostname(){
+	name=$(uci get sabai.general.hostname)
+	uci set system.@system[0].hostname="$(uci get sabai.general.hostname)";
+	uci commit
+	echo $(uci get system.@system[0].hostname) > /proc/sys/kernel/hostname
+}
+
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };"
 	exit 0
@@ -31,6 +38,7 @@ _updatepass(){
 
 
 case $act in
+	hostname) _hostname ;;
 	reboot)	_reboot	;;
 	halt)	_halt	;;
 	updatepass) _updatepass ;;

@@ -5,29 +5,29 @@
 act=$1
 
 _stop(){
-	uci delete network.vpn
-	uci delete firewall.vpn
-	uci set sabai.vpn.status=none
+    uci delete network.vpn
+    uci delete firewall.vpn
+    uci set sabai.vpn.status=none
     uci set sabai.vpn.proto=none
     uci set network.vpn.proto=none
-	uci commit
-	/etc/init.d/network restart
-	/etc/init.d/firewall restart
+    uci commit
+    /etc/init.d/network restart
+    /etc/init.d/firewall restart
     logger "pptp stopped and firewall restarted"
 }
 
 _start(){
-	#ensure that openvpn is stopped
-		/etc/init.d/openvpn stop
+    #ensure that openvpn is stopped
+        /etc/init.d/openvpn stop
         /etc/init.d/openvpn disable
-	#get the pptp settings
-		user=$(uci get sabai.vpn.username)
-		pass=$(uci get sabai.vpn.password)
-		server=$(uci get sabai.vpn.server)
+    #get the pptp settings
+        user=$(uci get sabai.vpn.username)
+        pass=$(uci get sabai.vpn.password)
+        server=$(uci get sabai.vpn.server)
     #set sabai vpn settings
         uci set sabai.vpn.proto=pptp
         uci set sabai.vpn.status=Starting
-	#set the network vpn settings
+    #set the network vpn settings
         uci set network.vpn=interface
         uci set network.vpn.ifname=pptp-vpn
         uci set network.vpn.proto=pptp
@@ -49,7 +49,7 @@ _start(){
         uci commit   
     #restart services
         /etc/init.d/network restart
-    	/etc/init.d/firewall restart
+        /etc/init.d/firewall restart
         logger "pptp run and firewall restarted"
     if [ $(ifconfig pptp-vpn | grep not) != "" ]; then
         uci set sabai.vpn.status=Disconnected
@@ -59,24 +59,24 @@ _start(){
 }
 
 _clear(){
-		uci delete network.vpn
-		uci delete firewall.vpn
-		uci delete sabai.vpn.username
-		uci delete sabai.vpn.password
-		uci delete sabai.vpn.server
-		uci set sabai.vpn.status=none
+        uci delete network.vpn
+        uci delete firewall.vpn
+        uci delete sabai.vpn.username
+        uci delete sabai.vpn.password
+        uci delete sabai.vpn.server
+        uci set sabai.vpn.status=none
         uci set sabai.vpn.proto=none
         uci set network.vpn.proto=none
         uci commit
         /etc/init.d/network restart
-    	/etc/init.d/firewall restart
+        /etc/init.d/firewall restart
         logger "pptp cleared and firewall restarted"
 }
 
 ls >/dev/null 2>/dev/null 
 
 case $act in
-	start)	_start	;;
-	stop)	_stop	;;
-	clear)  _clear  ;;
+    start)  _start  ;;
+    stop)   _stop   ;;
+    clear)  _clear  ;;
 esac

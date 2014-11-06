@@ -28,10 +28,11 @@
 		</div>
 
 		<div class="smallText">
-			<br><b>Make Static</b>- Choose any DHCP leases which you would like to remain permanent. </li>
+			<br><b>Make Static</b>- Choose "on" to make lease permanent. </li>
+      <br><b>Route</b>- Choose the default route for this device.  "vpn_fallback" will continue access through internet if VPN is down. </li>
 			<br><b>Address</b> - The IP address assigned to the device.  You can click in this field and change the IP address. </li>
-			<br><b>MAC Address</b> - The hardware address of the unit This is hardcoded into the device. </li>
-			<br><b>Name</b> - The name that the device reported for itself when requesting an address. </li>
+			<br><b>MAC Address</b> - The hardware address of the unit. This is hardcoded into the device. </li>
+			<br><b>Name</b> - The name of the device. You can click in this field and change the name.  </li>
 			<br><b>Lease Ends</b>- The time when the lease expires. </li>
 		</div>
 	</div>
@@ -42,7 +43,7 @@
 </form>
 
 <script type='text/ecmascript'>
-
+var settings;
 <?php exec('sh /www/bin/dhcp.sh get') ?>
 
 	$.widget("jai.devicelist", {
@@ -66,6 +67,7 @@
     	"sAjaxSource": 'libs/data/dhcp.json',
     	"aoColumns": [
     	{ "sTitle": "Make Static", "mData":"static", 'sClass':'staticDrop' },
+      { "sTitle": "Route", "mData":"route", 'sClass':'routeDrop' },
     	{ "sTitle": "Address", "mData":"ip", 'sClass':'plainText'  },
     	{ "sTitle": "MAC", "mData":"mac" },
     	{ "sTitle": "Name", "mData":"name", "sClass":"plainText"},
@@ -93,6 +95,17 @@
           }
           );
 
+          $(nRow).find('.routeDrop').editable(
+          function(value, settings){ return value; },
+          {
+          'data': " {'default':'default','internet':'internet','vpn_fallback':'vpn_fallback','vpn_only':'vpn_only','accelerator':'accelerator'}",
+          'type':'select',
+          'onblur':'submit',
+          'placeholder':'default',
+          'event': 'click'
+          }
+          );
+
     	} /* end fnRowCallback*/
     })
 
@@ -111,6 +124,7 @@ $(function(){
   var hide = E('hiddentext');
 
 function DHCPcall(act){ 
+  $('#list').blur();
     E("act").value=act;
     if ( act = "save") {
       //Save any Static DHCP
@@ -122,10 +136,11 @@ function DHCPcall(act){
      $('#list tr').each(function(row, tr){
       TableData[row] = {
           "static" : $(tr).find('td:eq(0)').text()
-        , "ip" : $(tr).find('td:eq(1)').text()
-        , "mac" : $(tr).find('td:eq(2)').text()
-        , "name" : $(tr).find('td:eq(3)').text()
-        , "time" : $(tr).find('td:eq(4)').text()
+        , "route" : $(tr).find('td:eq(1)').text()
+        , "ip" : $(tr).find('td:eq(2)').text()
+        , "mac" : $(tr).find('td:eq(3)').text()
+        , "name" : $(tr).find('td:eq(4)').text()
+        , "time" : $(tr).find('td:eq(5)').text()
       };
     });
      //create json data from table on screen
@@ -168,17 +183,5 @@ $(function(){
   $('#devicelist').devicelist();
 })
 };
-
-//validate the fields
-$( "#fe" ).validate({
-  rules: {
-    ip: {
-      validip: true
-    },
-    mac: {
-      macchecker: true
-    }
-  }
-});
 
 </script>
