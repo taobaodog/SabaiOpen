@@ -1,20 +1,17 @@
-From 0bdbe61f8aed9bc4b61aa38c01c6891e7ecdd3c1 Mon Sep 17 00:00:00 2001
-From: Alex Nikitenko <alex.nikitenko@sirinsoftware.com>
-Date: Tue, 30 Sep 2014 14:35:19 +0300
+From 3bf174288477e5c3e92c38d2e5cc990471291b15 Mon Sep 17 00:00:00 2001
+From: K <k@k-HP-ProBook-4520s.(none)>
+Date: Mon, 10 Nov 2014 13:26:07 +0200
 Subject: [PATCH] OpenWRT image build support for Sabai partitioning and
  fallback
 
-
-Signed-off-by: Alex Nikitenko <alex.nikitenko@sirinsoftware.com>
 ---
- target/linux/x86_64/image/Makefile           |   21 +++++----
- target/linux/x86_64/image/gen_image_sabai.sh |   61 ++++++++++++++++++++++++++
- tools/firmware-utils/src/ptgen.c             |    2 +-
- 3 files changed, 75 insertions(+), 9 deletions(-)
+ target/linux/x86_64/image/Makefile           |   26 +++++++----
+ target/linux/x86_64/image/gen_image_sabai.sh |   62 ++++++++++++++++++++++++++
+ 2 files changed, 80 insertions(+), 8 deletions(-)
  create mode 100755 target/linux/x86_64/image/gen_image_sabai.sh
 
 diff --git a/target/linux/x86_64/image/Makefile b/target/linux/x86_64/image/Makefile
-index c2f1ce9..bf6de6e 100644
+index e8d9ac1..24abe39 100644
 --- a/target/linux/x86_64/image/Makefile
 +++ b/target/linux/x86_64/image/Makefile
 @@ -9,7 +9,7 @@ include $(INCLUDE_DIR)/image.mk
@@ -26,7 +23,7 @@ index c2f1ce9..bf6de6e 100644
  GRUB2_MODULES_ISO = biosdisk boot chain configfile iso9660 linux ls part_msdos reboot serial vga
  GRUB_TERMINALS =
  GRUB_SERIAL_CONFIG =
-@@ -75,23 +75,22 @@ ifneq ($(CONFIG_GRUB_IMAGES),)
+@@ -77,23 +77,22 @@ ifneq ($(CONFIG_GRUB_IMAGES),)
  		-c ./grub-early.cfg \
  		$(GRUB2_MODULES)
  	$(CP) $(STAGING_DIR_HOST)/lib/grub/i386-pc/*.img $(KDIR)/grub2/
@@ -38,9 +35,9 @@ index c2f1ce9..bf6de6e 100644
  		-e 's#@CMDLINE@#$(strip $(call Image/cmdline/$(1)) $(BOOTOPTS) $(GRUB_CONSOLE_CMDLINE))#g' \
  		-e 's#@TIMEOUT@#$(GRUB_TIMEOUT)#g' \
  		./grub.cfg > $(KDIR)/root.grub/boot/grub/grub.cfg
--	PADDING="$(CONFIG_TARGET_IMAGES_PAD)" PATH="$(TARGET_PATH)" ./gen_image_generic.sh \
+-	PADDING="$(CONFIG_TARGET_IMAGES_PAD)" SIGNATURE="$(SIGNATURE)" PATH="$(TARGET_PATH)" ./gen_image_generic.sh \
 -		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
-+	PADDING="$(CONFIG_TARGET_IMAGES_PAD)" PATH="$(TARGET_PATH)" ./gen_image_sabai.sh \
++	PADDING="$(CONFIG_TARGET_IMAGES_PAD)" SIGNATURE="$(SIGNATURE)" PATH="$(TARGET_PATH)" ./gen_image_sabai.sh \
 +		$(BIN_DIR)/$(IMG_PREFIX)-sabai-$(1).img \
  		$(CONFIG_TARGET_KERNEL_PARTSIZE) $(KDIR)/root.grub \
 -		$(CONFIG_TARGET_ROOTFS_PARTSIZE) $(KDIR)/root.$(1) \
@@ -55,7 +52,7 @@ index c2f1ce9..bf6de6e 100644
  	$(call Image/Build/grub/$(1))
    endef
  endif
-@@ -157,7 +156,7 @@ ifneq ($(CONFIG_VMDK_IMAGES),)
+@@ -159,7 +158,7 @@ ifneq ($(CONFIG_VMDK_IMAGES),)
  endif
  
  define Image/Build/gzip
@@ -64,19 +61,24 @@ index c2f1ce9..bf6de6e 100644
  	gzip -f9 $(BIN_DIR)/$(IMG_PREFIX)-rootfs-$(1).img
  endef
  
-@@ -192,6 +191,11 @@ define Image/Build/Initramfs
+@@ -194,6 +193,16 @@ define Image/Build/Initramfs
  	$(CP) $(KDIR)/bzImage-initramfs $(BIN_DIR)/$(IMG_PREFIX)-ramfs.bzImage
  endef
  
 +define Image/Build/UpgradeImg
-+        gzip -c $(BIN_DIR)/$(IMG_PREFIX)-rootfs-ext4.img > $(BIN_DIR)/rootfs-sabai-img.gz
++	gzip -c $(BIN_DIR)/$(IMG_PREFIX)-rootfs-ext4.img > $(BIN_DIR)/rootfs-sabai-img.gz
 +	tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle.tar rootfs-sabai-img.gz $(IMG_PREFIX)-vmlinuz
++	openssl dgst -sha256 <  $(BIN_DIR)/sabai-bundle.tar > $(BIN_DIR)/hash
++	openssl rsautl -sign -inkey $(TOPDIR)/files/etc/sabai/keys/private.pem -keyform PEM -in $(BIN_DIR)/hash  > $(BIN_DIR)/signature
++	tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle-secured.tar sabai-bundle.tar signature
++	rm $(BIN_DIR)/hash
 +endef
++
 +
  define Image/Build
  	$(call Image/Build/$(1))
  	$(call Image/Build/bootscript,$(1))
-@@ -209,6 +213,7 @@ define Image/Build
+@@ -211,6 +220,7 @@ define Image/Build
  ifeq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),y)
  	$(call Image/Build/Initramfs)
  endif
@@ -86,10 +88,10 @@ index c2f1ce9..bf6de6e 100644
  $(eval $(call BuildImage))
 diff --git a/target/linux/x86_64/image/gen_image_sabai.sh b/target/linux/x86_64/image/gen_image_sabai.sh
 new file mode 100755
-index 0000000..8dec3ee
+index 0000000..2db5a32
 --- /dev/null
 +++ b/target/linux/x86_64/image/gen_image_sabai.sh
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,62 @@
 +#!/usr/bin/env bash
 +# Copyright (C) 2006-2012 OpenWrt.org
 +set -x
@@ -151,19 +153,7 @@ index 0000000..8dec3ee
 +dd if="$OUTPUT.kernel" of="$OUTPUT" bs=512 seek="$KERNELOFFSET" conv=notrunc
 +rm -f "$OUTPUT.kernel"
 +
-diff --git a/tools/firmware-utils/src/ptgen.c b/tools/firmware-utils/src/ptgen.c
-index 0247fd0..8546428 100644
---- a/tools/firmware-utils/src/ptgen.c
-+++ b/tools/firmware-utils/src/ptgen.c
-@@ -203,7 +203,7 @@ int main (int argc, char **argv)
- 			sectors = (int) strtoul(optarg, NULL, 0);
- 			break;
- 		case 'p':
--			if (part > 3) {
-+			if (part > 4) {
- 				fprintf(stderr, "Too many partitions\n");
- 				exit(1);
- 			}
++
 -- 
 1.7.9.5
 
