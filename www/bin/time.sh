@@ -2,18 +2,29 @@
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
-location=$(uci get sabai.time.location)
+action=$1
+if [ $action = "update" ]; then
+        config_file=sabai-new
+else
+        config_file=sabai
+fi
+
+location=$(uci get $config_file.time.location)
 
 # Set time on system
 uci set sabai.time.timezone="$(cat /www/libs/timezones.data | grep -w "$location" | awk '{print $2}')"
-uci set system.@system[0].timezone="$(uci get sabai.time.timezone)";
-uci set system.ntp.server="$(uci get sabai.time.servers)";
+uci set system.@system[0].timezone="$(uci get $config_file.time.timezone)";
+uci set system.ntp.server="$(uci get $config_file.time.servers)";
 uci commit
-echo $(uci get sabai.time.timezone) > /etc/TZ
-/etc/init.d/ntpd restart
-logger "time script run and time client restarted"
+echo $(uci get $config_file.time.timezone) > /etc/TZ
+if [ $action = "update" ]; then
+	echo "time" >> /tmp/.restart_services
+else
+	/etc/init.d/ntpd restart
+	logger "time script run and time client restarted"
 
-# Send completion message back to UI
-echo "res={ sabai: true, msg: 'Time settings applied' }"
+	# Send completion message back to UI
+	echo "res={ sabai: true, msg: 'Time settings applied' }"
+fi
 
 ls >/dev/null 2>/dev/null 

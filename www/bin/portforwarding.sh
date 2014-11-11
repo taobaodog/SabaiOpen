@@ -4,7 +4,20 @@
 # iptables rules are stored in /etc/sabai/firewall.settings
 
 #TODO remove debug echos
-uci get sabai.pf.table > /tmp/tmppftable
+
+if [ $# -ne 1 ]; then
+        action=save
+else
+        action=$1
+fi
+
+if [ $action = "update" ]; then
+        config_file=sabai-new
+else
+        config_file=sabai
+fi
+
+uci get $config_file.pf.table > /tmp/tmppftable
 
 num_items=$(/www/bin/jsawk 'return this.aaData.length' < /tmp/tmppftable);
 i=1
@@ -86,10 +99,14 @@ echo "exiting"
 exit 0
 
 uci commit;
-/etc/init.d/firewall restart
-logger "portforwarding set and firewall restarted"
+if [ $action = "update" ]; then
+	echo "firewall" >> /tmp/.restart_services
+else
+	/etc/init.d/firewall restart
+	logger "portforwarding set and firewall restarted"
+
+	# Send completion message back to UI
+	echo "res={ sabai: 1, msg: 'Port forwarding settings applied' };"
+fi
 
 ls >/dev/null 2>/dev/null 
-
-# Send completion message back to UI
-echo "res={ sabai: 1, msg: 'Port forwarding settings applied' };"

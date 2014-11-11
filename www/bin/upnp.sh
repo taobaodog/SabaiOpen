@@ -7,15 +7,23 @@
 
 #Used Variables 
 
-enable=$(uci get sabai.upnp.enable);
-natpmp=$(uci get sabai.upnp.natpmp);
-clean=$(uci get sabai.upnp.clean);
-secure=$(uci get sabai.upnp.secure);
-intmin=$(uci get sabai.upnp.intmin);
-intmax=$(uci get sabai.upnp.intmax);
+action=$1
+
+if [ $action = "update" ]; then
+        config_file=sabai-new
+else
+        config_file=sabai
+fi
+
+enable=$(uci get $config_file.upnp.enable);
+natpmp=$(uci get $config_file.upnp.natpmp);
+clean=$(uci get $config_file.upnp.clean);
+secure=$(uci get $config_file.upnp.secure);
+intmin=$(uci get $config_file.upnp.intmin);
+intmax=$(uci get $config_file.upnp.intmax);
 intrange="$intmin-$intmax"
-extmin=$(uci get sabai.upnp.extmin);
-extmax=$(uci get sabai.upnp.extmax);
+extmin=$(uci get $config_file.upnp.extmin);
+extmax=$(uci get $config_file.upnp.extmax);
 extrange="$extmin-$extmax"
 
 
@@ -48,10 +56,13 @@ else
 fi
 
 
-
 uci commit
-/etc/init.d/firewall restart
-logger "upnp script run and firewall restarted"
 
+if [ $action = "update" ]; then
+	echo "firewall" >> /tmp/.restart_services
+else
+	/etc/init.d/firewall restart
+	logger "upnp script run and firewall restarted"
+fi
 
 ls >/dev/null 2>/dev/null 
