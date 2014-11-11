@@ -4,7 +4,7 @@
 # Creates a json file of wan info and dhcp leases
 
 #receive the action being asked of the script
-act=$1
+action=$1
 
 #get dhcp information and build the dhcp table
 _get(){
@@ -62,21 +62,19 @@ _static_on(){
 
 #Save the modified existing DHCP table
 _save(){
-#convert table to single line json aaData variable
-# Creates a json object creating dhcp table data
-#convert table to single line json aaData variable
-table=$(cat /tmp/table1)
-sed 's/\[{/{\"aaData\"\:\[\{/g' /tmp/table1 > /tmp/table2
-sed -E 's/\"([0-9])\"\://g' /tmp/table2 > /tmp/table3
-sed 's/}\]/\}\]\}/g' /tmp/table3 > /tmp/table4
-aaData=$(cat /tmp/table4)
-#save table as single line json
-uci set sabai.dhcp.table="$(cat /tmp/table4)"
-uci commit
-
-# beginning
-
-uci get sabai.dhcp.table > /tmp/tmpdhcptable
+if [ $action = "update" ]; then
+	uci get sabai-new.dhcp.table > /tmp/tmpdhcptable
+else
+	table=$(cat /tmp/table1)
+	sed 's/\[{/{\"aaData\"\:\[\{/g' /tmp/table1 > /tmp/table2
+	sed -E 's/\"([0-9])\"\://g' /tmp/table2 > /tmp/table3
+	sed 's/}\]/\}\]\}/g' /tmp/table3 > /tmp/table4
+	aaData=$(cat /tmp/table4)
+	#save table as single line json
+	uci set sabai.dhcp.table="$(cat /tmp/table4)"
+	uci commit
+	uci get sabai.dhcp.table > /tmp/tmpdhcptable
+fi
 
 #delete old dhcp settings
 hosts=$(uci show dhcp | grep =host | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
@@ -121,16 +119,21 @@ echo "exiting"
 exit 0
 
 uci commit;
-# /www/bin/gw.sh start
-/etc/init.d/dnsmasq restart
-/etc/init.d/firewall restart
-logger "portforwarding set and firewall restarted"
 
-ls >/dev/null 2>/dev/null 
+if [ $action = "update" ]; then
+	echo "firewall" >> /tmp/.restart_services
+	echo "dnsmasq" >> /tmp/.restart_services
+else
+	# /www/bin/gw.sh start
+	/etc/init.d/dnsmasq restart
+	/etc/init.d/firewall restart
+	logger "portforwarding set and firewall restarted"
 
-# Send completion message back to UI
-echo "res={ sabai: 1, msg: 'Port forwarding settings applied' };"
+	ls >/dev/null 2>/dev/null 
 
+	# Send completion message back to UI
+	echo "res={ sabai: 1, msg: 'Port forwarding settings applied' };"
+fi
 
 # end
 
@@ -143,7 +146,8 @@ rm /tmp/table*
 
 ls >/dev/null 2>/dev/null 
 
-case $act in
+case $action in
 	get)	_get	;;
 	save)	_save	;;
+	update)	_save	;;
 esac

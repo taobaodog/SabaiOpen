@@ -2,8 +2,6 @@
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
-proto=$1
-
 _dhcp(){
 	uci set network.wan=interface
 	interfaces=$(ip link show | grep ": eth" | cut -d ':' -f2 | awk -F: '{print $0}' | awk '{print $1}');
@@ -15,13 +13,17 @@ _dhcp(){
 		uci set network.lan.ifname="$(cat /tmp/ports)";
 		break;
 	done
-	uci set network.wan.proto="$(uci get sabai.wan.proto)";
-	uci set network.wan.mtu="$(uci get sabai.wan.mtu)";
-	uci set network.wan.mac="$(uci get sabai.wan.mac)";
-	uci set network.wan.dns="$(uci get sabai.wan.dns)";
+	uci set network.wan.proto="$(uci get $config_file.wan.proto)";
+	uci set network.wan.mtu="$(uci get $config_file.wan.mtu)";
+	uci set network.wan.mac="$(uci get $config_file.wan.mac)";
+	uci set network.wan.dns="$(uci get $config_file.wan.dns)";
 	uci commit
 	ifconfig $(uci get network.wan.ifname) up
-	/etc/init.d/network restart
+	if [ $action = "update" ]; then
+		echo "network" >> /tmp/.restart_services
+	else
+		/etc/init.d/network restart
+	fi
 }
 
 _static(){
@@ -34,16 +36,20 @@ _static(){
 		uci set network.lan.ifname="$(cat /tmp/ports)";
 		break;
 	done
-	uci set network.wan.proto="$(uci get sabai.wan.proto)";
-	uci set network.wan.ipaddr="$(uci get sabai.wan.ipaddr)";
-	uci set network.wan.netmask="$(uci get sabai.wan.netmask)";
-	uci set network.wan.gateway="$(uci get sabai.wan.gateway)";
-	uci set network.wan.mtu="$(uci get sabai.wan.mtu)";
-	uci set network.wan.mac="$(uci get sabai.wan.mac)";
-	uci set network.wan.dns="$(uci get sabai.wan.dns)";
+	uci set network.wan.proto="$(uci get $config_file.wan.proto)";
+	uci set network.wan.ipaddr="$(uci get $config_file.wan.ipaddr)";
+	uci set network.wan.netmask="$(uci get $config_file.wan.netmask)";
+	uci set network.wan.gateway="$(uci get $config_file.wan.gateway)";
+	uci set network.wan.mtu="$(uci get $config_file.wan.mtu)";
+	uci set network.wan.mac="$(uci get $config_file.wan.mac)";
+	uci set network.wan.dns="$(uci get $config_file.wan.dns)";
 	uci commit;
 	ifconfig $(uci get network.wan.ifname) up;
-	/etc/init.d/network restart;
+	if [ $action = "update" ]; then
+		echo "network" >> /tmp/.restart_services
+	else
+		/etc/init.d/network restart
+	fi
 }
 
 _lan(){
@@ -52,11 +58,26 @@ _lan(){
 	uci delete network.wan;
 	uci set network.lan.ifname="$(cat /tmp/ports)";
 	uci commit;
-	/etc/init.d/network restart;
+	if [ $action = "update" ]; then
+		echo "network" >> /tmp/.restart_services
+	else
+		/etc/init.d/network restart
+	fi
 }
 
 ls >/dev/null 2>/dev/null 
 logger "wan script run and firewall restarted"
+
+
+if [ "$1" = "update" ];
+	config_file=sabai-new
+	action=$1;
+	proto=$(uci get $config_file.wan.proto)
+else
+	proto=$1
+	action="save"
+	config_file=sabai
+fi
 
 case $proto in
 	dhcp)	_dhcp	;;

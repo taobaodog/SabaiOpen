@@ -13,38 +13,45 @@
 ###################################
 #SCRIPT HELP 
 ###################################
-if [ $# -ne 4 ]
-then
-cat <<'EOF'
-   
-   this script for setting four parameters
-   usage: 
-         #./firewall.sh $icmp $multicast $cookies $wanroute 
-   Parameters: 
-               
-         [icmp]  on/off this to enable/disablke ping 
-                           
-         [multicast] on/off this is to enable/disable udp multicast  
-           
-         [cookies] on/off this to enable/disable syn-cookie 
-          
-         [wanroute] this is to enable/disable external access to router  
-                                       
-   Examples:
-         to run use the following 
-          #firewall.sh on off on off  
- 
- 
-EOF
-exit 
-fi
+
 ###############
 #Used Variables 
 ###############
-icmp=$1;
-multicast=$2;
-cookies=$3;
-wanroute=$4;
+if [ "$1" = "update" ];
+	action=$1;
+else
+	if [ $# -ne 4 ]
+	then
+		cat <<'EOF'
+   
+    	this script for setting four parameters
+    	usage: 
+        	 #./firewall.sh $icmp $multicast $cookies $wanroute 
+    	Parameters: 
+               
+         	[icmp]  on/off this to enable/disablke ping 
+                           
+         	[multicast] on/off this is to enable/disable udp multicast  
+           
+         	[cookies] on/off this to enable/disable syn-cookie 
+          
+         	[wanroute] this is to enable/disable external access to router  
+                                       
+    	Examples:
+         	to run use the following 
+          	#firewall.sh on off on off  
+ 
+ 
+	EOF
+	exit 
+	fi
+	
+	icmp=$1;
+	multicast=$2;
+	cookies=$3;
+	wanroute=$4;
+fi
+
 #wanport=$(uci get network.wan.ifname);
 
 #############################
@@ -213,10 +220,13 @@ else
      echo "ERROR invalid wanroute only on/off Accepted"
 fi
                                         
-
 uci commit;
-/etc/init.d/firewall restart 
-logger "firewall run and restarted"
-# restart any services like firewall or network that need it.
+if [ $action = "update" ]; then
+	echo "firewall" >> /tmp/.restart_services
+else
+	/etc/init.d/firewall restart 
+	logger "firewall run and restarted"
+	# restart any services like firewall or network that need it.
+fi
 
 ls >/dev/null 2>/dev/null 

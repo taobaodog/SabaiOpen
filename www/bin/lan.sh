@@ -2,18 +2,33 @@
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
-proto=$1
-uci set network.lan.ipaddr=$(uci get sabai.lan.ipaddr);
-uci set network.lan.netmask=$(uci get sabai.lan.netmask);
-uci set dhcp.lan.leasetime=$(uci get sabai.dhcp.leasetime);
-uci set dhcp.lan.start=$(uci get sabai.dhcp.start);
-uci set dhcp.lan.limit=$(uci get sabai.dhcp.limit);
-uci commit;
-/etc/init.d/network restart
-logger "lan run and network restarted"
+if [ $# -ne 1 ]; then
+        action=save
+else
+        action=$1
+fi
 
-# Send completion message back to UI
-echo "res={ sabai: true, msg: 'LAN settings applied' }";
+if [ $action = "update" ]; then
+        config_file=sabai-new
+else
+        config_file=sabai
+fi
+
+uci set network.lan.ipaddr=$(uci get $config_file.lan.ipaddr);
+uci set network.lan.netmask=$(uci get $config_file.lan.netmask);
+uci set dhcp.lan.leasetime=$(uci get $config_file.dhcp.leasetime);
+uci set dhcp.lan.start=$(uci get $config_file.dhcp.start);
+uci set dhcp.lan.limit=$(uci get $config_file.dhcp.limit);
+uci commit;
+if [ $action = "update" ]; then
+	echo "network" >> /tmp/.restart_services
+else
+	/etc/init.d/network restart
+	logger "lan run and network restarted"
+	
+	# Send completion message back to UI
+	echo "res={ sabai: true, msg: 'LAN settings applied' }";
+fi
 
 ls >/dev/null 2>/dev/null 
 

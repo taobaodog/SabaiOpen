@@ -2,24 +2,37 @@
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
-encryption=$(uci get sabai.wlradio0.encryption)
+if [ $# -ne 1 ]; then
+        action=save
+else
+        action=$1
+fi
+
+if [ $action = "update" ]; then
+        config_file=sabai-new
+else
+        config_file=sabai
+fi
+
+encryption=$(uci get $config_file.wlradio0.encryption)
+
 uci set wireless.radio0.country='US'
 uci set wireless.radio0.channel='auto'
 wifi down
 
-if [ $(uci get sabai.wlradio0.mode) = "off" ]; then
+if [ $(uci get $config_file.wlradio0.mode) = "off" ]; then
 		uci set wireless.radio0.disabled=1
 		uci delete wireless.@wifi-iface[0].mode
 	else
 		uci set wireless.radio0.disabled=0
-		uci set wireless.@wifi-iface[0].mode="$(uci get sabai.wlradio0.mode)";
+		uci set wireless.@wifi-iface[0].mode="$(uci get $config_file.wlradio0.mode)";
 	fi
 
-uci set wireless.@wifi-iface[0].ssid="$(uci get sabai.wlradio0.ssid)";
-uci set wireless.@wifi-iface[0].encryption="$(uci get sabai.wlradio0.encryption)";
+uci set wireless.@wifi-iface[0].ssid="$(uci get $config_file.wlradio0.ssid)";
+uci set wireless.@wifi-iface[0].encryption="$(uci get $config_file.wlradio0.encryption)";
 
 _wep(){
-	wepkeys="$(uci get sabai.wlradio0.wepkeys)";
+	wepkeys="$(uci get $config_file.wlradio0.wepkeys)";
 	uci set wireless.@wifi-iface[0].key1=$(echo $wepkeys |awk -F: '{print $0}' | awk '{print $1}')
 	uci set wireless.@wifi-iface[0].key2=$(echo $wepkeys |awk -F: '{print $0}' | awk '{print $2}')
 	uci set wireless.@wifi-iface[0].key3=$(echo $wepkeys |awk -F: '{print $0}' | awk '{print $3}')
@@ -29,10 +42,10 @@ _wep(){
 }
 
 _psk(){
-	wpa_encryption=$(uci get sabai.wlradio0.wpa_encryption)
+	wpa_encryption=$(uci get $config_file.wlradio0.wpa_encryption)
 	full_encryption=$(echo "$encryption+$wpa_encryption") 
 	uci set wireless.@wifi-iface[0].encryption=$full_encryption
-	uci set wireless.@wifi-iface[0].key=$(uci get sabai.wlradio0.wpa_psk)
+	uci set wireless.@wifi-iface[0].key=$(uci get $config_file.wlradio0.wpa_psk)
 	uci set wireless.@wifi-iface[0].key1=''
 	uci set wireless.@wifi-iface[0].key2=''
 	uci set wireless.@wifi-iface[0].key3=''
