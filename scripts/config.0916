@@ -2031,7 +2031,7 @@ CONFIG_PACKAGE_syslog-ng3=y
 #
 # CONFIG_PACKAGE_binutils is not set
 # CONFIG_PACKAGE_cppunit is not set
-# CONFIG_PACKAGE_diffutils is not set
+CONFIG_PACKAGE_diffutils=y
 # CONFIG_PACKAGE_gcc is not set
 # CONFIG_PACKAGE_gdb is not set
 # CONFIG_PACKAGE_gdbserver is not set
@@ -2795,7 +2795,7 @@ CONFIG_PACKAGE_php5-mod-zip=y
 #
 # CONFIG_PACKAGE_libacl is not set
 CONFIG_PACKAGE_libattr=y
-# CONFIG_PACKAGE_libext2fs is not set
+CONFIG_PACKAGE_libext2fs=y
 # CONFIG_PACKAGE_libfuse is not set
 # CONFIG_PACKAGE_libnfsidmap is not set
 # CONFIG_PACKAGE_libow is not set
@@ -2914,7 +2914,7 @@ CONFIG_PACKAGE_glib2=y
 # CONFIG_PACKAGE_libavahi is not set
 # CONFIG_PACKAGE_libavahi-client is not set
 # CONFIG_PACKAGE_libavahi-dbus-support is not set
-# CONFIG_PACKAGE_libblkid is not set
+CONFIG_PACKAGE_libblkid=y
 CONFIG_PACKAGE_libblobmsg-json=y
 # CONFIG_PACKAGE_libboblight is not set
 # CONFIG_PACKAGE_libbz2 is not set
@@ -3142,7 +3142,7 @@ CONFIG_PACKAGE_libuci=y
 # CONFIG_PACKAGE_libustream-cyassl is not set
 # CONFIG_PACKAGE_libustream-openssl is not set
 # CONFIG_PACKAGE_libustream-polarssl is not set
-# CONFIG_PACKAGE_libuuid is not set
+CONFIG_PACKAGE_libuuid=y
 # CONFIG_PACKAGE_libv4l is not set
 # CONFIG_PACKAGE_libvncserver is not set
 # CONFIG_PACKAGE_libvorbis is not set
@@ -4425,7 +4425,7 @@ CONFIG_PACKAGE_nano=y
 # CONFIG_PACKAGE_disktype is not set
 # CONFIG_PACKAGE_dosfsck is not set
 # CONFIG_PACKAGE_dosfslabel is not set
-# CONFIG_PACKAGE_e2fsprogs is not set
+CONFIG_PACKAGE_e2fsprogs=y
 # CONFIG_PACKAGE_fuse-utils is not set
 # CONFIG_PACKAGE_mkdosfs is not set
 # CONFIG_PACKAGE_ncdu is not set
@@ -4504,7 +4504,7 @@ CONFIG_PACKAGE_nano=y
 # CONFIG_PACKAGE_blkid is not set
 # CONFIG_PACKAGE_cfdisk is not set
 # CONFIG_PACKAGE_devio is not set
-# CONFIG_PACKAGE_fdisk is not set
+CONFIG_PACKAGE_fdisk=y
 # CONFIG_PACKAGE_findfs is not set
 # CONFIG_PACKAGE_hd-idle is not set
 # CONFIG_PACKAGE_hdparm is not set
@@ -4611,7 +4611,7 @@ CONFIG_PACKAGE_bash=y
 # CONFIG_PACKAGE_gnupg is not set
 # CONFIG_PACKAGE_gnuplot is not set
 # CONFIG_PACKAGE_grep is not set
-# CONFIG_PACKAGE_grub2-editenv is not set
+CONFIG_PACKAGE_grub2-editenv=y
 # CONFIG_PACKAGE_gzip is not set
 # CONFIG_PACKAGE_hamlib is not set
 # CONFIG_PACKAGE_haserl is not set

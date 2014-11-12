@@ -24,10 +24,11 @@ else
         echo Error occured during verification.
 fi
 
+tar -C /tmp/upgrade -xf /tmp/upgrade/sabai-bundle.tar
 gunzip /tmp/upgrade/rootfs-sabai-img.gz
 mv /tmp/upgrade/rootfs-sabai-img /tmp/upgrade/rootfs-sabai.img
 umount /dev/sda5
-mount /dev/sda1 /mnt
+mount -t ext2 /dev/sda1 /mnt
 if [ "$CURRENT_KERNEL" = "1" ]; then
 	cp -f /tmp/upgrade/openwrt-x86_64-vmlinuz /mnt/boot/vmlinuz2
 	dd if=rootfs-sabai.img of=/dev/sda3
@@ -36,7 +37,7 @@ else
 	dd if=rootfs-sabai.img of=/dev/sda2
 fi
 umount /dev/sda1
-mount /dev/sda5 /mnt
+mount -t ext4 /dev/sda5 /mnt
 #TODO check signature
 
 grub-editenv /mnt/grubenv set prev_kernel=$CURRENT_KERNEL
