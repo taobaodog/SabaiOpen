@@ -97,21 +97,30 @@ for i in $CONFIG_SECTIONS; do
 			esac
 		fi
 done
+
 #TODO remove .orig and .new in tmp
-cat /tmp/.restart_services
+if [ ! -e /tmp/.restart_services ]; then
+	echo "Nothing to update in config files"
+	exit 0
+else
+	cat /tmp/.restart_services
+fi
+
 
 #TODO restart affected services
-for i in $CONFIG_SECTIONS; do
-	cat /tmp/.restart_services | grep $i
-	if [ $? = 0 ]; then
-		echo "restart $i service to apply new config settings"
-		if [ $i = "time" ]; then
-			/etc/init.d/ntpd restart
-		else
-			/etc/init.d/$i restart
-		fi
-	fi
+for i in network; do
+        echo "checking section $i"
+        if grep -q $i /tmp/.restart_services; then
+                echo "restart $i service to apply new config settings"
+                if [ $i = "time" ]; then
+                        /etc/init.d/ntpd restart
+                else
+                        echo "service $i restart"
+                        /etc/init.d/$i restart
+                fi
+        fi
 done
+
 rm -f /tmp/.restart_services
 
 #replace configs
