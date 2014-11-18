@@ -108,7 +108,7 @@ fi
 
 
 #TODO restart affected services
-for i in network; do
+for i in $CONFIG_SECTIONS; do
         echo "checking section $i"
         if grep -q $i /tmp/.restart_services; then
                 echo "restart $i service to apply new config settings"

@@ -6,9 +6,32 @@ TMP_FILE='/tmp/upgrade/tmp.txt'
 CURRENT_KERNEL=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
 
 #TODO transfer firmware archive to tmpfs
-mkdir /tmp/upgrade
-wget -P /tmp/upgrade ftp://192.168.0.17/sabai-bundle-secured.tar
+rm -rvf /tmp/upgrade > /dev/null
+mkdir /tmp/upgrade > /dev/null
+CHECK_DIR=`sudo find /tmp -name upgrade`
+if [ -d "$CHECK_DIR" ]; then
+	echo Directory was allocated correct.
+else
+	echo Directory was not allocated.
+	exit 1
+fi
+
+wget -P /tmp/upgrade ftp://192.168.1.103/sabai-bundle-secured.tar
+CHECK_TAR='/tmp/upgrade/sabai-bundle-secured.tar'
+if [ -s "$CHECK_TAR" ]; then
+	echo New firmware was succesfully loaded.
+else
+	echo New firmware was failed to load.
+	exit 1
+fi
+
 tar -C /tmp/upgrade -xf /tmp/upgrade/sabai-bundle-secured.tar
+if [ -s "$CHECK_DIR/sabai-bundle.tar" ] && [ -e "$CHECK_DIR/signature" ]; then
+	echo Firmware is ready for verification.
+else
+	echo Firmware is NOT ready for verification.
+	exit 1
+fi
 openssl dgst -sha256 < /tmp/upgrade/sabai-bundle.tar > /tmp/upgrade/hash
 openssl rsautl -verify -inkey /etc/sabai/keys/public.pem -keyform PEM -pubin -in /tmp/upgrade/signature > /tmp/upgrade/verified
 diff -s /tmp/upgrade/verified /tmp/upgrade/hash > "$TMP_FILE"
