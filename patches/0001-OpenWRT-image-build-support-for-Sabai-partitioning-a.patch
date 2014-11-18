@@ -1,5 +1,5 @@
-From 3bf174288477e5c3e92c38d2e5cc990471291b15 Mon Sep 17 00:00:00 2001
-From: K <k@k-HP-ProBook-4520s.(none)>
+From c74996e53b130b84824dfcfb7268aa47a6e2c1e7 Mon Sep 17 00:00:00 2001
+From: "k@k-HP-ProBook-4520s.(none)" <k@k-HP-ProBook-4520s.(none)>
 Date: Mon, 10 Nov 2014 13:26:07 +0200
 Subject: [PATCH] OpenWRT image build support for Sabai partitioning and
  fallback
@@ -11,7 +11,7 @@ Subject: [PATCH] OpenWRT image build support for Sabai partitioning and
  create mode 100755 target/linux/x86_64/image/gen_image_sabai.sh
 
 diff --git a/target/linux/x86_64/image/Makefile b/target/linux/x86_64/image/Makefile
-index e8d9ac1..24abe39 100644
+index e8d9ac1..3045171 100644
 --- a/target/linux/x86_64/image/Makefile
 +++ b/target/linux/x86_64/image/Makefile
 @@ -9,7 +9,7 @@ include $(INCLUDE_DIR)/image.mk
@@ -69,7 +69,7 @@ index e8d9ac1..24abe39 100644
 +	gzip -c $(BIN_DIR)/$(IMG_PREFIX)-rootfs-ext4.img > $(BIN_DIR)/rootfs-sabai-img.gz
 +	tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle.tar rootfs-sabai-img.gz $(IMG_PREFIX)-vmlinuz
 +	openssl dgst -sha256 <  $(BIN_DIR)/sabai-bundle.tar > $(BIN_DIR)/hash
-+	openssl rsautl -sign -inkey $(TOPDIR)/files/etc/sabai/keys/private.pem -keyform PEM -in $(BIN_DIR)/hash  > $(BIN_DIR)/signature
++	openssl rsautl -sign -inkey $(SABAI_KEYS)/private.pem -keyform PEM -in $(BIN_DIR)/hash  > $(BIN_DIR)/signature
 +	tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle-secured.tar sabai-bundle.tar signature
 +	rm $(BIN_DIR)/hash
 +endef
