@@ -3151,7 +3151,7 @@ CONFIG_PACKAGE_libuuid=y
 CONFIG_PACKAGE_libwrap=y
 # CONFIG_PACKAGE_libwxbase is not set
 # CONFIG_PACKAGE_libxapian is not set
-# CONFIG_PACKAGE_libxml2 is not set
+CONFIG_PACKAGE_libxml2=y
 # CONFIG_PACKAGE_libxslt is not set
 # CONFIG_PACKAGE_libzip is not set
 # CONFIG_PACKAGE_libzstream is not set
