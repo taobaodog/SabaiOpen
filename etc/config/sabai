@@ -100,3 +100,6 @@ config dhcphost
 	option name 'wmphone'
 	option route 'default'
 
+config settings 'vpn'
+        option status 'none'
+        option proto 'none'
