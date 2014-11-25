@@ -5,5 +5,5 @@ config openvpn 'sabai'
 	option enabled '1'
 	option config '/etc/sabai/openvpn/ovpn.current'
 	option dev 'tun'
-	option filename 'WilliamSabaiNY.ovpn'
+
 
