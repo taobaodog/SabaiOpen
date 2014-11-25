@@ -7,7 +7,7 @@
 <form id="fe">
 <input type='hidden' id='dhcptable' name='dhcptable'>
 <input type='hidden' id='act' name='act'>
-	<div class='pageTitle'>Network: DHCP</div>
+	<div class='pageTitle'>Network: DHCP/Gateways</div>
 
 <div class='controlBox'>
 	<span class='controlBoxTitle'>Summary</span>
