@@ -79,7 +79,7 @@ _clear(){
         uci commit
 		/etc/init.d/openvpn stop
 		/etc/init.d/openvpn disable
-		echo "" > /etc/sabai/openvpn/open.current
+		echo "" > /etc/sabai/openvpn/ovpn.current
 		echo "" > /etc/sabai/openvpn/ovpn
 		echo "" > /etc/sabai/openvpn/auth-pass
 		sleep 5

@@ -8,8 +8,6 @@
 	 <li><a id='menu_network_wan' href='?panel=network&section=wan' class='subMenuLink button'>WAN</a></li>
 	 <li><a id='menu_network_lan' href='?panel=network&section=lan' class='subMenuLink button'>LAN</a></li>
 	 <li><a id='menu_network_time' href='?panel=network&section=time' class='subMenuLink button'>Time</a></li>
-	 <li><a id='menu_network_dhcp' href='?panel=network&section=dhcp' class='subMenuLink button'>DHCP</a></li>
-	 <!--<li><a id='menu_network_staticips' href='?panel=network&section=staticips' class='subMenuLink button'>Static IPs</a></li>-->
 	</ul>
 	 </li>
 
@@ -17,8 +15,6 @@
 	<a id='menu_wireless' class='superMenuLink button'>Wireless</a>
 	<ul id='submenu_wireless' class='subMenu'>
 	 <li><a id='menu_wireless_radio' href='?panel=wireless&section=radio' class='subMenuLink button'>Radio</a></li>
-	 <!--<li><a id='menu_wireless_survey' href='?panel=wireless&section=survey' class='subMenuLink button'>Survey</a></li>-->
-	 <!--<li><a id='menu_wireless_macfilter' href='?panel=wireless&section=macfilter' class='subMenuLink button'>MAC Filter</a></li>-->
 	</ul>
 	 </li>
 
