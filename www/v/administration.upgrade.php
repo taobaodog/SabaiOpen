@@ -1,66 +1,124 @@
-<form id='fe'><input type='hidden' name='version' id='_version'>
+<form id='fe' method="post" enctype="multipart/form-data">
+<input type='hidden' name='version' id='_version'>
+<input type='hidden' id='act' name='act'>
 <div class='pageTitle'>Settings</div>
 <div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Update</span>
   <div class='controlBoxContent'>
     <div>Current Version: <span id='cversion'></span></div><br>
     <div id='newversion' class='hiddenChildMenu'>New Version: <span id='available'></span></div><br>
-    <input type='button' value='Check for Update' id='_checkUpdate' onclick='checkUpdate();'>
-    <input type='button' class='hiddenChildMenu' id='_doUpdate' value='Run Update' onclick='doUpdate();'>
+    <span class='uploadButton'><font style="font-size:14px"> Browse for Update</font></span>
+    <input id='browse' name='_browse' type='file' onchange='fileInput(this)'/><t>
+    <input id='fileName' name='_fileName' type='text'>
+    <input id='download' type='button' name='submit' value='Download'/><br><br>
+    <input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/><br>
+        <div id='hideme'>
+            <div class='centercolumncontainer'>
+                <div class='middlecontainer'>
+                    <div id='hiddentext'>Please wait...</div>
+                    <br>
+                </div>
+            </div>
+        </div><br>
+    <p>
+    <div id='footer'>Copyright © 2014 Sabai Technology, LLC</div>
+    </p>
   </div>
 </div>
-<br>
-<pre id='messages'></pre>
-<div id='footer'> Copyright © 2014 Sabai Technology, LLC </div>
-<div id='hideme'><div class='centercolumncontainer'><div class='middlecontainer'>
- <div id='hiddentext'>Please wait...</div><br>
-</div></div></div>
-<?php
- if(array_key_exists('version',$_REQUEST)){
-  if($_REQUEST['version']!='new'){
-   header("Content-type: text/ecmascript; charset=utf-8;");
-   $req=array( 'version'=>$_REQUEST['version'], 'uid'=>exec("[ -e /sys/class/dmi/id/product_uuid ] && sudo cat /sys/class/dmi/id/product_uuid") );
-   $updURL='http://sabaitechnology.biz/grabs/vpnaupd.php';
-   $pass='tihuovehe8482E31365';
-   $iv='80408020E0301030';
-   $rstr=urlencode(openssl_encrypt(serialize($req), 'aes128', $pass,false,$iv));
-   $resp=unserialize( openssl_decrypt( file_get_contents($updURL .'?plz='. $rstr), 'aes128', $pass,false,$iv));
-   if($resp['newversion']!=false){
-    file_put_contents("bin/tmp.upgrade.sh",base64_decode($resp['upgrade']));
-    chmod("bin/tmp.upgrade.sh", 0755);
-   }
-   echo "svm={ sabai: ". ($resp['newversion']!=false?'true':'false') .", msg: '". $resp['msg'] ."' }";
-  }else{
-   exec("sudo bin/tmp.upgrade.sh 2>&1",$out);
-   unlink("bin/tmp.handler.sh");
-   echo htmlentities(implode("\n",$out));
-  }
-  return;
- }
-?>
-<title>[VPNA] Update</title>
+
+</form>
 <script type='text/javascript'>
-var hidden, hide;
+
+var hidden, hide, pForm = {};
+var hidden = E('hideme');
+var hide = E('hiddentext');
+
+E('fileName').value = '';
+E('browse').value = '';
+
 var version='<?php readfile("libs/data/version"); ?>';
  E('_version').value = (version==''?'000':version);
  E('cversion').innerHTML= version.substr(0,1) +'.'+ version.substr(1);
 
-function vers(){
- E('_version').value = (version==''?'000':version);
- E('cversion').innerHTML= version.substr(0,1) +'.'+ version.substr(1);
- hidden = E('hideme'); hide = E('hiddentext');
-  $('.active').removeClass('active')
-  $('#update').addClass('active')
+// jQuery uploadbutton implementation
+$('.uploadButton').bind("click" , function () {
+        $('#browse').click();
+});
+// View the file`s name
+function fileInput(obj){
+	var browseFile = obj.value;
+        E('fileName').value = browseFile;
 }
 
-function updateFinish(text){ hidden.style.display='none'; E('_doUpdate').className='hiddenChildMenu'; E('messages').innerHTML=text; }
-function doUpdate(){ E('_version').value='new'; hideUi("Updating..."); que.drop("admin-update.php",updateFinish, $("#fe").serialize()); }
-function updateResponse(text){ // hidden.style.display='none'; E('messages').innerHTML=text; return;
- eval(text); hidden.style.display='none';
- if(svm.msg!='') E('messages').innerHTML = svm.msg;
- if(svm.sabai){ E('_checkUpdate').className='hiddenChildMenu'; E('_doUpdate').className=''; }
+$(document).ready( function() {
+$("#fe").submit(function() { return false; });
+$("#download").on("click", function(){
+		hideUi("Downloading ...");
+		E("act").value='download';
+
+                var form = document.forms.fe;
+                var formData = new FormData(form);
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "php/download.php");
+
+                xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                                if(xhr.status == 200) {
+                                        data = xhr.responseText;
+                                        if(data == "true") {
+						setTimeout(function(){hideUi("New firmware was downloaded succesfully!")},3000);
+						setTimeout(function(){showUi()},7000);
+                                        } else {
+						setTimeout(function(){hideUi("Downlaod FAILED! Refresh page and try again.")},3000);
+						setTimeout(function(){showUi()},7000);
+                                        }
+                                 }
+                        }
+                };
+                xhr.send(formData);
+        });
+});
+
+
+function Upgrade(act)	{
+	$(document).ready( function() {
+		hideUi("Please wait. Preparing installation.");
+		E("act").value=act;
+		$.get('php/update.php')
+  			.done(function(data) {
+				if (data.trim() == "false") {
+					hideUi("No image file selected.");
+					setTimeout(function(){showUi()},3000);
+				} else {
+					setTimeout(function(){hideUi(data)},3000);
+                                        setTimeout(function(){showUi()},5000);
+				}
+			})
+			.fail(function() {
+				hideUi_timer("Firmware was transferred. Please wait. Upgrade in progress...", 170);
+				setTimeout(function(){hideUi("Please wait. Check installation status.")},171000);
+                                setTimeout(function(){checkUpdate()}, 173000);
+			})
+	});
+
 }
 
-function checkUpdate(){ hideUi("Checking for update..."); que.drop("php/update.php",updateResponse, $("#fe").serialize()); }
+function checkUpdate() {
+	$.get('resUpgrade.txt')
+		.done(function(res) {
+			if (res != '')	{
+				var text = res.slice(7);
+				setTimeout(function(){hideUi(text)},2000);
+				setTimeout(function(){showUi()},5000);
+			} else {
+				setTimeout(function(){hideUi("Something went wrong.")},2000);
+	                	setTimeout(function(){showUi()},5000);
+			}
+		})
+		.fail(function() {
+			setTimeout(function(){hideUi("Upgrade was not done.")},2000);
+			setTimeout(function(){showUi()},5000);
+		})
+}
 
 </script>
-</form>
