@@ -108,6 +108,32 @@ function hideUi(hide_msg){
   hidden.style.display = 'block'; 
 }
 
+function hideUi_timer(hide_msg, time) {
+  window.hidden_working = true;
+  var count = time;
+  var counter = setInterval(timer, 1000);
+
+  function timer() {
+	minutes = count/60 >> 0;
+	seconds = count - minutes*60;
+	hide.innerHTML= hide_msg + " " + minutes + ":" + seconds;
+  	
+	if ((count%60 == 1) && (count != 1)) {
+		count = count - 2;
+	} else {
+		count = count - 1;
+	}
+
+  	if (count < 0)
+  	{
+     		clearInterval(counter);
+     		return;
+  	}
+
+}
+  hidden.style.display = 'block';
+}
+
 function showUi(text){ 
   window.hidden_working = false; 
   hidden.style.display = 'none'; 

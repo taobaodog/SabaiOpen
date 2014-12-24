@@ -146,7 +146,11 @@ ul#superMenu, ul.subMenu {
 	margin-left: 10px;
 }
 
-input[type=button], .button {
+input[type="file"] {
+    display: none;
+}
+
+input[type=button], .button, .uploadButton {
  color: hsl(204, 70%, 59%);
  background: #F0F3F6;
  background: hsl(210, 25%, 95%);
@@ -159,7 +163,7 @@ input[type=button], .button {
  cursor: pointer;
 }
 
-input[type=button]:hover, .button:hover {
+input[type=button]:hover, .button:hover, .uploadButton:hover {
  color: hsl(204, 70%, 30%);
  border-color: transparent;
  background: #F7CA61;
@@ -172,7 +176,7 @@ input[type=button]:hover, .button:hover {
  background: linear-gradient(bottom, #f5bc38, #f9d990);
 }
 
-input[type=button]:active, .buttonSelected {
+input[type=button]:active, .buttonSelected, .uploadButton:active {
  color: white;
  border-color: transparent;
  background: #1B75BB;
@@ -185,7 +189,7 @@ input[type=button]:active, .buttonSelected {
  background: linear-gradient(top, #4FA5E0, #1B75BB);
 }
 
-input[type='button'] {
+input[type='button'], .uploadButton {
 	border-radius: .2em;
 	border: 1px solid silver;
 	padding: .25em .25em;

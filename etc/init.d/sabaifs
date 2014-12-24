@@ -58,7 +58,7 @@ make_filesystems() {
 
 		if [ "$UPGRADE_IN_PROGRESS" = "1" ]; then
 			if [ "$SAVE_DEFAULT" = "1" ]; then
-				echo "SABAI:> Sucessfully booted into after firmware upgrade"
+				echo "SABAI:> Sucessfully booted into after firmware upgrade" > /www/resUpgrade.txt
 				
 				# Sucessfully booted, so, cleanup savedefault entry
                			if [ "$BOOT_ENTRY" = "1" ]; then
