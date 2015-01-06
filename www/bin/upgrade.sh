@@ -4,7 +4,7 @@ echo "SABAI:> Simulate OS upgrade"
 TMP_FILE='/tmp/upgrade/tmp.txt'
 
 CURRENT_KERNEL=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
-echo **Current kernel is $CURRENT_KERNEL >/dev/kmsg
+echo **Current kernel is $CURRENT_KERNEL > /dev/kmsg
 
 #TODO transfer firmware archive to tmpfs
 CHECK_DIR=`find /tmp -name upgrade`
@@ -41,9 +41,7 @@ tar -C /tmp/upgrade -xf /tmp/upgrade/sabai-bundle.tar
 gunzip /tmp/upgrade/rootfs-sabai-img.gz
 mv /tmp/upgrade/rootfs-sabai-img /tmp/upgrade/rootfs-sabai.img
 umount /dev/sda5
-echo umount sda5 command executed with: $? > /dev/kmsg
 mount -t ext2 /dev/sda1 /mnt
-echo mount ext2 command executed with: $? > /dev/kmsg
 
 if [ "$CURRENT_KERNEL" = "0" ]; then
 	cp -f /tmp/upgrade/openwrt-x86_64-vmlinuz /mnt/boot/vmlinuz2
@@ -53,9 +51,7 @@ else
 	dd if=/tmp/upgrade/rootfs-sabai.img of=/dev/sda2
 fi
 umount /dev/sda1
-echo umount sda1 command executed with: $? > /dev/kmsg
 mount -t ext4 /dev/sda5 /mnt
-echo mount ext4 command executed with: $? > /dev/kmsg
 
 grub-editenv /mnt/grubenv set prev_kernel=$CURRENT_KERNEL
 if [ "$CURRENT_KERNEL" = "1" ]; then
