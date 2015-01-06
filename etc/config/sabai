@@ -30,6 +30,7 @@ config settings 'general'
 	option updateuri_ip '23.23.141.143'
 	option hostname 'SabaiOpen'
 	option ac_ip '2'
+	option version '0.1'
 
 config interface 'dns'
 	option servers '8.8.8.8 4.2.2.2 8.8.4.4 198.6.1.4'

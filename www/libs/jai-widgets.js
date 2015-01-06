@@ -50,6 +50,43 @@ $.widget('jai.radioswitch', $.Widget, {
   }
 });
 
+$.widget('jai.radioswitchH', $.Widget, {
+
+  _create: function(){
+
+    var eid = $(this.element).attr('id');
+
+    //hide or show children when the switch changes
+    if(this.options.hasChildren)
+      $(this.element).change(function(event,ui){
+        $('.' + eid).hide();
+        $('.'+ eid +'-'+ ui.value ).show();
+      });
+
+    $('<ul>').attr('id', eid +'radioSwitch')
+      .addClass('radioSwitchH')
+      .append(this.element.children()
+        .map(function(i,e){
+          return $('<li>')
+          .html( $(e).text().trim() )
+          .addClass('button')
+          .attr('id', eid +'_'+ e.value )
+          .data({ 'switchId': eid, 'switchValue': e.value })
+          .click(function(event){
+            $(this).addClass('buttonSelected').siblings().removeClass('buttonSelected');
+            $('#'+$(this).data('switchId'))
+              .val( $(this).data('switchValue'))
+              .triggerHandler('change',[{ value: $(this).data('switchValue') }]);
+          })
+          .get();
+        })
+      ).insertAfter(this.element);
+    $('#'+eid +'_'+ this.options.value).triggerHandler('click');
+    $(this.element).hide();
+  }
+});
+
+
 $.widget( "ui.timespinner", $.ui.spinner, {
  options: {
   step: 60000, // 60 * 1000, // seconds

@@ -19,25 +19,40 @@
                 </div>
             </div>
         </div><br>
+  </div>
+</div>
+</form>
+<form id='fc'>
+<div class='controlBox'><span class='controlBoxTitle'>Firmware Configuration</span>
+  <div class='controlBoxContent'>
+    <div>Available user configurations: <span id='config'></span></div><br>
+    <div class='radioSwitchElement' id='configList'></div><br>
+    <input id='save_config' name='Save_config' type='button' value='Restore'>
+    <input id='backUp' name='backUp_config' type='button' value='Backup'>
+  </div>
+</div>
+</form>
+
     <p>
     <div id='footer'>Copyright © 2014 Sabai Technology, LLC</div>
     </p>
-  </div>
-</div>
 
-</form>
 <script type='text/javascript'>
 
 var hidden, hide, pForm = {};
 var hidden = E('hideme');
 var hide = E('hiddentext');
 
+var list = $.parseJSON('{<?php $config = exec("sh /www/bin/config_search.sh");
+			       echo $config;?>}');
+var currConf = 'conf_1';
+var version = '<?php $get_version=exec("uci get sabai.general.version");
+		     echo $get_version; ?>';
+E('cversion').innerHTML = version;
+
 E('fileName').value = '';
 E('browse').value = '';
 
-var version='<?php readfile("libs/data/version"); ?>';
- E('_version').value = (version==''?'000':version);
- E('cversion').innerHTML= version.substr(0,1) +'.'+ version.substr(1);
 
 // jQuery uploadbutton implementation
 $('.uploadButton').bind("click" , function () {
@@ -121,4 +136,27 @@ function checkUpdate() {
 		})
 }
 
+$.widget("jai.config", {
+	_create: function(){
+		$(this.element)
+			.append(
+				$(document.createElement('select'))
+					.prop("id","configs")
+					.prop("name","configs")
+					.prop("class", "radioSwitchElement")
+			);
+		$.each( list, function( key, value ){
+			$('#configs').append (
+				$(document.createElement('option'))
+				 .prop("value", key)
+				 .prop("text", value)
+				)
+		});
+	$('#configs').radioswitchH({value: currConf, hasChildren: true });
+},
+});
+	
+$(function(){
+	$("#configList").config();
+	});
 </script>
