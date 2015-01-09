@@ -85,9 +85,9 @@ make_filesystems() {
 				else
 					echo "SABAI:> /configs already exists."
 				fi
-					mount -t ext4 /dev/sda6 /configs
-					mv /etc/config/sabai /configs
-					ln -s /configs/sabai /etc/config/sabai
+				mount -t ext4 /dev/sda6 /configs
+				mv /etc/config/sabai /configs
+				ln -s /configs/sabai /etc/config/sabai
 			else
 				echo "SABAI:> Upgrade failed. Fallback to old kernel"
 				grub-editenv /mnt/grubenv set is_upgrade=0

@@ -5,9 +5,6 @@ count=0
 #clear configList
 cat /dev/null > /tmp/configList
 
-#mounting partition with config files
-#mount -t ext4 /dev/sda6 /configs
-
 #searching for config files on partition
 config_list=`ls -p /configs | grep -v / | sed 's/\/mnt\///'`
 
@@ -23,5 +20,4 @@ for i in $config_list; do
 done
 strout=`cat /tmp/configList | tr '\n' ' '| sed 's/.$//' | sed 's/.$//'`
 echo $strout
-#umount /dev/sda6
 
