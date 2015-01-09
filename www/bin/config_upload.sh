@@ -1,11 +1,10 @@
 #!/bin/ash
 
-#copy the new config instead of old one
+# Script is used for restoring procedure.
 # |
-# - sabai
-# + configs
-#   - config.Fri_Oct_31_06:34:01_EDT_2014
-#   - config.Tue_Oct_29_03:33:31_EDT_2014
+# /etc/config/sabai is a link to /configs/sabai 
+# /configs - mounting point for /dev/sda6
+# all configurations are located on /dev/sda6
 #
 
 #apply settings from new config
@@ -24,9 +23,8 @@
 #section 'wlradio'     -> /www/bin/wl.sh              --> wifi up
 
 SABAI_CONFIG=/etc/config/sabai
-
-wget -P /etc/config ftp://192.168.0.76/some-config
-mv /etc/config/some-config /etc/config/sabai-new
+RESTORED_CONFIG=$1
+cp $RESTORED_CONFIG /etc/config/sabai-new
 
 CONFIG_SECTIONS=$(cat $SABAI_CONFIG | grep config | awk '{print $3}' | sed ':a;N;$!ba;s/\n/ /g' | tr -d "'")
 echo "CONFIG_SECTIONS=$CONFIG_SECTIONS"
@@ -98,7 +96,7 @@ for i in $CONFIG_SECTIONS; do
 		fi
 done
 
-#TODO remove .orig and .new in tmp
+#remove .orig and .new in tmp
 if [ ! -e /tmp/.restart_services ]; then
 	echo "Nothing to update in config files"
 	exit 0
@@ -107,7 +105,7 @@ else
 fi
 
 
-#TODO restart affected services
+#restart affected services
 for i in $CONFIG_SECTIONS; do
         echo "checking section $i"
         if grep -q $i /tmp/.restart_services; then
@@ -123,9 +121,4 @@ done
 
 rm -f /tmp/.restart_services
 
-#replace configs
-if [ ! -d "/etc/config/configs" ]; then
-	mkdir /etc/config/configs
-fi
-mv /etc/config/sabai /etc/config/configs/$(date | tr ' ' '_')
-mv /etc/config/sabai-new /etc/config/sabai
+mv /etc/config/sabai-new /configs/sabai

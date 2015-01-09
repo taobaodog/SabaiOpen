@@ -3,7 +3,7 @@
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>Settings</div>
 <div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Update</span>
-  <div class='controlBoxContent'>
+ <div class='controlBoxContent'>
     <div>Current Version: <span id='cversion'></span></div><br>
     <div id='newversion' class='hiddenChildMenu'>New Version: <span id='available'></span></div><br>
     <span class='uploadButton'><font style="font-size:14px"> Browse for Update</font></span>
@@ -21,21 +21,20 @@
         </div><br>
   </div>
 </div>
-</form>
-<form id='fc'>
 <div class='controlBox'><span class='controlBoxTitle'>Firmware Configuration</span>
   <div class='controlBoxContent'>
     <div>Available user configurations: <span id='config'></span></div><br>
     <div class='radioSwitchElement' id='configList'></div><br>
-    <input id='save_config' name='Save_config' type='button' value='Restore'>
-    <input id='backUp' name='backUp_config' type='button' value='Backup'>
+    <input id='restore' name='Restore' type='button' hidden='true' value='Restore'/>
+    <input id='backUp' name='backUp_config' type='button' value='Backup'/>
+    <span id='aMsg' style="color:blue" ></span></br>
   </div>
 </div>
-</form>
 
     <p>
     <div id='footer'>Copyright © 2014 Sabai Technology, LLC</div>
     </p>
+</form>
 
 <script type='text/javascript'>
 
@@ -45,14 +44,15 @@ var hide = E('hiddentext');
 
 var list = $.parseJSON('{<?php $config = exec("sh /www/bin/config_search.sh");
 			       echo $config;?>}');
-var currConf = 'conf_1';
+
 var version = '<?php $get_version=exec("uci get sabai.general.version");
 		     echo $get_version; ?>';
+
 E('cversion').innerHTML = version;
 
 E('fileName').value = '';
 E('browse').value = '';
-
+E('aMsg').innerHTML = ' * Sabai - is the currently running configuration.';
 
 // jQuery uploadbutton implementation
 $('.uploadButton').bind("click" , function () {
@@ -63,6 +63,50 @@ function fileInput(obj){
 	var browseFile = obj.value;
         E('fileName').value = browseFile;
 }
+
+$('#backUp').on("click", function() {
+	if (selectOption == '') {
+		hideUi("Please, select the configuration.");
+		setTimeout(function(){showUi()},3000);
+	} else {
+	       	var backUpName = prompt("Please enter new user config name.");
+		if (backUpName.trim() == null) {
+        	        hideUi("Backup wasn`t done.");
+                              setTimeout(function(){showUi()},3000);
+                        } else {
+				$.post('php/backUp.php', {'newName': backUpName})
+					.done(function(data) {
+						if (data.trim() == "no name") {
+							hideUi("Backup wasn`t done. The name is incorrect.")
+						} else {
+							hideUi(data);
+						}
+                       				setTimeout(function(){showUi()},3000);
+						setTimeout(function(){location.reload()},3100);
+					})
+					.fail(function(data) {
+						hideUi(data);
+                              			setTimeout(function(){showUi()},3000);
+					})
+                      	}
+	}
+});
+$('#restore').on("click", function() {
+	var selectOption = $("#configs").find(":selected").text();
+	hideUi("Restoring in process ...");
+	$.post('php/restore.php', {'restoreName': selectOption})
+		.done(function(data) {
+			setTimeout(function(){hideUi("Restored configuration settings from backup file.")},3000);
+			setTimeout(function(){showUi()},7000);
+			setTimeout(function(){location.reload()},7100);
+		})
+		.fail(function(data) {
+			setTimeout(function(){hideUi(data)},3000);
+			setTimeout(function(){showUi()},4500);
+		}) 
+
+});
+
 
 $(document).ready( function() {
 $("#fe").submit(function() { return false; });
@@ -112,7 +156,7 @@ function Upgrade(act)	{
 			.fail(function() {
 				hideUi_timer("Firmware was transferred. Please wait. Upgrade in progress...", 170);
 				setTimeout(function(){hideUi("Please wait. Check installation status.")},171000);
-                                setTimeout(function(){checkUpdate()}, 173000);
+                                setTimeout(function(){checkUpdate()}, 180000);
 			})
 	});
 
@@ -152,11 +196,26 @@ $.widget("jai.config", {
 				 .prop("text", value)
 				)
 		});
-	$('#configs').radioswitchH({value: currConf, hasChildren: true });
+
+	var currConf = $('#configs option').filter(function() { return $(this).html() == "sabai"; }).val();
+	$('#configs').radioswitchH({ value: currConf , hasChildren: true });
 },
 });
-	
-$(function(){
-	$("#configList").config();
-	});
+
+// Display radioswitch element
+$("#configList").config();
+var selectOption = $("#configs").find(":selected").text();
+
+$('#configs').change(function() {
+	selectOption = $(this).find(":selected").text();
+	if (selectOption.trim() == 'sabai') {
+		E('backUp').hidden = false;
+		E('restore').hidden = true;
+		E('aMsg').innerHTML = ' * Sabai - is the currently running configuration.';
+	} else {
+		E('restore').hidden = false;
+		E('backUp').hidden = true;
+		E('aMsg').innerHTML = ' * This is a previous user backup of Sabai configuration.';
+	}
+});
 </script>
