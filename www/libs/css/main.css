@@ -146,10 +146,6 @@ ul#superMenu, ul.subMenu {
 	margin-left: 10px;
 }
 
-input[type="file"] {
-    display: none;
-}
-
 input[type=button], .button, .uploadButton {
  color: hsl(204, 70%, 59%);
  background: #F0F3F6;

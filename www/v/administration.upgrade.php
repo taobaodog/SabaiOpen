@@ -7,7 +7,7 @@
     <div>Current Version: <span id='cversion'></span></div><br>
     <div id='newversion' class='hiddenChildMenu'>New Version: <span id='available'></span></div><br>
     <span class='uploadButton'><font style="font-size:14px"> Browse for Update</font></span>
-    <input id='browse' name='_browse' type='file' onchange='fileInput(this)'/><t>
+    <input id='browse' name='_browse' type='file' hidden='true' onchange='fileInput(this)'/><t>
     <input id='fileName' name='_fileName' type='text'>
     <input id='download' type='button' name='submit' value='Download'/><br><br>
     <input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/><br>
