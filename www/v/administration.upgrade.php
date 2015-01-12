@@ -7,7 +7,7 @@
     <div>Current Version: <span id='cversion'></span></div><br>
     <div id='newversion' class='hiddenChildMenu'>New Version: <span id='available'></span></div><br>
     <span class='uploadButton'><font style="font-size:14px"> Browse for Update</font></span>
-    <input id='browse' name='_browse' type='file' hidden='true' onchange='fileInput(this)'/><t>
+    <input id='browse' name='_browse' type='file' hidden='true' onchange="fileInput(this, 'img');"/><t>
     <input id='fileName' name='_fileName' type='text'>
     <input id='download' type='button' name='submit' value='Download'/><br><br>
     <input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/><br>
@@ -28,6 +28,11 @@
     <input id='restore' name='Restore' type='button' hidden='true' value='Restore'/>
     <input id='backUp' name='backUp_config' type='button' value='Backup'/>
     <span id='aMsg' style="color:blue" ></span></br>
+    <input id='saveConf' name='SaveConf' type='button' value='Download config'/>
+    <input id='loadConf' name='LoadConf' type='button' value='Upload config'/>
+    <input id='remove' name='Remove' type='button' value='Remove config' hidden='true'/>
+    <input id='browse1' name='_browse1' type='file' hidden='true' onchange="fileInput(this, 'conf')"/></br>
+    <input id='fileName1' name='_fileName1' type='text' hidden='true'/>
   </div>
 </div>
 
@@ -51,7 +56,9 @@ var version = '<?php $get_version=exec("uci get sabai.general.version");
 E('cversion').innerHTML = version;
 
 E('fileName').value = '';
+E('fileName1').value = '';
 E('browse').value = '';
+E('browse1').value = '';
 E('aMsg').innerHTML = ' * Sabai - is the currently running configuration.';
 
 // jQuery uploadbutton implementation
@@ -59,9 +66,13 @@ $('.uploadButton').bind("click" , function () {
         $('#browse').click();
 });
 // View the file`s name
-function fileInput(obj){
+function fileInput(obj, type) {
 	var browseFile = obj.value;
-        E('fileName').value = browseFile;
+	if (type == 'img') {
+        	E('fileName').value = browseFile;
+	} else {		
+                E('fileName1').value = browseFile;
+	}
 }
 
 $('#backUp').on("click", function() {
@@ -101,10 +112,71 @@ $('#restore').on("click", function() {
 			setTimeout(function(){location.reload()},7100);
 		})
 		.fail(function(data) {
-			setTimeout(function(){hideUi(data)},3000);
+			setTimeout(function(){hideUi("Failed")},3000);
 			setTimeout(function(){showUi()},4500);
 		}) 
 
+});
+
+// Remove selected config from the list
+$("#remove").on("click", function () {
+	var selectOption = $("#configs").find(":selected").text();
+	hideUi("Removing in process ...")
+	$.post('php/remove.php', {'removeName': selectOption})
+                .done(function(data) {
+                        setTimeout(function(){hideUi("Configuration file was removed successfully.")},3000);
+                        setTimeout(function(){showUi()},7000);
+                        setTimeout(function(){location.reload()},7100);
+                })
+                .fail(function(data) {
+                        setTimeout(function(){hideUi("Failed")},3000);
+                        setTimeout(function(){showUi()},4500);
+                })
+
+});
+
+// Download selected config on own pc
+$("#saveConf").on("click", function() { 
+	var selectOption = $("#configs").find(":selected").text();
+	$.post('php/saveFile.php', {'loadFile': selectOption})
+		.done(function(data) {
+			window.location.href = data;
+		})
+		.fail(function() {
+			hideUi("Failed");
+			setTimeout(function(){showUi()},4500);
+		})
+});
+
+// Upload file from client to server
+$("#loadConf").on("click", function() {
+	$('#browse1').click();
+	$("#browse1").on("change", function(){
+		$("#fe").submit(function() { return false; });
+                hideUi("Downloading ...");
+		var form = document.forms.fe;
+                var formData = new FormData(form);
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "php/download_config.php");
+
+                xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                                if(xhr.status == 200) {
+                                        data = xhr.responseText;
+                                        if(data.trim() === "true") {
+                                                setTimeout(function(){hideUi("New configuration file was downloaded succesfully!")},3000);
+                                                setTimeout(function(){showUi()},7000);
+                                                setTimeout(function(){location.reload()},7100);
+                                        } else {
+                                                setTimeout(function(){hideUi("Failed")},3000);
+                                                setTimeout(function(){showUi()},7000);
+                                        }
+                                 }
+			}
+                };
+                xhr.send(formData);
+        });
 });
 
 
@@ -124,7 +196,7 @@ $("#download").on("click", function(){
                         if (xhr.readyState == 4) {
                                 if(xhr.status == 200) {
                                         data = xhr.responseText;
-                                        if(data == "true") {
+                                        if(data.trim() === "true") {
 						setTimeout(function(){hideUi("New firmware was downloaded succesfully!")},3000);
 						setTimeout(function(){showUi()},7000);
                                         } else {
@@ -211,11 +283,15 @@ $('#configs').change(function() {
 	if (selectOption.trim() == 'sabai') {
 		E('backUp').hidden = false;
 		E('restore').hidden = true;
+		E('remove').hidden = true;
 		E('aMsg').innerHTML = ' * Sabai - is the currently running configuration.';
 	} else {
 		E('restore').hidden = false;
 		E('backUp').hidden = true;
+		E('remove').hidden = false;
 		E('aMsg').innerHTML = ' * This is a previous user backup of Sabai configuration.';
 	}
 });
+
+ 
 </script>
