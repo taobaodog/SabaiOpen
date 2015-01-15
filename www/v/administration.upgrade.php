@@ -87,7 +87,7 @@ $('#backUp').on("click", function() {
                         } else {
 				$.post('php/backUp.php', {'newName': backUpName})
 					.done(function(data) {
-						if (data.trim() == "no name") {
+						if (data.trim() === "false") {
 							hideUi("Backup wasn`t done. The name is incorrect.")
 						} else {
 							hideUi(data);
@@ -96,7 +96,7 @@ $('#backUp').on("click", function() {
 						setTimeout(function(){location.reload()},3100);
 					})
 					.fail(function(data) {
-						hideUi(data);
+						hideUi("Failed");
                               			setTimeout(function(){showUi()},3000);
 					})
                       	}
@@ -107,7 +107,11 @@ $('#restore').on("click", function() {
 	hideUi("Restoring in process ...");
 	$.post('php/restore.php', {'restoreName': selectOption})
 		.done(function(data) {
-			setTimeout(function(){hideUi("Restored configuration settings from backup file.")},3000);
+			if (data.trim() === "OK") {
+				setTimeout(function(){hideUi("Restored configuration settings from backup file.")},3000);
+			} else {
+				setTimeout(function(){hideUi("Something went wrong.")},3000);
+			}
 			setTimeout(function(){showUi()},7000);
 			setTimeout(function(){location.reload()},7100);
 		})
@@ -124,8 +128,12 @@ $("#remove").on("click", function () {
 	hideUi("Removing in process ...")
 	$.post('php/remove.php', {'removeName': selectOption})
                 .done(function(data) {
-                        setTimeout(function(){hideUi("Configuration file was removed successfully.")},3000);
-                        setTimeout(function(){showUi()},7000);
+			if (data.trim() === "OK") {
+                        	setTimeout(function(){hideUi("Configuration file was removed successfully.")},3000);
+                        } else {
+                                setTimeout(function(){hideUi("Something went wrong.")},3000);
+                        }
+			setTimeout(function(){showUi()},7000);
                         setTimeout(function(){location.reload()},7100);
                 })
                 .fail(function(data) {
@@ -162,8 +170,8 @@ $("#loadConf").on("click", function() {
 
                 xhr.onreadystatechange = function() {
                         if (xhr.readyState == 4) {
-                                if(xhr.status == 200) {
-                                        data = xhr.responseText;
+				if(xhr.status == 200) {
+                                	data = xhr.responseText;
                                         if(data.trim() === "true") {
                                                 setTimeout(function(){hideUi("New configuration file was downloaded succesfully!")},3000);
                                                 setTimeout(function(){showUi()},7000);
@@ -172,7 +180,10 @@ $("#loadConf").on("click", function() {
                                                 setTimeout(function(){hideUi("Failed")},3000);
                                                 setTimeout(function(){showUi()},7000);
                                         }
-                                 }
+				} else {
+                                        setTimeout(function(){hideUi(xhr.status)},3000);
+                                        setTimeout(function(){showUi()},7000);
+                                }
 			}
                 };
                 xhr.send(formData);
@@ -203,7 +214,11 @@ $("#download").on("click", function(){
 						setTimeout(function(){hideUi("Downlaod FAILED! Refresh page and try again.")},3000);
 						setTimeout(function(){showUi()},7000);
                                         }
-                                 }
+                                } else {
+					setTimeout(function(){hideUi(xhr.status)},3000);
+                                        setTimeout(function(){showUi()},7000);
+				}
+
                         }
                 };
                 xhr.send(formData);

@@ -88,6 +88,7 @@ make_filesystems() {
 				mount -t ext4 /dev/sda6 /configs
 				mv /etc/config/sabai /configs
 				ln -s /configs/sabai /etc/config/sabai
+				ln -s /configs/ /www/configs
 			else
 				echo "SABAI:> Upgrade failed. Fallback to old kernel"
 				grub-editenv /mnt/grubenv set is_upgrade=0
