@@ -101,21 +101,24 @@ if [ ! -e /tmp/.restart_services ]; then
 	echo "Nothing to update in config files"
 	exit 0
 else
-	cat /tmp/.restart_services
+	SERVICES=`cat /tmp/.restart_services`
+	echo $SERVICES
 fi
 
 
 #restart affected services
-for i in $CONFIG_SECTIONS; do
+for i in $SERVICES; do
         echo "checking section $i"
-        if grep -q $i /tmp/.restart_services; then
-                echo "restart $i service to apply new config settings"
-                if [ $i = "time" ]; then
-                        /etc/init.d/ntpd restart
-                else
-                        echo "service $i restart"
-                        /etc/init.d/$i restart
-                fi
+        echo "restart $i service to apply new config settings"
+        if [ $i = "time" ]; then
+	        /etc/init.d/ntpd restart
+	elif [ $i = "network" ]; then
+                /etc/init.d/$i restart
+		ifup wan
+		ifup wan
+        else
+        	echo "service $i restart"
+		/etc/init.d/$i restart
         fi
 done
 
