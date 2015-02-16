@@ -16,10 +16,11 @@ fi
 
 uci set network.lan.ipaddr=$(uci get $config_file.lan.ipaddr);
 uci set network.lan.netmask=$(uci get $config_file.lan.netmask);
+uci commit network;
 uci set dhcp.lan.leasetime=$(uci get $config_file.dhcp.leasetime);
 uci set dhcp.lan.start=$(uci get $config_file.dhcp.start);
 uci set dhcp.lan.limit=$(uci get $config_file.dhcp.limit);
-uci commit;
+uci commit dhcp;
 if [ $action = "update" ]; then
 	echo "network" >> /tmp/.restart_services
 else

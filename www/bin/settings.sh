@@ -1,12 +1,13 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
+UCI_PATH="-c /configs"
 act=$1
 
 _hostname(){
 	name=$(uci get sabai.general.hostname)
-	uci set system.@system[0].hostname="$(uci get sabai.general.hostname)";
-	uci commit
+	uci $UCI_PATH set system.@system[0].hostname="$(uci get sabai.general.hostname)";
+	uci $UCI_PATH commit sabai
 	echo $(uci get system.@system[0].hostname) > /proc/sys/kernel/hostname
 }
 

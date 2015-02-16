@@ -3,7 +3,10 @@
 // copyright 2014 Sabai Technology, LLC
 $userPass=$_REQUEST['sabaiPassword'];
 $password = crypt($userPass);
+//path to config files
+$UCI_PATH="-c /configs";
 
-exec("uci set sabai.general.password=$password");
+exec("uci $UCI_PATH set sabai.general.password=$password");
 echo "res={ sabai: 1, msg: 'Credentials Updated' };";
 ?>
+

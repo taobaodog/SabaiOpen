@@ -56,7 +56,7 @@ else
 fi
 
 
-uci commit
+uci commit upnpd
 
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services

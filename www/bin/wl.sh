@@ -63,5 +63,9 @@ case $encryption in
 	mixed-psk)	_psk	;;
 esac
 
-wifi up
+if [ $action = "update" ]; then
+	echo "network" >> /tmp/.restart_services
+else
+	wifi up
+fi
 logger "wireless script run and wifi restarted"

@@ -219,8 +219,7 @@ then
 else
      echo "ERROR invalid wanroute only on/off Accepted"
 fi
-                                        
-uci commit;
+
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
 else
