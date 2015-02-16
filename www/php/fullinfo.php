@@ -1,6 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // copyright 2014 Sabai Technology, LLC
+$UCI_PATH="-c /configs";
 
 //set system variables
  exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
@@ -59,7 +60,8 @@ if($pptp_ifup == 'pptp-vpn') {
 }
 if($ovpn_ifup == 'tun0') {
 	$vpnip=exec("ifconfig tun0 | grep inet | awk '{print $2}' | sed 's/addr://g' ");
-	exec("uci set sabai.vpn.ip=$vpnip")
+	exec("uci $UCI_PATH set sabai.vpn.ip=$vpnip");
+	exec("uci $UCI_PATH commit sabai");
 }
 if($pptp_ifup == 'pptp-vpn' || $ovpn_ifup == 'tun0') {
 	$vo=exec("uci get sabai.vpn.status");

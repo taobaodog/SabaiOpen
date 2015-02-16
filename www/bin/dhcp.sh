@@ -6,6 +6,9 @@
 #receive the action being asked of the script
 action=$1
 
+#path to config files
+UCI_PATH="-c /configs"
+
 #get dhcp information and build the dhcp table
 _get(){
 #get wan address and mac
@@ -43,21 +46,22 @@ done
 echo -n ']}' >> /www/libs/data/dhcp.json
 
 #save table as single line json
-uci set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
-uci commit
+uci $UCI_PATH set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
+uci $UCI_PATH commit sabai
 } #end _get
 
 _static_on(){
 	uci add dhcp host
-	uci add sabai dhcphost
 	uci set dhcp.@host[-1].ip=$ip;
-	uci set sabai.@dhcphost[-1].ip=$ip;
 	uci set dhcp.@host[-1].mac=$mac;
-	uci set sabai.@dhcphost[-1].mac=$mac;
 	uci set dhcp.@host[-1].name=$name;
-	uci set sabai.@dhcphost[-1].name=$name;
-	uci set sabai.@dhcphost[-1].route=$route;
-	uci commit;
+	uci commit dhcp;
+	uci $UCI_PATH add sabai dhcphost
+	uci $UCI_PATH set sabai.@dhcphost[-1].ip=$ip;
+	uci $UCI_PATH set sabai.@dhcphost[-1].mac=$mac;
+	uci $UCI_PATH set sabai.@dhcphost[-1].name=$name;
+	uci $UCI_PATH set sabai.@dhcphost[-1].route=$route;
+	uci $UCI_PATH commit sabai;
 }
 
 #Save the modified existing DHCP table
@@ -71,8 +75,8 @@ else
 	sed 's/}\]/\}\]\}/g' /tmp/table3 > /tmp/table4
 	aaData=$(cat /tmp/table4)
 	#save table as single line json
-	uci set sabai.dhcp.table="$(cat /tmp/table4)"
-	uci commit
+	uci $UCI_PATH set sabai.dhcp.table="$(cat /tmp/table4)"
+	uci $UCI_PATH commit sabai
 	uci get sabai.dhcp.table > /tmp/tmpdhcptable
 fi
 
@@ -82,14 +86,16 @@ while [ $hosts -ge 0 ]
 do	
 	echo "deleting rule  #$i:"
 	uci delete dhcp.@host["$hosts"]
+	uci commit dhcp
 	hosts=$(( $hosts - 1 ))
 done
 #delete old sabai dhcp settings
-hosts=$(uci show sabai | grep =dhcphost | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+hosts=$(uci $UCI_PATH show sabai | grep =dhcphost | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 while [ $hosts -ge 0 ]
 do	
 	echo "deleting rule  #$i:"
-	uci delete sabai.@dhcphost["$hosts"]
+	uci $UCI_PATH delete sabai.@dhcphost["$hosts"]
+	uci $UCI_PATH commit sabai
 	hosts=$(( $hosts - 1 ))
 done
 
@@ -118,7 +124,6 @@ done
 echo "exiting"
 exit 0
 
-uci commit;
 
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services

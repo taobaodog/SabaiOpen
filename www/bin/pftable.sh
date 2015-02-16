@@ -1,6 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
+UCI_PATH="-c /configs"
 
 #convert table to single line json aaData variable
 #calling program has already put table into /tmp/table1
@@ -12,8 +13,8 @@ sed 's/Click to edit//g' /tmp/table4 > /tmp/table5
 aaData=$(cat /tmp/table5)
 
 #save table as single line json
-uci set sabai.pf.table="$aaData"
-uci commit
+uci $UCI_PATH set sabai.pf.table="$aaData"
+uci $UCI_PATH commit sabai
 
 #cleanup
 rm /tmp/table*

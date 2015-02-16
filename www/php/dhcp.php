@@ -1,5 +1,5 @@
-<?php 
-  
+<?php
+$UCI_PATH = "-c /configs";
 //receive action requested from GUI
 $act = $_POST['act'];
 
@@ -22,8 +22,8 @@ if ($act == "save") {
 	file_get_contents("/tmp/table4", $aaData);
 
 	//save and commit modified json 
-	exec("uci set sabai.dhcp.table=\"" . $aaData . "\"");
-	exec("uci commit");
+	exec("uci $UCI_PATH set sabai.dhcp.table=\"" . $aaData . "\"");
+	exec("uci $UCI_PATH commit sabai");
 
 	//save changes in static
 	exec("sh /www/bin/dhcp.sh save");

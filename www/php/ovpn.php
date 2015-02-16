@@ -2,6 +2,7 @@
 header('Content-Type: application/javascript');
 // Sabai Technology - Apache v2 licence
 // copyright 2014 Sabai Technology
+$UCI_PATH="-c /configs";
 
 // Bring over variables from the openVPN
 
@@ -10,12 +11,12 @@ $VPNname=trim($_POST['VPNname']);
 $VPNpassword=trim($_POST['VPNpassword']);
 $conf=trim($_POST['conf']);
 
-exec("uci delete sabai.ovpn");
-exec("uci add sabai.ovpn=interface");
-exec("uci set sabai.ovpn.VPNname=\"" . $VPNname . "\"");
-exec("uci set sabai.ovpn.VPNpassword=\"" . $VPNpassword . "\"");
-exec("uci set sabai.ovpn.conf=\"" . $conf . "\"");
-exec("uci commit sabai");
+exec("uci $UCI_PATH delete sabai.ovpn");
+exec("uci $UCI_PATH add sabai.ovpn=interface");
+exec("uci $UCI_PATH set sabai.ovpn.VPNname=\"" . $VPNname . "\"");
+exec("uci $UCI_PATH set sabai.ovpn.VPNpassword=\"" . $VPNpassword . "\"");
+exec("uci $UCI_PATH set sabai.ovpn.conf=\"" . $conf . "\"");
+exec("uci $UCI_PATH commit sabai");
 
 function newfile(){
  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
@@ -28,6 +29,7 @@ function newfile(){
  $type = strrchr($file,".");
  file_put_contents('/etc/sabai/openvpn/auth-pass', '');
   exec("uci set openvpn.sabai.filetype=$type");
+  exec("uci commit");
 
  switch($type){
   case ".sh":

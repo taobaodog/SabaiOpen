@@ -48,6 +48,14 @@ make_filesystems() {
                 grub-editenv /mnt/grubenv set boot_entry=0
 		grub-editenv /mnt/grubenv set is_upgrade=0
                 umount /dev/sda5
+
+		echo "SABAI:> Creating directory configuration' storage."
+		mkdir /configs
+		mount -t ext4 /dev/sda6 /configs
+		mv /etc/config/sabai /configs
+		ln -s /configs/sabai /etc/config/sabai
+		ln -s /configs/ /www/configs
+		echo "SABAI:> Configuration Sabai is allocated."
         else
 		echo "SABAI:> Filesystems already created"
 		mount /dev/sda5 /mnt
@@ -68,7 +76,7 @@ make_filesystems() {
                 		fi
 				grub-editenv /mnt/grubenv set save_default=0
         		        grub-editenv /mnt/grubenv set is_upgrade=0
-				
+
 				umount /dev/sda5
 
 				mount /dev/sda1 /mnt
@@ -80,15 +88,14 @@ make_filesystems() {
                         	sed -i "s/Savedefault/savedefault/g" /mnt/boot/grub/grub.cfg
 				sed -i "s/tempstring/function savedefault/g" /mnt/boot/grub/grub.cfg
                         	umount /dev/sda1
-				if [ ! -d "/configs" ]; then
-					mkdir /configs
-				else
-					echo "SABAI:> /configs already exists."
-				fi
+
+				echo "SABAI:> Creating directory configuration' storage."
+				mkdir /configs
 				mount -t ext4 /dev/sda6 /configs
 				mv /etc/config/sabai /configs
 				ln -s /configs/sabai /etc/config/sabai
 				ln -s /configs/ /www/configs
+				echo "SABAI:> Configuration Sabai is allocated."
 			else
 				echo "SABAI:> Upgrade failed. Fallback to old kernel"
 				grub-editenv /mnt/grubenv set is_upgrade=0
@@ -100,7 +107,6 @@ make_filesystems() {
 			mount -t ext4 /dev/sda6 /configs
 		fi
         fi
-
 }
 
 start_service() {

@@ -1,6 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
+UCI_PATH="-c /configs"
 
 # send messages to log file but clear log file on each new setup of gw.sh
 rm /var/log/sabaigw.log; exec 2>&1; exec 1>/var/log/sabaigw.log;
@@ -28,8 +29,8 @@ _start(){
  [ -n "$wan_iface" ] && ([ -n "$wan_gateway" ] && [ "$wan_gateway" != "0.0.0.0" ]) && ip route add default via $wan_gateway dev $wan_iface table 1
  #ensure that accelerator IP is set
  if [ $(uci get sabai.general.ac_ip) = "" ]; then
-  uci set sabai.general.ac_ip=2
-  uci commit
+  uci $UCI_PATH set sabai.general.ac_ip=2
+  uci $UCI_PATH commit sabai
 fi
  # add route to the accelerator
  ip route add default via "$lan_prefix.$(uci get sabai.general.ac_ip)" dev br-lan table 3

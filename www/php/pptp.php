@@ -1,7 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // copyright 2014 Sabai Technology
-
+$UCI_PATH="-c /configs";
 $act=$_REQUEST['act'];
 $user=trim($_REQUEST['user']);
 $pass=trim($_REQUEST['pass']);
@@ -9,10 +9,10 @@ $server=trim($_REQUEST['server']);
 $serverip=trim(gethostbyname($server));
 
 // Set the Sabai config to reflect latest settings
-exec("uci set sabai.vpn.username=\"" . $user . "\"");
-exec("uci set sabai.vpn.password=\"" . $pass . "\"");
-exec("uci set sabai.vpn.server=\"" . $server . "\"");
-exec("uci commit sabai");
+exec("uci $UCI_PATH set sabai.vpn.username=\"" . $user . "\"");
+exec("uci $UCI_PATH set sabai.vpn.password=\"" . $pass . "\"");
+exec("uci $UCI_PATH set sabai.vpn.server=\"" . $server . "\"");
+exec("uci $UCI_PATH commit sabai");
 
 //execute the action and give response to calling page
 switch ($act) {
