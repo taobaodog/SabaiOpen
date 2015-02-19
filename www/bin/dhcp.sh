@@ -141,9 +141,6 @@ else
 fi
 
 # end
-
-
-
 #cleanup
 rm /tmp/table*
 
