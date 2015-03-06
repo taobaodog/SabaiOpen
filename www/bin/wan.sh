@@ -71,7 +71,7 @@ logger "wan script run and firewall restarted"
 
 if [ "$1" = "update" ]; then
 	config_file=sabai-new
-	action=$1;
+	action=$1
 	proto=$(uci get $config_file.wan.proto)
 else
 	proto=$1

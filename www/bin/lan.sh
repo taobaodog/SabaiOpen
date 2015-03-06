@@ -2,11 +2,7 @@
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
-if [ $# -ne 1 ]; then
-        action=save
-else
-        action=$1
-fi
+action=$1
 
 if [ $action = "update" ]; then
         config_file=sabai-new
@@ -21,15 +17,14 @@ uci set dhcp.lan.leasetime=$(uci get $config_file.dhcp.leasetime);
 uci set dhcp.lan.start=$(uci get $config_file.dhcp.start);
 uci set dhcp.lan.limit=$(uci get $config_file.dhcp.limit);
 uci commit dhcp;
+
 if [ $action = "update" ]; then
 	echo "network" >> /tmp/.restart_services
 else
 	/etc/init.d/network restart
 	logger "lan run and network restarted"
-	
 	# Send completion message back to UI
 	echo "res={ sabai: true, msg: 'LAN settings applied' }";
 fi
 
 ls >/dev/null 2>/dev/null 
-

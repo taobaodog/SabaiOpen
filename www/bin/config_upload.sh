@@ -58,10 +58,10 @@ for i in $CONFIG_SECTIONS; do
 					/www/bin/ovpn.sh stop
 					/www/bin/pptp.sh start update
 				elif [ "$proto" = "ovpn" ]; then
-					/www/bin/pptp.sh stop
-					/www/bin/ovpn.sh start update
+					/www/bin/pptp.sh stop update
+					/www/bin/ovpn.sh update
 				else
-					/www/bin/ovpn.sh stop update
+					/www/bin/ovpn.sh stop
 					/www/bin/pptp.sh stop update
 				fi
 				echo "vpn" >> /tmp/.etc_service
