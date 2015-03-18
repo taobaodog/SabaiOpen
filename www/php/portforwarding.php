@@ -9,7 +9,7 @@ file_put_contents($file, $aaData);
 $command="sh /www/bin/pftable.sh";
 exec($command);
 #implement the table
-$command="sh /www/bin/portforwarding.sh";
+$command="sh /www/bin/portforwarding.sh save";
 exec($command);
  
 // Send completion message back to UI

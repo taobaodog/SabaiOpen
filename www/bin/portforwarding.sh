@@ -3,39 +3,40 @@
 # copyright 2014 Sabai Technology
 # iptables rules are stored in /etc/sabai/firewall.settings
 
+#Include JSON parser for OpenWrt
+. /usr/share/libubox/jshn.sh
+
 #TODO remove debug echos
 
-if [ $# -ne 1 ]; then
-        action=save
-else
-        action=$1
-fi
+action=$1
 
 if [ $action = "update" ]; then
         config_file=sabai-new
 else
-        config_file=sabai
+	config_file=sabai
 fi
 
-uci get $config_file.pf.table > /tmp/tmppftable
+uci get $config_file.pf.tablejs > /tmp/tmppftable
+data=$(cat /tmp/tmppftable)
+json_load "$data"
+json_select 1
+json_select ..
+json_get_keys keys
+num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
 
-num_items=$(/www/bin/jsawk 'return this.aaData.length' < /tmp/tmppftable);
 i=1
-
-while [ $i -le $num_items ]
-do	
+while [ $i -le $num_items ]; do
 	echo "processing rule  #$i:"
-	pfenable=$(/www/bin/jsawk 'return this.aaData[0].status' < /tmp/tmppftable);
-	protocol=$(/www/bin/jsawk 'return this.aaData[0].protocol' < /tmp/tmppftable);
-	gateway=$(/www/bin/jsawk 'return this.aaData[0].gateway' < /tmp/tmppftable);
-	src=$(/www/bin/jsawk 'return this.aaData[0].src' < /tmp/tmppftable);
-	ext=$(/www/bin/jsawk 'return this.aaData[0].ext' < /tmp/tmppftable);
-	int=$(/www/bin/jsawk 'return this.aaData[0].int' < /tmp/tmppftable);
-	address=$(/www/bin/jsawk 'return this.aaData[0].address' < /tmp/tmppftable);
-	description=$(/www/bin/jsawk 'return this.aaData[0].description' < /tmp/tmppftable);
+	json_select $i
+        json_get_var pfenable status
+        json_get_var protocol protocol
+        json_get_var gateway gateway
+        json_get_var src src        
+        json_get_var ext ext        
+        json_get_var int int        
+        json_get_var address address
+        json_get_var description description
 
-	echo "src=$src"
-	
 	case $protocol in
 		Both) protocol="tcp udp" ;;
 		UDP) protocol="udp"  ;;
@@ -43,7 +44,6 @@ do
 
 		*) echo "INVALID PROTOCOL: you're not supposed to get here." ;;
 	esac	
-	echo "protocol=$protocol"
 
 	case $gateway in
 		WAN) gateway="wan" ;;
@@ -53,15 +53,15 @@ do
 
 		*) echo "INVALID GATEWAY: you're not supposed to get here." ;;
 	esac	
-	echo "gateway=$gateway"
 
 	if [ $pfenable = "on" ]; then
 		echo "condition 1" >> /tmp/portforwarding
-      	uci add firewall redirect
-      	#FIXME dummy name, generate correct name
-      	uci set firewall.@redirect[${i}].name='dummyname'
-      	#FIXME 'tcpudp' or 'tcp udp'
-      	uci set firewall.@redirect[${i}].proto='$protocol'
+		uci add firewall redirect
+      		#FIXME dummy name, generate correct name
+		uci set firewall.@redirect[$i].name='dummyname'
+      		#FIXME 'tcpudp' or 'tcp udp'
+		uci set firewall.@redirect[$i].proto='$protocol'
+	fi
       	if [ $gateway == "wan" ]; then
       		uci set firewall.@redirect[${i}].src='wan'
       		uci set firewall.@redirect[${i}].dest='lan'
@@ -78,22 +78,22 @@ do
       		#TODO openvpn setup
       		#uci set openvpn.sabai....
       	fi
-		if [ "$src" != "Click to edit" ]; then
-			uci set firewall.@redirect[${i}].src_ip='$src' #optional parameters
-		fi
+	if [ "$src" != "Click to edit" ]; then
+		uci set firewall.@redirect[${i}].src_ip='$src' #optional parameters
 		uci set firewall.@redirect[${i}].dest_ip='$address'
 		uci set firewall.@redirect[${i}].dest_port='$ext' #ext port
-		
 	else
 		uci delete firewall.@redirect[${i}] 
 		echo "condition 2" >> /tmp/portforwarding
 		break
 	fi
+
+	json_select .. 
 	i=$(( $i + 1 ))
 done
 
 #cleanup
-#rm /tmp/tmppftable
+rm /tmp/tmppftable
 
 echo "exiting"
 exit 0
