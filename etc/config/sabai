@@ -66,6 +66,7 @@ config settings 'upnp'
 config settings 'pf'
 	option json 'test'
 	option table '{"aaData":[{"status":"on","protocol":"Both","gateway":"WAN","src":"","ext":"18000","int":"18000","address":"","description":"Test Data4"}]}'
+	option tablejs	'{"1":{"status":"on","protocol":"Both","gateway":"WAN","src":"","ext":"18000","int":"18000","address":"","description":"Test Data4"}}'
 
 config settings 'wlradio0'
 	option mode 'ap'
