@@ -10,6 +10,8 @@
 #on or off according to user input 
 ###################################################
 
+UCI_PATH="-c /configs"
+
 ###################################
 #SCRIPT HELP 
 ###################################
@@ -19,31 +21,41 @@
 ###############
 if [ $# -ne 4 ]; then
 	action=$1
+	config_file=sabai-new
+	icmp=$(uci get $config_file.firewall.icmp)
+	multicast=$(uci get $config_file.firewall.multicast)                                                                                                
+        cookies=$(uci get $config_file.firewall.cookies)                                                                                                  
+        wanroute=$(uci get $config_file.firewall.wanroute)	
 else
 	action=$save
+	config_file=sabai 
 	cat << 'EOF'
    
-    this script for setting four parameters
-    usage: 
-       	 #./firewall.sh $icmp $multicast $cookies $wanroute 
-    Parameters: 
-    	[icmp]  on/off this to enable/disablke ping           
-    	[multicast] on/off this is to enable/disable udp multicast  
-    	[cookies] on/off this to enable/disable syn-cookie 
-    	[wanroute] this is to enable/disable external access to router  
+this script for setting four parameters
+usage: 
+#./firewall.sh $icmp $multicast $cookies $wanroute 
+Parameters: 
+[icmp]  on/off this to enable/disable ping           
+[multicast] on/off this is to enable/disable udp multicast  
+[cookies] on/off this to enable/disable syn-cookie 
+[wanroute] this is to enable/disable external access to router  
                                        
-	Examples:
-		to run use the following 
-		#firewall.sh on off on off  
+Examples:
+to run use the following 
+#firewall.sh on off on off  
   
-	EOF
-	exit 
-	fi
+EOF
 	
-	icmp=$1;
-	multicast=$2;
-	cookies=$3;
-	wanroute=$4;
+	icmp=$1
+	multicast=$2
+	cookies=$3
+	wanroute=$4
+
+	uci set $UCI_PATH $config_file.firewall.icmp=$icmp
+	uci set $UCI_PATH $config_file.firewall.multicast=$multicast
+	uci set $UCI_PATH $config_file.firewall.cookies=$cookies
+	uci set $UCI_PATH $config_file.firewall.wanroute=$wanroute
+	uci $UCI_PATH commit $config_file
 fi
 
 #wanport=$(uci get network.wan.ifname);
@@ -118,30 +130,25 @@ then
 	opkg install igmpproxy
 
 	#2-enableigmpsnooping in /etc/config/network 
-	cat /etc/config/network | grep -q igmp_snooping
-	if [ $? -eq 0 ]
-	then
-		sed -i '/igmp_snooping/d' /etc/config/network
-		sed -i '/lan/a        option igmp_snooping  1' /etc/config/network
-	else
-		sed -i '/lan/a        option igmp_snooping  1' /etc/config/network
-	fi
+	uci set network.lan.igmp_snooping=1
+	uci commit network 
 
 	#3-configure firewall to accept igmp 
-	cat /etc/config/firewall  | grep -q igmp 
-	if [ $? -ne 0 ]
-	then 
-		echo "config rule
-		option src      wan
-		option proto    igmp
-		option target   ACCEPT
-
-		config rule
-			option src      wan
-			option proto    udp
-			option dest     lan
-			option target   ACCEPT
-			option family   ipv4" >> /etc/config/firewall 
+    rule=$(uci show firewall | grep =igmp | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	if [ "$rule" = "" ]; then                                                                              
+		uci add firewall rule
+		uci set firewall.@rule[-1].src=wan
+		uci set firewall.@rule[-1].proto=igmp
+		uci set firewall.@rule[-1].target=ACCEPT	
+		uci commit firewall
+		uci add firewall rule                                                                                
+                uci set firewall.@rule[-1].src=wan                                                                   
+                uci set firewall.@rule[-1].proto="tcpudp"
+		uci set firewall.@rule[-1].dest=lan
+		uci set firewall.@rule[-1].dest_port=1024:65535                                                                
+                uci set firewall.@rule[-1].target=ACCEPT
+		uci set firewall.@rule[-1].family=ipv4 
+		uci commit firewall
 	else 
 		echo -n 
 	fi
@@ -158,7 +165,13 @@ then
 elif [ "$multicast" = "off" ]
 then
 	echo "udp multicast  disabled"
-	sed -i '/igmp_snooping/d' /etc/config/network
+	uci set network.lan.igmp_snooping=0
+	uci commit network
+	rule=$(uci show firewall | grep =igmp | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	# removing 2 rules, which was added for enabling
+	uci delete firewall.@rule["$rule"]
+	uci delete firewall.@rule["$rule"]
+	uci commit firewall
 else
 	echo "ERROR invalid multicast only on/off Accepted"
 fi
@@ -170,33 +183,22 @@ if [ "$cookies" = "on" ]
 then
 	#turn on Syn cookie 
 	echo "Syn-Cookies is on"
-	#checking for string in default then delet it after that append it n default part 
-	cat /etc/config/firewall | grep -q tcp_syncookies
-	if [ $? -eq 0 ] 
-	then 
-		sed -i '/tcp_syncookies/d' /etc/config/firewall 
-		sed -i '/defaults/a        option tcp_syncookies   1' /etc/config/firewall       
-	else
-		sed -i '/defaults/a        option tcp_syncookies   1' /etc/config/firewall 
-	fi 
+	#turn on Syn cookie                                                                          
+        echo "Syn-Cookies is on"                                                                                     
+        #setting tcp syncookies to 1
+	uci set firewall.@defaults[].tcp_syncookies=1
           
 elif [ "$cookies" = "off" ]
 then
-	echo "Syn-Cookies is off"
-	cat /etc/config/firewall | grep -q tcp_syncookies 
-	if [ $? -eq 0 ] 
-	then 
-		sed -i '/tcp_syncookies/d' /etc/config/firewall
-		sed -i '/defaults/a        option tcp_syncookies   0' /etc/config/firewall
-	else
-		sed -i '/defaults/a        option tcp_syncookies   0' /etc/config/firewall   
-	fi   
+	echo "Syn-Cookies is off"                                                         
+	#setting tcp syncookies to 0                                                                                 
+        uci set firewall.@defaults[].tcp_syncookies=0  
 else
 	echo "ERROR invalid cookies only on/off Accepted"   
 fi
 
 ##################
-external wan Route
+#external wan Route
 ##################
 
 #allow wan route input
