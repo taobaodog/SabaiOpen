@@ -145,8 +145,7 @@ then
                 uci set firewall.@rule[-1].src=wan                                                                   
                 uci set firewall.@rule[-1].proto="tcpudp"
 		uci set firewall.@rule[-1].dest=lan
-		uci set firewall.@rule[-1].dest_port=1024:65535                                                                
-                uci set firewall.@rule[-1].target=ACCEPT
+        uci set firewall.@rule[-1].target=ACCEPT
 		uci set firewall.@rule[-1].family=ipv4 
 		uci commit firewall
 	else 
@@ -215,8 +214,10 @@ fi
 
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
+	echo "network" >> /tmp/.restart_services
 else
-	/etc/init.d/firewall restart 
+	/etc/init.d/firewall restart
+	/etc/init.d/network restart
 	logger "firewall run and restarted"
 	# restart any services like firewall or network that need it.
 fi

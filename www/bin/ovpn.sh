@@ -33,6 +33,7 @@ _start(){
 	if [ ! -e /etc/sabai/openvpn/ovpn.current ]; then
 		_return 0 "No file loaded."
 	fi
+	echo -n
 	# stop other vpn's if running
 	if [ $status != "none" ]; then
 		uci $UCI_PATH commit sabai
@@ -50,15 +51,18 @@ _start(){
 	uci delete network.openvpn
 	forward=$(uci show firewall | grep =sabai | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 	uci delete firewall.@forwarding["$forward"]
+	uci commit firewall
 	uci set openvpn.sabai.log='/www/libs/data/stat/ovpn.log'
 	uci set openvpn.sabai.enabled=1
+	uci commit openvpn
 	uci set network.openvpn=interface
 	uci set network.openvpn.ifname='tun0'
 	uci set network.openvpn.proto='ovpn'
+	uci commit network
 	uci add firewall forwarding
-	uci add firewall@forwarding[-1].src=lan
-	uci add firewall@forwarding[-1].dest=sabai
-	uci commit
+	uci set firewall.@forwarding[-1].src=lan
+	uci set firewall.@forwarding[-1].dest=sabai
+	uci commit firewall
 	uci $UCI_PATH set sabai.vpn.status=Started
 	uci $UCI_PATH set sabai.vpn.proto=ovpn
 	uci $UCI_PATH commit sabai
@@ -87,7 +91,7 @@ _save(){
 
 _clear(){
 		uci set openvpn.sabai.enabled=0
-		uci set openvpn.sabai.filename="none"
+		uci set openvpn.sabai.filename=none
 		uci set network.vpn.proto=none
 		uci commit
 		uci $UCI_PATH set sabai.vpn.status=none
