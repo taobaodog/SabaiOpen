@@ -48,7 +48,10 @@ config settings 'time'
 	option servers '3.openwrt.pool.ntp.org 2.openwrt.pool.ntp.org 1.openwrt.pool.ntp.org'
 
 config settings 'firewall'
-	option wanroute 'on'
+	option icmp 'off'
+	option multicast 'off'
+	option cookies 'off'
+	option wanroute 'off'
 
 config settings 'dmz'
 	option destination '192.168.199.248'

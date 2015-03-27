@@ -1,0 +1,666 @@
+From d7fedeb9e17d71980eb290b52090fc1ae568c14d Mon Sep 17 00:00:00 2001
+From: Kateryna Pietukhova <kateryna.pietukhova@sirisoftware.com>
+Date: Wed, 25 Mar 2015 11:16:41 +0200
+Subject: [PATCH 1/1] Added UpNp services. #90414860
+
+---
+ package/net/miniupnpc/Makefile                     |   73 +++++++
+ .../miniupnpc/patches/100-no_minixml_test.patch    |   13 ++
+ .../net/miniupnpc/patches/200-miniupnpc_desc.patch |   11 ++
+ package/net/miniupnpd/Makefile                     |   70 +++++++
+ package/net/miniupnpd/files/firewall.include       |   55 ++++++
+ package/net/miniupnpd/files/miniupnpd.defaults     |   13 ++
+ package/net/miniupnpd/files/miniupnpd.hotplug      |   41 ++++
+ package/net/miniupnpd/files/miniupnpd.init         |  208 ++++++++++++++++++++
+ package/net/miniupnpd/files/upnpd.config           |   26 +++
+ package/net/miniupnpd/patches/100-no-ssl.patch     |   12 ++
+ .../net/miniupnpd/patches/102-ipv6-ext-port.patch  |   10 +
+ .../patches/103-no-ipv6-autodetection.patch        |   27 +++
+ 12 files changed, 559 insertions(+)
+ create mode 100644 package/net/miniupnpc/Makefile
+ create mode 100644 package/net/miniupnpc/patches/100-no_minixml_test.patch
+ create mode 100644 package/net/miniupnpc/patches/200-miniupnpc_desc.patch
+ create mode 100644 package/net/miniupnpd/Makefile
+ create mode 100644 package/net/miniupnpd/files/firewall.include
+ create mode 100644 package/net/miniupnpd/files/miniupnpd.defaults
+ create mode 100644 package/net/miniupnpd/files/miniupnpd.hotplug
+ create mode 100644 package/net/miniupnpd/files/miniupnpd.init
+ create mode 100644 package/net/miniupnpd/files/upnpd.config
+ create mode 100644 package/net/miniupnpd/patches/100-no-ssl.patch
+ create mode 100644 package/net/miniupnpd/patches/102-ipv6-ext-port.patch
+ create mode 100644 package/net/miniupnpd/patches/103-no-ipv6-autodetection.patch
+
+diff --git a/package/net/miniupnpc/Makefile b/package/net/miniupnpc/Makefile
+new file mode 100644
+index 0000000..fbf6222
+--- /dev/null
++++ b/package/net/miniupnpc/Makefile
+@@ -0,0 +1,73 @@
++#
++# Copyright (C) 2010-2012 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=miniupnpc
++PKG_VERSION:=1.9
++PKG_RELEASE:=1
++
++PKG_SOURCE_URL:=http://miniupnp.free.fr/files
++PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
++PKG_MD5SUM:=5ef3ba321e6df72d6519b728b292073e
++PKG_MAINTAINER:=Steven Barth <cyrus@openwrt.org>
++
++PKG_INSTALL:=1
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/miniupnpc/Default
++  TITLE:=Lightweight UPnP
++  URL:=http://miniupnp.tuxfamily.org/
++endef
++
++define Package/miniupnpc
++  $(call Package/miniupnpc/Default)
++  SECTION:=net
++  CATEGORY:=Network
++  SUBMENU:=Firewall
++  TITLE+= client
++  DEPENDS:=+libminiupnpc
++endef
++
++define Package/libminiupnpc
++  $(call Package/miniupnpc/Default)
++  SECTION:=libs
++  CATEGORY:=Libraries
++  TITLE+= library
++endef
++
++TARGET_CFLAGS += $(FPIC)
++
++MAKE_FLAGS += \
++	OS="Linux" \
++
++define Build/InstallDev
++	$(INSTALL_DIR) $(1)/usr/include/miniupnpc
++	$(CP) \
++		$(PKG_INSTALL_DIR)/usr/include/miniupnpc/*.h \
++		$(1)/usr/include/miniupnpc/
++	$(INSTALL_DIR) $(1)/usr/lib
++	$(CP) \
++		$(PKG_INSTALL_DIR)/usr/lib/*.{so*,a} \
++		$(1)/usr/lib/
++endef
++
++define Package/miniupnpc/install
++	$(INSTALL_DIR) $(1)/usr/bin
++	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/upnpc $(1)/usr/bin/
++endef
++
++define Package/libminiupnpc/install
++	$(INSTALL_DIR) $(1)/usr/lib
++	$(INSTALL_BIN) \
++		$(PKG_INSTALL_DIR)/usr/lib/libminiupnpc.so.* \
++		$(1)/usr/lib/
++endef
++
++$(eval $(call BuildPackage,miniupnpc))
++$(eval $(call BuildPackage,libminiupnpc))
+diff --git a/package/net/miniupnpc/patches/100-no_minixml_test.patch b/package/net/miniupnpc/patches/100-no_minixml_test.patch
+new file mode 100644
+index 0000000..93f6772
+--- /dev/null
++++ b/package/net/miniupnpc/patches/100-no_minixml_test.patch
+@@ -0,0 +1,13 @@
++--- a/Makefile
+++++ b/Makefile
++@@ -151,8 +151,8 @@ installpythonmodule3:	pythonmodule3
++ 	python3 setup.py install
++ 
++ validateminixml:	minixmlvalid
++-	@echo "minixml validation test"
++-	./minixmlvalid
+++	@echo "(skipping) minixml validation test"
+++#	./minixmlvalid
++ 	touch $@
++ 
++ validateminiwget:	testminiwget minihttptestserver testminiwget.sh
+diff --git a/package/net/miniupnpc/patches/200-miniupnpc_desc.patch b/package/net/miniupnpc/patches/200-miniupnpc_desc.patch
+new file mode 100644
+index 0000000..320707e
+--- /dev/null
++++ b/package/net/miniupnpc/patches/200-miniupnpc_desc.patch
+@@ -0,0 +1,11 @@
++--- a/upnpcommands.c
+++++ b/upnpcommands.c
++@@ -367,7 +367,7 @@ UPNP_AddPortMapping(const char * control
++ 	AddPortMappingArgs[5].elt = "NewEnabled";
++ 	AddPortMappingArgs[5].val = "1";
++ 	AddPortMappingArgs[6].elt = "NewPortMappingDescription";
++-	AddPortMappingArgs[6].val = desc?desc:"libminiupnpc";
+++	AddPortMappingArgs[6].val = desc?desc:"miniupnpc";
++ 	AddPortMappingArgs[7].elt = "NewLeaseDuration";
++ 	AddPortMappingArgs[7].val = leaseDuration?leaseDuration:"0";
++ 	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+diff --git a/package/net/miniupnpd/Makefile b/package/net/miniupnpd/Makefile
+new file mode 100644
+index 0000000..b890c8b
+--- /dev/null
++++ b/package/net/miniupnpd/Makefile
+@@ -0,0 +1,70 @@
++#
++# Copyright (C) 2006-2014 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=miniupnpd
++PKG_VERSION:=1.9.20141209
++PKG_RELEASE:=1
++
++PKG_SOURCE_URL:=http://miniupnp.free.fr/files
++PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
++PKG_MD5SUM:=e9e53869bb725e931cae74b20d4a39be
++
++PKG_MAINTAINER:=Markus Stenberg <fingon@iki.fi>
++PKG_LICENSE:=BSD-3-Clause
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/miniupnpd
++  SECTION:=net
++  CATEGORY:=Network
++  DEPENDS:=+iptables +libip4tc +IPV6:libip6tc +IPV6:ip6tables +libnfnetlink
++  TITLE:=Lightweight UPnP IGD, NAT-PMP & PCP daemon
++  SUBMENU:=Firewall
++  URL:=http://miniupnp.free.fr/
++endef
++
++define Package/miniupnpd/conffiles
++/etc/config/upnpd
++endef
++
++define Package/miniupnpd/postinst
++#!/bin/sh
++
++if [ -z "$$IPKG_INSTROOT" ]; then
++  ( . /etc/uci-defaults/99-miniupnpd )
++  rm -f /etc/uci-defaults/99-miniupnpd
++fi
++
++exit 0
++endef
++
++define Build/Prepare
++	$(call Build/Prepare/Default)
++	echo "OpenWrt/$(OPENWRTVERSION)" | tr \(\)\  _ >$(PKG_BUILD_DIR)/os.openwrt
++endef
++
++MAKE_FLAGS += \
++	TEST=0 \
++	LIBS="" \
++	CC="$(TARGET_CC) -DIPTABLES_143 -lnfnetlink -lip4tc $(if $(CONFIG_IPV6),-lip6tc)" \
++	CONFIG_OPTIONS="$(if $(CONFIG_IPV6),--ipv6) --leasefile" \
++	-f Makefile.linux \
++	miniupnpd
++
++define Package/miniupnpd/install
++	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/init.d $(1)/etc/config $(1)/etc/uci-defaults $(1)/etc/hotplug.d/iface $(1)/usr/share/miniupnpd
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/miniupnpd $(1)/usr/sbin/miniupnpd
++	$(INSTALL_BIN) ./files/miniupnpd.init $(1)/etc/init.d/miniupnpd
++	$(INSTALL_CONF) ./files/upnpd.config $(1)/etc/config/upnpd
++	$(INSTALL_DATA) ./files/miniupnpd.hotplug $(1)/etc/hotplug.d/iface/50-miniupnpd
++	$(INSTALL_DATA) ./files/miniupnpd.defaults $(1)/etc/uci-defaults/99-miniupnpd
++	$(INSTALL_DATA) ./files/firewall.include $(1)/usr/share/miniupnpd/firewall.include
++endef
++
++$(eval $(call BuildPackage,miniupnpd))
+diff --git a/package/net/miniupnpd/files/firewall.include b/package/net/miniupnpd/files/firewall.include
+new file mode 100644
+index 0000000..818af9d
+--- /dev/null
++++ b/package/net/miniupnpd/files/firewall.include
+@@ -0,0 +1,55 @@
++#!/bin/sh
++# miniupnpd integration for firewall3
++
++IP6TABLES=/usr/sbin/ip6tables
++
++iptables -t filter -N MINIUPNPD 2>/dev/null
++iptables -t nat -N MINIUPNPD 2>/dev/null
++
++[ -x $IP6TABLES ] && $IP6TABLES -t filter -N MINIUPNPD 2>/dev/null
++
++. /lib/functions/network.sh
++
++ADDED=0
++
++add_extzone_rules() {
++    local ext_zone=$1
++
++    [ -z "$ext_zone" ] && return
++
++    # IPv4 - due to NAT, need to add both to nat and filter table
++    iptables -t filter -I zone_${ext_zone}_forward -j MINIUPNPD
++    iptables -t nat -I zone_${ext_zone}_prerouting -j MINIUPNPD
++
++    # IPv6 if available - filter only
++    [ -x $IP6TABLES ] && {
++        $IP6TABLES -t filter -I zone_${ext_zone}_forward -j MINIUPNPD
++    }
++    ADDED=$(($ADDED + 1))
++}
++
++# By default, user configuration is king.
++
++for ext_iface in $(uci -q get upnpd.config.external_iface); do
++    add_extzone_rules $(fw3 -q network "$ext_iface")
++done
++
++add_extzone_rules $(uci -q get upnpd.config.external_zone)
++
++[ ! $ADDED = 0 ] && exit 0
++
++
++# If really nothing is available, resort to network_find_wan{,6} and
++# assume external interfaces all have same firewall zone.
++
++# (This heuristic may fail horribly, in case of e.g. multihoming, so
++# please set external_zone in that case!)
++
++network_find_wan wan_iface
++network_find_wan6 wan6_iface
++
++for ext_iface in $wan_iface $wan6_iface; do
++    # fw3 -q network fails on sub-interfaces => map to device first
++    network_get_device ext_device $ext_iface
++    add_extzone_rules $(fw3 -q device "$ext_device")
++done
+diff --git a/package/net/miniupnpd/files/miniupnpd.defaults b/package/net/miniupnpd/files/miniupnpd.defaults
+new file mode 100644
+index 0000000..7271389
+--- /dev/null
++++ b/package/net/miniupnpd/files/miniupnpd.defaults
+@@ -0,0 +1,13 @@
++#!/bin/sh
++
++uci -q batch <<-EOT
++	delete firewall.miniupnpd
++	set firewall.miniupnpd=include
++	set firewall.miniupnpd.type=script
++	set firewall.miniupnpd.path=/usr/share/miniupnpd/firewall.include
++	set firewall.miniupnpd.family=any
++	set firewall.miniupnpd.reload=1
++	commit firewall
++EOT
++
++exit 0
+diff --git a/package/net/miniupnpd/files/miniupnpd.hotplug b/package/net/miniupnpd/files/miniupnpd.hotplug
+new file mode 100644
+index 0000000..65bc500
+--- /dev/null
++++ b/package/net/miniupnpd/files/miniupnpd.hotplug
+@@ -0,0 +1,41 @@
++#!/bin/sh
++
++/etc/init.d/miniupnpd enabled || exit 0
++
++. /lib/functions/service.sh
++
++# If miniupnpd is not running:
++# - check on _any_ event (even updates may contribute to network_find_wan*)
++
++# If miniupnpd _is_ running:
++# - check only on ifup (otherwise lease updates etc would cause
++#   miniupnpd state loss)
++
++[ ! "$ACTION" = "ifup" ] && service_check /usr/sbin/miniupnpd && exit 0
++
++local iface
++local ifname
++local tmpconf="/var/etc/miniupnpd.conf"
++local extiface=$(uci get upnpd.config.external_iface)
++local extzone=$(uci get upnpd.config.external_zone)
++
++. /lib/functions/network.sh
++
++for iface in $(uci get upnpd.config.internal_iface); do
++    network_get_device device $iface
++    [ "$DEVICE" = "$device" ] && /etc/init.d/miniupnpd restart && exit 0
++done
++
++
++if [ -z "$extiface" ] ; then
++  # manual external zone (if dynamically find interfaces
++  # belonging to it) overrides network_find_wan*
++  if [ -n "$extzone" ] ; then
++    ifname=$(fw3 -q zone $extzone | head -1)
++  fi
++  [ -n "$extiface" ] || network_find_wan extiface
++  [ -n "$extiface" ] || network_find_wan6 extiface
++fi
++
++[ -n "$ifname" ] || network_get_device ifname ${extiface}
++grep -q "ext_ifname=$ifname" $tmpconf || /etc/init.d/miniupnpd restart
+diff --git a/package/net/miniupnpd/files/miniupnpd.init b/package/net/miniupnpd/files/miniupnpd.init
+new file mode 100644
+index 0000000..79def5d
+--- /dev/null
++++ b/package/net/miniupnpd/files/miniupnpd.init
+@@ -0,0 +1,208 @@
++#!/bin/sh /etc/rc.common
++# Copyright (C) 2006-2014 OpenWrt.org
++
++START=95
++STOP=15
++
++SERVICE_USE_PID=1
++
++upnpd_get_port_range() {
++	local _var="$1"; shift
++	local _val
++
++	config_get _val "$@"
++
++	case "$_val" in
++		[0-9]*[:-][0-9]*)
++			export -n -- "${_var}_start=${_val%%[:-]*}"
++			export -n -- "${_var}_end=${_val##*[:-]}"
++		;;
++		[0-9]*)
++			export -n -- "${_var}_start=$_val"
++			export -n -- "${_var}_end="
++		;;
++	esac
++}
++
++conf_rule_add() {
++	local cfg="$1"
++	local tmpconf="$2"
++	local action external_port_start external_port_end int_addr
++	local internal_port_start internal_port_end
++
++	config_get action "$cfg" action "deny"               # allow or deny
++	upnpd_get_port_range "ext" "$cfg" ext_ports "0-65535" # external ports: x, x-y, x:y
++	config_get int_addr "$cfg" int_addr "0.0.0.0/0"       # ip or network and subnet mask (internal)
++	upnpd_get_port_range "int" "$cfg" int_ports "0-65535" # internal ports: x, x-y, x:y or range
++
++	# Make a single IP IP/32 so that miniupnpd.conf can use it.
++	case "$int_addr" in
++		*/*) ;;
++		*) int_addr="$int_addr/32" ;;
++	esac
++
++	echo "${action} ${ext_start}${ext_end:+-}${ext_end} ${int_addr} ${int_start}${int_end:+-}${int_end}" >>$tmpconf
++}
++
++upnpd_write_bool() {
++	local opt="$1"
++	local def="${2:-0}"
++	local alt="$3"
++	local val
++
++	config_get_bool val config "$opt" "$def"
++	if [ "$val" -eq 0 ]; then
++		echo "${alt:-$opt}=no" >> $tmpconf
++	else
++		echo "${alt:-$opt}=yes" >> $tmpconf
++	fi
++}
++
++boot() {
++	return
++}
++
++start() {
++	config_load "upnpd"
++	local extiface intiface upload download logging secure enabled natpmp
++	local extip port usesysuptime conffile serial_number model_number
++	local uuid notify_interval presentation_url enable_upnp
++	local upnp_lease_file clean_ruleset_threshold clean_ruleset_interval
++        local ipv6_listening_ip
++
++	config_get extiface config external_iface
++	config_get extzone config external_zone
++	config_get intiface config internal_iface
++	config_get extip config external_ip
++	config_get port config port 5000
++	config_get upload   config upload
++	config_get download config download
++	config_get_bool logging config log_output 0
++	config_get conffile config config_file
++	config_get serial_number config serial_number
++	config_get model_number config model_number
++	config_get uuid config uuid
++	config_get notify_interval config notify_interval
++	config_get presentation_url config presentation_url
++	config_get upnp_lease_file config upnp_lease_file
++	config_get clean_ruleset_threshold config clean_ruleset_threshold
++	config_get clean_ruleset_interval config clean_ruleset_interval
++	config_get ipv6_listening_ip config ipv6_listening_ip
++
++	local args
++
++	. /lib/functions/network.sh
++
++	local ifname
++
++        # manual external interface overrides everything
++        if [ -z "$extiface" ] ; then
++            # manual external zone (if dynamically find interfaces
++            # belonging to it) overrides network_find_wan*
++            if [ -n "$extzone" ] ; then
++                ifname=$(fw3 -q zone $extzone | head -1)
++            fi
++            [ -n "$extiface" ] || network_find_wan extiface
++            [ -n "$extiface" ] || network_find_wan6 extiface
++        fi
++
++	[ -n "$ifname" ] || network_get_device ifname ${extiface}
++
++	if [ -n "$conffile" ]; then
++		args="-f $conffile"
++	else
++		local tmpconf="/var/etc/miniupnpd.conf"
++		args="-f $tmpconf"
++		mkdir -p /var/etc
++
++		echo "ext_ifname=$ifname" >$tmpconf
++
++		[ -n "$extip" ] && \
++			echo "ext_ip=$extip" >>$tmpconf
++
++		local iface
++		for iface in ${intiface:-lan}; do
++			local device
++			network_get_device device "$iface" && {
++				echo "listening_ip=$device" >>$tmpconf
++			}
++		done
++
++		[ "$port" != "auto" ] && \
++			echo "port=$port" >>$tmpconf
++
++		config_load "upnpd"
++		upnpd_write_bool enable_natpmp 1
++		upnpd_write_bool enable_upnp 1
++		upnpd_write_bool secure_mode 1
++		upnpd_write_bool pcp_allow_thirdparty 0
++		upnpd_write_bool system_uptime 1
++
++		[ -n "$upnp_lease_file" ] && \
++			echo "lease_file=$upnp_lease_file" >>$tmpconf
++
++		[ -n "$upload" -a -n "$download" ] && {
++			echo "bitrate_down=$(($download * 1024 * 8))" >>$tmpconf
++			echo "bitrate_up=$(($upload * 1024 * 8))" >>$tmpconf
++		}
++
++		[ -n "${presentation_url}" ] && \
++			echo "presentation_url=${presentation_url}" >>$tmpconf
++
++		[ -n "${notify_interval}" ] && \
++			echo "notify_interval=${notify_interval}" >>$tmpconf
++
++		[ -n "${clean_ruleset_threshold}" ] && \
++			echo "clean_ruleset_threshold=${clean_ruleset_threshold}" >>$tmpconf
++
++		[ -n "${clean_ruleset_interval}" ] && \
++			echo "clean_ruleset_interval=${clean_ruleset_interval}" >>$tmpconf
++
++		[ -n "${ipv6_listening_ip}" ] && \
++			echo "ipv6_listening_ip=${ipv6_listening_ip}" >>$tmpconf
++
++		[ -z "$uuid" ] && {
++			uuid="$(cat /proc/sys/kernel/random/uuid)"
++			uci set upnpd.config.uuid=$uuid
++			uci commit upnpd
++		}
++
++		[ "$uuid" = "nocli" ] || \
++			echo "uuid=$uuid" >>$tmpconf
++
++		[ -n "${serial_number}" ] && \
++			echo "serial=${serial_number}" >>$tmpconf
++
++		[ -n "${model_number}" ] && \
++			echo "model_number=${model_number}" >>$tmpconf
++
++	    config_foreach conf_rule_add perm_rule "$tmpconf"
++	fi
++
++
++	if [ -n "$ifname" ]; then
++		# start firewall
++		iptables -L MINIUPNPD >/dev/null 2>/dev/null || fw3 reload
++
++		if [ "$logging" = "1" ]; then
++			SERVICE_DAEMONIZE=1 \
++			service_start /usr/sbin/miniupnpd $args -d
++		else
++			SERVICE_DAEMONIZE= \
++			service_start /usr/sbin/miniupnpd $args
++		fi
++	else
++		logger -t "upnp daemon" "external interface not found, not starting"
++	fi
++}
++
++stop() {
++	service_stop /usr/sbin/miniupnpd
++
++	iptables -t nat -F MINIUPNPD 2>/dev/null
++	iptables -t filter -F MINIUPNPD 2>/dev/null
++
++        [ -x /usr/sbin/ip6tables ] && {
++	    ip6tables -t filter -F MINIUPNPD 2>/dev/null
++        }
++}
+diff --git a/package/net/miniupnpd/files/upnpd.config b/package/net/miniupnpd/files/upnpd.config
+new file mode 100644
+index 0000000..56cde57
+--- /dev/null
++++ b/package/net/miniupnpd/files/upnpd.config
+@@ -0,0 +1,26 @@
++config upnpd config
++	option enable_natpmp	1
++	option enable_upnp	1
++	option secure_mode	1
++	option log_output	0
++	option download 	1024
++	option upload   	512
++        #by default, looked up dynamically from ubus
++	#option external_iface	wan
++	option internal_iface	lan
++	option port		5000
++	option upnp_lease_file	/var/upnp.leases
++	
++config perm_rule
++	option action		allow
++	option ext_ports	1024-65535
++	option int_addr		0.0.0.0/0	# Does not override secure_mode
++	option int_ports	1024-65535
++	option comment		"Allow high ports"
++
++config perm_rule
++       option action		deny
++       option ext_ports		0-65535
++       option int_addr		0.0.0.0/0
++       option int_ports		0-65535
++       option comment		"Default deny"
+diff --git a/package/net/miniupnpd/patches/100-no-ssl.patch b/package/net/miniupnpd/patches/100-no-ssl.patch
+new file mode 100644
+index 0000000..343e615
+--- /dev/null
++++ b/package/net/miniupnpd/patches/100-no-ssl.patch
+@@ -0,0 +1,12 @@
++--- a/Makefile.linux
+++++ b/Makefile.linux
++@@ -147,7 +147,8 @@ LDLIBS += $(shell $(PKG_CONFIG) --static
++ LDLIBS += $(shell $(PKG_CONFIG) --static --libs-only-l libnetfilter_conntrack)
++ endif # ($(TEST),1)
++ 
++-LDLIBS += $(shell $(PKG_CONFIG) --static --libs-only-l libssl)
+++# n/a - we don't enable https server for IGD v2 anyway
+++#LDLIBS += $(shell $(PKG_CONFIG) --static --libs-only-l libssl)
++ 
++ TESTUPNPDESCGENOBJS = testupnpdescgen.o upnpdescgen.o
++ 
+diff --git a/package/net/miniupnpd/patches/102-ipv6-ext-port.patch b/package/net/miniupnpd/patches/102-ipv6-ext-port.patch
+new file mode 100644
+index 0000000..fdb2af4
+--- /dev/null
++++ b/package/net/miniupnpd/patches/102-ipv6-ext-port.patch
+@@ -0,0 +1,10 @@
++--- a/pcpserver.c
+++++ b/pcpserver.c
++@@ -1004,6 +1004,7 @@ static int CreatePCPMap_NAT(pcp_info_t *
++ 				   timestamp);
++ 	if (r < 0)
++ 		return PCP_ERR_NO_RESOURCES;
+++	pcp_msg_info->ext_port = pcp_msg_info->int_port;
++ 	return PCP_SUCCESS;
++ }
++ 
+diff --git a/package/net/miniupnpd/patches/103-no-ipv6-autodetection.patch b/package/net/miniupnpd/patches/103-no-ipv6-autodetection.patch
+new file mode 100644
+index 0000000..61c023a
+--- /dev/null
++++ b/package/net/miniupnpd/patches/103-no-ipv6-autodetection.patch
+@@ -0,0 +1,27 @@
++The miniupnpd makefile tries to autodetect iptables capabilities.
++This will incorrectly detect capabilities such as ipv6 support even though it is disabled for the target build.
++
++As the OpenWRT buildsystem already passes the right compile flags, we can skip the autodetection.
++
++
++--- a/netfilter/Makefile
+++++ b/netfilter/Makefile
++@@ -38,8 +38,6 @@ endif
++ endif
++ endif
++ 
++-LIBS +=  /lib/libip4tc.so /lib/libip6tc.so
++-
++ all:	iptcrdr.o testiptcrdr iptpinhole.o \
++         testiptcrdr_peer testiptcrdr_dscp test_nfct_get
++ #        testiptpinhole
++--- a/Makefile.linux
+++++ b/Makefile.linux
++@@ -70,7 +70,6 @@ CPPFLAGS += -DIPTABLES_143
++ endif
++ 
++ CFLAGS  += $(shell $(PKG_CONFIG) --cflags libiptc)
++-LDLIBS  += $(shell $(PKG_CONFIG) --static --libs-only-l libiptc)
++ LDFLAGS += $(shell $(PKG_CONFIG) --libs-only-L libiptc)
++ LDFLAGS += $(shell $(PKG_CONFIG) --libs-only-other libiptc)
++ else
+-- 
+1.7.9.5
+
