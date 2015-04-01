@@ -72,10 +72,13 @@ function DMZresp(res){
   msg(res.msg); 
   showUi(); 
   } 
-	$('#dmz_destination').ipspinner().ipspinner('value',dmz.destination).spinner({
-    disabled: false
-   });
 
-	$('#dmzToggle').prop({'checked': dmz.status});
+$('#dmz_destination').ipspinner().ipspinner('value',dmz.destination).spinner({disabled: false });
 
+if (dmz.status.trim() == 'on') {                                                                        
+	$('#dmzToggle').prop({ 'checked': true });
+} else {                                                                                                             
+	$('#dmzToggle').prop({ 'checked': false });
+};
 </script>
+

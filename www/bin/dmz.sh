@@ -1,25 +1,34 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
-if [ $# -ne 1 ]; then
+if [ $1 != "update" ]; then
 	status=$1
 	destination=$2
 	action="save"
 	echo $status "   " $destination > /tmp/dmz
 else
 	action=$1
+	status=$(uci get sabai-new.dmz.status)
+	destination=$(uci get sabai-new.dmz.destination)
 fi
 
+redirect=$(uci show firewall | grep 'redirect' | grep '=DMZ' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 if [ $status = "on" ] && [ $destination != "" ]; then
-	echo "condition 1" >> /tmp/dmz
+	echo "condition 1" > /tmp/dmz
+	if [ "$redirect" != "" ]; then
+		uci delete firewall.@redirect[$redirect]
+	else
+		echo -e /n
+	fi
 	uci add firewall redirect
-	uci set firewall.@redirect[0].src='wan'
-	uci set firewall.@redirect[0].proto='tcp udp'
-	uci set firewall.@redirect[0].src_dport='1-65535'
-	uci set firewall.@redirect[0].dest_ip=$destination
+	uci set firewall.@redirect[-1].name='DMZ'
+	uci set firewall.@redirect[-1].src='wan'
+	uci set firewall.@redirect[-1].proto='tcp udp'
+	uci set firewall.@redirect[-1].src_dport='1-65535'
+	uci set firewall.@redirect[-1].dest_ip=$destination
 else
-	uci delete firewall.@redirect[0] 
-	echo "condition 2" >> /tmp/dmz
+	uci delete firewall.@redirect[$redirect] 
+	echo "condition 2" > /tmp/dmz
 fi
 uci commit firewall
 
