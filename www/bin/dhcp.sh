@@ -3,6 +3,9 @@
 # copyright 2014 Sabai Technology
 # Creates a json file of wan info and dhcp leases
 
+#Include JSON parser for OpenWrt
+. /usr/share/libubox/jshn.sh
+
 #receive the action being asked of the script
 action=$1
 
@@ -18,15 +21,14 @@ wanport=$(uci get network.wan.ifname)
 wantime="----"
 
 #begin json table with wan port info
-echo -n '{"aaData": [{"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "mac": "'$wanmac'", "name": "WAN PORT", "time": "'$wantime'"}'  > /www/libs/data/dhcp.json
-
+echo -n '{"aaData": [{"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "mac": "'$wanmac'", "name": "WAN PORT", "time": "'$wantime'"}'> /www/libs/data/dhcp.json
 #continue json table with /tmp/dhcp.leases file info
 cat /tmp/dhcp.leases | while read -r line ; do
-	epochtime=$(echo "$line" | awk '{print $1}')
+    epochtime=$(echo "$line" | awk '{print $1}')
     dhcptime=$(date -d @"$epochtime")
     mac=$(echo "$line" | awk '{print $2}')
     exists=$(uci show dhcp | grep "$mac" | cut -d "[" -f2 | cut -d "]" -f1)
-    echo $exists
+
     if ["$exists" = ""]; then
     	    ipaddr=$(echo "$line" | awk '{print $3}')
     		name=$(echo "$line" | awk '{print $4}')
@@ -44,7 +46,6 @@ done
 
 #close up the json format
 echo -n ']}' >> /www/libs/data/dhcp.json
-
 #save table as single line json
 uci $UCI_PATH set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
 uci $UCI_PATH commit sabai
@@ -52,32 +53,24 @@ uci $UCI_PATH commit sabai
 
 _static_on(){
 	uci add dhcp host
-	uci set dhcp.@host[-1].ip=$ip;
-	uci set dhcp.@host[-1].mac=$mac;
-	uci set dhcp.@host[-1].name=$name;
-	uci commit dhcp;
+	uci set dhcp.@host[-1].ip=$ip
+	uci set dhcp.@host[-1].mac=$mac
+	uci set dhcp.@host[-1].name="$name"
+	uci commit dhcp
 	uci $UCI_PATH add sabai dhcphost
-	uci $UCI_PATH set sabai.@dhcphost[-1].ip=$ip;
-	uci $UCI_PATH set sabai.@dhcphost[-1].mac=$mac;
-	uci $UCI_PATH set sabai.@dhcphost[-1].name=$name;
-	uci $UCI_PATH set sabai.@dhcphost[-1].route=$route;
-	uci $UCI_PATH commit sabai;
+	uci $UCI_PATH set sabai.@dhcphost[-1].ip=$ip
+	uci $UCI_PATH set sabai.@dhcphost[-1].mac=$mac
+	uci $UCI_PATH set sabai.@dhcphost[-1].name="$name"
+	uci $UCI_PATH set sabai.@dhcphost[-1].route=$route
+	uci $UCI_PATH commit sabai
 }
 
 #Save the modified existing DHCP table
 _save(){
 if [ $action = "update" ]; then
-	uci get sabai-new.dhcp.table > /tmp/tmpdhcptable
+	uci get sabai-new.dhcp.tablejs > /tmp/tmpdhcptable
 else
-	table=$(cat /tmp/table1)
-	sed 's/\[{/{\"aaData\"\:\[\{/g' /tmp/table1 > /tmp/table2
-	sed -E 's/\"([0-9])\"\://g' /tmp/table2 > /tmp/table3
-	sed 's/}\]/\}\]\}/g' /tmp/table3 > /tmp/table4
-	aaData=$(cat /tmp/table4)
-	#save table as single line json
-	uci $UCI_PATH set sabai.dhcp.table="$(cat /tmp/table4)"
-	uci $UCI_PATH commit sabai
-	uci get sabai.dhcp.table > /tmp/tmpdhcptable
+	uci get sabai.dhcp.tablejs > /tmp/tmpdhcptable
 fi
 
 #delete old dhcp settings
@@ -99,19 +92,24 @@ do
 	hosts=$(( $hosts - 1 ))
 done
 
-num_items=$(/www/bin/jsawk 'return this.aaData.length' < /tmp/tmpdhcptable);
-echo "num items is $num_items" > /tmp/feedback
-i=0
-
-while [ $i -lt $num_items ]
+data=$(cat /tmp/tmpdhcptable)
+json_load "$data"
+json_select 1
+json_select ..
+json_get_keys keys
+num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
+echo $num_items
+i=1
+while [ $i -le $num_items ]
 do	
 	echo "processing rule  #$i:"
-	static=$(/www/bin/jsawk "return this.aaData["$i"].static" < /tmp/tmpdhcptable);
-	route=$(/www/bin/jsawk "return this.aaData["$i"].route" < /tmp/tmpdhcptable);
-	ip=$(/www/bin/jsawk "return this.aaData["$i"].ip" < /tmp/tmpdhcptable);
-	mac=$(/www/bin/jsawk "return this.aaData["$i"].mac" < /tmp/tmpdhcptable);
-	name=$(/www/bin/jsawk "return this.aaData["$i"].name" < /tmp/tmpdhcptable);
-	leasetime=$(/www/bin/jsawk "return this.aaData["$i"].time" < /tmp/tmpdhcptable);
+	json_select $i                           
+        json_get_var static static
+	json_get_var route route
+	json_get_var ip ip
+	json_get_var mac mac
+	json_get_var name name
+	json_get_var leasetime leasetime
 	if [ "$route" = "internet" ] || [ "$route" = "vpn_fallback" ] || [ "$route" = "vpn_only" ] || [ "$static" = "on" ]; then
 		_static_on;
 	fi
@@ -119,7 +117,7 @@ do
 done
 
 #cleanup
-#rm /tmp/tmpdhcptable
+rm /tmp/tmpdhcptable
 
 echo "exiting"
 exit 0
@@ -128,6 +126,7 @@ exit 0
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
 	echo "dnsmasq" >> /tmp/.restart_services
+	echo `cat /tmp/.restart_services`
 else
 	# /www/bin/gw.sh start
 	/etc/init.d/dnsmasq restart
@@ -146,9 +145,29 @@ rm /tmp/table*
 
 }
 
+# Creates a json object creating dhcp table data
+_json() {
+	sed 's/\"1\"\:/\"aaData\"\:\[/g' /tmp/table1 > /tmp/table2
+	sed -E 's/\"([0-9])\"\://g' /tmp/table2 > /tmp/table3
+	sed 's/\}\}/\}\]\}/g' /tmp/table3 > /tmp/table4
+	aaData=$(cat /tmp/table4)
+	jsData=$(cat /tmp/table1)
+
+	#save table as single line json
+	uci $UCI_PATH set sabai.dhcp.tablejs="$jsData"
+	uci $UCI_PATH set sabai.dhcp.table="$aaData"
+	uci $UCI_PATH commit sabai
+
+	# Send completion message back to UI
+	echo "res={ sabai: 1, msg: 'Table Fixed' };"
+
+}
+
+
 ls >/dev/null 2>/dev/null 
 
 case $action in
+	json)	_json	;;
 	get)	_get	;;
 	save)	_save	;;
 	update)	_save	;;
