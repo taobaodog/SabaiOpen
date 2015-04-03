@@ -6,6 +6,12 @@ UCI_PATH="-c /configs"
 act=$1
 config_act=$2
 
+if [ $config_act = "update" ]; then
+	config_file=sabai-new
+else
+	config_gile=sabai
+fi
+
 _stop(){
     uci delete network.vpn
     uci delete firewall.vpn
@@ -35,7 +41,7 @@ _start(){
     #set the network vpn settings
         uci set network.vpn=interface
         uci set network.vpn.ifname=pptp-vpn
-        uci set network.vpn.proto=pptp
+        uci set network.vpn.proto="pptp"
         uci set network.vpn.username="$user"
         uci set network.vpn.password="$pass"
         uci set network.vpn.server="$server"
@@ -61,11 +67,12 @@ _start(){
 		echo "network" >> /tmp/.restart_services
         	echo "firewall" >> /tmp/.restart_services
 	else                                         
-        	/etc/init.d/network restart             
+		/etc/init.d/network restart             
         	/etc/init.d/firewall restart            
 	fi  
 	
     logger "pptp run and firewall restarted"
+    sleep 20 
     if [ $(ifconfig pptp-vpn | grep not) != "" ]; then
         uci set sabai.vpn.status=Disconnected
     else
@@ -77,11 +84,11 @@ _start(){
 _clear(){
         uci delete network.vpn
         uci delete firewall.vpn
-        uci delete sabai.vpn.username
-        uci delete sabai.vpn.password
-        uci delete sabai.vpn.server
 	uci set network.vpn.proto=none
         uci commit
+        uci $UCI_PATH delete sabai.vpn.username          
+        uci $UCI_PATH delete sabai.vpn.password          
+        uci $UCI_PATH delete sabai.vpn.server
         uci $UCI_PATH set sabai.vpn.status=none
         uci $UCI_PATH set sabai.vpn.proto=none
 	uci $UCI_PATH commit sabai

@@ -9,7 +9,7 @@ if ($act == "save") {
 
 	//set file to be used to process data into effective json format 
 	$file = '/tmp/table1';  
-//	unset ($json[0]); (makes no sense)
+	unset ($json[0]); //MAKE BIG SENSE 
 	$aaData=json_encode($json);
 
 	//write initial json data into file for dhcptable.sh to work on
@@ -20,10 +20,6 @@ if ($act == "save") {
 
 	//receive reworked datatables ready json data
 	file_get_contents("/tmp/table4", $aaData);
-
-	//save and commit modified json 
-	exec("uci $UCI_PATH set sabai.dhcp.table=\"" . $aaData . "\"");
-	exec("uci $UCI_PATH commit sabai");
 
 	//save changes in static
 	exec("sh /www/bin/dhcp.sh save");
@@ -39,7 +35,7 @@ if ($act == "get") {
 }
 
 // Send completion message back to UI
-$res = array('sabai' => true, 'rMessage' => 'DHCP in development');
+$res = array('sabai' => true, 'rMessage' => 'DHCP in development, but it was improved ...');
 echo json_encode($res);
 
 ?>  
