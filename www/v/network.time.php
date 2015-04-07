@@ -75,11 +75,17 @@ var cx = Date();
 document.getElementById('ct').innerHTML = cx;
  }
 
-function display_routertime() {
-var strcount
-var rx = "<?php echo exec('date'); ?>";
-document.getElementById('rt').innerHTML = rx;
- }
+//function display_routertime() {
+//var strcount
+//var rx = "<?php echo exec('date'); ?>";
+//document.getElementById('rt').innerHTML = rx;
+// }
+
+$(document).ready(function() {
+    setInterval(function() {
+        $("#rt").load("/bin/routertime.php");
+    }, 1000);
+});
 
 var ntpraw='<?php
           echo exec("uci get sabai.time.servers");
@@ -88,8 +94,9 @@ var ntplocation='<?php
           echo exec("uci get sabai.time.location");
           ?>';  
 $('#edit-date-default-timezone').val(ntplocation);  
-display_routertime();     
-display_computertime();  
+
+ 
+setInterval(display_computertime,1000);
 var array = JSON.stringify(ntpraw.split(" "));
 var ntpfin= "{\"servers\"" + ":" + array + "}";
 var ntp = $.parseJSON(ntpfin);
@@ -122,8 +129,6 @@ function TIMEcall(){
     };
 //      showUi();
 });
-// Important stops the page refreshing
-  return false;
 } 
 
 
@@ -139,3 +144,4 @@ function TIMEresp(res){
     $('#demo').append( event.type +'\n' ); 
   }
 </script>
+
