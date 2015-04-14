@@ -19,12 +19,13 @@ fi
 uci get $config_file.pf.tablejs > /tmp/tmppftable
 data=$(cat /tmp/tmppftable)
 json_load "$data"
-json_select 1
-json_select ..
+json_select 1   
+json_select ..    
 json_get_keys keys
 num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
 
 i=1
+j=0
 while [ $i -le $num_items ]; do
 	echo "processing rule  #$i:"
 	json_select $i
@@ -38,7 +39,7 @@ while [ $i -le $num_items ]; do
         json_get_var description description
 
 	case $protocol in
-		Both) protocol="tcp udp" ;;
+		Both) protocol="tcpudp" ;;
 		UDP) protocol="udp"  ;;
 		TCP) protocol="tcp"  ;;
 
@@ -55,50 +56,52 @@ while [ $i -le $num_items ]; do
 	esac	
 
 	if [ $pfenable = "on" ]; then
-		echo "condition 1" >> /tmp/portforwarding
+		check=$(uci show firewall | grep 'redirect' | grep '=portforwarding'$j)
+		echo $check
+		if [ "$check" != "" ]; then
+			uci delete firewall.@redirect[${j}]
+      		fi
 		uci add firewall redirect
-      		#FIXME dummy name, generate correct name
-		uci set firewall.@redirect[$i].name='dummyname'
-      		#FIXME 'tcpudp' or 'tcp udp'
-		uci set firewall.@redirect[$i].proto='$protocol'
-	fi
-      	if [ $gateway == "wan" ]; then
-      		uci set firewall.@redirect[${i}].src='wan'
-      		uci set firewall.@redirect[${i}].dest='lan'
-      		uci set firewall.@redirect[${i}].target='DNAT'
-      		uci set firewall.@redirect[${i}].src_dport='$int' #int port
-      	fi
-      	if [ $gateway == "lan" ]; then
-      		uci set firewall.@redirect[${i}].src='lan'
-      		uci set firewall.@redirect[${i}].dest='wan'
-      		uci set firewall.@redirect[${i}].target='SNAT'
-      	fi
-      	if [ $gateway == "vpn" ]; then
-      		echo "not implemented yet"
-      		#TODO openvpn setup
-      		#uci set openvpn.sabai....
-      	fi
-	if [ "$src" != "Click to edit" ]; then
-		uci set firewall.@redirect[${i}].src_ip='$src' #optional parameters
-		uci set firewall.@redirect[${i}].dest_ip='$address'
-		uci set firewall.@redirect[${i}].dest_port='$ext' #ext port
+		uci set firewall.@redirect[${j}].name='portforwarding'$j
+      		uci set firewall.@redirect[${j}].proto=$protocol
+	
+		if [ $gateway == "wan" ]; then
+      			uci set firewall.@redirect[${j}].src='wan'
+      			uci set firewall.@redirect[${j}].dest='lan'
+      			uci set firewall.@redirect[${j}].target='DNAT'
+      			uci set firewall.@redirect[${j}].src_dport=$int #int port
+      	elif [ $gateway == "lan" ]; then
+      			uci set firewall.@redirect[${j}].src='lan'
+      			uci set firewall.@redirect[${j}].dest='wan'
+      			uci set firewall.@redirect[${j}].target='SNAT'
+      	elif [ $gateway == "vpn" ]; then
+      			echo "not implemented yet"
+      			#TODO openvpn setup
+      			#uci set openvpn.sabai....
+      	else
+			echo -e \n
+		fi
+	
+		if [ "$src" != "Click to edit" ]; then
+			uci set firewall.@redirect[${j}].src_ip=$src #optional parameters
+			uci set firewall.@redirect[${j}].dest_ip=$address
+			uci set firewall.@redirect[${j}].dest_port=$ext #ext port
+		fi
 	else
-		uci delete firewall.@redirect[${i}] 
+		uci delete firewall.@redirect[${j}] 
 		echo "condition 2" >> /tmp/portforwarding
-		break
 	fi
 
 	json_select .. 
 	i=$(( $i + 1 ))
+	j=$(( $j + 1 ))
+	uci commit firewall
 done
 
 #cleanup
 rm /tmp/tmppftable
 
-echo "exiting"
-exit 0
-
-uci commit;
+uci commit
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
 else
@@ -109,4 +112,5 @@ else
 	echo "res={ sabai: 1, msg: 'Port forwarding settings applied' };"
 fi
 
-ls >/dev/null 2>/dev/null 
+ls >/dev/null 2>/dev/null
+exit 0  
