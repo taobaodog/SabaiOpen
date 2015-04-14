@@ -5,6 +5,8 @@ UCI_PATH="-c /configs"
 
 action=$1
 status=$(uci get sabai.vpn.status)
+proto=$(uci get sabai.vpn.proto)
+
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };";
@@ -14,19 +16,22 @@ _return(){
 _stop(){
 	_clear
 	/etc/init.d/firewall restart
-	/etc/init.d/network restart
 	sleep 5
 	_return 1 "OpenVPN stopped."
 	logger "Openvpn stopped"
 }
 
 _start(){
+	if [ $proto == "ovpn" ]; then
+		_return 0 "Ovpn has been already running."
+	fi
+	
 	uci $UCI_PATH set sabai.vpn.status=Starting
 	uci $UCI_PATH set sabai.vpn.proto=ovpn
 	if [ ! -e /etc/sabai/openvpn/ovpn.current ]; then
 		_return 0 "No file loaded."
 	fi
-	echo -n
+	
 	# stop other vpn's if running
 	if [ $status != "none" ]; then
 		uci $UCI_PATH commit sabai
@@ -37,12 +42,6 @@ _start(){
 		uci delete firewall.@forwarding["forward"]
 		uci commit firewall		
 		
-		if [ $action = "update" ]; then
-			echo "network" >> /tmp/.restart_services
-		else
-			/etc/init.d/network restart
-		fi
-
 		logger "Vpn stopped and network restarted"
 		sleep 5
 	fi
@@ -68,6 +67,7 @@ _start(){
         uci set firewall.ovpn.forward=ACCEPT 
 	uci set firewall.ovpn.network=sabai
         uci set firewall.ovpn.masq=1  
+	uci add firewall forwarding
 	uci set firewall.@forwarding[-1].src=lan
 	uci set firewall.@forwarding[-1].dest=sabai
 	uci commit firewall
@@ -78,13 +78,11 @@ _start(){
 	/etc/init.d/openvpn enable
 	if [ $action = "update" ]; then
 		echo "firewall" >> /tmp/.restart_services                                
-		echo "network" >> /tmp/.restart_services
 	else                                            
 		/etc/init.d/firewall restart
-		/etc/init.d/network restart           
 	fi
 
-	sleep 10
+	sleep 15
 
 	ifconfig > /tmp/check
 	if [ "$(cat /tmp/check | grep tun0)" == "" ]; then
