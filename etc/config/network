@@ -27,7 +27,3 @@ config interface 'sabai'
 	option ifname 'tun0'
 	option proto 'none'
 
-config interface 'openvpn'
-	option ifname 'tun0'
-	option proto 'ovpn'
-
