@@ -81,16 +81,9 @@ _config(){
         else                                                                                                                                   
 		echo -r "\n"                                                                                                                                               
         fi                                                      
-        #Removing LAN to WAN forwarding                                                                               
-        i=0                                                                                                                                    
-        while true; do                                                                                                                         
-                if [ "$(uci get firewall.@forwarding["${i}"].src)" = "lan" ] && [ "$(uci get firewall.@forwarding["${i}"].dest)" = "wan"  ]; then
-                        uci delete firewall.@forwarding["${i}"]                                                       
-                        break                                                                                                                  
-                else                                                                                                                           
-                        i=$(( $i + 1 ))                                                                                                        
-                fi                                                                                                    
-        done                                                                                                                                   
+        #Removing LAN to WAN forwarding
+	#TODO correct                                                                               
+#        if [ "$(uci get firewall.@forwarding["${i}"].src)" = "lan" ] && [ "$(uci get firewall.@forwarding["${i}"].dest)" = "wan"  ]; then
         uci delete firewall.ovpn                                                                                                               
         uci commit firewall                                                                                                                    
         #Configuring openvpn profile.                                                                                 
@@ -132,12 +125,13 @@ _clear(){
         fi 
 	uci delete firewall.ovpn                                                                    
 	#Allow LAN traffic to WAN
-        uci add firewall forwarding                         
-        uci set firewall.@forwarding[-1].src=lan                                                                                               
-        uci set firewall.@forwarding[-1].dest=wan 
+	#TODO correct
+#        uci add firewall forwarding                         
+#        uci set firewall.@forwarding[-1].src=lan                                                                                               
+#        uci set firewall.@forwarding[-1].dest=wan 
 	uci commit firewall                                                                         
-	uci $UCI_PATH set sabai.vpn.status=none                                                     
-	uci $UCI_PATH set sabai.vpn.proto=none                                                      
+	uci $UCI_PATH set sabai.vpn.proto=none                                                     
+	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH commit sabai                                                                  
 	/etc/init.d/openvpn stop                                                                    
 	/etc/init.d/openvpn disable
