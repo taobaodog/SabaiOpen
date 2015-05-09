@@ -12,6 +12,21 @@ action=$1
 #path to config files
 UCI_PATH="-c /configs"
 
+#Set config for static attribute
+_static_on(){                                                                                                                                  
+        uci add dhcp host                                                                                                                      
+        uci set dhcp.@host[-1].ip=$1                                                                                                           
+        uci set dhcp.@host[-1].mac=$2                                                                                                          
+        uci set dhcp.@host[-1].name="$3"                                                                                                       
+        uci commit dhcp                                                                                                                        
+	uci $UCI_PATH add sabai dhcphost                                                        
+	uci $UCI_PATH set sabai.@dhcphost[-1].ip=$1                                                                                            
+	uci $UCI_PATH set sabai.@dhcphost[-1].mac=$2                                                                                           
+	uci $UCI_PATH set sabai.@dhcphost[-1].name="$3"                             
+	uci $UCI_PATH set sabai.@dhcphost[-1].route=$4                                          
+	uci $UCI_PATH commit sabai 
+}
+
 #get dhcp information and build the dhcp table
 _get(){
 #get wan address and mac
@@ -19,51 +34,48 @@ wanip=$(ip route | grep -e "/24 dev eth0" | awk -F: '{print $0}' | awk '{print $
 wanmac=$(ifconfig eth0 | grep 'eth0' | awk -F: '{print $0}' | awk '{print $5}')
 wanport=$(uci get network.wan.ifname)
 wantime="----"
-
+x=1
 #begin json table with wan port info
 echo -n '{"aaData": [{"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "mac": "'$wanmac'", "name": "WAN PORT", "time": "'$wantime'"}'> /www/libs/data/dhcp.json
+echo -n '{"1": {"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "mac": "'$wanmac'", "name": "WAN PORT", "time": "'$wantime'"}' > /tmp/dhcptable
+
 #continue json table with /tmp/dhcp.leases file info
+line_num=1
 cat /tmp/dhcp.leases | while read -r line ; do
+    line_num=$(( $line_num + 1 ))
     epochtime=$(echo "$line" | awk '{print $1}')
     dhcptime=$(date -d @"$epochtime")
     mac=$(echo "$line" | awk '{print $2}')
     exists=$(uci show dhcp | grep "$mac" | cut -d "[" -f2 | cut -d "]" -f1)
-
-    if ["$exists" = ""]; then
-    	    ipaddr=$(echo "$line" | awk '{print $3}')
-    		name=$(echo "$line" | awk '{print $4}')
-    		static="off"
-    		route="default"
-    	else
-    		ipaddr=$(uci get dhcp.@host["$exists"].ip)
-    		name=$(uci get dhcp.@host["$exists"].name)
-    		route=$(uci get sabai.@dhcphost["$exists"].route)
-    		static="on"
-    fi
+#static attribute check
+if ["$exists" = ""]; then
+	ipaddr=$(echo "$line" | awk '{print $3}')
+	name=$(echo "$line" | awk '{print $4}')
+	static="off"
+	route="default"
+else
+	ipaddr=$(uci get dhcp.@host["$exists"].ip)
+	name=$(uci get dhcp.@host["$exists"].name)
+	route=$(uci get sabai.@dhcphost["$exists"].route)
+	static="on"
+fi
 
 echo -n ', {"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"}' >> /www/libs/data/dhcp.json
+echo -n ',"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"}' >> /tmp/dhcptable
 done
 
 #close up the json format
 echo -n ']}' >> /www/libs/data/dhcp.json
+echo -n '}' >> /tmp/dhcptable
+
 #save table as single line json
 uci $UCI_PATH set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
+uci $UCI_PATH set sabai.dhcp.tablejs="$(cat /tmp/dhcptable)"
 uci $UCI_PATH commit sabai
-} #end _get
 
-_static_on(){
-	uci add dhcp host
-	uci set dhcp.@host[-1].ip=$ip
-	uci set dhcp.@host[-1].mac=$mac
-	uci set dhcp.@host[-1].name="$name"
-	uci commit dhcp
-	uci $UCI_PATH add sabai dhcphost
-	uci $UCI_PATH set sabai.@dhcphost[-1].ip=$ip
-	uci $UCI_PATH set sabai.@dhcphost[-1].mac=$mac
-	uci $UCI_PATH set sabai.@dhcphost[-1].name="$name"
-	uci $UCI_PATH set sabai.@dhcphost[-1].route=$route
-	uci $UCI_PATH commit sabai
-}
+#clear tmp files
+rm /tmp/dhcptable
+} #end _get
 
 #Save the modified existing DHCP table
 _save(){
@@ -92,13 +104,16 @@ do
 	hosts=$(( $hosts - 1 ))
 done
 
+#adding iprouting tables
+/www/bin/gw.sh start
+
+#parsing data from WEB UI
 data=$(cat /tmp/tmpdhcptable)
 json_load "$data"
-json_select 1
+json_select 1 
 json_select ..
 json_get_keys keys
 num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
-echo $num_items
 i=1
 while [ $i -le $num_items ]
 do	
@@ -110,9 +125,35 @@ do
 	json_get_var mac mac
 	json_get_var name name
 	json_get_var leasetime leasetime
-	if [ "$route" = "internet" ] || [ "$route" = "vpn_fallback" ] || [ "$route" = "vpn_only" ] || [ "$static" = "on" ]; then
-		_static_on;
+
+	#clear firewall rules
+	rule_name=$(echo "$mac" | tr -d ":")
+	uci delete firewall.$rule_name
+	uci commit firewall
+        if [ "$static" = "on" ]; then                                                                                                          
+                _static_on $ip $mac $name $route                                                                                               
+                logger "$ip set to Static IP."                                      
+        else                                                                                    
+                logger "$ip is not Static."                                                                                                    
+        fi
+	#defining route
+	if [ "$route" = "vpn_fallback" ] || [ "$route" = "vpn_only" ]; then
+		#check VPN status                                                       
+		if [ "$(uci get sabai.vpn.status)" != none ]; then                                                                     
+			/www/bin/gw.sh iprules $route $ip                         
+			logger "$ip has vpn route."                                    
+		else                                                                                                                   
+			#MSG to Web UI vpn is off                                                                                      
+			logger "VPN is off. $ip has default route."         
+		fi
+	elif ([ "$route" = "accelerator" ] || [ "$route" = "internet" ]); then
+		/www/bin/gw.sh iprules $route $ip
+		logger "$ip has $route route."
+	else
+		#default
+		logger "$ip has $route route."
 	fi
+	json_select ..
 	i=$(( $i + 1 ))
 done
 
@@ -120,23 +161,19 @@ done
 rm /tmp/tmpdhcptable
 
 echo "exiting"
-exit 0
 
 
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
 	echo "dnsmasq" >> /tmp/.restart_services
-	echo `cat /tmp/.restart_services`
 else
-	# /www/bin/gw.sh start
-	/etc/init.d/dnsmasq restart
 	/etc/init.d/firewall restart
-	logger "portforwarding set and firewall restarted"
+	logger "dhcp settings applied and firewall restarted"
 
 	ls >/dev/null 2>/dev/null 
 
 	# Send completion message back to UI
-	echo "res={ sabai: 1, msg: 'Port forwarding settings applied' };"
+	echo "res={ sabai: 1, msg: 'DHCP settings applied' };"
 fi
 
 # end
@@ -159,8 +196,7 @@ _json() {
 	uci $UCI_PATH commit sabai
 
 	# Send completion message back to UI
-	echo "res={ sabai: 1, msg: 'Table Fixed' };"
-
+#	echo "res={ sabai: 1, msg: 'Table Fixed' };"
 }
 
 
