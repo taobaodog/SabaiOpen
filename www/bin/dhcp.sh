@@ -27,6 +27,16 @@ _static_on(){
 	uci $UCI_PATH commit sabai 
 }
 
+_vpn_on(){
+	if [ "$(uci get sabai.vpn.status)" != none ]; then                              
+		/www/bin/gw.sh iprules $route $ip                                                                                      
+		logger "$1 has vpn route."                                                                                            
+	else                                                                            
+		#MSG to Web UI vpn is off                                               
+		logger "VPN is off. $1 has default route."                                                                            
+	fi
+}
+
 #get dhcp information and build the dhcp table
 _get(){
 #get wan address and mac
@@ -127,9 +137,9 @@ do
 	json_get_var leasetime leasetime
 
 	#clear firewall rules
-	rule_name=$(echo "$mac" | tr -d ":")
-	uci delete firewall.$rule_name
-	uci commit firewall
+	rule_name=$(uci show firewall | grep "$ip" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	[ -n "$rule_name" ] && uci delete firewall.@rule[$rule_name] && uci commit firewall
+
         if [ "$static" = "on" ]; then                                                                                                          
                 _static_on $ip $mac $name $route                                                                                               
                 logger "$ip set to Static IP."                                      
@@ -137,15 +147,17 @@ do
                 logger "$ip is not Static."                                                                                                    
         fi
 	#defining route
-	if [ "$route" = "vpn_fallback" ] || [ "$route" = "vpn_only" ]; then
-		#check VPN status                                                       
-		if [ "$(uci get sabai.vpn.status)" != none ]; then                                                                     
-			/www/bin/gw.sh iprules $route $ip                         
-			logger "$ip has vpn route."                                    
-		else                                                                                                                   
-			#MSG to Web UI vpn is off                                                                                      
-			logger "VPN is off. $ip has default route."         
-		fi
+	if [ "$route" = "vpn_fallback" ]; then 
+		_vpn_on $ip
+	elif [ "$route" = "vpn_only" ]; then
+		_vpn_on $ip
+		uci add firewall rule
+		uci set firewall.@rule[-1].src=lan
+		uci set firewall.@rule[-1].dest=wan
+		uci set firewall.@rule[-1].src_ip=$ip
+		uci set firewall.@rule[-1].target=REJECT
+		uci commit firewall
+		logger "Only VPN traffic for $ip allowed."
 	elif ([ "$route" = "accelerator" ] || [ "$route" = "internet" ]); then
 		/www/bin/gw.sh iprules $route $ip
 		logger "$ip has $route route."
@@ -156,12 +168,6 @@ do
 	json_select ..
 	i=$(( $i + 1 ))
 done
-
-#cleanup
-rm /tmp/tmpdhcptable
-
-echo "exiting"
-
 
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
@@ -176,10 +182,9 @@ else
 	echo "res={ sabai: 1, msg: 'DHCP settings applied' };"
 fi
 
-# end
 #cleanup
 rm /tmp/table*
-
+rm /tmp/tmpdhcptable
 }
 
 # Creates a json object creating dhcp table data
