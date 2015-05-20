@@ -32,7 +32,6 @@ _vpn_on(){
 		/www/bin/gw.sh iprules $route $ip                                                                                      
 		logger "$1 has vpn route."                                                                                            
 	else                                                                            
-		#MSG to Web UI vpn is off                                               
 		logger "VPN is off. $1 has default route."                                                                            
 	fi
 }
@@ -44,7 +43,7 @@ wanip=$(ip route | grep -e "/24 dev eth0" | awk -F: '{print $0}' | awk '{print $
 wanmac=$(ifconfig eth0 | grep 'eth0' | awk -F: '{print $0}' | awk '{print $5}')
 wanport=$(uci get network.wan.ifname)
 wantime="----"
-x=1
+
 #begin json table with wan port info
 echo -n '{"aaData": [{"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "mac": "'$wanmac'", "name": "WAN PORT", "time": "'$wantime'"}'> /www/libs/data/dhcp.json
 echo -n '{"1": {"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "mac": "'$wanmac'", "name": "WAN PORT", "time": "'$wantime'"}' > /tmp/dhcptable
@@ -52,26 +51,26 @@ echo -n '{"1": {"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "ma
 #continue json table with /tmp/dhcp.leases file info
 line_num=1
 cat /tmp/dhcp.leases | while read -r line ; do
-    line_num=$(( $line_num + 1 ))
-    epochtime=$(echo "$line" | awk '{print $1}')
-    dhcptime=$(date -d @"$epochtime")
-    mac=$(echo "$line" | awk '{print $2}')
-    exists=$(uci show dhcp | grep "$mac" | cut -d "[" -f2 | cut -d "]" -f1)
-#static attribute check
-if ["$exists" = ""]; then
-	ipaddr=$(echo "$line" | awk '{print $3}')
-	name=$(echo "$line" | awk '{print $4}')
-	static="off"
-	route="default"
-else
-	ipaddr=$(uci get dhcp.@host["$exists"].ip)
-	name=$(uci get dhcp.@host["$exists"].name)
-	route=$(uci get sabai.@dhcphost["$exists"].route)
-	static="on"
-fi
+	line_num=$(( $line_num + 1 ))
+	epochtime=$(echo "$line" | awk '{print $1}')
+	dhcptime=$(date -d @"$epochtime")
+	mac=$(echo "$line" | awk '{print $2}')
+	exists=$(uci show dhcp | grep "$mac" | cut -d "[" -f2 | cut -d "]" -f1)
+	#static attribute check
+	if [ "$exists" = "" ]; then
+		ipaddr=$(echo "$line" | awk '{print $3}')
+		name=$(echo "$line" | awk '{print $4}')
+		static="off"
+		route="default"
+	else
+		ipaddr=$(uci get dhcp.@host["$exists"].ip)
+		name=$(uci get dhcp.@host["$exists"].name)
+		route=$(uci get sabai.@dhcphost["$exists"].route)
+		static="on"
+	fi
 
-echo -n ', {"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"}' >> /www/libs/data/dhcp.json
-echo -n ',"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"}' >> /tmp/dhcptable
+	echo -n ', {"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"}' >> /www/libs/data/dhcp.json
+	echo -n ',"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"}' >> /tmp/dhcptable
 done
 
 #close up the json format
@@ -179,7 +178,7 @@ else
 	ls >/dev/null 2>/dev/null 
 
 	# Send completion message back to UI
-	echo "res={ sabai: 1, msg: 'DHCP settings applied' };"
+	echo "res={ sabai: 1, msg: 'DHCP settings applied' }"
 fi
 
 #cleanup
@@ -199,9 +198,6 @@ _json() {
 	uci $UCI_PATH set sabai.dhcp.tablejs="$jsData"
 	uci $UCI_PATH set sabai.dhcp.table="$aaData"
 	uci $UCI_PATH commit sabai
-
-	# Send completion message back to UI
-#	echo "res={ sabai: 1, msg: 'Table Fixed' };"
 }
 
 
