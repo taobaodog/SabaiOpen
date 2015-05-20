@@ -12,6 +12,10 @@ lan_prefix="$(uci get network.lan.ipaddr | cut -d '.' -f1,2,3)";
 #get the current server address for sabaitechnology.biz for address services
 sabaibiz="$(nslookup sabaitechnology.biz | grep "Address 1:" | cut -d':' -f2 | awk '{print $1}' | awk '{print $1}' | tail -n 1)";
 
+_check_static(){
+	[ -n "$(uci show sabai | grep $1)" ] && sed -i "8i\/usr/sbin/ip rule add from "$1" table $2" /etc/rc.local
+}
+
 #clear the old ip routes
 _fin(){ ip route flush cache; }
 
@@ -21,6 +25,7 @@ _stop(){
 	for i in wan acc vpn; do ip route flush table $i; done
 	ip rule | grep "$lan_prefix" | cut -d':' -f2 | while read old_rule; do ip rule del $old_rule; done
 	ip_rules="$(grep -n -m 1 "exit 0" /etc/rc.local |sed  's/\([0-9]*\).*/\1/')"
+	echo $ip_rules
 	[ -n "$ip_rules" ] && [ "$ip_rules" -gt "$start_line" ] && sed -i ""$start_line","$(( ip_rules - 1 ))"d" /etc/rc.local
 	_fin
 }
@@ -58,31 +63,30 @@ _start(){
                 ip route del $vpn_gateway dev $vpn_device                                             
                 ip route add $sabaibiz dev $vpn_device
 	else
-		logger "no vpn route table was added."
+		logger "NO VPN route table was added."
 	fi
 
 }
 
 _ip_rules(){
         #assign statics to ip rules                                                                                                            
-	echo "iprules"
 	case $1 in
 		internet)
 			ip rule add from "$2" table wan 
-			sed -i "8i\/usr/sbin/ip rule add from "$2" table wan" /etc/rc.local
+			_check_static $2 wan
 		;;
 		vpn_fallback)
 			ip rule add from "$2" table vpn
-			sed -i "8i\/usr/sbin/ip rule add from "$2" table vpn" /etc/rc.local
-			logger "VPN connection is up. $2 is connected to vpn_fallback option."
+			_check_static $2 vpn
+			logger "$2 is connected to vpn_fallback option."
 		;;
 		vpn_only)
 			ip rule add from "$2" table vpn
-			sed -i "8i\/usr/sbin/ip rule add from "$2" table vpn" /etc/rc.local
+			_check_static $2 vpn
 		;;
 		accelerator)
 			ip rule add from "$2" table acc
-			sed -i "8i\/usr/sbin/ip rule add from "$2" table acc" /etc/rc.local
+			_check_static $2 acc
 		;;
         esac
 

@@ -22,20 +22,16 @@ if ($act == "save") {
 	file_get_contents("/tmp/table4", $aaData);
 
 	//save changes in static
-	exec("sh /www/bin/dhcp.sh save");
+	$res=exec("sh /www/bin/dhcp.sh save 2>&1", $out);
 
 	//cleanup workspace
 	//exec("rm /tmp/table*");
 
-}
+	// Send completion message back to UI                                
+	echo $res; 
 
-if ($act == "get") {
+} elseif ($act == "get") {
 	//sabai.dhcp.table is constructed and assigned 
 	exec("sh /www/bin/dhcp.sh get");
 }
-
-// Send completion message back to UI
-$res = array('sabai' => true, 'rMessage' => 'DHCP in development, but it was improved ...');
-echo json_encode($res);
-
 ?>  

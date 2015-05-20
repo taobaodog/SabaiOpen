@@ -11,10 +11,10 @@
 
 <div class='controlBox'>
 	<span class='controlBoxTitle'>Summary</span>
-	<div class='controlBoxContent' id='devicelist'>
+	<div class='controlBoxContent' id='devicelist'></div>
+		<div class='controlBoxContent' id='other'>
 		<input type='button' id="savebutton" name="savebutton" value='Save' onclick='DHCPcall("save")'>
-		<input type='button' id="cancelbutton" name="cancelbutton" value='Cancel' onclick='DHCPcall("get")'>
-    <input type='button' id="refreshbutton" name="refreshbutton" value='Refresh' onclick='DHCPcall("get")'>
+		<input type='button' id="refreshbutton" name="refreshbutton" value='Refresh' onclick='REFcall("get")'>
 		<span id='messages'>&nbsp;</span>
 
 
@@ -35,7 +35,7 @@
 			<br><b>Name</b> - The name of the device. You can click in this field and change the name.  </li>
 			<br><b>Lease Ends</b>- The time when the lease expires. </li>
 		</div>
-	</div>
+	</div>	
 </div>
 <p>
 	<div id='footer'>Copyright © 2014 Sabai Technology, LLC</div>
@@ -110,7 +110,20 @@ var settings;
     })
 
     this._super();
-}
+    },
+
+   _destroy: function() {
+   this.element
+	.removeClass( "listTable" )
+	.text( "" );
+   },
+
+    refresh: function() {
+	this._destroy();
+	this._create();
+    }
+
+
 });
 
 $(function(){
@@ -147,19 +160,16 @@ function DHCPcall(act){
      TableData = $.toJSON(TableData);
       var json=$.parseJSON(TableData);
       $("#dhcptable").val(TableData);
-   };
 
 // Pass the form values to the php file 
-$.post('php/dhcp.php', $("#fe").serialize(), function(pass){
-  res=$.parseJSON(pass);
-// Detect if values have been passed back   
-if( res.rMessage != ""){
-  PORTresp();
-};
-showUi();
+$.post('php/dhcp.php', $("#fe").serialize(), function(res){
+	eval(res);                                                                                                                                   
+  	msg(res.msg);                                                                                
+	showUi();
 });
 // Important stops the page refreshing
 return false;
+}
 } 
 
 
@@ -176,12 +186,12 @@ function STATICcall(){
 //$('#rowclick2 tr').filter(':has(:checkbox:checked)').find('td');
 } 
 
-function REFcall(){ 
-$(function(){
-    <?php exec('sh /www/bin/dhcp.sh') ?>
-  //refresh widgets on document 
-  $('#devicelist').devicelist();
-})
+function REFcall(act){ 
+	E("act").value=act;	
+	$.post('php/dhcp.php', {'act': 'get'})
+		.done(function() {
+			$('#devicelist').devicelist("refresh");
+	})
 };
 
 </script>
