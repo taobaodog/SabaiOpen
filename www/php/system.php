@@ -3,6 +3,8 @@
  
 if(isset($_REQUEST['act']) && $_REQUEST['act']!="")
 {
+$filter = array("<", ">","="," (",")",";","/","|");
+$_REQUEST['act']=str_replace ($filter, "#", $_REQUEST['act']);
 $act=$_REQUEST['act'];
 
 

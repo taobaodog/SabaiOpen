@@ -4,6 +4,8 @@
 		 
 	if(isset($_REQUEST['act']) && $_REQUEST['act']!="")
 	{
+	$filter = array("<", ">","="," (",")",";","/","|");
+        $_REQUEST['act']=str_replace ($filter, "#", $_REQUEST['act']);
 		$act=$_REQUEST['act'];
 
 		$toDo= exec("sudo /var/www/bin/ssh.sh $act",$out);

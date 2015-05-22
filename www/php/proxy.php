@@ -3,7 +3,8 @@
 // copyright 2014 Sabai Technology, LLC
 
 header('Content-Type: application/javascript');
-
+$filter = array("<", ">","="," (",")",";","/","|");
+$_REQUEST['act']=str_replace ($filter, "#", $_REQUEST['act']);
 $act=$_REQUEST['act'];
 
 switch ($act) {

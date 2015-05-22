@@ -1,8 +1,9 @@
 <?php
-
+	$filter = array("<", ">","="," (",")",";","/","|");
+	$_REQUEST['ns_domain']=str_replace ($filter, "#", $_REQUEST['ns_domain']);
 	$lookupAddress=$_REQUEST['ns_domain'];
-	
-	// $ip = gethostbynamel($lookupAddress);
+	echo $lookupAddress;
+	$ip = gethostbynamel($lookupAddress);
 
 	exec("nslookup $lookupAddress", $ip);
 
@@ -10,5 +11,6 @@
 
 	for ($i = 0 ; $i < $addrs ; $i++)
         echo($ip[$i] . "\n");
+//	echo "Bad guy go away.";
 
 ?>
