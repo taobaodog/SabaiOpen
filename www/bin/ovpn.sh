@@ -20,8 +20,9 @@ _stop(){
 }
 
 _start(){
-	proto=$(uci get sabai.vpn.proto)                    
-        if [ $proto == "ovpn" ]; then                     
+	proto=$(uci get sabai.vpn.proto)
+        if [ $proto == "ovpn" ]; then
+		logger "Ovpn has been already running."
                 _return 0 "Ovpn has been already running."     
         fi                                                     
                                                             
@@ -36,7 +37,7 @@ _start(){
 	if [ $action = "update" ]; then
 		echo "firewall" >> /tmp/.restart_services                                
 	else                                            
-		/etc/init.d/firewall restart
+		echo -e "\n"		 
 	fi
 
 	sleep 10 
@@ -79,11 +80,8 @@ _config(){
         if [ "$forwarding" != "" ]; then                        
                 uci delete firewall.@forwarding["$forward"]                                                           
         else                                                                                                                                   
-		echo -r "\n"                                                                                                                                               
+		echo -e "\n"                                                                                                                                               
         fi                                                      
-        #Removing LAN to WAN forwarding
-	#TODO correct                                                                               
-#        if [ "$(uci get firewall.@forwarding["${i}"].src)" = "lan" ] && [ "$(uci get firewall.@forwarding["${i}"].dest)" = "wan"  ]; then
         uci delete firewall.ovpn                                                                                                               
         uci commit firewall                                                                                                                    
         #Configuring openvpn profile.                                                                                 
@@ -124,11 +122,6 @@ _clear(){
                 echo -e /n                                                                                            
         fi 
 	uci delete firewall.ovpn                                                                    
-	#Allow LAN traffic to WAN
-	#TODO correct
-#        uci add firewall forwarding                         
-#        uci set firewall.@forwarding[-1].src=lan                                                                                               
-#        uci set firewall.@forwarding[-1].dest=wan 
 	uci commit firewall                                                                         
 	uci $UCI_PATH set sabai.vpn.proto=none                                                     
 	uci $UCI_PATH set sabai.vpn.status=none
