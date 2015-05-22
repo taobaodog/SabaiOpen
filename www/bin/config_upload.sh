@@ -42,7 +42,7 @@ for i in $CONFIG_SECTIONS; do
 				/www/bin/lan.sh update
 			;;
 			dhcp) 
-				echo "in dhcp"
+				echo "in dhcp" 
 				/www/bin/lan.sh update
 				/www/bin/dhcp.sh update	
 			;;
@@ -52,10 +52,10 @@ for i in $CONFIG_SECTIONS; do
 				/www/bin/lan.sh update
 			;;
 			vpn) 
-				echo "in vpn"
+				echo "in vpn" 
 				proto=$(uci get sabai-new.vpn.proto)
 				if [ "$proto" = "pptp" ]; then
-					/www/bin/ovpn.sh stop
+                                        /www/bin/ovpn.sh stop 
 					/www/bin/pptp.sh start update
 				elif [ "$proto" = "ovpn" ]; then
 					/www/bin/pptp.sh stop update
@@ -75,14 +75,11 @@ for i in $CONFIG_SECTIONS; do
 				/www/bin/time.sh update
 			;;
 			firewall) 
-				echo "in firewall" 
-
-				#TODO not implemented in firewall.sh
+				echo "in firewall"
 				/www/bin/firewall.sh update
  			;;
 			dmz)
 				echo "in dmz"
-				#TODO not implemented in dmz.sh
 				/www/bin/dmz.sh update
 			;;
 			upnp)

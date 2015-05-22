@@ -2,11 +2,12 @@
 // Sabai Technology - Apache v2 licence
 // copyright 2014 Sabai Technology, LLC
 
-$act=$_REQUEST['act'];
-$user=trim($_REQUEST['user']);
-$pass=trim($_REQUEST['pass']);
-$psk=trim($_REQUEST['psk']);
-$server=trim($_REQUEST['server']);
+$filter = array("<", ">","="," (",")",";","/","|");
+$act=str_replace($filter, "#", $_REQUEST['ns_domain']);
+$user=trim(str_replace($filter, "#", $_REQUEST['user']));
+$pass=trim(str_replace($filter, "#", $_REQUEST['pass']));
+$psk=trim(str_replace($filter, "#", $_REQUEST['psk']));
+$server=trim(str_replace($filter, "#", $_REQUEST['server']));
 $serverip=trim(gethostbyname($server));
 
 switch ($act) {

@@ -1,9 +1,11 @@
 <?php 
 $UCI_PATH="-c /configs";
-$icmp=$_REQUEST['respondToggle']; 
-$multicast=$_REQUEST['multicastToggle']; 
-$cookies=$_REQUEST['synToggle']; 
-$wanroute=$_REQUEST['wanToggle']; 
+$filter = array("<", ">","="," (",")",";","/","|");
+    
+$icmp=str_replace ($filter, "#", $_REQUEST['respondToggle']);
+$multicast=str_replace ($filter, "#", $_REQUEST['multicastToggle']);
+$cookies=str_replace ($filter, "#", $_REQUEST['synToggle']);
+$wanroute=str_replace ($filter, "#", $_REQUEST['wanToggle']);
 
 
 // Set the Sabai config to reflect latest settings

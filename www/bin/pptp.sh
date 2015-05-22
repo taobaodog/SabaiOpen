@@ -21,12 +21,8 @@ _stop(){
         if [ "$forward" != "" ]; then                                                                                                          
                 uci delete firewall.@forwarding["$forward"]                                                                                    
         else                                                                                                                                   
-                echo -e /n                                                                                                                     
+                echo -e "\n"                                                                                                                     
         fi                                                                                                                                     
-#        #Allow LAN traffic to WAN                                                                                                              
-#        uci add firewall forwarding                                                                                                            
-#        uci set firewall.@forwarding[-1].src=lan                                                                                               
-#        uci set firewall.@forwarding[-1].dest=wan                                                                                              
 	uci commit firewall	
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.proto=none
@@ -58,9 +54,6 @@ _start(){
 			echo -e "\n"
 		fi
 	fi
-        #Removing LAN to WAN forwarding                                                               
-	#TODO correct                                                                                                           
-    
 	#get the pptp settings
         user=$(uci get $config_file.vpn.username)
         pass=$(uci get $config_file.vpn.password)
@@ -124,12 +117,8 @@ _clear(){
 	if [ "$forward" != "" ]; then                                                                                                          
                 uci delete firewall.@forwarding["$forward"]                                                                                    
         else                                                                                                                                   
-                echo -e /n                                                                                                                     
+                echo -e "\n"                                                                                                                     
         fi
-        #Allow LAN traffic to WAN                                                                                                              
-#        uci add firewall forwarding                                                                                                            
-#        uci set firewall.@forwarding[-1].src=lan                                                                                               
-#        uci set firewall.@forwarding[-1].dest=wan 
 	uci commit firewall
         uci $UCI_PATH delete sabai.vpn.username          
         uci $UCI_PATH delete sabai.vpn.password          

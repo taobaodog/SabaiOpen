@@ -3,6 +3,8 @@
 $UCI_PATH="-c /configs"; 
 if(isset($_REQUEST['act']) && $_REQUEST['act']!="")
 {
+$filter = array("<", ">","="," (",")",";","/","|");
+$_REQUEST['act']=str_replace ($filter, "#", $_REQUEST['act']);
 $act=$_REQUEST['act'];
 $pass=$_REQUEST['sabaiPassword'];
 $name=$_REQUEST['host'];

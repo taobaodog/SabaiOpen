@@ -7,7 +7,7 @@
 . /usr/share/libubox/jshn.sh
 
 _return(){                                                                                                                  
-        echo "res={ sabai: $1, msg: '$2' };"                                                                 
+        echo "res={ sabai: $1, msg: '$2' }"                                                                 
         exit 0                                                                                       
 }
 
@@ -19,6 +19,7 @@ else
 	config_file=sabai
 fi
 
+uci get $config_file.pf.tablejs > /tmp/tmppftable
 data=$(cat /tmp/tmppftable)
 json_load "$data"
 json_select 1   
@@ -85,29 +86,39 @@ while [ $i -le $num_items ]; do
       			uci set firewall.@redirect[-1].dest='wan'
       			uci set firewall.@redirect[-1].target='SNAT'
       		elif [ $gateway == "vpn" ]; then
-      			echo "vpn"
 			proto=$(uci get sabai.vpn.proto)                  
-        		if [ $proto == "ovpn" ]; then                          
-       				echo -e "pass"
+			status=$(uci get sabai.vpn.status)
+			if [ "$proto" == "none" ]; then
+				msg="No VPN connection. Please turn on VPN and flash this table again."        		
+			elif [ "$proto" == "ovpn" ] && [ "$status" == "Connected" ]; then                          
+       				uci set firewall.@redirect[-1].src_ip=$src #Host from LAN accesses VPN                              
+                        	ifconfig tun0 | grep "inet addr" | cut -d: -f2 | cut -d " " -f1 > /tmp/tun_ip        
+                        	uci set firewall.@redirect[-1].src_dip=$(cat /tmp/tun_ip)                            
+                        	uci set firewall.@redirect[-1].src_dport=$ext                                
+                        	uci set firewall.@redirect[-1].dest_ip=$address                                                     
+                        	uci set firewall.@redirect[-1].dest_port=$int                                        
+                        	uci set firewall.@redirect[-1].src='lan'                                             
+                        	uci set firewall.@redirect[-1].dest='sabai'                                  
+                        	uci set firewall.@redirect[-1].target='SNAT'
+				msg=""
+			elif [ "$proto" == "ovpn" ] && [ "$status" == "Disconnected" ]; then
+				msg="No VPN connection. Please restart OVPN or try PPTP connection and flash this table again."
+			elif [ "$proto" == "pptp" ] && [ "$status" == "Connected" ]; then
+				uci set firewall.@redirect[-1].src_ip=$src #Host from LAN accesses VPN                      
+                                ifconfig pptp-vpn | grep "inet addr" | cut -d: -f2 | cut -d " " -f1 > /tmp/tun_ip               
+                                uci set firewall.@redirect[-1].src_dip=$(cat /tmp/tun_ip)                    
+                                uci set firewall.@redirect[-1].src_dport=$ext                                               
+                                uci set firewall.@redirect[-1].dest_ip=$address                                             
+                                uci set firewall.@redirect[-1].dest_port=$int                                
+                                uci set firewall.@redirect[-1].src='lan'                                     
+                                uci set firewall.@redirect[-1].dest='sabai'                                                 
+                                uci set firewall.@redirect[-1].target='SNAT'
+				msg=""
+			elif [ "$proto" == "pptp" ] && [ "$status" == "Disconnected" ]; then
+				msg="No VPN connection. Please restart PPTP or try OVPN connection and flash this table again."
 			else
-				if [ ! -e /etc/sabai/openvpn/ovpn.current ]; then                                     
-                                _return 0 "VPN tunnel cant be established. Please, download VPN config file."                                                   
-                        	fi
-				/www/bin/ovpn.sh config
+				echo -e "\n"
 			fi
-			/etc/init.d/openvpn start                                                                     
-        		/etc/init.d/openvpn enable
-			/etc/init.d/firewall restart
-			sleep 10
-                        uci set firewall.@redirect[${j}].src_ip=$src #Host from LAN accesses VPN  
-	                ifconfig tun0 | grep "inet addr" | cut -d: -f2 | cut -d " " -f1 > /tmp/tun_ip 
-			uci set firewall.@redirect[-1].src_dip=$(cat /tmp/tun_ip)                   
-			uci set firewall.@redirect[-1].src_dport=$ext
-			uci set firewall.@redirect[-1].dest_ip=$address                              
-			uci set firewall.@redirect[-1].dest_port=$int 
-                        uci set firewall.@redirect[-1].src='lan'                                            
-                        uci set firewall.@redirect[-1].dest='sabai'                                         
-                        uci set firewall.@redirect[-1].target='SNAT'
 	      	else
 			echo -e "\n"
 		fi
@@ -134,7 +145,7 @@ else
 	logger "Port forwarding configs were aplied."
 
 	# Send completion message back to UI
-	_return 1 "Port forwarding settings applied"
+	_return 1 "Port forwarding settings applied. $msg"	
 fi
 
 ls >/dev/null 2>/dev/null

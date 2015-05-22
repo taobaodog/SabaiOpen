@@ -9,11 +9,9 @@ file_put_contents($file, $aaData);
 $command="sh /www/bin/pftable.sh";
 exec($command);
 #implement the table
-$command="sh /www/bin/portforwarding.sh save";
-exec($command);
+$res=exec("sh /www/bin/portforwarding.sh 2>&1",$out);
  
 // Send completion message back to UI
-$res = array('sabai' => true, 'rMessage' => 'Port Forwarding in development');
-echo json_encode($res);
+echo $res;
 
 ?>  

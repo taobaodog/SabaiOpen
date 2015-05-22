@@ -6,12 +6,9 @@
   <div class='controlBox'>
     <span class='controlBoxTitle'>Port Forwarding</span>
     <div class='controlBoxContent'> 
-
-      <table id='list' class='listTable clickable' width='100%'></table>
-
+      <table id='list' class='listTable clickable' ></table>
       <input type='button' value='Add' id='add'>
       <input type='button' id="savebutton" name="savebutton" value='Save' onclick="PORTcall()">
-      <input type='button' value='Cancel' onclick='cancelGateway();'>
       <input type='button' id="deletebutton" name="deletebutton" value='Delete Row' onclick="DELcall()">
       <span id='messages'>&nbsp;</span>
 
@@ -77,11 +74,12 @@ TableData = $.toJSON(TableData);
 var json=$.parseJSON(TableData);
 $("#pftable").val(TableData);
 // Pass the form values to the php file 
-$.post('php/portforwarding.php', $("#fe").serialize(), function(pass){
-  res=$.parseJSON(pass);
+$.post('php/portforwarding.php', $("#fe").serialize(), function(res){
+ // res=$.parseJSON(pass);
 // Detect if values have been passed back   
-if( res.rMessage != ""){
-  PORTresp();
+if( res != "" ){
+  eval(res);                                                                                                                                   
+  msg(res.msg);                                                                                
 };
 showUi();
 });
@@ -114,10 +112,10 @@ var lt =  $('#list').dataTable({
   { 'sTitle': 'On/Off',       'mData':'status',     'sClass':'statusDrop'},  
   { 'sTitle': 'Proto',        'mData':'protocol',   'sClass':'protoDrop' },
   { 'sTitle': 'Gateway',          'mData':'gateway',    'sClass':'vpnDrop' },
-  { 'sTitle': 'Src Address',  'mData':'src',        'sClass':'plainText'  },
-  { 'sTitle': 'Ext Port',     'mData':'ext',        'sClass':'plainText'   }, 
-  { 'sTitle': 'Int Port',     'mData':'int',        'sClass':'plainText' },
-  { 'sTitle': 'Int Address',  'mData':'address',    'sClass':'plainText'  },
+  { 'sTitle': 'Source Address',  'mData':'src',        'sClass':'plainText'  },
+  { 'sTitle': 'Source Port',     'mData':'ext',        'sClass':'plainText'   }, 
+  { 'sTitle': 'Destination Port',     'mData':'int',        'sClass':'plainText' },
+  { 'sTitle': 'Destination Address',  'mData':'address',    'sClass':'plainText'  },
   { 'sTitle': 'Description',  'mData':'description','sClass':'plainText'  }
   ],
 
