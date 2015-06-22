@@ -71,7 +71,7 @@ _start(){
 _ip_rules(){
         #assign statics to ip rules                                                                                                            
 	case $1 in
-		internet)
+		local)
 			ip rule add from "$2" table wan 
 			_check_static $2 wan
 		;;

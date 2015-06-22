@@ -98,7 +98,7 @@ var settings;
           $(nRow).find('.routeDrop').editable(
           function(value, settings){ return value; },
           {
-          'data': " {'default':'default','internet':'internet','vpn_fallback':'vpn_fallback','vpn_only':'vpn_only','accelerator':'accelerator'}",
+          'data': " {'default':'default','local':'local','vpn_fallback':'vpn_fallback','vpn_only':'vpn_only','accelerator':'accelerator'}",
           'type':'select',
           'onblur':'submit',
           'placeholder':'default',
