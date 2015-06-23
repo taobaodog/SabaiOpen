@@ -23,29 +23,9 @@ config zone
 	option masq '1'
 	option mtu_fix '1'
 
-config zone
-	option name 'vpn'
-	option network 'vpn'
-	option input 'ACCEPT'
-	option output 'ACCEPT'
-	option forward 'ACCEPT'
-	option masq '1'
-
-config zone
-	option name 'sabai'
-	option input 'ACCEPT'
-	option forward 'REJECT'
-	option output 'ACCEPT'
-	option masq '1'
-	option network 'sabai'
-
 config forwarding
 	option src 'lan'
 	option dest 'wan'
-
-config forwarding
-	option src 'lan'
-	option dest 'vpn'
 
 config rule
 	option name 'Allow-DHCP-Renew'
@@ -142,22 +122,5 @@ config include 'miniupnpd'
 	option family 'any'
 	option reload '1'
 
-config redirect
 
-config redirect
-	option name 'dummyname'
-	option proto '$protocol'
-	option src 'wan'
-	option dest 'lan'
-	option target 'DNAT'
-	option src_dport '$int'
-	option src_ip '$src'
-	option dest_ip '$address'
-	option dest_port '$ext'
-
-config redirect
-
-config forwarding
-	option src 'lan'
-	option dest 'vpn'
 

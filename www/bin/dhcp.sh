@@ -84,6 +84,7 @@ uci $UCI_PATH commit sabai
 
 #clear tmp files
 rm /tmp/dhcptable
+logger "EXECUTED!"
 } #end _get
 
 #Save the modified existing DHCP table
@@ -157,7 +158,7 @@ do
 		uci set firewall.@rule[-1].target=REJECT
 		uci commit firewall
 		logger "Only VPN traffic for $ip allowed."
-	elif ([ "$route" = "accelerator" ] || [ "$route" = "internet" ]); then
+	elif ([ "$route" = "accelerator" ] || [ "$route" = "local" ]); then
 		/www/bin/gw.sh iprules $route $ip
 		logger "$ip has $route route."
 	else
