@@ -26,6 +26,13 @@ SABAI_CONFIG=/etc/config/sabai
 RESTORED_CONFIG=$1
 cp $RESTORED_CONFIG /etc/config/sabai-new
 
+#presence check of ovpn configuration
+addr_prefix="/configs/backup_"
+conf_name=${RESTORED_CONFIG#$addr_prefix}
+ovpn_filename="/configs/ovpn_backup/ovpn.filename_$conf_name"
+ovpn_config="/configs/ovpn_backup/ovpn.config_$conf_name"
+ovpn_msg="/configs/ovpn_backup/ovpn.msg_$conf_name"
+
 CONFIG_SECTIONS=$(cat $SABAI_CONFIG | grep config | awk '{print $3}' | sed ':a;N;$!ba;s/\n/ /g' | tr -d "'")
 echo "CONFIG_SECTIONS=$CONFIG_SECTIONS"
 
@@ -34,6 +41,9 @@ for i in $CONFIG_SECTIONS; do
 		uci show sabai.$i | awk -F. '{$1=""; print $0}' > /tmp/$i.orig
 		uci show sabai-new.$i | awk -F. '{$1=""; print $0}' > /tmp/$i.new
 		cmp /tmp/$i.orig /tmp/$i.new
+		if [ "$i" = "vpn" ] && [ $? = 0 ]; then
+			cmp /etc/sabai/openvpn/ovpn.current $ovpn_config
+		fi
 		if [ $? != 0 ]; then
 			echo "config $i differ"
 			case "$i" in
@@ -53,15 +63,33 @@ for i in $CONFIG_SECTIONS; do
 			;;
 			vpn) 
 				echo "in vpn" 
+				old_proto=$(uci get sabai.vpn.proto)
 				proto=$(uci get sabai-new.vpn.proto)
-				if [ "$proto" = "pptp" ]; then
-                                        /www/bin/ovpn.sh stop 
-					/www/bin/pptp.sh start update
-				elif [ "$proto" = "ovpn" ]; then
+				if [ "$old_proto" = "pptp"] && [ "$proto" = "pptp" ]; then
+					#stop all vpn connections
 					/www/bin/pptp.sh stop update
-					/www/bin/ovpn.sh update
+					#start pptp 
+					/www/bin/pptp.sh start update
+				elif [ "$old_proto" = "pptp"] && [ "$proto" = "ovpn" ]; then
+					cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename
+					cp $ovpn_config /etc/sabai/openvpn/ovpn.current
+					cp $ovpn_msg /etc/sabai/openvpn/ovpn
+					/www/bin/ovpn.sh start
+				elif [ "$old_proto" = "ovpn"] && [ "$proto" = "ovpn" ]; then
+					#stop all vpn connections         
+					/www/bin/ovpn.sh stop
+					cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename                  
+					cp $ovpn_config /etc/sabai/openvpn/ovpn.current   
+					cp $ovpn_msg /etc/sabai/openvpn/ovpn
+					/www/bin/ovpn.sh start
+				elif [ "$old_proto" = "ovpn"] && [ "$proto" = "pptp" ]; then
+					/www/bin/ovpn.sh stop
+					/www/bin/ovpn.sh start update
 				else
 					/www/bin/ovpn.sh stop
+					cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename
+					cp $ovpn_config /etc/sabai/openvpn/ovpn.current
+					cp $ovpn_msg /etc/sabai/openvpn/ovpn 
 					/www/bin/pptp.sh stop update
 				fi
 				echo "vpn" >> /tmp/.etc_service
