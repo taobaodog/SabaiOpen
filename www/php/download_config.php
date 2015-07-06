@@ -12,8 +12,12 @@ if (!empty($_FILES['_browse1']['tmp_name'])) {
 	
 	if ($file_type == "tar") {
 		$name = str_replace(".tar", "", $uploadfile);
-		//TODO: check if it is backup or not 
-		$file = str_replace("backup_", "", $name);;
+		$check = strpos($name, "backup_");
+		if ($check === false) {
+			$file = $name;
+		} else {
+			$file = str_replace("backup_", "", $name);
+		}
 		exec("mkdir /tmp/$name");
 		exec("tar -xvf $tmp -C /tmp/$name");
 		if (copy("/tmp/" . $name . "/configs/" . $name,$uploaddir.$name)) {
@@ -39,10 +43,25 @@ if (!empty($_FILES['_browse1']['tmp_name'])) {
                 } else {
                         echo "Something went wrong. Could not upload your file.";
                 }
+		exec("rm /etc/config/$file");
+		exec("rm -r /tmp/$name");
+		exec("rm -r $tmp");
         } else {
-		echo "TODO: upload just a config file";
+		exec("mv $tmp $uploaddir$uploadfile");
+		if (file_exists($uploaddir.$uploadfile)) {
+			exec("ln -s $uploaddir$uploadfile /etc/config/$uploadfile");
+			$get_version = exec("uci get $uploadfile.general.version");
+			if ($get_version != "") {
+				echo "true";
+			} else {
+				exec("rm $uploaddir$uploadfile");
+				echo "Failed.You tried to upload some wrong configuration.";
+			} 
+		} else {
+			echo "Something went wrong. No file was uploaded.";
+		}
+		exec("rm /etc/config/$uploadfile");		
 	}
-	exec("rm /etc/config/$file");
 } else {
         echo "false";
 }
