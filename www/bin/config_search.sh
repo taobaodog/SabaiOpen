@@ -5,8 +5,11 @@ count=0
 #clear configList
 cat /dev/null > /tmp/configList
 
+#removing .tar files                      
+find /configs -name '*.tar' -type f -print0 | xargs -0 /bin/rm -f
+
 #searching for config files on partition
-config_list=`ls -p /configs | grep -v / | sed 's/\/mnt\///'`
+config_list=`ls -p /configs | grep -v / | grep -v .tar | sed 's/\/mnt\///'`
 
 #counting number of avaliable config files
 for i in  $(echo "$config_list"); do
