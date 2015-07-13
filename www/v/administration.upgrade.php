@@ -7,7 +7,7 @@
     <div>Current Version: <span id='cversion'></span></div><br>
     <div id='newversion' class='hiddenChildMenu'>New Version: <span id='available'></span></div><br>
     <span class='uploadButton'><font style="font-size:14px"> Browse for Update</font></span>
-    <input id='browse' name='_browse' type='file' hidden='true' onchange="fileInput(this, 'img');"/><t>
+    <input id='browse' name='_browse' type='file' hidden='true' onchange="fileInput(this, 'tar');"/><t>
     <input id='fileName' name='_fileName' type='text'>
     <input id='download' type='button' name='submit' value='Download'/><br><br>
     <input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/><br>
@@ -67,12 +67,12 @@ $('.uploadButton').bind("click" , function () {
 });
 // View the file`s name
 function fileInput(obj, type) {
-	var browseFile = obj.value;
-	if (type == 'img') {
-        	E('fileName').value = browseFile;
-	} else {		
-                E('fileName1').value = browseFile;
-	}
+        var browseName = obj.value.split('.').pop().toLowerCase();           
+        if ($.inArray(browseName, [type]) != -1) {
+                E('fileName').value = obj.value;               
+        } else {                                                                                    
+                E('fileName').value = 'Please select an image file.';                       
+        }
 }
 
 $('#backUp').on("click", function() {

@@ -1,0 +1,73 @@
+From e45ff1cbdd4604eea70d0d79d3f5426296162aca Mon Sep 17 00:00:00 2001
+From: Kateryna Pietukhova <kateryna.pietukhova@sirisoftware.com>
+Date: Wed, 8 Jul 2015 16:43:28 +0300
+Subject: [PATCH 1/1] Nano editor was added.
+
+---
+ package/utils/nano/Makefile |   54 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 package/utils/nano/Makefile
+
+diff --git a/package/utils/nano/Makefile b/package/utils/nano/Makefile
+new file mode 100644
+index 0000000..49f0b9b
+--- /dev/null
++++ b/package/utils/nano/Makefile
+@@ -0,0 +1,54 @@
++#
++# Copyright (C) 2007-2014 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=nano
++PKG_VERSION:=2.3.6
++PKG_RELEASE:=1
++
++PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
++PKG_SOURCE_URL:=http://www.nano-editor.org/dist/v2.3
++PKG_MD5SUM:=df3d201aecb3155a80633990cc467831
++
++PKG_INSTALL:=1
++PKG_BUILD_PARALLEL:=1
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/nano
++  SUBMENU:=Editors
++  SECTION:=utils
++  CATEGORY:=Utilities
++  TITLE:=An enhanced clone of the Pico text editor
++  URL:=http://www.nano-editor.org/
++  MAINTAINER:=Jonathan Bennett <JBennett@incomsystems.biz>
++  DEPENDS:=+libncurses
++endef
++
++define Package/nano/description
++  GNU nano (Nano's ANOther editor, or Not ANOther editor) is an enhanced clone
++  of the Pico text editor.
++endef
++
++CONFIGURE_ARGS += \
++	--enable-tiny \
++	--disable-glibtest \
++	--disable-utf8 \
++        --without-slang \
++        --disable-color \
++
++CONFIGURE_VARS += \
++	ac_cv_header_regex_h=no \
++
++define Package/nano/install
++	$(INSTALL_DIR) $(1)/usr/bin
++	$(CP) $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME) $(1)/usr/bin/
++endef
++
++$(eval $(call BuildPackage,nano))
++
+-- 
+1.7.9.5
+
