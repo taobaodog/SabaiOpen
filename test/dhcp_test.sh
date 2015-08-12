@@ -6,6 +6,8 @@ test=$1
 #path to config files
 UCI_PATH="-c /configs"
 
+echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>DHCP & GW TEST<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
+
 _get(){
 	echo "---------------START OF GET-TEST---------------"
 	echo "-> -> -> Expecting "GET" procedure and creating /www/libs/data/dhcp.json "
@@ -25,7 +27,6 @@ _get(){
 	[ -n "$host_1" ] && uci delete dhcp.@host[$host_1] && uci delete dhcp.@host[$host_1] && uci commit dhcp 
 	
 	sabai_host_1=$(uci show sabai | grep "taobaodog1" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
-	echo "1"
 	[ -n "$sabai_host_1" ] && uci $UCI_PATH delete sabai.@dhcphost[$sabai_host_1] && uci delete sabai.@dhcphost[$sabai_host_1] && uci $UCI_PATH commit sabai
 
 	uci add dhcp host
@@ -58,43 +59,64 @@ _get(){
 			echo -e "INPUT:\n$check_json"
 			echo -e "OUTPUT:\n$res"
 			echo "-> -> -> 1.1: Fail <- <- <-"
+			exit 1
 		fi		
+	rm /tmp/test_tablejs
 	echo "---------------END OF GET-TEST-----------------"
 }
 
 _save(){
 	echo "---------------START OF SAVE-TEST---------------"
 	echo "-> -> -> Expecting "SAVE" procedure"
-	echo "***Test case 1***"
-	rm /tmp/table2
-	rm /tmp/table3
-	rm /tmp/table4
-	rm /tmp/tmpdhcptable
+	#Input test data
+	echo -n '{"1":{"static": "off", "route": "default", "ip": "192.168.199.250", "mac": "d8:d3:85:e9:b2:d4", "name": "taobaodog", "time": "Wed Aug 12 04:57:11 EDT 2015"},' > /tmp/table1
+	echo -n '"2":{"static": "WAN PORT", "route": "--------", "ip": "kernel", "mac": "00:30:18:AF:3E:A2", "name": "WAN PORT", "time": "----"},' >> /tmp/table1
+	echo -n '"3":{"static": "on", "route": "local", "ip": "192.168.199.240", "mac": "d1:d3:85:e9:b2:d4", "name": "taobaodog1", "time": "Sat Apr  1 12:10:00 EDT 2017"},' >> /tmp/table1
+	echo -n '"4":{"static": "off", "route": "accelerator", "ip": "192.168.199.230", "mac": "d8:d1:85:e9:b2:d4", "name": "taobaodog2", "time": "Sat Apr  1 12:08:00 EDT 2017"},' >> /tmp/table1
+	echo -n '"5":{"static": "on", "route": "vpn_only", "ip": "192.168.199.220", "mac": "d8:d3:81:e9:b2:d4", "name": "taobaodog3", "time": "Sat Apr  1 11:50:00 EDT 2017"},' >> /tmp/table1
+	echo -n '"6":{"static": "on", "route": "vpn_fallback", "ip": "192.168.199.210", "mac": "d8:d3:85:e1:b2:d4", "name": "taobaodog4", "time":  "Sat Apr  1 11:50:00 EDT 2017"}}' >> /tmp/table1
+	cp /tmp/table1 /tmp/test_tablejs	
+
+	#Start testing
+	/www/bin/dhcp.sh json
 	/www/bin/dhcp.sh save
-	if [ -e "/tmp/table2" ]; then
-		if [ -e "/tmp/table3" ]; then
-			if [ -e "/tmp/table4" ]; then
-				if [ -e "/tmp/tmpdhcptable" ]; then
-					check=`cat /tmp/tmpdhcptable`
-					check_1=`cat /tmp/table4`
-					if [ "$check" == "$check_1" ]; then
-						echo "-> -> -> 2.1: Pass <- <- <-"
-					else
-						echo $check
-						echo check_1
-						echo "-> -> -> 2.1: Fail <- <- <-"		
-					fi
-				fi
-			fi
+	#Clean up check
+	if [ ! -e "/tmp/table2" ] && [ ! -e "/tmp/table3" ] && [ ! -e "/tmp/table4" ] && [ ! -e "/tmp/tmpdhcptable" ]; then
+		echo "-> -> -> 2.1: Pass <- <- <-"
+		#Copy check
+		check_json=$(uci $UCI_PATH get sabai.dhcp.tablejs)
+		check=$(cat /tmp/test_tablejs)
+		if [ "$check" = "$check_json" ]; then
+			echo "-> -> -> 2.2: Pass <- <- <-"
+		else
+			echo -e "INPUT:\n$check"
+			echo -e "OUTPUT:\n$check_json"
+			echo "-> -> -> 2.2: Fail <- <- <-"
+			exit 1	
 		fi
-	fi
-	if [ -e "/tmp/feedback" ]; then
-		echo  "-> -> -> 3.1: Pass <- <- <-"
 	else
-		echo "-> -> -> 3.1: Fail <- <- <-"
+		echo "Clean up test failed."
+		ls /tmp/
+		echo "-> -> -> 2.1: Fail <- <- <-"
+		exit 1
 	fi
+	#gw.sh testig	
+	#Input test data tun0 is up
+	#Accelerator test
+	[ "$(uci $UCI_PATH get sabai.general.ac_ip)" -ne 2 ] && (echo "-> -> -> Accelerator IP was set incorrect <- <- <-"; exit 1)
 
-
+	#IP rules check 
+	[ -z "$(ip rule show | grep '192.168.199.210 lookup vpn')" ] && (echo "-> -> -> VPN rule was not added <- <- <-"; exit 1) 
+	[ -z "$(ip rule show | grep '192.168.199.220 lookup vpn')" ] && (echo "-> -> -> VPN rule was not added <- <- <-"; exit 1)
+	[ -z "$(ip rule show | grep '192.168.199.230 lookup acc')" ] && (echo "-> -> -> ACC rule was not added <- <- <-"; exit 1)
+	[ -z "$(ip rule show | grep '192.168.199.240 lookup wan')" ] && (echo "-> -> -> WAN rule was not added <- <- <-"; exit 1)
+	
+	#Static attribute check
+	[ -z "$(uci show dhcp | grep 192.168.199.240)" ] && [ -z "$(uci show dhcp | grep 192.168.199.240)" ] && (echo "-> -> -> Host wan not aded to static <- <- <-"; exit 1)
+	[ -z "$(uci show dhcp | grep 192.168.199.220)" ] && [ -z "$(uci show dhcp | grep 192.168.199.220)" ] && (echo "-> -> -> Host wan not aded to static <- <- <-"; exit 1)
+	[ -z "$(uci show dhcp | grep 192.168.199.210)" ] && [ -z "$(uci show dhcp | grep 192.168.199.210)" ] && (echo "-> -> -> Host wan not aded to static <- <- <-"; exit 1)
+	
+	rm /tmp/test_tablejs
 	echo "---------------END OF SAVE-TEST-----------------"
 }
 
