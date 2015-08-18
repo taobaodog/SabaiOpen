@@ -118,7 +118,7 @@ done
 /www/bin/gw.sh start
 
 #parsing data from WEB UI
-data=$(cat /tmp/tmpdhcptable)
+data="$(cat /tmp/tmpdhcptable)"
 json_load "$data"
 json_select 1 
 json_select ..
