@@ -6,6 +6,7 @@ test=$1
 #path to config files
 UCI_PATH="-c /configs"
 
+wanmac="$(ifconfig eth0 | grep 'eth0' | awk -F: '{print $0}' | awk '{print $5}')"
 echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>DHCP & GW TEST<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
 
 _get(){
@@ -16,7 +17,7 @@ _get(){
 	#Input testdata
 	echo -e "1439298369 d8:d3:85:e9:b2:d4 192.168.199.250 taobaodog *\n1439298370 d1:d3:85:e9:b2:d4 192.168.199.240 taobaodog1 *" > /tmp/dhcp.leases
 	echo -e "1439298368 d8:d1:85:e9:b2:d4 192.168.199.230 taobaodog2 *\n1439298350 d8:d3:81:e9:b2:d4 192.168.199.220 taobaodog3 *" >> /tmp/dhcp.leases
-	echo -n '{"1": {"static": "WAN PORT", "route": "--------", "ip": "kernel", "mac": "00:30:18:AF:3E:A2", "name": "WAN PORT", "time": "----"},'> /tmp/test_tablejs
+	echo -n '{"1": {"static": "WAN PORT", "route": "--------", "ip": "kernel", "mac": "'$wanmac'", "name": "WAN PORT", "time": "----"},'> /tmp/test_tablejs
 	echo -n '"2":{"static": "off", "route": "default", "ip": "192.168.199.250", "mac": "d8:d3:85:e9:b2:d4", "name": "taobaodog", "time": "Tue Aug 11 09:06:09 EDT 2015"},' >> /tmp/test_tablejs
 	echo -n '"3":{"static": "on", "route": "local", "ip": "192.168.199.240", "mac": "d1:d3:85:e9:b2:d4", "name": "taobaodog1", "time": "Tue Aug 11 09:06:10 EDT 2015"},' >> /tmp/test_tablejs
 	echo -n '"4":{"static": "off", "route": "default", "ip": "192.168.199.230", "mac": "d8:d1:85:e9:b2:d4", "name": "taobaodog2", "time": "Tue Aug 11 09:06:08 EDT 2015"},' >> /tmp/test_tablejs
@@ -70,7 +71,7 @@ _save(){
 	echo "-> -> -> Expecting "SAVE" procedure"
 	#Input test data
 	echo -n '{"1":{"static": "off", "route": "default", "ip": "192.168.199.250", "mac": "d8:d3:85:e9:b2:d4", "name": "taobaodog", "time": "Wed Aug 12 04:57:11 EDT 2015"},' > /tmp/table1
-	echo -n '"2":{"static": "WAN PORT", "route": "--------", "ip": "kernel", "mac": "00:30:18:AF:3E:A2", "name": "WAN PORT", "time": "----"},' >> /tmp/table1
+	echo -n '"2":{"static": "WAN PORT", "route": "--------", "ip": "kernel", "mac": "'$wanmac'", "name": "WAN PORT", "time": "----"},' >> /tmp/table1
 	echo -n '"3":{"static": "on", "route": "local", "ip": "192.168.199.240", "mac": "d1:d3:85:e9:b2:d4", "name": "taobaodog1", "time": "Sat Apr  1 12:10:00 EDT 2017"},' >> /tmp/table1
 	echo -n '"4":{"static": "off", "route": "accelerator", "ip": "192.168.199.230", "mac": "d8:d1:85:e9:b2:d4", "name": "taobaodog2", "time": "Sat Apr  1 12:08:00 EDT 2017"},' >> /tmp/table1
 	echo -n '"5":{"static": "on", "route": "vpn_only", "ip": "192.168.199.220", "mac": "d8:d3:81:e9:b2:d4", "name": "taobaodog3", "time": "Sat Apr  1 11:50:00 EDT 2017"},' >> /tmp/table1

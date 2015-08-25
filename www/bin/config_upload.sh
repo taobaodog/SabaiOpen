@@ -27,8 +27,11 @@ RESTORED_CONFIG=$1
 cp $RESTORED_CONFIG /etc/config/sabai-new
 
 #presence check of ovpn configuration
-addr_prefix="/configs/backup_"
-conf_name=${RESTORED_CONFIG#$addr_prefix}
+prefix_addr="/configs/"
+prefix_file="backup_"
+[[ "$RESTORED_CONFIG" =~ "backup" ]] && conf_name=${RESTORED_CONFIG#$prefix_addr} && conf_name=${RESTORED_CONFIG#$prefix_file}
+[[ "$RESTORED_CONFIG" =~ "backup" ]] || conf_name=${RESTORED_CONFIG#$prefix_addr}
+
 ovpn_filename="/configs/ovpn_backup/ovpn.filename_$conf_name"
 ovpn_config="/configs/ovpn_backup/ovpn.config_$conf_name"
 ovpn_msg="/configs/ovpn_backup/ovpn.msg_$conf_name"
