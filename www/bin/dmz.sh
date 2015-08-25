@@ -14,11 +14,10 @@ fi
 
 redirect=$(uci show firewall | grep 'redirect' | grep '=DMZ' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 if [ $status = "on" ] && [ $destination != "" ]; then
-	echo "condition 1" > /tmp/dmz
 	if [ "$redirect" != "" ]; then
 		uci delete firewall.@redirect[$redirect]
 	else
-		echo -e /n
+		echo -e "\n"
 	fi
 	uci add firewall redirect
 	uci set firewall.@redirect[-1].name='DMZ'
@@ -28,10 +27,8 @@ if [ $status = "on" ] && [ $destination != "" ]; then
 	uci set firewall.@redirect[-1].dest_ip=$destination
 else
 	uci delete firewall.@redirect[$redirect] 
-	echo "condition 2" > /tmp/dmz
 fi
 uci commit firewall
-
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
 else

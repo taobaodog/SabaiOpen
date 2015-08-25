@@ -54,24 +54,23 @@ var dmz=$.parseJSON('{<?php
 
 function DMZcall(){ 
 	hideUi("Adjusting DMZ settings..."); 
-// Pass the form values to the php file 
+	// Pass the form values to the php file 
 	$.post('php/dmz.php', $("#fe").serialize(), function(res){
-// Detect if values have been passed back   
-    if(res!=""){
-      DMZresp(res);
-    };
-      showUi();
+	// Detect if values have been passed back   
+	if(res!=""){
+		DMZresp(res);
+    	};
 });
-// Important stops the page refreshing
+	// Important stops the page refreshing
 	return false;
 } 
 
 
 function DMZresp(res){ 
-  eval(res); 
-  msg(res.msg); 
-  showUi(); 
-  } 
+	eval(res); 
+  	msg(res.msg); 
+	setTimeout(function(){showUi()},2000); 
+} 
 
 $('#dmz_destination').ipspinner().ipspinner('value',dmz.destination).spinner({disabled: false });
 
