@@ -15,24 +15,20 @@ echo "*************************** Test Case 1 ******************************"
 echo -e "-> -> -> \033[32m Input: status=on destination=192.168.199.221 \033[00m"
 status="on"
 destination="192.168.199.221"
-cat /etc/config/firewall | grep -q "redirect"
-if [ $? -eq 0 ]; then
-	uci delete firewall.@redirect[0]
+indx_redirect=$(uci show firewall | grep -q "DMZ" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+if [ "$indx_redirect" != "" ]; then
+	uci delete firewall.@redirect["$indx_redirect"]
 else
 	echo "Script is running ..."	
 fi
+
 /www/bin/dmz.sh $status $destination
-if [ "$(uci get firewall.@redirect[0])" != ""  ]; then
+indx_redirect=$(uci show firewall | grep -q "DMZ" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+if [ "$(uci get firewall.@redirect["$indx_redirect"])" != ""  ]; then
 	echo -e "\033[32m -> -> -> 1.1: Pass <- <- <- \033[00m"
 else
-	echo -e "\033[31m -> -> -> 1.1: Fail <- <- <- \033[00m"
-fi
-
-check=$(cat /tmp/dmz | grep "condition 1")
-if [ $? -eq 0 ]; then
-	echo -e "\033[32m -> -> -> 1.2: Pass <- <- <- \033[00m"
-else                                                
-        echo -e "\033[31m -> -> -> 1.2: Fail <- <- <- \033[00m"          
+	echo -e "\033[31m -> -> -> 1.1: Fail. Firewall rule was not added. <- <- <- \033[00m"
+	exit 1
 fi
 }
 
@@ -41,55 +37,58 @@ echo "************************** Test case 2 *********************************"
 echo -e "-> -> -> \033[32m Input: status=off destination=192.168.199.222 \033[00m"
 status="off"                                                                      
 destination="192.168.199.222"                                                    
-cat /etc/config/firewall | grep -q "redirect"                                    
-if [ $? -eq 0 ]; then                                                            
-	echo "Script is running ..."
-else                                                                             
+indx_redirect=$(uci show firewall | grep -q "DMZ" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+if [ "$indx_redirect" != "" ]; then                                                            
 	uci add firewall redirect     
-        uci set firewall.@redirect[0].src='wan'
-        uci set firewall.@redirect[0].proto='tcp udp'
-        uci set firewall.@redirect[0].src_dport='1-65535'
-        uci set firewall.@redirect[0].dest_ip=$destination
-fi                                                                               
-/www/bin/dmz.sh $status $destination                                             
-if [ "$(uci get firewall.@redirect[0])" == ""  ]; then                                                   
-        echo -e "\033[32m -> -> -> 1.1: Pass <- <- <- \033[00m"
-else                                                        
-        echo -e "\033[31m -> -> -> 1.1: Fail <- <- <- \033[00m"
-fi                                                          
-                                                            
-check=$(cat /tmp/dmz | grep "condition 2")                  
-if [ $? -eq 0 ]; then                                       
-        echo -e "\033[32m -> -> -> 2.2: Pass <- <- <- \033[00m"
-else                                                        
-        echo -e "\033[31m -> -> -> 2.2: Fail <- <- <- \033[00m"
+        uci set firewall.@redirect[-1].src='wan'
+        uci set firewall.@redirect[-1].proto='tcp udp'
+        uci set firewall.@redirect[-1].src_dport='1-65535'
+        uci set firewall.@redirect[-1].dest_ip=$destination
+else
+	echo "Script is running ..."
 fi
-
+                                                                               
+/www/bin/dmz.sh $status $destination                                             
+indx_redirect=$(uci show firewall | grep -q "DMZ" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+if [ "$indx_redirect" == ""  ]; then                                                   
+        echo -e "\033[32m -> -> -> 2.1: Pass <- <- <- \033[00m"
+else                                                        
+        echo -e "\033[31m -> -> -> 2.1: Fail. Firewall rule was not cleared. <- <- <- \033[00m"
+	exit 1
+fi                                                          
 }
 
 third(){
 echo "*************************** Test Case 3 ******************************"     
-echo -e "-> -> -> \033[32m Input: status=none destination=none action=update \033[00m" 
+echo -e "-> -> -> \033[32m Input: status=from sabai-new; destination=from sabai-new; action=update \033[00m" 
+cp /etc/config/sabai /etc/config/sabai-new
+uci set sabai-new.dmz.status="on"
+uci set sabai-new.dmz.destination="192.168.199.223"
+uci commit sabai-new
+
+echo "A) Status=on Destination=192.168.199.223"
 /www/bin/dmz.sh update                                             
-if [ "$(uci get sabai.dmz.status)" == "on"  ]; then
-	if [ "$(uci get firewall.@redirect[0])" != ""  ]; then                                                     
-		echo -e "\033[32m -> -> -> 3.1.1: Pass <- <- <- \033[00m"
-	else                                                                              
-        	echo -e "\033[31m -> -> -> 3.1.1: Fail <- <- <- \033[00m"                   
-	fi
-else
-        if [ "$(uci get firewall.@redirect[0])" == ""  ]; then                                                  
-                echo -e "\033[32m -> -> -> 3.1.2: Pass <- <- <- \033[00m"           
-        else                                                                      
-                echo -e "\033[31m -> -> -> 3.1.2: Fail <- <- <- \033[00m"           
-        fi
-fi                                                                                
-                                                                                  
-check=$(cat /tmp/.restart_services | grep "firewall")                                        
-if [ $? -eq 0 ]; then                                                             
-        echo -e "\033[32m -> -> -> 3.2: Pass <- <- <- \033[00m"                   
+indx_redirect=$(uci show firewall | grep -q "DMZ" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+if [ "$(uci get firewall.@redirect[$indx_redirect])" != ""  ]; then                                                     
+	echo -e "\033[32m -> -> -> 3.1: Pass <- <- <- \033[00m"
 else                                                                              
-        echo -e "\033[31m -> -> -> 3.2: Fail <- <- <- \033[00m"                   
+       	echo -e "\033[31m -> -> -> 3.1: Fail. Firewall rule was not added. <- <- <- \033[00m"                   
+	exit 1
+fi
+
+sleep 5
+echo "B) Status=off Destination=192.168.199.224"
+cp /etc/config/sabai /etc/config/sabai-new                                                                  
+uci set sabai-new.dmz.status="off"                                                                      
+uci set sabai-new.dmz.destination="192.168.199.224"                                                    
+uci commit sabai-new
+/www/bin/dmz.sh update 
+indx_redirect=$(uci show firewall | grep -q "DMZ" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+if [ "$indx_redirect" == ""  ]; then                                                  
+	echo -e "\033[32m -> -> -> 3.2: Pass <- <- <- \033[00m"           
+else                                                                      
+	echo -e "\033[31m -> -> -> 3.2: Fail. Firewall rule was not cleared. <- <- <- \033[00m"           
+	exit 1
 fi
 }
 

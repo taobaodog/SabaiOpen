@@ -63,7 +63,7 @@ _config(){
                 uci commit network
                 uci delete firewall.vpn
                 forward=$(uci show firewall | grep =vpn | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                                         
-                uci delete firewall.@forwarding["forward"]                                                                                     
+                uci delete firewall.@forwarding["$forward"] 
                 uci commit firewall                             
                 /etc/init.d/network restart                                                                           
                 logger "Vpn stopped and network restarted"                                                                                     
