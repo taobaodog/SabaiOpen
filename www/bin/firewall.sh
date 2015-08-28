@@ -78,16 +78,15 @@ then
            #string existed just update it to be 0 or 1 inorder to enable/disable icmp ping
            cat /etc/sysctl.conf | grep  "net.ipv4.icmp_echo_ignore_all" | grep -q "0" 
            if [ $? -eq 0 ] 
-           then 
-               echo "icmp response on"  
-           else 
-               echo "enabling icmp response ...." 
-               sed -i 's/net.ipv4.icmp_echo_ignore_all=1/net.ipv4.icmp_echo_ignore_all=0/'  /etc/sysctl.conf 
+           then
+		echo "icmp response on"  
+           else
+		echo "enabling icmp response ...." 
+		sed -i 's/net.ipv4.icmp_echo_ignore_all=1/net.ipv4.icmp_echo_ignore_all=0/'  /etc/sysctl.conf 
            fi 
-            
      else 
-      #string not found append string to the file 
-      echo "net.ipv4.icmp_echo_ignore_all=0" >> /etc/sysctl.conf 
+	#string not found append string to the file 
+	echo "net.ipv4.icmp_echo_ignore_all=0" >> /etc/sysctl.conf 
      fi  
       
 elif [ "$icmp" = "off" ] 
@@ -96,7 +95,7 @@ then
 	cat /etc/sysctl.conf | grep -q "net.ipv4.icmp_echo_ignore_all"
 	if [ $? -eq 0 ]
 	then
-	cat /etc/sysctl.conf | grep  "net.ipv4.icmp_echo_ignore_all" | grep -q "1"
+		cat /etc/sysctl.conf | grep  "net.ipv4.icmp_echo_ignore_all" | grep -q "1"
     	if [ $? -eq 0 ]
 		then
 			echo "icmp response off"
@@ -127,6 +126,7 @@ then
 	#turn on multicast 
 	echo "UDP  multicast is enabled "
 	#1-INSTALL IGMPPROXY
+	opkg update
 	opkg install igmpproxy
 
 	#2-enableigmpsnooping in /etc/config/network 
@@ -134,7 +134,7 @@ then
 	uci commit network 
 
 	#3-configure firewall to accept igmp 
-    rule=$(uci show firewall | grep =igmp | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	rule=$(uci show firewall | grep =igmp | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 	if [ "$rule" = "" ]; then                                                                              
 		uci add firewall rule
 		uci set firewall.@rule[-1].src=wan
@@ -145,7 +145,7 @@ then
                 uci set firewall.@rule[-1].src=wan                                                                   
                 uci set firewall.@rule[-1].proto="tcpudp"
 		uci set firewall.@rule[-1].dest=lan
-        uci set firewall.@rule[-1].target=ACCEPT
+		uci set firewall.@rule[-1].target=ACCEPT
 		uci set firewall.@rule[-1].family=ipv4 
 		uci commit firewall
 	else 
@@ -195,6 +195,8 @@ then
 else
 	echo "ERROR invalid cookies only on/off Accepted"   
 fi
+
+uci commit firewall
 
 ##################
 #external wan Route
