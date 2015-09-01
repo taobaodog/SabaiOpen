@@ -12,6 +12,7 @@ config interface 'lan'
 	option netmask '255.255.255.0'
 	option dns '8.8.8.8 8.8.4.4'
 	option ipaddr '192.168.199.1'
+	option igmp_snooping '0'
 
 config interface 'wan'
 	option ifname 'eth0'
@@ -26,4 +27,9 @@ config interface 'wan'
 config interface 'sabai'
 	option ifname 'tun0'
 	option proto 'none'
+
+config 'interface' 'guest'
+        option 'proto' 'static'
+        option 'ipaddr' '10.0.0.1'
+        option 'netmask' '255.255.255.0'
 

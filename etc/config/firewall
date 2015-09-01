@@ -1,10 +1,10 @@
 
 config defaults
-	option tcp_syncookies '0'
 	option syn_flood '1'
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'REJECT'
+	option tcp_syncookies '0'
 
 config zone
 	option name 'lan'
@@ -122,5 +122,29 @@ config include 'miniupnpd'
 	option family 'any'
 	option reload '1'
 
+config 'zone'
+	option name 'guest'
+	option network 'guest'
+	option input 'REJECT'
+	option forward 'REJECT'
+	option output 'ACCEPT'
 
+config 'forwarding'
+	option src 'guest'
+	option dest 'wan'
+
+config 'rule'
+	option name 'Allow DNS Queries'
+	option src 'guest'
+	option dest_port '53'
+	option proto 'tcpudp'
+	option target 'ACCEPT'
+  
+config 'rule'
+	option name 'Allow DHCP request'
+	option src 'guest'
+	option src_port '67-68'
+	option dest_port '67-68'
+	option proto 'udp'
+	option target 'ACCEPT'
 

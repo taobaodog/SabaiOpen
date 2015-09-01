@@ -32,6 +32,12 @@ config odhcpd 'odhcpd'
 	option leasefile '/tmp/hosts/odhcpd'
 	option leasetrigger '/usr/sbin/odhcpd-update'
 
+config 'dhcp' 'guest'
+	option 'interface' 'guest'
+	option 'start' '50'
+	option 'limit' '200'
+	option 'leasetime' '2h'
+
 config host
 	option ip '192.168.199.124'
 	option mac '08:10:76:2a:5c:6e'
@@ -41,4 +47,3 @@ config host
 	option ip '192.168.199.199'
 	option mac '8c:3a:e3:73:73:80'
 	option name 'wmphone'
-

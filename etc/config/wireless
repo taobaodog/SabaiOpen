@@ -16,3 +16,20 @@ config wifi-iface
 	option encryption 'psk2+aes'
 	option key 'sabaipass123'
 
+config wifi-device 'radio0'
+        option type 'mac80211'
+        option hwmode '11g'
+        option path 'pci0000:00/0000:00:1c.3/0000:04:00.0/0000:05:02.0/0000:07:00.0'
+        option htmode 'HT20'
+        option disabled '0'
+        option country 'US'
+        option channel 'auto'
+
+config 'wifi-iface'
+        option device     'radio0'
+        option network    'guest'
+	option mode       'ap'
+        option ssid       'Sabai-guest'
+        option encryption 'psk2-aes'
+	option key 'sabaiguest'
+	option 'isolate' 1
