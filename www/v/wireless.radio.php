@@ -36,8 +36,11 @@ var wl0=$.parseJSON('{<?php
           $wpa_type=trim(exec("uci get sabai.wlradio0.wpa_type"));
           $wpa_encryption=trim(exec("uci get sabai.wlradio0.wpa_encryption"));
           $wpa_psk=trim(exec("uci get sabai.wlradio0.wpa_psk"));
-          $wpa_rekey=trim(exec("uci get sabai.wlradio0.wpa_rekey"));      
-          echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_type\": \"$wpa_type\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"wpa_rekey\": \"$wpa_rekey\"";
+          $wpa_rekey=trim(exec("uci get sabai.wlradio0.wpa_rekey"));
+	  $channels_qty=trim(exec("uci get sabai.wlradio0.channels_qty"));      
+	  $channel=trim(exec("uci get sabai.wlradio0.channel_freq"));
+	  $auto=trim(exec("uci get sabai.wlradio0.auto"));
+          echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_type\": \"$wpa_type\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"wpa_rekey\": \"$wpa_rekey\", \"channel\": \"$channel\", \"auto\": \"$auto\", \"channels_qty\": \"$channels_qty\"";
       ?>}');
 var wl0_wepkeyraw='<?php
           $servers=exec("uci get sabai.wlradio0.wepkeys");
@@ -54,6 +57,8 @@ $('#wl_wpa_type').val(wl0.wpa_type);
 $('#wl_wpa_encryption').val(wl0.wpa_encryption); 
 $('#wl_wpa_psk').val(wl0.wpa_psk);  
 $('#wl_wpa_rekey').val(wl0.wpa_rekey);  
+$('#wl_channel').val(wl0.channel);
+$('#channel_mode').val(wl0.auto);
 
 function WLcall(){ 
   hideUi("Adjusting Wireless settings..."); 
@@ -240,6 +245,34 @@ $.widget("jai.wl_wl0", {
             )
           )
         ) // end PSK tr
+	
+	.append( $(document.createElement('tr'))
+	  .append( $(document.createElement('td')).html('Channel')
+	  )
+	  .append( $(document.createElement('td') )
+	    .append(
+	      $(document.createElement('input'))
+		.prop("id","wl_channel")
+		.prop("name","wl_channel")
+	    )
+	  )
+	  .append( $(document.createElement('td')).html('auto')
+	  )
+	    .append(
+	      $(document.createElement('select'))
+	        .prop("id", "channel_mode")
+	        .prop("name", "channel_mode")
+	        .prop("class", "radioSwitchElement")
+	      .append( $(document.createElement('option'))
+	        .prop("value", "on")
+	        .prop("text", "on")
+	      )
+	      .append( $(document.createElement('option'))                                                                                       
+                .prop("value", "off")                                                                                                           
+                .prop("text", "off")
+	      )
+	    )
+	) // end Channel tr
       ) // end WPA tbody
     ) // end lower table
 
@@ -276,6 +309,17 @@ $.widget("jai.wl_wl0", {
 	//$('#wl_wpa_rekey').val(wl[0].wpa.rekey);
 
 	$('#wl_wpa_rekey').spinner({ min: 0, max: 525600 }).spinner('value',wl0.wpa_rekey);
+
+	if (wl0.auto == "off") {	
+		$('#wl_channel').spinner({ min: 0, max: wl0.channels_qty }).spinner('value',wl0.channel);
+	} else {
+		E('wl_channel').value =  'Automaticaly set'+ wl0.channel;
+		E('wl_channel').disabled = true;
+	}
+	
+	$('#channel_mode').radioswitch({
+	 value: wl0.auto
+	});
 
 	$('#wl_wep_keys').oldeditablelist({ list: wl0_wepkey.keys, fixed: false });
 
