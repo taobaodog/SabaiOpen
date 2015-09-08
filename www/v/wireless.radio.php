@@ -59,6 +59,7 @@ $('#wl_wpa_psk').val(wl0.wpa_psk);
 $('#wl_wpa_rekey').val(wl0.wpa_rekey);  
 $('#wl_channel').val(wl0.channel);
 $('#channel_mode').val(wl0.auto);
+$('#wl_channel_msg').val('Automaticaly set'+ wl0.channel);
 
 function WLcall(){ 
   hideUi("Adjusting Wireless settings..."); 
@@ -121,7 +122,7 @@ $.widget("jai.wl_wl0", {
           )
         ) // end mode tr
 
-                .append( $(document.createElement('tr'))
+	.append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('SSID') 
           )
           .append( $(document.createElement('td') ) 
@@ -132,6 +133,50 @@ $.widget("jai.wl_wl0", {
             )
           )
         ) // end SSID tr
+
+	.append( $(document.createElement('tr'))
+	  .append( $(document.createElement('td')).html('Auto mode')                                                          
+         )
+	    .append( $(document.createElement('td') )                                                                                                              
+            .append(                                                                                                     
+              $(document.createElement('select'))                                                                        
+                .prop("id", "channel_mode")                                                                                                     
+                .prop("name", "channel_mode")                                                                            
+                .prop("class", "radioSwitchElement")                                                                     
+              .append( $(document.createElement('option'))                                                               
+                .prop("value", "on")                                                                                     
+                .prop("text", "on")                                                                                                             
+              )                                                                                                          
+              .append( $(document.createElement('option'))                                                       
+                .prop("value", "off")                                                                            
+                .prop("text", "off")                                                                                     
+              )                                                                                                                                 
+	    )
+	  )
+        ) // End tr
+
+	.append( $(document.createElement('tr')).addClass("channel control")
+	  .append( $(document.createElement('td')).html('Channel')                                       
+          ) 
+          .append( $(document.createElement('td')).addClass("channel_mode auto_on")
+            .append(                                                                                                                            
+              $(document.createElement('input'))                                                                         
+                .prop("id","wl_channel_msg")                                                                                 
+                .prop("name","wl_channel_msg")                                                                               
+		.prop("disabled", "true")
+            )                                                                                                            
+	  )
+
+	  .append( $(document.createElement('td')).addClass("channel_mode auto_off")
+            .append(                                                                                             
+              $(document.createElement('input'))                                                                    
+                .prop("id","wl_channel")                                                                 
+                .prop("name","wl_channel")                                                                       
+            )                                                                                                    
+          )
+
+	)
+	
 
         .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('Encryption') 
@@ -245,34 +290,6 @@ $.widget("jai.wl_wl0", {
             )
           )
         ) // end PSK tr
-	
-	.append( $(document.createElement('tr'))
-	  .append( $(document.createElement('td')).html('Channel')
-	  )
-	  .append( $(document.createElement('td') )
-	    .append(
-	      $(document.createElement('input'))
-		.prop("id","wl_channel")
-		.prop("name","wl_channel")
-	    )
-	  )
-	  .append( $(document.createElement('td')).html('auto')
-	  )
-	    .append(
-	      $(document.createElement('select'))
-	        .prop("id", "channel_mode")
-	        .prop("name", "channel_mode")
-	        .prop("class", "radioSwitchElement")
-	      .append( $(document.createElement('option'))
-	        .prop("value", "on")
-	        .prop("text", "on")
-	      )
-	      .append( $(document.createElement('option'))                                                                                       
-                .prop("value", "off")                                                                                                           
-                .prop("text", "off")
-	      )
-	    )
-	) // end Channel tr
       ) // end WPA tbody
     ) // end lower table
 
@@ -292,6 +309,32 @@ $.widget("jai.wl_wl0", {
 
 	$('#wl_ssid').val(wl0.ssid);
 
+	$('#channel_mode').radioswitch({ 
+		value: wl0.auto
+	});
+
+	$('#channel_mode').change(function(){
+		var selectOption = $(this).find(":selected").text();
+		if (selectOption.trim() == "off") {
+			$('.auto_on').hide();
+			$('.auto_off').show();
+		} else {
+			$('.auto_off').hide();
+			$('.auto_on').show();
+		}
+	})
+
+	if (wl0.auto == "off") {
+		$('.auto_on').hide();
+		$('.auto_off').show();
+	} else {
+		$('.auto_off').hide();
+		$('.auto_on').show();
+	}
+
+	$('#wl_channel').spinner({ min: 0, max: wl0.channels_qty }).spinner('value',wl0.channel);
+	$('#wl_channel_msg').val(wl0.channel);
+
 	$('#wl_encryption').radioswitch({
 		value: wl0.encryption
 	});
@@ -309,17 +352,6 @@ $.widget("jai.wl_wl0", {
 	//$('#wl_wpa_rekey').val(wl[0].wpa.rekey);
 
 	$('#wl_wpa_rekey').spinner({ min: 0, max: 525600 }).spinner('value',wl0.wpa_rekey);
-
-	if (wl0.auto == "off") {	
-		$('#wl_channel').spinner({ min: 0, max: wl0.channels_qty }).spinner('value',wl0.channel);
-	} else {
-		E('wl_channel').value =  'Automaticaly set'+ wl0.channel;
-		E('wl_channel').disabled = true;
-	}
-	
-	$('#channel_mode').radioswitch({
-	 value: wl0.auto
-	});
 
 	$('#wl_wep_keys').oldeditablelist({ list: wl0_wepkey.keys, fixed: false });
 
