@@ -139,8 +139,11 @@ function showUi(text){
   hidden.style.display = 'none'; 
 }
 
-function msg(msg){ 
-  E('messages').innerHTML=msg; 
+function msg(msg,wl){
+	if(wl)
+		E('messages1').innerHTML=msg;
+	else
+		E('messages').innerHTML=msg; 
 }
 
 function setVPNStats(){
