@@ -25,7 +25,7 @@
 	</div>
 </div>
 
-<input type='button' value='Save' onclick='WLcall("#fe1")'><span id='messages1'>  &nbsp;</span>                                                         
+<input type='button' value='Save' onclick='WLcall("#fe1")'><span id='messages1'>&nbsp;</span>                                                         
     <div id='hideme'>                                                                                                                          
         <div class='centercolumncontainer'>                                                                                                    
             <div class='middlecontainer'>                                                                                                      
@@ -46,7 +46,7 @@ var hidden, hide;
 var f = E('fe'); 
 var hidden = E('hideme'); 
 var hide = E('hiddentext');
-
+//TODO: remove wpa_type
 var wl0=$.parseJSON('{<?php
           $mode=exec("uci get sabai.wlradio0.mode");
           $ssid=trim(exec("uci get sabai.wlradio0.ssid"));

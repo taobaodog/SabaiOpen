@@ -2,25 +2,44 @@
 # Sabai Technology - Apache v2 licence
 # copyright 2014 Sabai Technology
 
-if [ $# -ne 1 ]; then
-        action=save
+#input parameters
+action="$1"
+device="$2"
+
+# checking action
+if [ "$action" = "save" ] || [ "$action" = "start" ] ; then
+	config_file=sabai
 else
-        action=$1
+	config_file=sabai-new
 fi
 
-if [ $action = "update" ]; then
-        config_file=sabai-new
-else
-        config_file=sabai
-fi
+# parsing common configs of devices
+mode=$(uci get $config_file.$device.mode)
+ssid=$(uci get $config_file.$device.ssid)
+wpa_psk=$(uci get $config_file.$device.wpa_psk)
+encryption=$(uci get $config_file.$device.encryption)
+channel_freq=$(uci get $config_file.$device.channel_freq)
 
-encryption=$(uci get $config_file.wlradio0.encryption)
+# parsing specific configs of main wl
+if [ "$device" = "wlradio0" ]; then
+	wpa_rekey=$(uci get $config_file.$device.wpa_rekey)
+	auto=$(uci get $config_file.$device.auto)
+	if [ "$auto" = "off" ]; then
+		uci set wireless.radio0.channel="$channel_freq"
+		uci commit wireless
+	else
+		uci set wireless.radio0.channel="auto"
+	fi
+fi
 
 uci set wireless.radio0.country='US'
-uci set wireless.radio0.channel='auto'
+
+
+
+
 wifi down
 
-if [ $(uci get $config_file.wlradio0.mode) = "off" ]; then
+if [ "$mode" = "off" ]; then
 		uci set wireless.radio0.disabled=1
 		uci delete wireless.@wifi-iface[0].mode
 	else
