@@ -733,6 +733,12 @@ color: blue;
 	margin: 10px 10px 10px 10px; 
 }
 
+#messages1 { 
+	display: inline-block; 
+	text-indent: 10px; 
+	margin: 10px 10px 10px 10px; 
+}
+
 .VPN_tab_off { 
 	width: 60px; 
 	display: inline-block; 
