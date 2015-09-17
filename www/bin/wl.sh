@@ -28,7 +28,7 @@ channel_freq=$(uci get $config_file.wlradio$device.channel_freq)
 
 # parsing specific configs of main wl
 if [ "$device" = "0" ]; then
-	wpa_rekey=$(uci get $config_file.wlradio$device.wpa_rekey)
+	uci set wireless.@wifi-iface["$device"].wpa_group_rekey=$(uci get $config_file.wlradio$device.wpa_group_rekey)
 	auto=$(uci get $config_file.wlradio$device.auto)
 	if [ "$auto" = "off" ]; then
 		uci set wireless.radio0.channel="$channel_freq"
@@ -83,10 +83,17 @@ _psk(){
 	uci commit wireless
 }
 
+_none(){
+	uci set wireless.@wifi-iface[$device].encryption='none'
+	uci delete wireless.@wifi-iface[$device].key
+	uci commit wireless
+	logger "NO encryption method for wlan$device."
+}
+
 ls >/dev/null 2>/dev/null 
 
 case $encryption in
-	none)	break;	;;
+	none)	_none	;;
 	wep)	_wep	;;
 	psk)	_psk	;;
 	psk2)	_psk	;;

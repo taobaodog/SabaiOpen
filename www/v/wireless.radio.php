@@ -58,7 +58,7 @@ var wl0=$.parseJSON('{<?php
           $wpa_type=trim(exec("uci get sabai.wlradio0.wpa_type"));
           $wpa_encryption=trim(exec("uci get sabai.wlradio0.wpa_encryption"));
           $wpa_psk=trim(exec("uci get sabai.wlradio0.wpa_psk"));
-          $wpa_rekey=trim(exec("uci get sabai.wlradio0.wpa_rekey"));
+          $wpa_rekey=trim(exec("uci get sabai.wlradio0.wpa_group_rekey"));
           $channels_qty=trim(exec("uci get sabai.wlradio0.channels_qty"));      
           $channel=trim(exec("uci get sabai.wlradio0.channel_freq"));
           $auto=trim(exec("uci get sabai.wlradio0.auto"));
@@ -629,6 +629,23 @@ $( "#fe" ).validate({
       required: true,
       range: [600, 7200]
     }
+  }
+});
+
+//validate the fields
+$( "#fe1" ).validate({
+  rules: {
+    wl1_ssid: {
+      required: true,
+    },
+    wl1_encryption: {
+      required: true,
+    },
+    wl1_wpa_psk : {
+      required: true,
+      minlength: 8,
+      maxlength: 63
+    },
   }
 });
 

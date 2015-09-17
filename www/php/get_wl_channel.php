@@ -3,5 +3,5 @@
 // copyright 2014 Sabai Technology
 
 // setting wlradio channel configs
-exec("sh /www/bin/wlchannel.sh");
+exec("sh /www/bin/wl_channel.sh");
 ?>
