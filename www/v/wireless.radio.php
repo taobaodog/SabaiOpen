@@ -46,6 +46,10 @@ var hidden, hide;
 var f = E('fe'); 
 var hidden = E('hideme'); 
 var hide = E('hiddentext');
+
+//WL init
+$.get('php/get_wl_channel.php');
+
 //TODO: remove wpa_type
 var wl0=$.parseJSON('{<?php
           $mode=exec("uci get sabai.wlradio0.mode");

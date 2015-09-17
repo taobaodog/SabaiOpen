@@ -121,9 +121,13 @@ for i in $CONFIG_SECTIONS; do
 				echo "in pf"
 				/www/bin/portforwarding.sh update
 			;;
-			wlradio0|wlradio1)
-				echo "in wlradio"
-				/www/bin/wl.sh update
+			wlradio0)
+				echo "in wlradio0"
+				/www/bin/wl.sh update 0
+			;;
+			wlradio1)
+				echo "in wlradio1"
+				/www/bin/wl.sh update 1
 			;;
 			loopback)
 				echo "loopback" >> /tmp/.etc_services

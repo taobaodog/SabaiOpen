@@ -13,15 +13,17 @@ wifi detect > /etc/config/wireless
 # enabling radio0
 [ -n "$(uci get wireless.@wifi-device[0].disabled)" ] && uci set wireless.@wifi-device[0].disabled=0
 
+# Setting country code
+uci set wireless.@wifi-device[0].country="US"
+uci commit wireless
+
 # commit the current sabai wireless settings
 # wlradio0
 sh /www/bin/wl.sh start 0
 logger "Wireless configurations for wlan0 were set."
 
 # wlradio1 - guest ap
-uci add wireless wifi-iface
-uci commit wireless
-sh /www/bin/wl.sh start 1
+vish /www/bin/wl.sh start 1
 logger "Wireless configurations for wlan1 were set."
 
 sleep 15

@@ -16,8 +16,7 @@ uci $UCI_PATH set sabai.wlradio0.channels.qty="$channel_aval"
 uci $UCI_PATH commit sabai
 
 # set current channel
-channel_curr_wl0=$(iw dev wlan0 info | grep "channel" | awk '{print $2}')
-channel_curr_wl1=$(iw dev wlan1 info | grep "channel" | awk '{print $2}')
-uci $UCI_PATH set sabai.wlradio0.channel_freq="$channel_curr_wl0"
-uci $UCI_PATH set sabai.wlradio1.channel_freq="$channel_curr_wl1"
+channel_curr=$(iw dev wlan0 info | grep "channel" | awk '{print $2}')
+uci $UCI_PATH set sabai.wlradio0.channel_freq="$channel_curr"
+uci $UCI_PATH set sabai.wlradio1.channel_freq="$channel_curr"
 uci $UCI_PATH commit sabai

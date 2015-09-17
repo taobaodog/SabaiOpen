@@ -6,9 +6,15 @@
 action="$1"
 device="$2"
 
+wifi down
+
 # checking action
-if [ "$action" = "save" ] || [ "$action" = "start" ] || [ "$action" = "update" ]; then
+if [ "$action" = "save" ]; then
 	config_file=sabai
+elif [ "$action" = "start" ]; then
+	config_file=sabai
+	uci add wireless wifi-iface
+	uci commit wireless
 else
 	config_file=sabai-new
 fi
@@ -41,8 +47,19 @@ else
 	uci set wireless.@wifi-iface["$device"].mode="$(uci get $config_file.wlradio$device.mode)";
 fi
 
-#uci set wireless.@wifi-iface[0].ssid="$(uci get $config_file.wlradio0.ssid)";
-#uci set wireless.@wifi-iface[0].encryption="$(uci get $config_file.wlradio0.encryption)";
+# Copy wlan configuration
+uci set wireless.@wifi-iface[$device].device="radio0"
+uci set wireless.@wifi-iface[$device].ssid="$(uci get $config_file.wlradio$device.ssid)"
+uci set wireless.@wifi-iface[$device].key="$(uci get $config_file.wlradio$device.wpa_psk)"
+
+# Setting specific configs for guest wlan
+if [ "$device" = "1" ]; then
+	uci set wireless.@wifi-iface[$device].ifname="wlan1"
+	uci set wireless.@wifi-iface[$device].network="guest"
+	uci set wireless.@wifi-iface[$device].isolate=1
+fi
+
+uci commit wireless
 
 _wep(){
 	wepkeys="$(uci get $config_file.wlradio0.wepkeys)";
@@ -57,12 +74,12 @@ _wep(){
 _psk(){
 	wpa_encryption=$(uci get $config_file.wlradio0.wpa_encryption)
 	full_encryption=$(echo "$encryption+$wpa_encryption") 
-	uci set wireless.@wifi-iface[0].encryption=$full_encryption
-	uci set wireless.@wifi-iface[0].key=$(uci get $config_file.wlradio0.wpa_psk)
-	uci set wireless.@wifi-iface[0].key1=''
-	uci set wireless.@wifi-iface[0].key2=''
-	uci set wireless.@wifi-iface[0].key3=''
-	uci set wireless.@wifi-iface[0].key4=''
+	uci set wireless.@wifi-iface[$device].encryption=$full_encryption
+	uci set wireless.@wifi-iface[$device].key=$(uci get $config_file.wlradio$device.wpa_psk)
+	uci set wireless.@wifi-iface[$device].key1=''
+	uci set wireless.@wifi-iface[$device].key2=''
+	uci set wireless.@wifi-iface[$device].key3=''
+	uci set wireless.@wifi-iface[$device].key4=''
 	uci commit wireless
 }
 
@@ -81,4 +98,5 @@ if [ $action = "update" ]; then
 else
 	wifi up
 fi
+
 logger "wireless script run and wifi restarted"
