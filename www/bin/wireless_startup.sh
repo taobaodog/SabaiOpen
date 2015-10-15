@@ -23,7 +23,7 @@ sh /www/bin/wl.sh start 0
 logger "Wireless configurations for wlan0 were set."
 
 # wlradio1 - guest ap
-vish /www/bin/wl.sh start 1
+sh /www/bin/wl.sh start 1
 logger "Wireless configurations for wlan1 were set."
 
 sleep 15
