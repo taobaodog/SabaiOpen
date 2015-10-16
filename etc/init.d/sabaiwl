@@ -2,12 +2,17 @@
 
 START=63
 
-wireless=$(ifconfig | grep wlan0)
-echo "setting up wireless"
-if [ -z $wireless ]; then
-   sh /www/bin/wireless_startup.sh
+start() {
+	logger "SABAI WL:> Setting up wireless."
+	if [ -z "$(ifconfig | grep wlan0)" ]; then
+   		sh /www/bin/wireless_startup.sh
         return 0;
-fi
+	else
+		logger "SABAI WL:> Wireless interfaces are working."
+	fi
+}
 
-exit 0
-
+stop() {
+	logger "SABAI WL:> Setting down wireless."
+	wifi down
+}
