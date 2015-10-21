@@ -1,0 +1,692 @@
+From 6406998c632c99e5db2c37310b222db517257cad Mon Sep 17 00:00:00 2001
+From: Kateryna Pietukhova <kateryna.pietukhova@sirisoftware.com>
+Date: Mon, 23 Mar 2015 18:00:03 +0200
+Subject: [PATCH 1/1] Ntpd, libcap, privoxy were added.
+
+---
+ package/libs/libcap/Makefile              |   56 ++++++++++
+ package/net/ntpd/Makefile                 |  157 +++++++++++++++++++++++++++++
+ package/net/ntpd/files/ntp.conf           |   26 +++++
+ package/net/ntpd/files/ntpd.hotplug       |   10 ++
+ package/net/ntpd/files/ntpd.init          |   18 ++++
+ package/net/ntpd/files/ntpdate.init       |   13 +++
+ package/net/privoxy/Makefile              |  109 ++++++++++++++++++++
+ package/net/privoxy/files/privoxy.config  |   44 ++++++++
+ package/net/privoxy/files/privoxy.hotplug |   18 ++++
+ package/net/privoxy/files/privoxy.init    |  150 +++++++++++++++++++++++++++
+ 10 files changed, 601 insertions(+)
+ create mode 100644 package/libs/libcap/Makefile
+ create mode 100644 package/net/ntpd/Makefile
+ create mode 100644 package/net/ntpd/files/ntp.conf
+ create mode 100644 package/net/ntpd/files/ntpd.hotplug
+ create mode 100644 package/net/ntpd/files/ntpd.init
+ create mode 100644 package/net/ntpd/files/ntpdate.init
+ create mode 100644 package/net/privoxy/Makefile
+ create mode 100644 package/net/privoxy/files/privoxy.config
+ create mode 100644 package/net/privoxy/files/privoxy.hotplug
+ create mode 100644 package/net/privoxy/files/privoxy.init
+
+diff --git a/package/libs/libcap/Makefile b/package/libs/libcap/Makefile
+new file mode 100644
+index 0000000..418033d
+--- /dev/null
++++ b/package/libs/libcap/Makefile
+@@ -0,0 +1,56 @@
++#
++# Copyright (C) 2011 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=libcap
++PKG_VERSION:=2.24
++PKG_RELEASE:=1
++
++PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
++PKG_SOURCE_URL:=http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/
++PKG_MD5SUM:=d43ab9f680435a7fff35b4ace8d45b80
++PKG_MAINTAINER:=Steven Barth <cyrus@openwrt.org>
++
++PKG_INSTALL:=1
++
++include $(INCLUDE_DIR)/package.mk
++include $(INCLUDE_DIR)/kernel.mk
++
++define Package/libcap
++  TITLE:=Linux capabilities library
++  SECTION:=libs
++  CATEGORY:=Libraries
++  URL:=http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/
++endef
++
++MAKE_FLAGS += \
++    CFLAGS="$(TARGET_CFLAGS)" \
++    BUILD_CC="$(CC)" \
++    BUILD_CFLAGS="$(FPIC) -I$(PKG_BUILD_DIR)/libcap/include" \
++    CFLAGS="$(TARGET_CFLAGS)" \
++    LD="$(TARGET_CC)" \
++    LDFLAGS="$(TARGET_LDFLAGS) -shared" \
++    INDENT="| true" \
++    PAM_CAP="no" \
++    LIBATTR="no" \
++    DYNAMIC="yes" \
++    lib="lib"
++
++define Build/InstallDev
++	$(INSTALL_DIR) $(1)/usr/include/sys
++	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
++	$(INSTALL_DIR) $(1)/usr/lib/
++	$(CP) $(PKG_INSTALL_DIR)/lib/* $(1)/usr/lib/
++endef
++
++define Package/libcap/install
++	$(INSTALL_DIR) $(1)/usr/lib
++	$(CP) $(PKG_INSTALL_DIR)/lib/libcap.so* $(1)/usr/lib/
++endef
++
++$(eval $(call BuildPackage,libcap))
+diff --git a/package/net/ntpd/Makefile b/package/net/ntpd/Makefile
+new file mode 100644
+index 0000000..34a8dda
+--- /dev/null
++++ b/package/net/ntpd/Makefile
+@@ -0,0 +1,157 @@
++#
++# Copyright (C) 2006-2015 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=ntp
++PKG_VERSION:=4.2.8p1
++PKG_RELEASE:=1
++
++PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
++PKG_SOURCE_URL:=http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/
++PKG_MD5SUM:=65d8cdfae4722226fbe29863477641ed
++
++PKG_LICENSE:=Unique
++PKG_LICENSE_FILES:=COPYRIGHT html/copyright.html
++
++PKG_FIXUP:=autoreconf
++PKG_LIBTOOL_PATHS:=. sntp
++PKG_CHECK_FORMAT_SECURITY:=0
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/ntpd/Default
++  SUBMENU:=Time Synchronization
++  SECTION:=net
++  CATEGORY:=Network
++  TITLE:=ISC ntp
++  MAINTAINER:=Peter Wagner <tripolar@gmx.at>
++  URL:=http://www.ntp.org/
++  DEPENDS:=+libopenssl +libpthread
++endef
++
++define Package/ntpd/Default/description
++ The ISC ntp suite is a collection of tools used to synchronize the
++ system clock with remote NTP time servers and run/monitor local NTP
++ servers.
++endef
++
++define Package/ntpd
++$(call Package/ntpd/Default)
++  TITLE+= server
++  DEPENDS+= +libcap
++  USERID:=ntp=123:ntp=123
++endef
++
++define Package/ntpd/description
++$(call Package/ntpd/Default/description)
++ .
++ This package contains the ntpd server.
++endef
++
++define Package/ntpdate
++$(call Package/ntpd/Default)
++  TITLE+=date
++endef
++
++define Package/ntpdate/description
++$(call Package/ntpd/Default/description)
++ .
++ This package contains ntpdate.
++endef
++
++define Package/ntp-utils
++$(call Package/ntpd/Default)
++  TITLE+= utilities
++endef
++
++define Package/ntp-utils/description
++$(call Package/ntpd/Default/description)
++ .
++ This package contains ntpdc, ntpq and ntptime.
++endef
++
++define Package/ntp-keygen
++$(call Package/ntpd/Default)
++  TITLE+=keygen
++endef
++
++define Package/ntp-keygen/description
++$(call Package/ntpd/Default/description)
++ .
++ This package contains the ntp-keygen.
++endef
++
++define Package/ntpd/conffiles
++/etc/ntp.conf
++endef
++
++CONFIGURE_VARS += \
++	ac_cv_header_md5_h=no \
++	ac_cv_lib_rt_sched_setscheduler=no \
++	ac_cv_header_dns_sd_h=no
++
++CONFIGURE_ARGS += \
++	--disable-all-clocks \
++	--disable-parse-clocks \
++	--without-ntpsnmpd \
++	--without-lineeditlibs \
++	--enable-NMEA \
++	--enable-LOCAL-CLOCK \
++	--enable-SHM \
++	--enable-linuxcaps \
++	--with-yielding-select=yes \
++	--with-crypto \
++	--with-openssl-incdir="$(STAGING_DIR)/usr/include" \
++	--with-openssl-libdir="$(STAGING_DIR)/usr/lib"
++
++define Package/ntpd/install
++	$(INSTALL_DIR) $(1)/sbin
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ntpd/ntpd $(1)/sbin/
++	$(INSTALL_DIR) $(1)/etc
++	$(INSTALL_CONF) ./files/ntp.conf $(1)/etc/
++	$(INSTALL_DIR) $(1)/etc/init.d
++	$(INSTALL_BIN) ./files/ntpd.init $(1)/etc/init.d/ntpd
++	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
++	$(INSTALL_BIN) ./files/ntpd.hotplug $(1)/etc/hotplug.d/iface/20-ntpd
++endef
++
++define Package/ntpd/postinst
++#!/bin/sh
++[ -L "$${IPKG_INSTROOT}/usr/sbin/ntpd" ] && rm -f "$${IPKG_INSTROOT}/usr/sbin/ntpd"
++exit 0
++endef
++
++define Package/ntpd/postrm
++#!/bin/sh
++/bin/busybox ntpd -h 2>&1 | grep -q BusyBox && ln -sf ../../bin/busybox /usr/sbin/ntpd
++exit 0
++endef
++
++define Package/ntpdate/install
++	$(INSTALL_DIR) $(1)/usr/sbin
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ntpdate/ntpdate $(1)/usr/sbin/
++	$(INSTALL_DIR) $(1)/etc/init.d
++	$(INSTALL_BIN) ./files/ntpdate.init $(1)/etc/init.d/ntpdate
++endef
++
++define Package/ntp-utils/install
++	$(INSTALL_DIR) $(1)/usr/sbin
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ntpdc/ntpdc $(1)/usr/sbin/
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ntpq/ntpq $(1)/usr/sbin/
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/util/ntptime $(1)/usr/sbin/
++endef
++
++define Package/ntp-keygen/install
++	$(INSTALL_DIR) $(1)/usr/sbin
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/util/ntp-keygen $(1)/usr/sbin/
++endef
++
++$(eval $(call BuildPackage,ntpd))
++$(eval $(call BuildPackage,ntpdate))
++$(eval $(call BuildPackage,ntp-utils))
++$(eval $(call BuildPackage,ntp-keygen))
+diff --git a/package/net/ntpd/files/ntp.conf b/package/net/ntpd/files/ntp.conf
+new file mode 100644
+index 0000000..8bfb8e3
+--- /dev/null
++++ b/package/net/ntpd/files/ntp.conf
+@@ -0,0 +1,26 @@
++# use a random selection of 4 public stratum 2 servers
++# see http://twiki.ntp.org/bin/view/Servers/NTPPoolServers
++
++#restrict default nomodify notrap noquery
++#restrict default noquery
++
++restrict 127.0.0.1
++
++driftfile  /var/lib/ntp/ntp.drift
++
++server 0.openwrt.pool.ntp.org iburst
++server 1.openwrt.pool.ntp.org iburst
++server 2.openwrt.pool.ntp.org iburst
++server 3.openwrt.pool.ntp.org iburst
++
++
++# GPS(NMEA)+PPS
++#server 127.127.20.0 minpoll 4 prefer
++#fudge 127.127.20.0 flag3 1 flag2 0
++
++# SMA PPS
++#server 127.127.28.0 minpoll 4 prefer
++#fudge 127.127.28.0 refid PPS flag3 1
++
++#server 192.168.1.253
++
+diff --git a/package/net/ntpd/files/ntpd.hotplug b/package/net/ntpd/files/ntpd.hotplug
+new file mode 100644
+index 0000000..992628f
+--- /dev/null
++++ b/package/net/ntpd/files/ntpd.hotplug
+@@ -0,0 +1,10 @@
++NAME=ntpd
++CONFIG=/etc/ntp.conf
++COMMAND=/usr/sbin/$NAME
++
++[ "$ACTION" = "ifup" -a "$INTERFACE" = "wan" ] && {
++        [ -x $COMMAND ] && [ -r $CONFIG ] && {
++		killall ntpd
++		/etc/init.d/ntpd start
++        } &
++}
+diff --git a/package/net/ntpd/files/ntpd.init b/package/net/ntpd/files/ntpd.init
+new file mode 100644
+index 0000000..e626e24
+--- /dev/null
++++ b/package/net/ntpd/files/ntpd.init
+@@ -0,0 +1,18 @@
++#!/bin/sh /etc/rc.common
++# Copyright (C) 2006-2011 OpenWrt.org
++
++START=65
++STOP=65
++
++USE_PROCD=1
++
++start_service() {
++#	ln -sf /dev/ttyS0 /dev/gps0
++#	/usr/sbin/setgarmin -d /dev/gps -c /etc/setgarmin.conf
++	mkdir -p /var/lib/ntp
++	chown -R ntp:ntp /var/lib/ntp
++
++	procd_open_instance
++	procd_set_param command /sbin/ntpd -g -u ntp:ntp -p /var/run/ntpd.pid -n
++	procd_close_instance
++}
+diff --git a/package/net/ntpd/files/ntpdate.init b/package/net/ntpd/files/ntpdate.init
+new file mode 100644
+index 0000000..2f33210
+--- /dev/null
++++ b/package/net/ntpd/files/ntpdate.init
+@@ -0,0 +1,13 @@
++#!/bin/sh /etc/rc.common
++# Copyright (C) 2006-2008 OpenWrt.org
++
++START=60
++
++STEP_SERVERS="0.openwrt.pool.ntp.org 1.openwrt.pool.ntp.org 2.openwrt.pool.ntp.org"
++TIMEOUT="2" # in seconds
++
++start() {
++	for s in $STEP_SERVERS ; do
++		/usr/sbin/ntpdate -s -b -u -t "$TIMEOUT" "$s" && break
++	done
++}
+diff --git a/package/net/privoxy/Makefile b/package/net/privoxy/Makefile
+new file mode 100644
+index 0000000..76f5615
+--- /dev/null
++++ b/package/net/privoxy/Makefile
+@@ -0,0 +1,109 @@
++#
++# Copyright (C) 2006-2015 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=privoxy
++PKG_VERSION:=3.0.23
++PKG_RELEASE:=3
++
++PKG_SOURCE:=privoxy-$(PKG_VERSION)-stable-src.tar.gz
++PKG_SOURCE_URL:=@SF/ijbswa
++PKG_MD5SUM:=bbe47d5ff1a54d9f9fc93a160532697f
++PKG_BUILD_DIR:=$(BUILD_DIR)/privoxy-$(PKG_VERSION)-stable
++PKG_FIXUP:=autoreconf
++PKG_INSTALL:=1
++
++PKG_LICENSE:=GPL-2.0
++PKG_LICENSE_FILES:=LICENSE
++
++PKG_MAINTAINER:=christian.schoenebeck@gmail.com
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/$(PKG_NAME)
++  SECTION:=net
++  CATEGORY:=Network
++  SUBMENU:=Web Servers/Proxies
++  DEPENDS:=+libpcre +libpthread +zlib
++  TITLE:=Privoxy WEB Proxy
++  URL:=http://www.privoxy.org/
++  USERID:=privoxy=8118:privoxy=8118
++endef
++
++# shown in LuCI package description
++define Package/$(PKG_NAME)/description
++$(TITLE) - Homepage: www.privoxy.org
++endef
++
++# shown in make menuconfig <Help>
++define Package/$(PKG_NAME)/config
++help
++	Privoxy is a web proxy with advanced filtering capabilities for protecting
++	privacy, modifying web page content, managing cookies, controlling access,
++	and removing ads, banners, pop-ups and other obnoxious Internet junk. 
++	Privoxy has a very flexible configuration and can be customized to suit
++	individual needs and tastes. 
++	Privoxy has application for both stand-alone systems and multi-user networks.
++
++	Run as : $(USERID)
++	Version: $(PKG_VERSION)-$(PKG_RELEASE)
++	Home   : $(URL)
++
++	$(PKG_MAINTAINER)
++endef
++
++CONFIGURE_ARGS += \
++	--sysconfdir=/etc/privoxy
++
++# needed otherwise errors during compile
++MAKE_FLAGS:=
++
++define Package/$(PKG_NAME)/conffiles
++/etc/config/privoxy
++/etc/privoxy/user.action
++/etc/privoxy/user.filter
++/etc/privoxy/user.trust
++endef
++
++define Package/$(PKG_NAME)/preinst
++	#!/bin/sh
++	[ -n "$${IPKG_INSTROOT}" ] && exit 0	# if run within buildroot exit
++
++	# stop service if PKG_UPGRADE
++	[ "$${PKG_UPGRADE}" = "1" ] && /etc/init.d/privoxy stop >/dev/null 2>&1
++		
++	exit 0	# supress errors from stop command
++endef
++
++define Package/$(PKG_NAME)/install
++	if [ -f $(PKG_INSTALL_DIR)/etc/privoxy/trust ]; then \
++		mv -f $(PKG_INSTALL_DIR)/etc/privoxy/trust $(PKG_INSTALL_DIR)/etc/privoxy/user.trust; \
++	fi
++	if [ -f $(PKG_INSTALL_DIR)/etc/privoxy/config ]; then \
++		rm -f $(PKG_INSTALL_DIR)/etc/privoxy/config; \
++	fi
++
++	$(INSTALL_DIR) \
++		$(1)/usr/sbin\
++		$(1)/etc/privoxy/templates
++	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/privoxy $(1)/usr/sbin/
++	find $(PKG_INSTALL_DIR)/etc/privoxy/templates -maxdepth 1 -type f \
++		-exec $(INSTALL_DATA) -t $(1)/etc/privoxy/templates {} \;
++	find $(PKG_INSTALL_DIR)/etc/privoxy -maxdepth 1 -type f \
++		-exec install -m0664 -t $(1)/etc/privoxy {} \;
++
++	$(INSTALL_DIR) \
++		$(1)/etc/init.d \
++		$(1)/etc/hotplug.d/iface \
++		$(1)/etc/config
++	$(INSTALL_BIN)  ./files/privoxy.init $(1)/etc/init.d/privoxy
++	$(INSTALL_BIN)  ./files/privoxy.hotplug $(1)/etc/hotplug.d/iface/80-privoxy
++	$(INSTALL_CONF) ./files/privoxy.config $(1)/etc/config/privoxy
++endef
++
++$(eval $(call BuildPackage,$(PKG_NAME)))
+diff --git a/package/net/privoxy/files/privoxy.config b/package/net/privoxy/files/privoxy.config
+new file mode 100644
+index 0000000..95b6cf1
+--- /dev/null
++++ b/package/net/privoxy/files/privoxy.config
+@@ -0,0 +1,44 @@
++# this file support all available configuration options of Privoxy web-proxy
++# the scripts move all options to the final privoxy readable configuration file
++#
++# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
++# !!! privoxy uses "-" in option names but uci only support "_"         !!!
++# !!! privoxy "listen-address" must be uci "listen_address"             !!!
++# !!!                                                                   !!!
++# !!! if you add entries please use                                     !!!
++# !!! option for options with one parameter (option confdir)            !!!
++# !!! list   for options with multiple parameters (list listen_address) !!!
++# !!!                                                                   !!!
++# !!! special handling for debug option                                 !!!
++# !!! privoxy option "debug 1024" must be uci option debug_1024 '1'     !!!
++# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
++#
++config	privoxy	'privoxy'
++	option	confdir		'/etc/privoxy'
++	option	logdir		'/var/log'
++	option	logfile		'privoxy.log'
++	list	filterfile	'default.filter'
++#	list	filterfile	'user.filter'
++	list	actionsfile	'match-all.action'
++	list	actionsfile	'default.action'
++#	list	actionsfile	'user.action'
++#	list	listen_address	'127.0.0.1:8118'
++	list	listen_address	'192.168.1.1:8118'
++	option	toggle		'1'
++	option	enable_remote_toggle	'1'
++	option	enable_remote_http_toggle	'0'
++	option	enable_edit_actions	'1'
++	option	enforce_blocks		'0'
++	option	buffer_limit		'4096'
++	option	forwarded_connect_retries	'0'
++	option	accept_intercepted_requests	'0'
++	option	allow_cgi_request_crunching	'0'
++	option	split_large_forms	'0'
++	option	keep_alive_timeout	'300'
++	option	socket_timeout		'300'
++	list	permit_access		'192.168.1.0/24'
++	option	debug_1		'0'
++	option	debug_512	'1'
++	option	debug_1024	'0'
++	option	debug_4096	'1'
++	option	debug_8192	'1'
+diff --git a/package/net/privoxy/files/privoxy.hotplug b/package/net/privoxy/files/privoxy.hotplug
+new file mode 100644
+index 0000000..bd66801
+--- /dev/null
++++ b/package/net/privoxy/files/privoxy.hotplug
+@@ -0,0 +1,18 @@
++#!/bin/sh
++
++# only (re-)start on ifup
++[ "$ACTION" = "ifup" ] || exit 0
++
++PIDFILE=/var/run/privoxy.pid
++
++_PID=$(cat $PIDFILE 2>/dev/null)
++kill -1 $_PID 2>/dev/null
++if [ $? -eq 0 ]; then
++	# only restart if already running
++	logger -p daemon.info -t "privoxy[$_PID]" \
++		"Restart request due to '$ACTION' of interface '$INTERFACE'"
++	/etc/init.d/privoxy restart
++else
++	# only start if enabled
++	/etc/init.d/privoxy enabled && /etc/init.d/privoxy start
++fi
+diff --git a/package/net/privoxy/files/privoxy.init b/package/net/privoxy/files/privoxy.init
+new file mode 100644
+index 0000000..b8d978f
+--- /dev/null
++++ b/package/net/privoxy/files/privoxy.init
+@@ -0,0 +1,150 @@
++#!/bin/sh /etc/rc.common
++
++START=80
++STOP=20
++
++PIDFILE=/var/run/privoxy.pid
++CFGFILE=/var/etc/privoxy.conf
++CFGTEMP=/var/etc/privoxy.conf.tmp
++
++_uci2conf() {
++	# redefined callback for options when calling config_load
++	option_cb()
++	{
++		# $1	name of variable
++		# $2	value
++		local __OPT="$1"
++		local __VAL="$2"
++		case $__OPT in
++			confdir|templdir|temporary_directory|logdir|logfile)
++				# needs to be handled separately because we need to set permissions
++				# AND needs to be defined first because of a BUG inside privoxy
++				# require directories to be defined first inside config 
++				;;
++			debug_*)
++				[ $__VAL -eq 0 ] && return	# not set ignore
++				echo -e "debug\t$(echo $__OPT | sed -e 's#debug_##g')" >> $CFGTEMP ;;
++			*)
++				# detect list options (LENGTH) and ignore
++				echo $__OPT | grep -i "_LENGTH" >/dev/null 2>&1 && return
++				# detect list options (ITEM) and ignore
++				echo $__OPT | grep -i "_ITEM" >/dev/null 2>&1 && __OPT=$(echo $__OPT | sed -e "s#_ITEM.##g")
++				# uci only accept "_" but we need "-"
++				local __OPT=$(echo $__OPT | sed -e "s#_#-#g")
++				# write to config
++				echo -e "$__OPT\t$__VAL" >> $CFGTEMP
++				;;
++		esac
++	}
++
++	# temporary config file
++	# privoxy need read access
++	mkdir -m0755 -p /var/etc
++	echo "" > $CFGTEMP
++	chmod 644 $CFGTEMP
++	chgrp privoxy $CFGTEMP
++
++	echo '### AUTO-GENERATED CONFIGURATION'	   >> $CFGTEMP
++	echo '### USED BY PRIVOXY'		   >> $CFGTEMP
++	echo '### DO NOT EDIT'			   >> $CFGTEMP
++	echo '### SEE /etc/config/privoxy INSTEAD' >> $CFGTEMP
++	echo ''					   >> $CFGTEMP
++
++	# confdir
++	# privoxy needs read access (possibly write access)
++	_CONFDIR=$(uci -q get privoxy.privoxy.confdir) || _CONFDIR="/etc/privoxy"
++	chmod 755 $_CONFDIR
++	chmod 664 $_CONFDIR/*
++	chgrp privoxy $_CONFDIR $_CONFDIR/*
++	echo -e "confdir\t$_CONFDIR" >> $CFGTEMP
++
++	# templdir
++	# privoxy need read access
++	_TEMPLDIR=$(uci -q get privoxy.privoxy.templdir)	# no default needed
++	if [ -z "$_TEMPLDIR" ]; then
++		chmod 755 $_CONFDIR/templates
++		chmod 644 $_CONFDIR/templates/*
++		chgrp privoxy $_CONFDIR/templates $_CONFDIR/templates/*
++	else
++		chmod 755 $_TEMPLDIR
++		chmod 644 $_TEMPLDIR/*
++		chgrp privoxy $_TEMPLDIR $_TEMPLDIR/*
++		echo -e "templdir\t$_TEMPLDIR" >> $CFGTEMP
++	fi
++
++	# logdir and logfile
++	# privoxy needs read/write access
++	_LOGDIR=$(uci -q get privoxy.privoxy.logdir)   || _LOGDIR="/var/log"
++	_LOGFILE=$(uci -q get privoxy.privoxy.logfile) || _LOGFILE="privoxy.log"
++	mkdir -m0755 -p $_LOGDIR
++	touch $_LOGDIR/$_LOGFILE
++	chmod 664 $_LOGDIR/$_LOGFILE
++	chown privoxy:privoxy $_LOGDIR/$_LOGFILE
++	echo -e "logdir\t$_LOGDIR" >> $CFGTEMP
++	echo -e "logfile\t$_LOGFILE" >> $CFGTEMP
++
++	# temporary-directory
++	# privoxy needs read/write access
++	_TMP_DIR=$(uci -q get privoxy.privoxy.temporary_directory)	# no default needed
++	if [ -n "$_TMP_DIR" ]; then
++		mkdir -m0750 -p $_TMP_DIR
++		chown privoxy:privoxy $_TMP_DIR
++		echo -e "temporary-directory\t$_TMP_DIR" >> $CFGTEMP
++	fi
++
++	config_load privoxy	# calling above option_cb() and write the rest into $CFGTEMP
++
++	# move temp to final privoxy readable configuration
++	mv -f $CFGTEMP $CFGFILE
++	return 0
++}
++
++boot() {
++	return 0	# will be started by "iface" hotplug events
++}
++
++start() {
++	# if already running do nothing
++	local _PID=$(cat $PIDFILE 2>/dev/null)
++	kill -1 $_PID 2>/dev/null && return 0
++
++	_uci2conf
++	/usr/sbin/privoxy --pidfile $PIDFILE --user privoxy.privoxy $CFGFILE
++
++	# verify startup
++	_PID=$(cat $PIDFILE 2>/dev/null)
++	kill -1 $_PID 2>/dev/null
++	local _ERR=$?
++	[ $_ERR -eq 0 ] \
++		&& logger -p daemon.notice -t "privoxy[$_PID]" "Started successfully"\
++		|| logger -p daemon.warn -t "privoxy[-----]" "Failed to start"
++	return $_ERR
++}
++
++reload() {
++	# reload is also used by luci-app-privoxy
++	local _PID=$(cat $PIDFILE 2>/dev/null)
++	kill -1 $_PID 2>/dev/null
++	if [ $? -eq 0 ]; then
++		# only restart if already running
++		restart
++	else
++		# only start if enabled
++		enabled && start
++	fi
++	return 0
++}
++
++stop() {
++	local _PID=$(cat $PIDFILE 2>/dev/null)
++	kill -15 $_PID 2>/dev/null
++	sleep 1			# give time to shutdown
++	local _tmp=$(pgrep privoxy | tr "\n" " ")
++	if [ -z "$_tmp" ]; then
++		logger -p daemon.notice -t "privoxy[$_PID]" "Shutdown successfully"
++	else
++		kill -9 $_tmp	# Normally never come here
++		logger -p daemon.warn -t "privoxy[-----]" "Shutdown forced by KILL"
++	fi
++	return 0
++}
+-- 
+1.7.9.5
+
