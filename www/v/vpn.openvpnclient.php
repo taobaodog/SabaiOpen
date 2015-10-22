@@ -66,7 +66,7 @@
 		function getUpdate(ipref){ 
 			que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
 	   $.get('php/get_remote_ip.php', function( data ) {
-	     donde = $.parseJSON(data.substring(6));
+	     donde = $.parseJSON(data.substring(4));
 	     console.log(donde);
 	     for(i in donde) E('loc'+i).innerHTML = donde[i];
 	   });
