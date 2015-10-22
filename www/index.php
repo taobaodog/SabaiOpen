@@ -22,12 +22,12 @@ function setUpdate(res){
 }
 
 function getUpdate(ipref){ 
-			que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
-	   $.get('php/get_remote_ip.php', function( data ) {
-	     donde = $.parseJSON(data.substring(6));
-	     console.log(donde);
-	     for(i in donde) E('loc'+i).innerHTML = donde[i];
-	   });
+	que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
+	$.get('php/get_remote_ip.php', function( data ) {
+		donde = $.parseJSON(data.substring(4));
+		console.log(donde);
+		for(i in donde) E('loc'+i).innerHTML = donde[i];
+	});
 }
 
 function init(){ 
@@ -86,11 +86,12 @@ $(function(){
 				</div>
 
 				<div class='fright' id='locstats'>
-					<div id='locip'></div>
-					<div class='noshow' id='loccontinent'></div>
+					<div id='locIP'></div>
+					<div id='loccity'></div> 
 					<div id='loccountry'></div>
 					<div class= 'noshow' id='locregion'></div>
-					<div id='loccity'></div>
+					<div class= 'noshow' id='loclat'></div>
+					<div class= 'noshow' id='loclon'></div>
 				</div>
 			<img id="helpButton" src="libs/img/help.png">
 			<div id="helpSection" class="ui-widget-content ui-corner-al">
