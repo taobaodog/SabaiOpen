@@ -83,6 +83,7 @@ $(function(){
 					<div class='fright' id='vpnstats'>
 					<div id='vpntype'></div>
 					<div id='vpnstatus'></div>
+					<div id='vpnip'></div>
 				</div>
 
 				<div class='fright' id='locstats'>
