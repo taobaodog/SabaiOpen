@@ -1,1 +1,23 @@
+#!/bin/sh /etc/rc.common
 
+toggle=$(ifconfig | grep eth1)
+
+if $toggle="" then accelerator else router
+
+accelerator() {
+  rm /etc/config/network
+  cp /etc/sabai/accelerator/network /etc/config/network
+  rm /etc/config/firewall
+  cp /etc/sabai/accelerator/firewall /etc/config/firewall
+  rm /www/php/menu.php
+  cp /etc/sabai/accelerator/menu.php /www/php/menu.php
+  uci set sabai.general.hostname="vpna"
+  uci set system.@system[0].hostname="vpna"
+  echo "vpna" > /proc/sys/kernel/hostname
+  echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
+  echo "hit accelerator" > /tmp/result
+}
+
+router() {
+	echo "hit router" > /tmp/result
+}
