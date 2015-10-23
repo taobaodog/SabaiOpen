@@ -1,5 +1,9 @@
 #!/bin/sh /etc/rc.common
 
+if [ ! -f /etc/sabai/firstboot ]; then
+    touch /etc/sabai/firstboot
+fi
+
 toggle=$(ifconfig | grep eth1)
 
 accelerator () {
@@ -22,12 +26,14 @@ router () {
 }
 
 
-if [$toggle eq ""]|[$(echo /etc/sabai/firstboot eq "")];
+if [$toggle eq ""]||[$(cat /etc/sabai/firstboot) eq "" ];
 then 
 	echo "accelerator"
 	accelerator 
 	echo "accelerator" > /etc/sabai/firstboot
-else 
+else if [ ! -f /tmp/foo.txt ]; then
+    echo "File not found!"
+fi
 	echo "router"
 	router
 	echo "router" > /etc/sabai/firstboot
