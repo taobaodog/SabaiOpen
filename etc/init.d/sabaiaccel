@@ -2,9 +2,7 @@
 
 toggle=$(ifconfig | grep eth1)
 
-if $toggle="" then accelerator else router
-
-accelerator() {
+accelerator () {
   rm /etc/config/network
   cp /etc/sabai/accelerator/network /etc/config/network
   rm /etc/config/firewall
@@ -18,6 +16,16 @@ accelerator() {
   echo "hit accelerator" > /tmp/result
 }
 
-router() {
-	echo "hit router" > /tmp/result
+router () {
+        echo "hit router" > /tmp/result
 }
+
+
+if [$toggle eq ""];
+then 
+	echo "accelerator"
+	accelerator 
+else 
+	echo "router"
+	router
+fi
