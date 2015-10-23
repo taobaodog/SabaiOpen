@@ -28,13 +28,11 @@ router () {
 
 if [$toggle eq ""]||[$(cat /etc/sabai/firstboot) eq "" ];
 then 
-	echo "accelerator"
+	logger "Device setup as accelerator"
 	accelerator 
 	echo "accelerator" > /etc/sabai/firstboot
-else if [ ! -f /tmp/foo.txt ]; then
-    echo "File not found!"
-fi
-	echo "router"
+else
+	logger "Device setup as router"
 	router
 	echo "router" > /etc/sabai/firstboot
 fi
