@@ -1,0 +1,15 @@
+config defaults
+	option syn_flood '1'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'REJECT'
+	option tcp_syncookies '0'
+
+config zone
+	option name 'lan'
+	option network 'lan'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'ACCEPT'
+	option masq '1'
+	option mtu_fix '1'
