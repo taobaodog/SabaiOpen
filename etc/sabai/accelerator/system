@@ -1,0 +1,7 @@
+config system
+	option timezone 'EST5EDT,M3.2.0,M11.1.0'
+	option hostname 'vpna'
+
+config timeserver 'ntp'
+	option enable_server '0'
+	option server '3.openwrt.pool.ntp.org 2.openwrt.pool.ntp.org 1.openwrt.pool.ntp.org'
