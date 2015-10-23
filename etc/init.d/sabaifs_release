@@ -27,23 +27,23 @@ create_partitions() {
 make_filesystems() {
 
         echo "SABAI:> making filesystems"
-	mount /dev/sda1 /mnt
+	mount -t ext2 /dev/sda1 /mnt
 	CMD_FILE=$(ls /mnt/boot/vmlinuz2)
 	umount /dev/sda1
         if [ -z "$CMD_FILE" ]; then
                 echo "SABAI:> Found sabai partitions. Creating filesystems"
-                mkfs.ext4 /dev/sda5
-                mkfs.ext4 /dev/sda6
-                mkfs.ext4 /dev/sda7
+                mkfs.ext4 -F /dev/sda5
+                mkfs.ext4 -F /dev/sda6
+                mkfs.ext4 -F /dev/sda7
                 echo "SABAI:> Copying kernel partition"
-                mount /dev/sda1 /mnt
+                mount -t ext4 /dev/sda1 /mnt
                 cp -f /mnt/boot/vmlinuz /mnt/boot/vmlinuz2
 		mv /mnt/boot/vmlinuz /mnt/boot/vmlinuz1
 
                 cp -f /etc/sabai/grub.cfg.sabai /mnt/boot/grub/grub.cfg
                 umount /dev/sda1
 
-                mount /dev/sda5 /mnt
+                mount -t ext4 /dev/sda5 /mnt
                 grub-editenv /mnt/grubenv create
                 grub-editenv /mnt/grubenv set boot_entry=0
 		grub-editenv /mnt/grubenv set is_upgrade=0
@@ -58,7 +58,7 @@ make_filesystems() {
 		echo "SABAI:> Configuration Sabai is allocated."
         else
 		echo "SABAI:> Filesystems already created"
-		mount /dev/sda5 /mnt
+		mount -t ext4 /dev/sda5 /mnt
 		UPGRADE_IN_PROGRESS=$(grub-editenv /mnt/grubenv list | grep is_upgrade | awk -F "=" '{print $2}')
 		PREV_KERNEL=$(grub-editenv /mnt/grubenv list | grep prev_kernel | awk -F "=" '{print $2}')
 		SAVE_DEFAULT=$(grub-editenv /mnt/grubenv list | grep save_default | awk -F "=" '{print $2}')
@@ -79,7 +79,7 @@ make_filesystems() {
 
 				umount /dev/sda5
 
-				mount /dev/sda1 /mnt
+				mount -t ext2 /dev/sda1 /mnt
 				# switching between entries requires calling "savedefault" function
 				# on entry, which is going to be used after upgrade
 				sed -i "s/function savedefault/tempstring/g" /mnt/boot/grub/grub.cfg
@@ -114,6 +114,6 @@ start_service() {
         exec 2>/dev/console  ;
         create_partitions
         make_filesystems
-        mount /dev/sda5 /mnt
+        mount -t ext4 /dev/sda5 /mnt
 }
 
