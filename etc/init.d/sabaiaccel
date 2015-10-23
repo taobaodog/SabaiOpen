@@ -9,8 +9,9 @@ accelerator () {
   cp /etc/sabai/accelerator/firewall /etc/config/firewall
   rm /www/php/menu.php
   cp /etc/sabai/accelerator/menu.php /www/php/menu.php
+  rm /etc/config/system
+  cp /etc/sabai/accelerator/system /etc/config/system
   uci set sabai.general.hostname="vpna"
-  uci set system.@system[0].hostname="vpna"
   echo "vpna" > /proc/sys/kernel/hostname
   echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
   echo "hit accelerator" > /tmp/result
@@ -21,11 +22,13 @@ router () {
 }
 
 
-if [$toggle eq ""];
+if [$toggle eq ""]|[$(echo /etc/sabai/firstboot eq "")];
 then 
 	echo "accelerator"
 	accelerator 
+	echo "accelerator" > /etc/sabai/firstboot
 else 
 	echo "router"
 	router
+	echo "router" > /etc/sabai/firstboot
 fi
