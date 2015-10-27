@@ -46,6 +46,8 @@ _start(){
 	else
 		uci $UCI_PATH set sabai.vpn.status=Connected
 		uci $UCI_PATH commit sabai
+		#adjusting ip rules
+		/www/bin/gw.sh vpn_gw
 		logger "Openvpn started."
 		_return 1 "OpenVPN started."
 	fi
@@ -71,7 +73,7 @@ _config(){
         fi
 
 	#Removing old configuration if it is.                                                                                                  
-        forward=$(uci show firewall | grep forwarding | grep dest=sabai | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                         
+        forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                         
         if [ "$forwarding" != "" ]; then                        
                 uci delete firewall.@forwarding["$forward"]                                                           
         else                                                                                                                                   
@@ -111,7 +113,7 @@ _clear(){
 	uci delete network.sabai                                                                    
 	uci commit network                                                                          
 	#Removing configuration of firewall.                                                        
-	forward=$(uci show firewall | grep forwarding | grep dest=sabai | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 	if [ "$forward" != "" ]; then                                                                                             
                 uci delete firewall.@forwarding["$forward"]
         else                                       
