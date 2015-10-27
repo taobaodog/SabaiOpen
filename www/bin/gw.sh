@@ -9,11 +9,33 @@ UCI_PATH="-c /configs"
 #find our local network, minus last octet.  For example 192.168.199.1 becomes 192.168.199
 lan_prefix="$(uci get network.lan.ipaddr | cut -d '.' -f1,2,3)"; 
 
+#TODO: Unused functionality for now.
 #get the current server address for sabaitechnology.biz for address services
-sabaibiz="$(nslookup sabaitechnology.biz | grep "Address 1:" | cut -d':' -f2 | awk '{print $1}' | awk '{print $1}' | tail -n 1)";
+#sabaibiz="$(nslookup sabaitechnology.biz | grep "Address 1:" | cut -d':' -f2 | awk '{print $1}' | awk '{print $1}' | tail -n 1)";
 
 _check_static(){
 	[ -n "$(uci show sabai | grep $1)" ] && sed -i "8i\/usr/sbin/ip rule add from "$1" table $2" /etc/rc.local
+}
+
+#configure vpn route table
+_vpn_config(){
+  	ip route add $2 dev $1
+	ip route | grep $1 | while read vpn_rt; do ip route add $vpn_rt table vpn; done
+	ip route del $2 dev $1
+}
+
+_vpn_start(){
+	if [ "$(ifconfig | grep tun0)" != "" ]; then
+		vpn_device="tun0"
+		vpn_gateway="$(ifconfig tun0 | grep P-t-P: | awk '{print $3}' | sed 's/P-t-P://g')"
+                _vpn_config $vpn_device $vpn_gateway
+	elif [ "$(ifconfig | grep pptp-vpn)" != "" ]; then
+		vpn_device="pptp-vpn";
+		vpn_gateway="$(ifconfig pptp-vpn | grep P-t-P: | awk '{print $3}' | sed 's/P-t-P://g')";
+		_vpn_config $vpn_device $vpn_gateway
+        else
+                logger "NO VPN route table was added."
+	fi
 }
 
 #clear the old ip routes
@@ -38,54 +60,38 @@ _start(){
 	wan_gateway="$(uci get network.wan.gateway)"; wan_iface="$(uci get network.wan.ifname)";
 	#adding wan route to 1 table
 	[ -n "$wan_iface" ] && ([ -n "$wan_gateway" ] && [ "$wan_gateway" != "0.0.0.0" ]) && ip route add default via $wan_gateway dev $wan_iface table wan 
-
 	#ensure that accelerator IP is set
 	if [ "$(uci get sabai.general.ac_ip)" = "" ]; then
 		uci $UCI_PATH set sabai.general.ac_ip=2
 		uci $UCI_PATH commit sabai
 	fi
 	# adding route to the accelerator to 2 table 
- 	ip route add default via "$lan_prefix.$(uci get sabai.general.ac_ip)" dev br-lan table acc
-
+	
+	ip route add default via "$lan_prefix.$(uci get sabai.general.ac_ip)" dev br-lan table acc
 	# adding VPN route to table 3
-	if [ "$(ifconfig | grep tun0)" != "" ]; then
-  		vpn_device="tun0"
-  		vpn_gateway="$(ifconfig tun0 | grep P-t-P: | awk '{print $3}' | sed 's/P-t-P://g')"
-  		ip route add $vpn_gateway dev $vpn_device
-		ip route | grep $vpn_device | while read vpn_rt; do ip route add $vpn_rt table acc; done
-		ip route del $vpn_gateway dev $vpn_device
-		ip route add $sabaibiz dev $vpn_device
-	elif [ "$(ifconfig | grep pptp-vpn)" != "" ]; then
-		vpn_device="pptp-vpn";                                                                    
-                vpn_gateway="$(ifconfig pptp-vpn | grep P-t-P: | awk '{print $3}' | sed 's/P-t-P://g')";                                       
-                ip route add $vpn_gateway dev $vpn_device                                                                                      
-                ip route | grep $vpn_device | while read vpn_rt; do ip route add $vpn_rt table acc; done             
-                ip route del $vpn_gateway dev $vpn_device                                             
-                ip route add $sabaibiz dev $vpn_device
-	else
-		logger "NO VPN route table was added."
-	fi
-
+	_vpn_start
 }
 
 _ip_rules(){
+	#setting priority 
+	val_prio=2
         #assign statics to ip rules                                                                                                            
 	case $1 in
 		local)
-			ip rule add from "$2" table wan 
+			ip rule add prio $val_prio from "$2" table wan 
 			_check_static $2 wan
 		;;
 		vpn_fallback)
-			ip rule add from "$2" table vpn
+			ip rule add prio $val_prio from "$2" table vpn
 			_check_static $2 vpn
 			logger "$2 is connected to vpn_fallback option."
 		;;
 		vpn_only)
-			ip rule add from "$2" table vpn
+			ip rule add prio $val_prio from "$2" table vpn
 			_check_static $2 vpn
 		;;
 		accelerator)
-			ip rule add from "$2" table acc
+			ip rule add prio $val_prio from "$2" table acc
 			_check_static $2 acc
 		;;
         esac
@@ -100,5 +106,6 @@ case $1 in
 	stop)	_stop		;;
 	start)	_start $2	;;
 	ds)	_ds		;;
+	vpn_gw)	_vpn_start	;;
 	iprules) _ip_rules $2 $3 ;;
 esac
