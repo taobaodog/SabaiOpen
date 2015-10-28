@@ -35,9 +35,10 @@ switch($vo){
  	exec("uci $UCI_PATH commit sabai");
  	break;
 }
+$vpn_status=exec("uci get sabai.vpn.status");
 
 $vpn = ",\n vpn: {\n type: '". $vpn_type ."',
-  status: '". (($vpn_type=='-')?'-':'Connected') ."',
+  status: '". (($vpn_type=='-')?'-': $vpn_status) ."',
   ip: '". $vpn_ip ."' \n },";
 
 echo "info = {\n"

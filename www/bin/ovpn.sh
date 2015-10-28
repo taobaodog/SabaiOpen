@@ -41,8 +41,8 @@ _start(){
 	if [ "$(cat /tmp/check | grep tun0)" == "" ]; then
 		uci $UCI_PATH set sabai.vpn.status=Disconnected
 		uci $UCI_PATH commit sabai
-		logger "“OpenVPN did not start. Please check your configuration."
-		_return 1 "“OpenVPN did not start. Please check your configuration."
+		logger "OpenVPN did not start. Please check your configuration."
+		_return 1 "OpenVPN did not start. Please check your configuration."
 	else
 		uci $UCI_PATH set sabai.vpn.status=Connected
 		uci $UCI_PATH commit sabai
