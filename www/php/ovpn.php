@@ -11,13 +11,6 @@ $VPNname=trim($_POST['VPNname']);
 $VPNpassword=trim($_POST['VPNpassword']);
 $conf=trim($_POST['conf']);
 
-exec("uci $UCI_PATH delete sabai.ovpn");
-exec("uci $UCI_PATH add sabai.ovpn=interface");
-exec("uci $UCI_PATH set sabai.ovpn.VPNname=\"" . $VPNname . "\"");
-exec("uci $UCI_PATH set sabai.ovpn.VPNpassword=\"" . $VPNpassword . "\"");
-exec("uci $UCI_PATH set sabai.ovpn.conf=\"" . $conf . "\"");
-exec("uci $UCI_PATH commit sabai");
-
 function newfile(){
  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
   exec("uci set openvpn.sabai.filename=$file");

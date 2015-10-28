@@ -88,8 +88,16 @@ $(function(){
 
 				<div class='fright' id='locstats'>
 					<div id='locIP'></div>
+					<table>
+					<tr>
+					<td>
 					<div id='loccity'></div> 
+					</td>
+					<td>
 					<div id='loccountry'></div>
+					</td>
+					</tr>
+					</table>
 					<div class= 'noshow' id='locregion'></div>
 					<div class= 'noshow' id='loclat'></div>
 					<div class= 'noshow' id='loclon'></div>

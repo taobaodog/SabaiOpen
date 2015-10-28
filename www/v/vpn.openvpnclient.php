@@ -47,7 +47,7 @@
 		var ovpnfile='<?php $filename=exec('uci get openvpn.sabai.filename'); echo $filename; ?>';
 		document.getElementById('ovpn_file').innerHTML = ovpnfile;
 		E('ovpn_file').innerHTML = 'Current File: ' + ovpnfile;
--		 msg('Please supply a .conf/.ovpn complete configuration or a DD-WRT style .sh script.');
+-		 msg('Please supply a .conf/.ovpn configuration file.');
 		}
 
 		function setUpdate(res){ 

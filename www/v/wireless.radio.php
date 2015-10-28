@@ -101,7 +101,6 @@ $('#wl1_encryption').val(wl1.encryption);
 $('#wl1_wpa_type').val(wl1.wpa_type); 
 $('#wl1_wpa_encryption').val(wl1.wpa_encryption); 
 $('#wl1_wpa_psk').val(wl1.wpa_psk);  
-$('#wl1_channel_msg').val(wl1.channel);
 
 function WLcall(wlForm){ 
   hideUi("Adjusting Wireless settings..."); 
@@ -190,7 +189,7 @@ $.widget("jai.wl_wl0", {
                 .prop("class", "radioSwitchElement")                                                                     
               .append( $(document.createElement('option'))                                                               
                 .prop("value", "off")                                                                                     
-                .prop("text", "Off")                                                                                                             
+                .prop("text", "Manual")                                                                                                             
               )                                                                                                          
               .append( $(document.createElement('option'))                                                       
                 .prop("value", "auto")                                                                            
@@ -313,7 +312,7 @@ $.widget("jai.wl_wl0", {
         ) // end WPA Encryption tr
 
         .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('PSK') 
+          .append( $(document.createElement('td')).html('Key') 
           )
           .append( $(document.createElement('td') ) 
             .append(
@@ -468,19 +467,6 @@ $.widget("jai.wl_wl1", {
 				) // End SSID
 
 				.append( $(document.createElement('tr'))
-					.append( $(document.createElement('td')).html('Channel')
-					)
-						.append( $(document.createElement('td') )
-							.append(
-								$(document.createElement('input'))
-									.prop("id","wl1_channel_msg")
-									.prop("name","wl1_channel_msg")
-									.prop("disabled", "true")
-							)
-						)
-				) // End Channel
-
-				.append( $(document.createElement('tr'))
 					.append( $(document.createElement('td')).html('Encryption')
 					)
 						.append( $(document.createElement('td') )
@@ -549,7 +535,7 @@ $.widget("jai.wl_wl1", {
 									) // end WPA Encryption tr
 
 									.append( $(document.createElement('tr'))
-										.append( $(document.createElement('td')).html('PSK')
+										.append( $(document.createElement('td')).html('Key')
 										)
 											.append( $(document.createElement('td') )
 												.append(
@@ -565,11 +551,6 @@ $.widget("jai.wl_wl1", {
 		 
 	$('#wl1_mode').radioswitch({ value: wl1.mode });
 	$('#wl1_ssid').val(wl1.ssid);
-	$('#channel_mode_wl1').radioswitch({
-		value: wl1.auto
-	});
-
-	$('#wl1_channel_msg').val(wl1.channel);
 
 	$('#wl1_encryption').radioswitch({
 		value: wl1.encryption
