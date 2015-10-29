@@ -38,20 +38,14 @@ _vpn_on(){
 
 #get dhcp information and build the dhcp table
 _get(){
-#get wan address and mac
-wanip=$(ip route | grep -e "/24 dev eth0" | awk -F: '{print $0}' | awk '{print $5}')
-wanmac=$(ifconfig eth0 | grep 'eth0' | awk -F: '{print $0}' | awk '{print $5}')
-wanport=$(uci get network.wan.ifname)
-wantime="----"
 
 #begin json table with wan port info
-echo -n '{"aaData": [{"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "mac": "'$wanmac'", "name": "WAN PORT", "time": "'$wantime'"}'> /www/libs/data/dhcp.json
-echo -n '{"1": {"static": "WAN PORT", "route": "--------", "ip": "'$wanip'", "mac": "'$wanmac'", "name": "WAN PORT", "time": "'$wantime'"}' > /tmp/dhcptable
+echo -n '{"aaData": ['> /www/libs/data/dhcp.json
+echo -n '{' > /tmp/dhcptable
 
 #continue json table with /tmp/dhcp.leases file info
 line_num=1
 cat /tmp/dhcp.leases | while read -r line ; do
-	line_num=$(( $line_num + 1 ))
 	epochtime=$(echo "$line" | awk '{print $1}')
 	dhcptime=$(date -d @"$epochtime")
 	mac=$(echo "$line" | awk '{print $2}')
@@ -69,11 +63,14 @@ cat /tmp/dhcp.leases | while read -r line ; do
 		static="on"
 	fi
 
-	echo -n ', {"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"}' >> /www/libs/data/dhcp.json
-	echo -n ',"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"}' >> /tmp/dhcptable
+	echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /www/libs/data/dhcp.json
+	echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /tmp/dhcptable
+	line_num=$(( $line_num + 1 ))
 done
 
 #close up the json format
+sed -i '$ s/.$//' /www/libs/data/dhcp.json
+sed -i '$ s/.$//' /tmp/dhcptable
 echo -n ']}' >> /www/libs/data/dhcp.json
 echo -n '}' >> /tmp/dhcptable
 
@@ -199,6 +196,9 @@ _json() {
 	uci $UCI_PATH set sabai.dhcp.tablejs="$jsData"
 	uci $UCI_PATH set sabai.dhcp.table="$aaData"
 	uci $UCI_PATH commit sabai
+
+	#save for web
+	uci $UCI_PATH get sabai.dhcp.table > /www/libs/data/dhcp.json
 }
 
 

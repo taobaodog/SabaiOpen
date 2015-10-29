@@ -44,10 +44,9 @@
 
 <script type='text/ecmascript'>
 var settings;
-<?php exec('sh /www/bin/dhcp.sh get') ?>
+
 
 	$.widget("jai.devicelist", {
-
   //Adding to the built-in widget constructor method - do this when widget is instantiated
   _create: function(){
     //TO DO: check to see if containing element has a unique id
