@@ -4,7 +4,7 @@ config interface 'loopback'
 	option ipaddr '127.0.0.1'
 	option netmask '255.0.0.0'
 
-config interface 'lan'
+config interface 'wan'
 	option ifname 'eth0'
 	option netmask '255.255.255.0'
 	option ipaddr '192.168.200.254'
