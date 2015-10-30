@@ -6,8 +6,8 @@ config defaults
 	option tcp_syncookies '0'
 
 config zone
-	option name 'lan'
-	option network 'lan'
+	option name 'wan'
+	option network 'wan'
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'ACCEPT'
