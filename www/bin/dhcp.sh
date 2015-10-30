@@ -36,52 +36,111 @@ _vpn_on(){
 	fi
 }
 
+_rewrite(){
+	logger "REWRITING"
+	line_num=1
+	data="$(uci get sabai.dhcp.tablejs)"
+	json_load "$data"
+	json_select 1
+	json_select ..
+	json_get_keys keys
+	num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
+	cat /tmp/dhcp.leases | while read -r line ; do
+		epochtime=$(echo "$line" | awk '{print $1}')
+		dhcptime=$(date -d @"$epochtime")
+		mac=$(echo "$line" | awk '{print $2}')
+		name=$(echo "$line" | awk '{print $4}')
+		i=1
+		while [ $i -le $num_items ]
+		do
+			json_select $i
+			json_get_var mac_curr mac
+			if [ "$mac_curr" = "$mac" ]; then
+				json_get_var ip ip
+				json_get_var route route
+				json_get_var static static
+			elif [ "$mac_curr" != "$mac" ] && [ $i -eq $num_items ]; then
+				ip=$(echo "$line" | awk '{print $3}')
+				name=$(echo "$line" | awk '{print $4}')
+				static="off"
+				route="default"
+			else
+				echo -e "\n"
+			fi
+			json_select ..
+			i=$(( $i + 1 ))
+		done
+		echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /tmp/dhcptable
+		echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /www/libs/data/dhcp.json
+		line_num=$(( $line_num + 1 ))
+	done
+}
+
+_close() {
+	#close up the json format
+	sed -i '$ s/.$//' /www/libs/data/dhcp.json
+	sed -i '$ s/.$//' /tmp/dhcptable
+	echo -n ']}' >> /www/libs/data/dhcp.json
+	echo -n '}' >> /tmp/dhcptable
+	#save table as single line json
+	uci $UCI_PATH set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
+	uci $UCI_PATH set sabai.dhcp.tablejs="$(cat /tmp/dhcptable)"
+	uci $UCI_PATH commit sabai
+	#clear tmp files
+	rm /tmp/dhcptable
+	logger "EXECUTED!"
+
+}
+
 #get dhcp information and build the dhcp table
 _get(){
 
-#begin json table with wan port info
-echo -n '{"aaData": ['> /www/libs/data/dhcp.json
-echo -n '{' > /tmp/dhcptable
-
-#continue json table with /tmp/dhcp.leases file info
-line_num=1
-cat /tmp/dhcp.leases | while read -r line ; do
-	epochtime=$(echo "$line" | awk '{print $1}')
-	dhcptime=$(date -d @"$epochtime")
-	mac=$(echo "$line" | awk '{print $2}')
-	exists=$(uci show dhcp | grep "$mac" | cut -d "[" -f2 | cut -d "]" -f1)
-	#static attribute check
-	if [ "$exists" = "" ]; then
-		ipaddr=$(echo "$line" | awk '{print $3}')
-		name=$(echo "$line" | awk '{print $4}')
-		static="off"
-		route="default"
+	if [ -e "/tmp/dhcp.leases_backup"  ]; then
+		#compare old data
+		diff /tmp/dhcp.leases_backup /tmp/dhcp.leases > /dev/null
+		if [ "$?" -eq 1 ]; then
+			echo -n '{"aaData": ['> /www/libs/data/dhcp.json
+			echo -n '{' > /tmp/dhcptable
+			_rewrite
+			_close
+			#backup last data
+			cp /tmp/dhcp.leases /tmp/dhcp.leases_backup
+		else
+	        	logger "DHCP table has no changes."
+        	fi
 	else
-		ipaddr=$(uci get dhcp.@host["$exists"].ip)
-		name=$(uci get dhcp.@host["$exists"].name)
-		route=$(uci get sabai.@dhcphost["$exists"].route)
-		static="on"
+		echo -n '{"aaData": ['> /www/libs/data/dhcp.json
+		echo -n '{' > /tmp/dhcptable
+		#backup last data
+		cp /tmp/dhcp.leases /tmp/dhcp.leases_backup
+
+		#continue json table with /tmp/dhcp.leases file info
+		line_num=1
+		cat /tmp/dhcp.leases | while read -r line ; do
+			epochtime=$(echo "$line" | awk '{print $1}')
+			dhcptime=$(date -d @"$epochtime")
+			mac=$(echo "$line" | awk '{print $2}')
+			exists=$(uci show dhcp | grep "$mac" | cut -d "[" -f2 | cut -d "]" -f1)
+			#static attribute check
+			if [ "$exists" = "" ]; then
+				ip=$(echo "$line" | awk '{print $3}')
+				name=$(echo "$line" | awk '{print $4}')
+				static="off"
+				route="default"
+			else
+				ip=$(uci get dhcp.@host["$exists"].ip)
+				name=$(uci get dhcp.@host["$exists"].name)
+				route=$(uci get sabai.@dhcphost["$exists"].route)
+				static="on"
+			fi
+
+			echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /www/libs/data/dhcp.json
+			echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /tmp/dhcptable
+			line_num=$(( $line_num + 1 ))
+		done
+		_close
 	fi
 
-	echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /www/libs/data/dhcp.json
-	echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /tmp/dhcptable
-	line_num=$(( $line_num + 1 ))
-done
-
-#close up the json format
-sed -i '$ s/.$//' /www/libs/data/dhcp.json
-sed -i '$ s/.$//' /tmp/dhcptable
-echo -n ']}' >> /www/libs/data/dhcp.json
-echo -n '}' >> /tmp/dhcptable
-
-#save table as single line json
-uci $UCI_PATH set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
-uci $UCI_PATH set sabai.dhcp.tablejs="$(cat /tmp/dhcptable)"
-uci $UCI_PATH commit sabai
-
-#clear tmp files
-rm /tmp/dhcptable
-logger "EXECUTED!"
 } #end _get
 
 #Save the modified existing DHCP table
