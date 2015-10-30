@@ -1,10 +1,8 @@
 #!/bin/sh /etc/rc.common
 
-if [ ! -f /etc/sabai/firstboot ]; then
-    touch /etc/sabai/firstboot
-fi
+START=25
 
-toggle=$(ifconfig | grep eth1)
+USE_PROCD=1
 
 accelerator () {
   rm /etc/config/network
@@ -25,14 +23,20 @@ router () {
         echo "hit router" > /tmp/result
 }
 
-
-if [$toggle eq ""]||[$(cat /etc/sabai/firstboot) eq "" ];
-then 
-	logger "Device setup as accelerator"
-	accelerator 
-	echo "accelerator" > /etc/sabai/firstboot
-else
-	logger "Device setup as router"
-	router
-	echo "router" > /etc/sabai/firstboot
-fi
+start_service() {
+        exec 1>/dev/console  ;
+        exec 2>/dev/console  ;
+        if [ ! -f /etc/sabai/devtype ]; then
+    		touch /etc/sabai/devtype
+	fi
+	if [$toggle eq ""]||[$(cat /etc/sabai/devtype) eq "" ];
+		then 
+			logger "Device setup as accelerator"
+			accelerator 
+			echo "accelerator" > /etc/sabai/devtype
+	else
+		logger "Device setup as router"
+		router
+		echo "router" > /etc/sabai/devtype
+	fi
+}
