@@ -7,20 +7,23 @@ USE_PROCD=1
 accelerator () {
   rm /etc/config/network
   cp /etc/sabai/accelerator/network /etc/config/network
+  /etc/init.d/network reload
   rm /etc/config/firewall
   cp /etc/sabai/accelerator/firewall /etc/config/firewall
+  /etc/init.d/firewall restart
   rm /www/php/menu.php
   cp /etc/sabai/accelerator/menu.php /www/php/menu.php
-  rm /etc/config/system
-  cp /etc/sabai/accelerator/uhttpd /www/config/uhttpd
+  rm /www/v/network.wan.php
+  cp /etc/sabai/accelerator/network.wan.php /www/v/network.wan.php
+  rm /etc/config/uhttpd
+  cp /etc/sabai/accelerator/uhttpd /etc/config/uhttpd
+  /etc/init.d/uhttpd restart
   rm /etc/config/system
   cp /etc/sabai/accelerator/system /etc/config/system
   uci set sabai.general.hostname="vpna"
   echo "vpna" > /proc/sys/kernel/hostname
   echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
   echo "hit accelerator" > /tmp/result
-  /etc/init.d/firewall restart
-  /etc/init.d/uhttpd restart
 }
 
 router () {
