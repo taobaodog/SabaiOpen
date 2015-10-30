@@ -12,11 +12,15 @@ accelerator () {
   rm /www/php/menu.php
   cp /etc/sabai/accelerator/menu.php /www/php/menu.php
   rm /etc/config/system
+  cp /etc/sabai/accelerator/uhttpd /www/config/uhttpd
+  rm /etc/config/system
   cp /etc/sabai/accelerator/system /etc/config/system
   uci set sabai.general.hostname="vpna"
   echo "vpna" > /proc/sys/kernel/hostname
   echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
   echo "hit accelerator" > /tmp/result
+  /etc/init.d/firewall restart
+  /etc/init.d/uhttpd restart
 }
 
 router () {
