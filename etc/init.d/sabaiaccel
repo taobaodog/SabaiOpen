@@ -35,15 +35,23 @@ start_service() {
         exec 2>/dev/console  ;
         if [ ! -f /etc/sabai/devtype ]; then
     		touch /etc/sabai/devtype
+    		else
+    		if [$(cat /etc/sabai/devtype) -eq "accelerator"]
+    			then
+    			sh /etc/sabai/accelerator/wanfix.sh
+    		fi
 	fi
+	toggle=$(ifconfig | grep eth1);
 	if [$toggle eq ""]||[$(cat /etc/sabai/devtype) eq "" ];
 		then 
 			logger "Device setup as accelerator"
 			accelerator 
 			echo "accelerator" > /etc/sabai/devtype
-	else
-		logger "Device setup as router"
-		router
-		echo "router" > /etc/sabai/devtype
+			sh /etc/sabai/accelerator/wanfix.sh
 	fi
+	if [toggle -ne ""]||[$(cat /etc/sabai/devtype) eq "" ]
+		then
+			logger "Device setup as router"
+			router
+			echo "router" > /etc/sabai/devtype
 }
