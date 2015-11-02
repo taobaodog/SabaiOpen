@@ -54,4 +54,6 @@ start_service() {
 			logger "Device setup as router"
 			router
 			echo "router" > /etc/sabai/devtype
+	fi
 }
+start_service
