@@ -44,10 +44,10 @@ umount /dev/sda5
 mount -t ext2 /dev/sda1 /mnt
 
 if [ "$CURRENT_KERNEL" = "0" ]; then
-	cp -f /tmp/upgrade/openwrt-x86_64-vmlinuz /mnt/boot/vmlinuz2
+	cp -f /tmp/upgrade/openwrt-x86-64-vmlinuz /mnt/boot/vmlinuz2
 	dd if=/tmp/upgrade/rootfs-sabai.img of=/dev/sda3
 else
-	cp -f /tmp/upgrade/openwrt-x86_64-vmlinuz /mnt/boot/vmlinuz1
+	cp -f /tmp/upgrade/openwrt-x86-64-vmlinuz /mnt/boot/vmlinuz1
 	dd if=/tmp/upgrade/rootfs-sabai.img of=/dev/sda2
 fi
 umount /dev/sda1
