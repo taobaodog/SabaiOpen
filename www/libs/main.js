@@ -116,7 +116,14 @@ function hideUi_timer(hide_msg, time) {
   function timer() {
 	minutes = count/60 >> 0;
 	seconds = count - minutes*60;
-	hide.innerHTML= hide_msg + " " + minutes + ":" + seconds;
+	zero_up = minutes*60 + 10;
+	zero_low = minutes*60;
+	
+	if ((count > zero_low) && (count < zero_up)) {
+                hide.innerHTML= hide_msg + " " + minutes + ":" + "0" + seconds;
+        } else {
+                hide.innerHTML= hide_msg + " " + minutes + ":" + seconds;
+        }
   	
 	if ((count%60 == 1) && (count != 1)) {
 		count = count - 2;

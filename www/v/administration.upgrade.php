@@ -241,9 +241,9 @@ function Upgrade(act)	{
 				}
 			})
 			.fail(function() {
-				hideUi_timer("Firmware was transferred. Please wait. Upgrade in progress...", 170);
-				setTimeout(function(){hideUi("Please wait. Check installation status.")},171000);
-                                setTimeout(function(){checkUpdate()}, 180000);
+				hideUi_timer("Firmware was transferred. Please wait. Upgrade in progress...", 270);
+				setTimeout(function(){hideUi("Please wait. Check installation status.")},271000);
+                                setTimeout(function(){checkUpdate()}, 280000);
 			})
 	});
 
