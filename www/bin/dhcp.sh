@@ -59,11 +59,13 @@ _rewrite(){
 				json_get_var ip ip
 				json_get_var route route
 				json_get_var static static
+				break
 			elif [ "$mac_curr" != "$mac" ] && [ $i -eq $num_items ]; then
 				ip=$(echo "$line" | awk '{print $3}')
 				name=$(echo "$line" | awk '{print $4}')
 				static="off"
 				route="default"
+				break
 			else
 				echo -e "\n"
 			fi
@@ -71,7 +73,7 @@ _rewrite(){
 			i=$(( $i + 1 ))
 		done
 		echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /tmp/dhcptable
-		echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ipaddr'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /www/libs/data/dhcp.json
+		echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /www/libs/data/dhcp.json
 		line_num=$(( $line_num + 1 ))
 	done
 }
