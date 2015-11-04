@@ -92,6 +92,14 @@
 	 	</select>
 		<input type="text" name='detail' id='detail'><span id='detailSuffix'></span>
 		<input id='goButton' type="button" value="Go" onclick="goLog();">
+		<div id='hideme'>
+            		<div class='centercolumncontainer'>
+                		<div class='middlecontainer'>
+                    			<div id='hiddentext'>Please wait...</div>
+                    		<br>
+                		</div>
+            		</div>
+        	</div><br>
 </form>
 		<textarea id='logContents' readonly></textarea>
 	</div>
@@ -101,10 +109,29 @@
 </div>
 
 <script type='text/javascript'>
+var hidden, hide, pForm = {};
+var hidden = E('hideme');
+var hide = E('hiddentext');
+
 
 function goLog(n){
 	if($("#act").val() == "download"){
-		alert("DOWNLOAD FILE");
+		hideUi("Downloading ...");
+		$.ajax("php/logs.php", {
+			success: function(data){
+				if (data.trim() == "false") {
+					hideUi("Log file is missed.");
+					setTimeout(function(){showUi()},4500);
+				} else {
+					window.location.href = data 
+					hideUi("Downloading completed.");
+					setTimeout(function(){showUi()},4500);
+				}
+			},
+			error: function(data){ hideUi("Failed"); setTimeout(function(){showUi()},4500); },
+			dataType: "text",
+			data: $("#fe").serialize()
+		});
 	}else{
 		$.ajax("php/logs.php", {
 			success: function(o){ $('#logContents').html(o); },

@@ -51,7 +51,16 @@ switch ($act) {
 	case 'grep':
 		passthru( $isZipped ? "gunzip -c $validPath | $act $detail" : "$act $detail $validPath" );
 	break;
-
+	case 'download':
+		if (file_exists("/var/log/messages")) {
+			exec("cat /var/log/messages > /configs/syslog");
+			$pathToFile = "/configs/syslog";
+		} else {
+			$pathToFile = "false";
+		}
+		echo $pathToFile;
+	break;
+	
 	case 'list':
 	default:
 		listFiles($logPath);
