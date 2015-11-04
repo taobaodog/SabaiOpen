@@ -53,8 +53,8 @@ switch ($act) {
 	break;
 	case 'download':
 		if (file_exists("/var/log/messages")) {
-			exec("cat /var/log/messages > /configs/syslog");
-			$pathToFile = "/configs/syslog";
+			exec("cat /var/log/messages > /configs/log/syslog");
+			$pathToFile = "/configs/log/syslog";
 		} else {
 			$pathToFile = "false";
 		}
