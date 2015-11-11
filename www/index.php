@@ -61,6 +61,7 @@ function closeHelpSection() {
  if( empty($panel) ){ $panel = 'network'; $section = 'wan'; }
  $page = ( $template ?'m':'v') ."/$panel". ( empty($section) ? '' : ".$section") .".php";
  if(!file_exists($page)) $page = 'v/lorem.php';
+ if($page == "192.168.199.1/php") $page = 'v/lorem.php';
  echo "var template = ". ($template?'true':'false') ."; var panel = '$panel'; var section = '$section';\n";
 ?>
 
