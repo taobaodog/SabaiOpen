@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// copyright 2014 Sabai Technology, LLC
+// Copyright 2015 Sabai Technology, LLC
 $filter = array("<", ">","="," (",")",";","/","|");
 $_REQUEST['primaryDNS']=str_replace ($filter, "#", $_REQUEST['primaryDNS']);
 $_REQUEST['secDNS']=str_replace ($filter, "#", $_REQUEST['secDNS']);

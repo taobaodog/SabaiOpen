@@ -3,6 +3,7 @@
 <div id="vpn_clients"></div>
 
 <pre id="testing"></pre>
+<div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
 
 <script type='text/ecmascript' src='php/etc.php?q=vpnclients'></script>
 <script type='text/ecmascript'>

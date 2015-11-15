@@ -1,4 +1,6 @@
 #!/bin/ash
+# Sabai Technology - Apache v2 licence
+# Copyright 2015 Sabai Technology
 
 action=$1
 

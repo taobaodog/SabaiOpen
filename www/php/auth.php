@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// copyright 2014 Sabai Technology, LLC
+// Copyright 2015 Sabai Technology, LLC
 $userPass=$_REQUEST['sabaiPassword'];
 $password = crypt($userPass);
 //path to config files

@@ -10,6 +10,7 @@
       
     </div> <!--end control box content -->
 </div> <!--end control box  -->
+<div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
 
 <!-- COPIED FROM NETWORK: STATIC IP's, partially modified
 NEEDS LOTS OF WORK -->

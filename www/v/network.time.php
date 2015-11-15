@@ -63,7 +63,7 @@ Sync time and zone with computer time/zone
     </div>
 <input type='button' value='Save' onclick='TIMEcall()'><span id='messages'>&nbsp;</span>
 <p>
-        <div id='footer'>Copyright © 2014 Sabai Technology, LLC</div>
+        <div id='footer'>Copyright © 2015 Sabai Technology, LLC</div>
 </p>
 </form>
 

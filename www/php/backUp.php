@@ -1,4 +1,6 @@
 <?php
+// Sabai Technology - Apache v2 licence
+// Copyright 2015 Sabai Technology, LLC
 if(isset($_POST['newName'])) {
 	$file_name = str_replace(" " , "_" , $_POST['newName']);
 	if (trim($file_name) == null) {

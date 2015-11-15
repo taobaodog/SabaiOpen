@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--Sabai Technology - Apache v2 licence
-    copyright 2015 Sabai Technology -->
+    Copyright 2015 Sabai Technology -->
 <div class='pageTitle'>VPN: Tor - Anonymity Online</div>
 <form id="fe">
 <input type='hidden' id='form_tor' name='form_tor' value='tor'>

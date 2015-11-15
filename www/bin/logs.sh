@@ -1,6 +1,6 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
-# copyright 2014 Sabai Technology
+# Copyright 2015 Sabai Technology
 case $1 in
  list) find /var/log/* -maxdepth 0 -type f ! -name '*.gz' | sed 's|/var/log/||g' ;;
  all) cat /var/log/$2 ;;

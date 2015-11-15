@@ -1,4 +1,6 @@
 <?php
+// Sabai Technology - Apache v2 licence
+// Copyright 2015 Sabai Technology
  if (!headers_sent()){ header('Content-type: text/ecmascript'); }
  $logPath = '/var/log/';
 

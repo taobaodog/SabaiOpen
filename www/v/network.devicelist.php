@@ -19,6 +19,7 @@
 		</span>
 	</div>
 </div>
+<div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
 
 <script type='text/ecmascript'>
 

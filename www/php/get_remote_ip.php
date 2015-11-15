@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// copyright 2014 Sabai Technology, LLC
+// Copyright 2015 Sabai Technology, LLC
 # allow HTTPS comunication
 $arrContextOptions=array(
 	"ssl"=>array(

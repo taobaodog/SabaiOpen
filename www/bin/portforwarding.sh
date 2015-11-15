@@ -1,6 +1,6 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
-# copyright 2014 Sabai Technology
+# Copyright 2015 Sabai Technology
 # iptables rules are stored in /etc/sabai/firewall.settings
 
 #Include JSON parser for OpenWrt

@@ -21,3 +21,4 @@
 	<div class='xsmallText' id='aboutSabai'> Sabai Technology LLC is a networking solutions company based in South Carolina. The Company has earned a reputation for products that are easy to use and for outstanding customer service. Sabai is preparing to introduce a revolutionary router product that the Company believes will become an industry standard device for home and small business networking.
 	</div>
 </div>
+<div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
