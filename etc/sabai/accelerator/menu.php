@@ -15,6 +15,7 @@
 	<ul id='submenu_vpn' class='subMenu'>
 	 <li><a id='menu_vpn_pptpclient' href='?panel=vpn&section=pptpclient' class='subMenuLink button'>PPTP Client</a></li>
 	 <li><a id='menu_vpn_openvpnclient' href='?panel=vpn&section=openvpnclient' class='subMenuLink button'>OpenVPN Client</a></li>
+	 <li><a id='menu_vpn_tor' href='?panel=vpn&section=tor' class='subMenuLink button'>Tor</a></li>
 	</ul>
 	 </li>
 
