@@ -4,6 +4,7 @@
 
 <pre id="reply"></pre>
 <pre id="testing"></pre>
+<div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
 
 <script src="/libs/jai-widgets-vpnclient.js"></script>
 <script type="text/ecmascript">

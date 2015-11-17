@@ -1,4 +1,6 @@
 <?php
+// Sabai Technology - Apache v2 licence
+// Copyright 2015 Sabai Technology
 if(isset($_POST['loadFile'])) {
         $file_name = $_POST['loadFile'];
 

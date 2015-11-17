@@ -95,6 +95,7 @@
         </div>
     </div>
     </td></tr></td></tr></tbody></table></div></div></form>
+    <div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
 <script type='text/javascript'>
 
 var hidden, hide, pForm = {}; pForm2 = {}

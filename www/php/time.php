@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// copyright 2014 Sabai Technology
+// Copyright 2015 Sabai Technology
 $UCI_PATH="-c /configs";
 // Bring over variables from the Time page
 $ntp=implode(" ", $_POST["ntp_servers"]);

@@ -23,6 +23,7 @@
   <div class='controlBoxContent' id='wirelessstatus'>
 	</div>
 </div>
+<div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
 
 
 <script type='text/ecmascript' src='php/diagnostics.route.php'></script>

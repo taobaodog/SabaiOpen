@@ -147,6 +147,7 @@
 </div> <!-- end accordion -->
 <br>
 <input type='button' value='Save' id='save'>
+<div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
 
 
 <script type='text/ecmascript' src='php/etc.php?q=conntrack'></script>

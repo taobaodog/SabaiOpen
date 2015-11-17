@@ -1,6 +1,6 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
-# copyright 2014 Sabai Technology
+# Copyright 2015 Sabai Technology
 UCI_PATH="-c /configs"
 table=$(cat /tmp/table)
 sed 's/\"1\"\:/\"aaData\"\:\[/g' /tmp/table > /tmp/aatable
