@@ -1,0 +1,48 @@
+From 9daddf3a3349552c3cc9a21d844494eaf45056b7 Mon Sep 17 00:00:00 2001
+From: Kateryna Pietukhova <kateryna.pietukhova@sirinsoftware.com>
+Date: Tue, 17 Nov 2015 09:53:18 -0500
+Subject: [PATCH] Added Device type. For Acc.
+
+---
+ target/linux/x86/image/Makefile | 23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
+
+diff --git a/target/linux/x86/image/Makefile b/target/linux/x86/image/Makefile
+index 4de4a2f..4cf28c9 100644
+--- a/target/linux/x86/image/Makefile
++++ b/target/linux/x86/image/Makefile
+@@ -18,12 +18,27 @@ GRUB_CONSOLE_CMDLINE =
+ 
+ USE_ATKBD = generic kvm_guest
+ 
+-ifeq ($(BUILD_TYPE),DEBUG)
+-  $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_debug $(TOPDIR)/files/etc/init.d/sabaifs)
+-else
++ifeq ($(DEVICE_TYPE),ACC)
++  # Reconfiguration of the system
++  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/network $(TOPDIR)/files/etc/config/network)
++  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/firewall $(TOPDIR)/files/etc/config/firewall)
++  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/uhttpd $(TOPDIR)/files/etc/config/uhttpd)
++  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/menu.php $(TOPDIR)/files/www/php/menu.php)
++  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/network.wan.php $(TOPDIR)/files/www/v/network.wan.php)
++  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/menuHeader.png $(TOPDIR)/files/www/libs/img)
++  $(shell sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $(TOPDIR)/files/etc/config/sabai )
++  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/wanfix $(TOPDIR)/files/etc/init.d/sabaiwl)
+   $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_release $(TOPDIR)/files/etc/init.d/sabaifs)
++else
++  # Checking build type
++  ifeq ($(BUILD_TYPE),DEBUG)
++    $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_debug $(TOPDIR)/files/etc/init.d/sabaifs)
++  else
++    $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_release $(TOPDIR)/files/etc/init.d/sabaifs)
++  endif
+ endif
+-  $(shell rm $(TOPDIR)/files/etc/init.d/sabaifs_debug $(TOPDIR)/files/etc/init.d/sabaifs_release)
++$(shell rm $(TOPDIR)/files/etc/init.d/sabaifs_debug $(TOPDIR)/files/etc/init.d/sabaifs_release)
++$(shell rm -r $(TOPDIR)/files/etc/sabai/accelerator)
+ 
+ ifneq ($(strip $(foreach subtarget,$(USE_ATKBD),$(CONFIG_TARGET_x86_64_$(subtarget)))),)
+   GRUB2_MODULES += at_keyboard
+-- 
+1.9.1
+

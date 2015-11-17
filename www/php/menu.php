@@ -63,9 +63,6 @@
 	 <li>
 	<a id='menu_help' href='?panel=help' class='superMenuLink button'>Help</a>
 	 </li>
-
-
 	</ul>
- </div>
- <div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
- 
+</div>
+
