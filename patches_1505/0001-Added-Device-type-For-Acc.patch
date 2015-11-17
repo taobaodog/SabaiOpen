@@ -1,17 +1,17 @@
-From 9daddf3a3349552c3cc9a21d844494eaf45056b7 Mon Sep 17 00:00:00 2001
+From 8bc86d5f6118a9a8baf3ce75740a972cddcff275 Mon Sep 17 00:00:00 2001
 From: Kateryna Pietukhova <kateryna.pietukhova@sirinsoftware.com>
-Date: Tue, 17 Nov 2015 09:53:18 -0500
-Subject: [PATCH] Added Device type. For Acc.
+Date: Tue, 17 Nov 2015 11:38:15 -0500
+Subject: [PATCH] Added Device type For Acc
 
 ---
- target/linux/x86/image/Makefile | 23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ target/linux/x86/image/Makefile | 24 ++++++++++++++++++++----
+ 1 file changed, 20 insertions(+), 4 deletions(-)
 
 diff --git a/target/linux/x86/image/Makefile b/target/linux/x86/image/Makefile
-index 4de4a2f..4cf28c9 100644
+index 4de4a2f..eabc966 100644
 --- a/target/linux/x86/image/Makefile
 +++ b/target/linux/x86/image/Makefile
-@@ -18,12 +18,27 @@ GRUB_CONSOLE_CMDLINE =
+@@ -18,12 +18,28 @@ GRUB_CONSOLE_CMDLINE =
  
  USE_ATKBD = generic kvm_guest
  
@@ -26,7 +26,8 @@ index 4de4a2f..4cf28c9 100644
 +  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/menu.php $(TOPDIR)/files/www/php/menu.php)
 +  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/network.wan.php $(TOPDIR)/files/www/v/network.wan.php)
 +  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/menuHeader.png $(TOPDIR)/files/www/libs/img)
-+  $(shell sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $(TOPDIR)/files/etc/config/sabai )
++  $(shell sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $(TOPDIR)/files/etc/config/system)
++  $(shell sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $(TOPDIR)/files/etc/config/sabai)
 +  $(shell mv $(TOPDIR)/files/etc/sabai/accelerator/wanfix $(TOPDIR)/files/etc/init.d/sabaiwl)
    $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_release $(TOPDIR)/files/etc/init.d/sabaifs)
 +else
