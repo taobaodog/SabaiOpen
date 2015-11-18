@@ -2,24 +2,37 @@
 <input type='hidden' name='version' id='_version'>
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>Settings</div>
-<div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Update</span>
- <div class='controlBoxContent'>
-    <div>Current Version: <span id='cversion'></span></div><br>
-    <div id='newversion' class='hiddenChildMenu'>New Version: <span id='available'></span></div><br>
-    <span class='uploadButton'><font style="font-size:14px"> Browse for Update</font></span>
-    <input id='browse' name='_browse' type='file' hidden='true' onchange="fileInput(this, 'tar');"/><t>
-    <input id='fileName' name='_fileName' type='text'>
-    <input id='download' type='button' name='submit' value='Download'/><br><br>
-    <input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/><br>
-        <div id='hideme'>
-            <div class='centercolumncontainer'>
-                <div class='middlecontainer'>
-                    <div id='hiddentext'>Please wait...</div>
-                    <br>
-                </div>
-            </div>
-        </div><br>
-  </div>
+<div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Server Update</span>
+ 	<div class='controlBoxContent'>
+    	<div>Current Version: <span id='cversion'></span></div><br>
+    	<input id='check_version' type='button' name='check_version' value='Check Update'/><br><br>
+    	<div id='hideme'>
+            	<div class='centercolumncontainer'>
+                	<div class='middlecontainer'>
+                    	<div id='hiddentext'>Please wait...</div>
+                    	<br>
+                	</div>
+            	</div>
+        </div>
+		<div class='controlBoxContent' id='update_form'> </div>
+	</div>   
+</div>
+<div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Manual Update</span>
+	<div class='controlBoxContent'>
+    	<span class='uploadButton'><font style="font-size:14px"> Browse for Update</font></span>
+    	<input id='browse' name='_browse' type='file' hidden='true' onchange="fileInput(this, 'tar');"/><t>
+    	<input id='fileName' name='_fileName' type='text'>
+    	<input id='download' type='button' name='submit' value='Download'/><br><br>
+    	<input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/><br>
+        	<div id='hideme'>
+            	<div class='centercolumncontainer'>
+                	<div class='middlecontainer'>
+                    	<div id='hiddentext'>Please wait...</div>
+                    	<br>
+                	</div>
+            	</div>
+        	</div><br>
+  	</div>
 </div>
 <div class='controlBox'><span class='controlBoxTitle'>Firmware Configuration</span>
   <div class='controlBoxContent'>
@@ -27,11 +40,11 @@
     <div class='radioSwitchElement' id='configList'></div><br>
     <input id='restore' name='Restore' type='button' hidden='true' value='Restore'/>
     <input id='backUp' name='backUp_config' type='button' value='Backup'/>
-    <span id='aMsg' style="color:blue" ></span></br>
+    <span id='aMsg' style="color:blue" ></span><br>
     <input id='saveConf' name='SaveConf' type='button' value='Download config'/>
     <input id='loadConf' name='LoadConf' type='button' value='Upload config'/>
     <input id='remove' name='Remove' type='button' value='Remove config' hidden='true'/>
-    <input id='browse1' name='_browse1' type='file' hidden='true' onchange="fileInput(this, 'conf')"/></br>
+    <input id='browse1' name='_browse1' type='file' hidden='true' onchange="fileInput(this, 'conf')"/><br>
     <input id='fileName1' name='_fileName1' type='text' hidden='true'/>
   </div>
 </div>
@@ -60,6 +73,77 @@ E('fileName1').value = '';
 E('browse').value = '';
 E('browse1').value = '';
 E('aMsg').innerHTML = ' * Sabai - is the currently running configuration.';
+
+$('#check_version').on("click", function () {
+	hideUi("Checking ...");
+	$.get('php/check_update.php')
+		.done(function(data) {
+		if (data.trim() == "false") {
+			hideUi("No new version yet.");
+		} else {
+			hideUi("New " + data + " version is available.");
+		}
+		setTimeout(function(){showUi()},4500);
+	})
+	.fail(function() {
+		hideUi("Failed to check.");
+		setTimeout(function(){showUi()},4500);
+	})
+});
+
+// TODO: widget with updating form
+/*
+$.widget("jai.update_form", {
+	_create: function(){
+		$(this.element)
+		.append( $(document.createElement('table')).addClass("controlTable smallwidth")
+			.append( $(document.createElement('tbody'))
+				.append( $(document.createElement('tr'))
+					.append( $(document.createElement('td')).html('New available version:')
+						.prop("style","color:#FF6600")
+					)
+					.append( $(document.createElement('td') ) 
+   						.append(
+   							$(document.createElement('input'))
+                				.prop("id","new_version")
+                				.prop("name","new_version")
+                				.prop("style","color:#FF6600")
+               			)
+               		)
+               	)
+               	
+               	.append( $(document.createElement('tr'))
+               		.append( $(document.createElement('td') )
+               			.append(
+               				$(document.createElement('input'))
+               					.prop("id","update_download")
+               					.prop("name","update_download")
+               					.prop("type","button")
+               					.prop("value", "Server Update")
+               					//.prop("onclick","ServerUpdate")
+               			)
+               		)
+               	)
+			) // end tbody
+		) // end table
+
+		$('#new_version').val(soft.version);
+
+		$('#update_download').on("click", function() {
+			$.post('php/update_download.php')
+			.done(function(data) {
+				Upgrade('upgrading');
+			})
+			.fail(function() {
+				hideUi("Failed");
+				setTimeout(function(){showUi()},4500);
+			})
+	});
+		});
+		
+		this._super();
+	},
+}); */
 
 // jQuery uploadbutton implementation
 $('.uploadButton').bind("click" , function () {
@@ -237,13 +321,13 @@ function Upgrade(act)	{
 					setTimeout(function(){showUi()},3000);
 				} else {
 					setTimeout(function(){hideUi(data)},3000);
-                                        setTimeout(function(){showUi()},5000);
+ 					setTimeout(function(){showUi()},5000);
 				}
 			})
 			.fail(function() {
 				hideUi_timer("Firmware was transferred. Please wait. Upgrade in progress...", 270);
 				setTimeout(function(){hideUi("Please wait. Check installation status.")},271000);
-                                setTimeout(function(){checkUpdate()}, 280000);
+				setTimeout(function(){checkUpdate()}, 280000);
 			})
 	});
 
