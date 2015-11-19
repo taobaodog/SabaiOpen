@@ -5,12 +5,11 @@
 <div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Server Update</span>
  	<div class='controlBoxContent'>
     	<div>Current Version: <span id='cversion'></span></div><br>
-    	<input id='check_version' type='button' name='check_version' value='Check Update'/><br><br>
+    	<input id='check_version' type='button' name='check_version' value='Check Update'/>
     	<div id='hideme'>
             	<div class='centercolumncontainer'>
                 	<div class='middlecontainer'>
                     	<div id='hiddentext'>Please wait...</div>
-                    	<br>
                 	</div>
             	</div>
         </div>
@@ -63,11 +62,13 @@ var hide = E('hiddentext');
 var list = $.parseJSON('{<?php $config = exec("sh /www/bin/config_search.sh");
 			       echo $config;?>}');
 
-var version = '<?php $get_version=exec("uci get sabai.general.version");
-		     echo $get_version; ?>';
+var soft=$.parseJSON('{<?php
+						$old_sabai_version=trim(exec("uci get sabai.general.version"));
+						$new_sabai_version=trim(exec("uci get sabai.general.new_version"));
+						echo "\"new_sabai_version\": \"$new_sabai_version\",\"old_sabai_version\": \"$old_sabai_version\"";							
+						?>}');
 
-E('cversion').innerHTML = version;
-
+E('cversion').innerHTML = soft.old_sabai_version;
 E('fileName').value = '';
 E('fileName1').value = '';
 E('browse').value = '';
@@ -82,6 +83,7 @@ $('#check_version').on("click", function () {
 			hideUi("No new version yet.");
 		} else {
 			hideUi("New " + data + " version is available.");
+			ServerUpdateForm();
 		}
 		setTimeout(function(){showUi()},4500);
 	})
@@ -91,25 +93,14 @@ $('#check_version').on("click", function () {
 	})
 });
 
-// TODO: widget with updating form
-/*
 $.widget("jai.update_form", {
 	_create: function(){
 		$(this.element)
 		.append( $(document.createElement('table')).addClass("controlTable smallwidth")
 			.append( $(document.createElement('tbody'))
 				.append( $(document.createElement('tr'))
-					.append( $(document.createElement('td')).html('New available version:')
-						.prop("style","color:#FF6600")
+					.append( $(document.createElement('td')).html('New available version: '+ soft.new_sabai_version)
 					)
-					.append( $(document.createElement('td') ) 
-   						.append(
-   							$(document.createElement('input'))
-                				.prop("id","new_version")
-                				.prop("name","new_version")
-                				.prop("style","color:#FF6600")
-               			)
-               		)
                	)
                	
                	.append( $(document.createElement('tr'))
@@ -120,30 +111,42 @@ $.widget("jai.update_form", {
                					.prop("name","update_download")
                					.prop("type","button")
                					.prop("value", "Server Update")
-               					//.prop("onclick","ServerUpdate")
                			)
+               			.append(
+               				$(document.createTextNode("  *Click to download new version and run update automaticaly."))
+               			)            			
                		)
                	)
 			) // end tbody
 		) // end table
 
-		$('#new_version').val(soft.version);
-
 		$('#update_download').on("click", function() {
+			hideUi();
 			$.post('php/update_download.php')
 			.done(function(data) {
-				Upgrade('upgrading');
+				hideUi("COMPLETED ! ! !");
+				setTimeout(function(){showUi()},4500);
+				//Upgrade('upgrading');
 			})
 			.fail(function() {
 				hideUi("Failed");
 				setTimeout(function(){showUi()},4500);
 			})
-	});
 		});
 		
 		this._super();
 	},
-}); */
+});
+
+function ServerUpdateForm(){
+	//instatiate widgets on document ready
+	$('#update_form').update_form({ conf: soft });
+}
+
+//save result of last request for available version
+if (soft.new_sabai_version != "") {
+	ServerUpdateForm();
+}
 
 // jQuery uploadbutton implementation
 $('.uploadButton').bind("click" , function () {
