@@ -10,6 +10,7 @@ mv $TOPDIR/files/etc/sabai/accelerator/uhttpd $TOPDIR/files/etc/config/uhttpd
 # changing config
 sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/system
 sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/sabai
+sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/network
 sed -i '5,8d' $TOPDIR/files/etc/rc.local
 
 # copy and rm sh
