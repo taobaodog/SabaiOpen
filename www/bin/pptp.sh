@@ -102,6 +102,8 @@ _start(){
 		logger "pptp is disconnected."
 	else
         	uci set sabai.vpn.status=Connected
+		#adjusting ip rules
+		/www/bin/gw.sh vpn_gw
 		logger "pptp is connected."
         fi
 	uci $UCI_PATH commit sabai

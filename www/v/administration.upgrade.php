@@ -121,12 +121,11 @@ $.widget("jai.update_form", {
 		) // end table
 
 		$('#update_download').on("click", function() {
-			hideUi();
+			hideUi("Please wait...");
 			$.post('php/update_download.php')
-			.done(function(data) {
-				hideUi("COMPLETED ! ! !");
-				setTimeout(function(){showUi()},4500);
-				//Upgrade('upgrading');
+			.done(function() {
+				hideUi("New firmware was downloaded!");
+				setTimeout(function(){Upgrade('upgrading')},2000);
 			})
 			.fail(function() {
 				hideUi("Failed");
@@ -144,7 +143,7 @@ function ServerUpdateForm(){
 }
 
 //save result of last request for available version
-if (soft.new_sabai_version != "") {
+if (soft.new_sabai_version.trim() != "" && soft.new_sabai_version != soft.old_sabai_version)	{
 	ServerUpdateForm();
 }
 

@@ -1,5 +1,5 @@
 <?php
-	$dir_upgrade="/tmp/upgrade/sabai-secured.tar";
+	$dir_upgrade="/tmp/upgrade/sabai-bundle-secured.tar";
 	$link_upgrade=exec("uci get sabai.general.download_uri");
 	
 	# allow HTTPS comunication
