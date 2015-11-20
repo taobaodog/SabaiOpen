@@ -143,7 +143,7 @@ function ServerUpdateForm(){
 }
 
 //save result of last request for available version
-if (soft.new_sabai_version != "") {
+if (soft.new_sabai_version.trim() != "" && soft.new_sabai_version != soft.old_sabai_version)	{
 	ServerUpdateForm();
 }
 

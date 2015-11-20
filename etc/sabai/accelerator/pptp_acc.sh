@@ -17,7 +17,7 @@ _stop(){
 	uci set network.vpn.proto=none
 	uci commit network
 	uci delete firewall.vpn
-	forward=$(uci show firewall | grep forwarding | grep dest=vpn | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                           
+	forward=$(uci show firewall | grep forwarding | grep dest=\'vpn\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                           
         if [ "$forward" != "" ]; then                                                                                                          
                 uci delete firewall.@forwarding["$forward"]                                                                                    
         else                                                                                                                                   
@@ -47,7 +47,7 @@ _start(){
 	#ensure that openvpn settings removed
 		uci delete network.sabai
 		uci delete firewall.ovpn
-		forward=$(uci show firewall | grep forwarding | grep dest=sabai | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+		forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 		if [ "$forward" != ""  ]; then
 			uci delete firewall.@forwarding["$forward"]
 		else
@@ -76,7 +76,7 @@ _start(){
 	uci set firewall.vpn.network=vpn
         uci set firewall.vpn.masq=1
 	uci add firewall forwarding 
-        uci set firewall.@forwarding[-1].src=lan
+        uci set firewall.@forwarding[-1].src=wan
         uci set firewall.@forwarding[-1].dest=vpn
     #commit all changed services
         uci commit firewall   
@@ -102,8 +102,6 @@ _start(){
 		logger "pptp is disconnected."
 	else
         	uci set sabai.vpn.status=Connected
-		#adjusting ip rules
-		/www/bin/gw.sh vpn_gw
 		logger "pptp is connected."
         fi
 	uci $UCI_PATH commit sabai
@@ -115,7 +113,7 @@ _clear(){
 	uci set network.vpn.proto=none
         uci commit network
 	uci delete firewall.vpn
-	forward=$(uci show firewall | grep forwarding | grep dest=vpn | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	forward=$(uci show firewall | grep forwarding | grep dest=\'vpn\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 	if [ "$forward" != "" ]; then                                                                                                          
                 uci delete firewall.@forwarding["$forward"]                                                                                    
         else                                                                                                                                   
