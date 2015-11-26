@@ -1,0 +1,38 @@
+From 7748b3775a52108631cf8674393373b8c8f6e75e Mon Sep 17 00:00:00 2001
+From: Kateryna Pietukhova <kateryna.pietukhova@sirinsoftware.com>
+Date: Thu, 26 Nov 2015 12:58:33 -0500
+Subject: [PATCH] ACC build support
+
+---
+ target/linux/x86/image/Makefile | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/target/linux/x86/image/Makefile b/target/linux/x86/image/Makefile
+index 4de4a2f..4a13dba 100644
+--- a/target/linux/x86/image/Makefile
++++ b/target/linux/x86/image/Makefile
+@@ -18,12 +18,18 @@ GRUB_CONSOLE_CMDLINE =
+ 
+ USE_ATKBD = generic kvm_guest
+ 
+-ifeq ($(BUILD_TYPE),DEBUG)
+-  $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_debug $(TOPDIR)/files/etc/init.d/sabaifs)
++ifeq ($(DEVICE_TYPE),ACC)
++  # Reconfiguration of the system
++  ACC:=$(shell sh $(TOPDIR)/files/etc/sabai/accelerator/acc_install.sh "$(TOPDIR)")
+ else
+-  $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_release $(TOPDIR)/files/etc/init.d/sabaifs)
++  ifeq ($(BUILD_TYPE),DEBUG)
++    $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_debug $(TOPDIR)/files/etc/init.d/sabaifs)
++  else  
++    $(shell cp $(TOPDIR)/files/etc/init.d/sabaifs_release $(TOPDIR)/files/etc/init.d/sabaifs)
++  endif
+ endif
+   $(shell rm $(TOPDIR)/files/etc/init.d/sabaifs_debug $(TOPDIR)/files/etc/init.d/sabaifs_release)
++  $(shell rm -r $(TOPDIR)/files/etc/sabai/accelerator)
+ 
+ ifneq ($(strip $(foreach subtarget,$(USE_ATKBD),$(CONFIG_TARGET_x86_64_$(subtarget)))),)
+   GRUB2_MODULES += at_keyboard
+-- 
+1.9.1
+
