@@ -5,6 +5,7 @@ TOPDIR="$1"
 # copy config files
 mv $TOPDIR/files/etc/sabai/accelerator/network $TOPDIR/files/etc/config/network
 mv $TOPDIR/files/etc/sabai/accelerator/firewall $TOPDIR/files/etc/config/firewall
+mv $TOPDIR/files/etc/sabai/accelerator/firewall.user $TOPDIR/files/etc/config/firewall.user
 mv $TOPDIR/files/etc/sabai/accelerator/uhttpd $TOPDIR/files/etc/config/uhttpd
 
 # changing config
