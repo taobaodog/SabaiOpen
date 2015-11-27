@@ -9,9 +9,9 @@ mv $TOPDIR/files/etc/sabai/accelerator/firewall.user $TOPDIR/files/etc/firewall.
 mv $TOPDIR/files/etc/sabai/accelerator/uhttpd $TOPDIR/files/etc/config/uhttpd
 
 # changing config
-sed -i "s/option hostname 'SabaiOpen'/option hostname 'VPNA'/" $TOPDIR/files/etc/config/system
-sed -i "s/option hostname 'SabaiOpen'/option hostname 'VPNA'/" $TOPDIR/files/etc/config/sabai
-sed -i "s/option hostname 'SabaiOpen'/option hostname 'VPNA'/" $TOPDIR/files/etc/config/network
+sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/system
+sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/sabai
+sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/network
 sed -i '5,8d' $TOPDIR/files/etc/rc.local
 echo "echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp" >> $TOPDIR/files/etc/rc.local
 
