@@ -79,7 +79,7 @@ function setUpdate(res){
 function getUpdate(ipref){ 
             que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
        $.get('php/get_remote_ip.php', function( data ) {
-         donde = $.parseJSON(data.substring(6));
+         donde = $.parseJSON(data.substring(4));
          console.log(donde);
          for(i in donde) E('loc'+i).innerHTML = donde[i];
        });
@@ -96,26 +96,44 @@ function PPTPresp(res){
 }
 
 function PPTPcall(act){ 
-  hideUi("Adjusting PPTP settings..."); 
-  E("act").value=act;
-// Pass the form values to the php file 
-$.post('php/pptp.php', $("#fe").serialize(), function(res){
-  // Detect if values have been passed back   
-    if(res!=""){
-      PPTPresp(res);
-    }
-      showUi();
-});
-        if(act =='clear'){ 
-        setTimeout("window.location.reload()",5000);
-            }; 
+	hideUi("Adjusting PPTP settings..."); 
+	E("act").value=act;
+	// Pass the form values to the php file
+	if (act=='start') {
+		$.post('php/pptp.php', $("#fe").serialize(), function(res){
+			// Detect if values have been passed back   
+			if(res!=""){
+				eval(res);
+				hideUi(res.msg);
+				setTimeout(function(){hideUi("Checking PPTP status...")},5000);
+				setTimeout(check,10000);
+			}
+		});
+	} else {
+		$.post('php/pptp.php', $("#fe").serialize(), function(res){
+			if(res!=""){
+				PPTPresp(res);
+			}
+			showUi();
+		});
+		if(act =='clear'){
+			setTimeout("window.location.reload()",5000);
+		}
+	}
  
 // Important stops the page refreshing
 return false;
 
 }; 
 
-
+function check(){
+	$.post('php/pptp.php',{'check': 'status'}, function(res){
+		if(res!=""){
+			PPTPresp(res);
+		}
+		showUi();
+	});
+}
 
 function init(){ 
     f = E('fe'); 
