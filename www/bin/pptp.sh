@@ -80,7 +80,7 @@ _start(){
 	uci set firewall.vpn.network=vpn
         uci set firewall.vpn.masq=1
 	uci add firewall forwarding 
-        uci set firewall.@forwarding[-1].src=wan
+        uci set firewall.@forwarding[-1].src=lan
         uci set firewall.@forwarding[-1].dest=vpn
     #commit all changed services
         uci commit firewall   
