@@ -12,6 +12,10 @@ else
 	config_file="sabai"
 fi
 
+_return(){
+	echo "res={ sabai: $1, msg: '$2' };"
+}
+
 _stop(){
 	uci delete network.vpn
 	uci set network.vpn.proto=none
@@ -21,8 +25,8 @@ _stop(){
         if [ "$forward" != "" ]; then                                                                                                          
                 uci delete firewall.@forwarding["$forward"]                                                                                    
         else                                                                                                                                   
-                echo -e "\n"                                                                                                                     
-        fi                                                                                                                                     
+        	echo -e "\n"
+	fi                                                                                                                                     
 	uci commit firewall	
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.proto=none
@@ -91,20 +95,9 @@ _start(){
         	echo "firewall" >> /tmp/.restart_services
 	else                                         
         	/etc/init.d/firewall restart
-		sleep 5            
+		sleep 2
 		/etc/init.d/network restart
 	fi  
-	
-	sleep 20 
-	ifconfig > /tmp/check
-	if [ "$(cat /tmp/check | grep tun0)" != "" ]; then
-        	uci set sabai.vpn.status=Disconnected
-		logger "pptp is disconnected."
-	else
-        	uci set sabai.vpn.status=Connected
-		logger "pptp is connected."
-        fi
-	uci $UCI_PATH commit sabai
 }
 
 _clear(){
@@ -117,8 +110,8 @@ _clear(){
 	if [ "$forward" != "" ]; then                                                                                                          
                 uci delete firewall.@forwarding["$forward"]                                                                                    
         else                                                                                                                                   
-                echo -e "\n"                                                                                                                     
-        fi
+        	echo -e "\n"
+	fi
 	uci commit firewall
         uci $UCI_PATH delete sabai.vpn.username          
         uci $UCI_PATH delete sabai.vpn.password          
@@ -130,10 +123,25 @@ _clear(){
         logger "pptp cleared and firewall restarted."
 }
 
+_stat(){
+	ifconfig > /tmp/check
+	if [ "$(cat /tmp/check | grep pptp-vpn)" = "" ]; then
+		uci $UCI_PATH set sabai.vpn.status=Disconnected
+		logger "pptp is disconnected."
+		_return 1 "PPTP is disconnected."
+	else
+		uci $UCI_PATH set sabai.vpn.status=Connected
+		logger "pptp is connected."
+		_return 1 "PPTP is connected."
+	fi
+	uci $UCI_PATH commit sabai
+}
+
 ls >/dev/null 2>/dev/null 
 
 case $act in
     start)  _start  ;;
     stop)   _stop   ;;
+    status) _stat   ;;
     clear)  _clear  ;;
 esac
