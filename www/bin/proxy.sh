@@ -2,7 +2,7 @@
 # Sabai Technology - Apache v2 licence
 # Copyright 2015 Sabai Technology
 
-UCI_PATH="-c /configs" 
+UCI_PATH="-c /config" 
 # this script allows 2 variables to be passed to it, as documented below:
 # act variable is the action sent into the script
 
@@ -10,12 +10,16 @@ UCI_PATH="-c /configs"
 
 act=$1
 
+# the ip address of the device
+ip=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
+ipfix="$ip:8080"
+
 # the ip address and mask of the device
 iproute=$(ip route | grep -e "/24 dev eth0" | awk -F: '{print $0}' | awk '{print $1}')
-
+iproutefix="'$iproute'"
 
 # the proxy address and mask in the configuration file
-proxyroute=$(cat /etc/privoxy/config | grep -e "permit-access" | awk -F: '{print $0}' | awk '{print $2}')
+proxyroute=$(cat /etc/config/privoxy | grep -e "permit_access" | awk -F: '{print $0}' | awk '{print $3}')
 
 
 
@@ -35,12 +39,14 @@ _proxystart(){
     # replace the ip address and mask if necessary
     if [ "$iproute" != "$proxyroute" ]; then
 	logger "Proxy setup: address not equal" $proxyroute $iproute;
-	sed -i "s#$proxyroute#$iproute#" /etc/privoxy/config
+	sed -i "s#$proxyroute#$iproutefix#" /etc/config/privoxy
     fi
-   uci $UCI_PATH set sabai.proxy.status="On";
-   uci $UCI_PATH commit sabai;
-    /etc/init.d/privoxy start;
-    _return 1 "Proxy Started";
+   uci set privoxy.privoxy.listen_address=$ipfix
+   uci set sabai.proxy.status="On";
+   uci commit sabai;
+   uci commit privoxy;
+   /etc/init.d/privoxy start;
+   _return 1 "Proxy Started";
 }
 
 sudo -n ls >/dev/null 2>/dev/null
@@ -51,4 +57,3 @@ case $act in
    proxystart)  _proxystart  ;;
    proxystop)   _proxystop   ;;
 esac
-
