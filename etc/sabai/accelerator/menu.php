@@ -7,6 +7,7 @@
 	<ul id='submenu_network' class='subMenu'>
 	 <li><a id='menu_network_wan' href='?panel=network&section=wan' class='subMenuLink button'>WAN</a></li>
 	 <li><a id='menu_network_time' href='?panel=network&section=time' class='subMenuLink button'>Time</a></li>
+	 <li><a id='menu_wireless_radio' href='?panel=network&section=radio' class='subMenuLink button'>Wireless Radio</a></li>
 	</ul>
 	 </li>
 
