@@ -110,3 +110,30 @@ config rule
         option dest 'vpn'
         option target 'ACCEPT'
         option family 'ipv4'
+
+# wifi configs
+config 'zone'
+        option name 'mainAP'
+        option network 'mainAP'
+        option input 'REJECT'
+        option forward 'REJECT'
+        option output 'ACCEPT'
+
+config 'forwarding'
+        option src 'mainAP'
+        option dest 'wan'
+
+config 'rule'
+        option name 'Allow DNS Queries'
+        option src 'mainAP'
+        option dest_port '53'
+        option proto 'tcpudp'
+        option target 'ACCEPT'
+
+config 'rule'
+        option name 'Allow DHCP request'
+        option src 'mainAP'
+        option src_port '67-68'
+        option dest_port '67-68'
+        option proto 'udp'
+        option target 'ACCEPT'

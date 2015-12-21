@@ -15,7 +15,15 @@ function setVar($prefix, $option){
 		$wepkeys=implode(" ", $_POST[$prefix.'_wep_keys']);
 	};
 	$auto=trim($_POST['channel_mode']);
-	$channel=trim($_POST[$prefix.'_channel']);
+	$freq=trim($_POST['channel_freq']);
+	if ($freq == '2') {
+		$width=trim($_POST['channel_width_2']);
+		$channel=trim($_POST[$prefix.'_channel']);
+	} else {
+		$width=trim($_POST['channel_width_5']);
+		$channel=trim($_POST[$prefix.'_channel_5']);
+	}
+	
 	$command="sh /www/bin/wl.sh save $option";
 
 	// Set the Sabai config to reflect latest settings
@@ -29,6 +37,8 @@ function setVar($prefix, $option){
 		exec("uci $UCI_PATH set sabai.wlradio$option.channel_freq=\"" . $channel . "\"");
 		exec("uci $UCI_PATH set sabai.wlradio$option.wpa_group_rekey=\"" . $wpa_rekey . "\"");
 		exec("uci $UCI_PATH set sabai.wlradio$option.wepkeys=\"" . $wepkeys . "\"");
+		exec("uci $UCI_PATH set sabai.wlradio$option.freq=\"" . $freq . "\"");
+		exec("uci $UCI_PATH set sabai.wlradio$option.width=\"" . $width . "\"");
 	};
 	exec("uci -c /configs commit sabai");
 	exec($command);

@@ -40,7 +40,8 @@ elif [ $device = "vpna" ] && [ $freq = "5" ]; then
 			fi
 		done < /etc/wl_channels_58
 	done < /tmp/wl_disabled_58
-	channel_aval="$(cat /etc/wl_channels_58 | tr '\n' ' ' | sed 's/.$//')"
+	channel_aval="$(wc -l /etc/wl_channels_58 | awk '{print substr ($0, 0, 2)}')"
+	#channel_aval="$(cat /etc/wl_channels_58 | tr '\n' ' ' | sed 's/.$//')"
 	rm /tmp/wl*
 else
 	logger "ERROR: Undefined device! Please check your configuration."
@@ -49,7 +50,7 @@ fi
 # set number of Wifi channels to sabai config
 # set current channel
 channel_curr=$(iw dev wlan0 info | grep "channel" | awk '{print $2}')
-uci $UCI_PATH set sabai.wlradio1.channel_freq="$channel_curr"
+uci $UCI_PATH set sabai.wlradio0.channel_freq="$channel_curr"
 uci $UCI_PATH set sabai.wlradio0.channels_qty="$channel_aval"
 uci $UCI_PATH commit sabai
 	
