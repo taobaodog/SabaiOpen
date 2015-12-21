@@ -7,6 +7,7 @@ mv $TOPDIR/files/etc/sabai/accelerator/network $TOPDIR/files/etc/config/network
 mv $TOPDIR/files/etc/sabai/accelerator/firewall $TOPDIR/files/etc/config/firewall
 mv $TOPDIR/files/etc/sabai/accelerator/firewall.user $TOPDIR/files/etc/firewall.user
 mv $TOPDIR/files/etc/sabai/accelerator/uhttpd $TOPDIR/files/etc/config/uhttpd
+mv $TOPDIR/files/etc/sabai/accelerator/dhcp $TOPDIR/files/etc/config/dhcp
 
 # changing config
 sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/system
@@ -24,6 +25,7 @@ mv $TOPDIR/files/etc/sabai/accelerator/pptp_acc.sh $TOPDIR/files/www/bin/pptp.sh
 mv $TOPDIR/files/etc/sabai/accelerator/menu.php $TOPDIR/files/www/php/menu.php
 mv $TOPDIR/files/etc/sabai/accelerator/network.wan.php $TOPDIR/files/www/v/network.wan.php
 mv $TOPDIR/files/etc/sabai/accelerator/menuHeader.png $TOPDIR/files/www/libs/img
+mv $TOPDIR/files/etc/sabai/accelerator/network.radio.php $TOPDIR/files/www/v/
 
 # Removing ../v/*.php
 rm $TOPDIR/files/www/v/network.lan.php
