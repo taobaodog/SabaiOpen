@@ -9,12 +9,8 @@ device="$2"
 wifi down
 
 # checking action
-if [ "$action" = "save" ]; then
+if [ "$action" = "save" ] || [ "$action" = "start" ] || [ "$action" = "acc" ]; then
 	config_file=sabai
-elif [ "$action" = "start" ]; then
-	config_file=sabai
-	uci add wireless wifi-iface
-	uci commit wireless
 else
 	config_file=sabai-new
 fi
@@ -25,6 +21,8 @@ ssid=$(uci get $config_file.wlradio$device.ssid)
 wpa_psk=$(uci get $config_file.wlradio$device.wpa_psk)
 encryption=$(uci get $config_file.wlradio$device.encryption)
 channel_freq=$(uci get $config_file.wlradio$device.channel_freq)
+frequency=$(uci get $config_file.wlradio$device.freq)
+width=$(uci get $config_file.wlradio$device.width)
 
 # parsing specific configs of main wl
 if [ "$device" = "0" ]; then
@@ -34,7 +32,19 @@ if [ "$device" = "0" ]; then
 		uci set wireless.radio0.channel="$channel_freq"
 		uci commit wireless
 	else
-		uci set wireless.radio0.channel="auto"
+		if [ "$frequency" = "5" ]; then
+			uci set wireless.radio0.channel="36"
+		else
+			uci set wireless.radio0.channel="1"
+		fi
+	fi
+	
+	if [ "$frequency" = "5" ]; then
+		uci set wireless.radio0.hwmode="11a"
+		uci set wireless.radio0.htmode="VHT$width"
+	else
+		uci set wireless.radio0.hwmode="11n"
+		uci set wireless.radio0.htmode="HT$width"
 	fi
 fi
 
@@ -51,6 +61,11 @@ fi
 uci set wireless.@wifi-iface[$device].device="radio0"
 uci set wireless.@wifi-iface[$device].ssid="$(uci get $config_file.wlradio$device.ssid)"
 uci set wireless.@wifi-iface[$device].key="$(uci get $config_file.wlradio$device.wpa_psk)"
+
+# Setting specific configs for mainAP if device is VPNA
+if [ "$device" = "0" ] && [ "$action" = "acc" ]; then
+	 uci set wireless.@wifi-iface[$device].network="mainAP"
+fi
 
 # Setting specific configs for guest wlan
 if [ "$device" = "1" ]; then
@@ -103,6 +118,8 @@ esac
 if [ $action = "update" ]; then
 	echo "network" >> /tmp/.restart_services
 else
+	wifi up
+	sleep 5
 	wifi up
 fi
 

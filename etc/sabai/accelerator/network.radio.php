@@ -44,7 +44,8 @@ var wl0=$.parseJSON('{<?php
           $channels_qty=trim(exec("uci get sabai.wlradio0.channels_qty"));      
           $channel=trim(exec("uci get sabai.wlradio0.channel_freq"));
           $auto=trim(exec("uci get sabai.wlradio0.auto"));
-          echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_type\": \"$wpa_type\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"wpa_rekey\": \"$wpa_rekey\", \"channel\": \"$channel\", \"auto\": \"$auto\", \"channels_qty\": \"$channels_qty\"";
+          $freq=trim(exec("uci get sabai.wlradio0.freq"));
+          echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_type\": \"$wpa_type\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"wpa_rekey\": \"$wpa_rekey\", \"channel\": \"$channel\", \"auto\": \"$auto\", \"channels_qty\": \"$channels_qty\", \"freq\": \"$freq\"";
       ?>}');
 
 var wl0_wepkeyraw='<?php
@@ -98,6 +99,24 @@ function WLresp(res,wlForm){
     getUpdate(); 
   } 
 }
+
+function appendChannel() {
+	var channel_qty = <?php $qty=exec("wc -l /etc/wl_channels_58 | awk '{print $1}'"); 
+						echo "$qty";
+						?>;
+	for (var i = 0; i < channel_qty; i++) {
+		$.get('php/read_channels.php',{'num': i}, function(res){
+			if(res!=""){
+				$('#wl_channel_5')
+					.append( $(document.createElement('option'))                                                       
+                		.prop("value", res)                                                                            
+                		.prop("text", res)                                                                                     
+            		)
+			}
+		});	
+	}
+}
+
 
 $.widget("jai.wl_wl0", {
     
@@ -174,28 +193,55 @@ $.widget("jai.wl_wl0", {
     		                .prop("name", "channel_freq")                                                                            
     		                .prop("class", "radioSwitchElement")                                                                     
     		              .append( $(document.createElement('option'))                                                               
-    		                .prop("value", "low")                                                                                     
+    		                .prop("value", "2")                                                                                     
     		                .prop("text", "2,4 GHz")                                                                                                             
     		              )                                                                                                          
     		              .append( $(document.createElement('option'))                                                       
-    		                .prop("value", "high")                                                                            
+    		                .prop("value", "5")                                                                            
     		                .prop("text", "5 GHz")                                                                                     
     		              )                                                                                                                                 
     			    )
     			  )
     	) // End tr
 
-    	.append( $(document.createElement('tr'))
+    	.append( $(document.createElement('tr')).addClass("channel_width")
   			  .append( $(document.createElement('td')).html('Channel width')                                                          
   		         )
-  			    .append( $(document.createElement('td') )                                                                                                              
-  		            .append(                                                                                                     
-  		              $(document.createElement('input'))                                                                        
-  		                .prop("id", "channel_width")                                                                                                     
-  		                .prop("name", "channel_width")                                                                            
-  		                //.prop("class", "radioSwitchElement")                                                                                                                                                                                                 
-  			    )
+  			    .append( $(document.createElement('td')).addClass("channel_freq 5")
+  		  	       .append(                                                                                                     
+  		              $(document.createElement('select'))                                                                        
+  		                .prop("id", "channel_width_5")                                                                                                     
+  		                .prop("name", "channel_width_5")                                                                            
+					  .append( $(document.createElement('option'))
+						.prop("value", "20")
+						.prop("text", "20 MGz")
+					  )
+					  .append( $(document.createElement('option'))
+						.prop("value", "40")
+						.prop("text", "40 MGz")
+					  )
+					  .append( $(document.createElement('option'))
+						.prop("value", "80")
+						.prop("text", "80 MGz")
+					  )
+				  )
   			  )
+			  .append( $(document.createElement('td')).addClass("channel_freq 2")
+  		  	       .append(                                                                                                     
+  		              $(document.createElement('select'))                                                                        
+  		                .prop("id", "channel_width_2")                                                                                                     
+  		                .prop("name", "channel_width_2")                                                                            
+					  .append( $(document.createElement('option'))
+						.prop("value", "20")
+						.prop("text", "20 MGz")
+					  )
+					  .append( $(document.createElement('option'))
+						.prop("value", "40")
+						.prop("text", "40 MGz")
+					  )
+			  	  )
+			  )
+  			  
   		) // End tr
 
     	
@@ -208,9 +254,9 @@ $.widget("jai.wl_wl0", {
               $(document.createElement('input'))                                                                         
                 .prop("id","wl_channel_msg")                                                                                 
                 .prop("name","wl_channel_msg")                                                                               
-		.prop("disabled", "true")
+				.prop("disabled", "true")
             )                                                                                                            
-	  )
+	  	)
 
 	  .append( $(document.createElement('td')).addClass("channel_mode auto_off")
             .append(                                                                                             
@@ -220,7 +266,15 @@ $.widget("jai.wl_wl0", {
             )                                                                                                    
           )
 
-)
+      .append( $(document.createElement('td')).addClass("channel_mode auto_off_5")
+            .append(                                                                                             
+              $(document.createElement('select'))                                                                    
+                .prop("id","wl_channel_5")                                                                 
+                .prop("name","wl_channel_5")                                                                       
+            )                                                                                                    
+          )
+
+	  )
 	
 	
         .append( $(document.createElement('tr'))
@@ -358,33 +412,92 @@ $.widget("jai.wl_wl0", {
 		value: wl0.auto
 	});
 
-	$('#channel_freq').radioswitch({ 
-		value: "high"
-	});
-
-	$('#channel_width').spinner({ })spinner('value', 40);
-
 	$('#channel_mode').change(function(){
 		var selectOption = $(this).find(":selected").val();
-		if (selectOption.trim() == "off") {
+		var selectFreq = $('#channel_freq').find(":selected").val();
+		if (selectOption.trim() == "off" && selectFreq.trim() == "2") {
 			$('.auto_on').hide();
+			$('.auto_off_5').hide();
 			$('.auto_off').show();
+			$('.5').hide();
+                        $('.2').show();
+		} else if (selectOption.trim() == "off" && selectFreq.trim() == "5"){
+			$('.auto_on').hide();
+			$('.auto_off_5').show();
+			$('.auto_off').hide();
+			$('.2').hide();
+                        $('.5').show();
+			appendChannel();
 		} else {
 			$('.auto_off').hide();
+			$('.auto_off_5').hide();
 			$('.auto_on').show();
 		}
 	})
 
-	if (wl0.auto == "off") {
-		$('.auto_on').hide();
-		$('.auto_off').show();
+	$('#channel_freq').radioswitch({ 
+		value: wl0.freq
+	});
+
+	$('#channel_width').select('value', 20);
+
+	$('#channel_freq').change(function(){
+		var selectOption = $(this).find(":selected").val();
+		var selectMode = $('#channel_mode').find(":selected").val();
+		if (selectOption.trim() == "5" && selectMode.trim() == "off") {
+			$('.2').hide();
+			$('.5').show();
+			$('.auto_off_5').show();
+			$('.auto_off').hide();
+			$('.auto_on').hide();
+			appendChannel();
+		} else if (selectOption.trim() == "2" && selectMode.trim() == "off") {
+			$('.5').hide();
+			$('.2').show();
+			$('.auto_on').hide();
+			$('.auto_off').show();
+			$('.auto_off_5').hide();
+		} else if (selectOption.trim() == "2" && selectMode.trim() == "auto") {
+			$('.5').hide();
+			$('.2').show();
+			$('.auto_off').hide();
+			$('.auto_off_5').hide();
+			$('.auto_on').show();
+		} else if (selectOption.trim() == "5" && selectMode.trim() == "auto") {
+			$('.5').show();
+                        $('.2').hide();
+                        $('.auto_off').hide();
+                        $('.auto_off_5').hide();
+                        $('.auto_on').show();
+		}
+	})
+	
+	if (wl0.freq == "5") {
+		$('.2').hide();
+		$('.5').show();
 	} else {
+		$('.5').hide();
+		$('.2').show();
+	}
+
+	if (wl0.auto == "off" && wl0.freq == "2") {
+		$('.auto_on').hide();
+		$('.auto_off_5').hide();
+		$('.auto_off').show();
+	} else if (wl0.auto == "off" && wl0.freq == "5") {
+		$('.auto_on').hide();
+		$('.auto_off_5').show();
 		$('.auto_off').hide();
+		appendChannel();
+	} else { 
+		$('.auto_off').hide();
+		$('.auto_off_5').hide();
 		$('.auto_on').show();
 	}
 
 	$('#wl_channel').spinner({ min: 1, max: wl0.channels_qty }).spinner('value',wl0.channel);
 	$('#wl_channel_msg').val(wl0.channel);
+	$('#wl_channel_5').select(wl0.channel);
 
 	$('#wl_encryption').radioswitch({
 		value: wl0.encryption

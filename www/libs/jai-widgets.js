@@ -14,6 +14,7 @@ $.widget("jai.macspinner", $.ui.spinner, {
  _format: function(value){ return long2mac(value); }
 });
 
+
 $.widget('jai.radioswitch', $.Widget, {
   
   _create: function(){
