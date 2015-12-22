@@ -24,6 +24,13 @@ config interface 'wan'
 	option mtu '1500'
 	option proto 'dhcp'
 
+config interface 'tor'
+        option proto 'static'
+        option ipaddr '20.0.0.1'
+        option netmask '255.255.255.0'
+	option network '10.192.0.0'
+	option mode 'off'
+
 config settings 'general'
 	option ovpn_status 'stopped'
 	option ovpn_file '/etc/sabai/openvpn/ovpn.current'
@@ -103,3 +110,5 @@ config settings 'vpn'
         option proto 'none'
         option status 'none'
         option ip ''
+
+

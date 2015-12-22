@@ -31,6 +31,46 @@ var f = E('fe');
 var hidden = E('hideme'); 
 var hide = E('hiddentext');
 
+var tor=$.parseJSON('{<?php
+        $ssid=trim(exec("uci get sabai.wlradio0.ssid"));
+        $ip=trim(exec("uci get sabai.tor.ipaddr"));
+        $netmask=trim(exec("uci get sabai.tor.netmask"));
+        $network=trim(exec("uci get sabai.tor.network"));
+        $mode=trim(exec("uci get sabai.tor.mode"));
+        echo "\"ip\": \"$ip\",\"ssid\": \"$ssid\",\"network\": \"$network\", \"netmask\": \"$netmask\", \"mode\": \"$mode\"";
+    ?>}');
+
+
+ function TORcall(torForm){ 
+ 	hideUi("Adjusting Wireless settings..."); 
+    $(document).ready( function(){
+    	// Pass the form values to the php file 
+    	$.post('php/tor.php', $(torForm).serialize(), function(res){
+    	  // Detect if values have been passed back   
+    	    if(res!=""){
+    	      TORresp(res);
+    	    }
+    	      showUi();
+    	});
+    	// Important stops the page refreshing
+    	return false;
+
+    }); 
+
+ }
+
+ function TORresp(res){ 
+ 	eval(res); 
+    msg(res.msg); 
+    showUi(); 
+    if(res.sabai){ 
+    	limit=10; 
+    	getUpdate(); 
+    }
+}
+
+
+
 $.widget("jai.tor_setup_wl", {
 	_create: function(){
 
@@ -75,7 +115,7 @@ $.widget("jai.tor_setup_wl", {
 	              ) // end SSID tr
 
 	         .append( $(document.createElement('tr'))
-				.append( $(document.createElement('td')).html('TOR Network IP') 
+				.append( $(document.createElement('td')).html('TOR Wireless IP') 
 	  	                )
 	  	                .append( $(document.createElement('td') ) 
 	  	                  .append(
@@ -102,7 +142,7 @@ $.widget("jai.tor_setup_wl", {
 
 
 	  	  	  	        .append( $(document.createElement('tr'))
-	  		  	  				.append( $(document.createElement('td')).html('TOR Server IP') 
+	  		  	  				.append( $(document.createElement('td')).html('TOR Network IP') 
 	  		  	  	  	                )
 	  		  	  	  	                .append( $(document.createElement('td') ) 
 	  		  	  	  	                  .append(
@@ -117,13 +157,13 @@ $.widget("jai.tor_setup_wl", {
 	    ) // end lower table
 
 	    $('#tor_mode').radioswitch({ 
-			value: 'off'
+			value: tor.mode
 		});
 
-		$('#tor_ssid').val();
-		$('#tor_nw_ip').ipspinner().ipspinner('value', '20.0.0.1');//tor.gateway);
-		$('#tor_nw_mask').maskspinner().maskspinner('value','255.255.255.0');//tor.mask);
-		$('#tor_server').ipspinner().ipspinner('value','10.192.0.0');//tor.server);
+		$('#tor_ssid').val(tor.ssid);
+		$('#tor_nw_ip').ipspinner().ipspinner('value', tor.ip);//tor.gateway);
+		$('#tor_nw_mask').maskspinner().maskspinner('value', tor.netmask);//tor.mask);
+		$('#tor_server').ipspinner().ipspinner('value', tor.network);//tor.server);
 
 		this._super();
 	},

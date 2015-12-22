@@ -419,10 +419,15 @@ $.widget("jai.wl_wl0", {
 			$('.auto_on').hide();
 			$('.auto_off_5').hide();
 			$('.auto_off').show();
+			$('.5').hide();
+                        $('.2').show();
 		} else if (selectOption.trim() == "off" && selectFreq.trim() == "5"){
 			$('.auto_on').hide();
 			$('.auto_off_5').show();
 			$('.auto_off').hide();
+			$('.2').hide();
+                        $('.5').show();
+			appendChannel();
 		} else {
 			$('.auto_off').hide();
 			$('.auto_off_5').hide();
@@ -445,18 +450,25 @@ $.widget("jai.wl_wl0", {
 			$('.auto_off_5').show();
 			$('.auto_off').hide();
 			$('.auto_on').hide();
+			appendChannel();
 		} else if (selectOption.trim() == "2" && selectMode.trim() == "off") {
 			$('.5').hide();
 			$('.2').show();
 			$('.auto_on').hide();
 			$('.auto_off').show();
 			$('.auto_off_5').hide();
-		} else {
+		} else if (selectOption.trim() == "2" && selectMode.trim() == "auto") {
 			$('.5').hide();
 			$('.2').show();
 			$('.auto_off').hide();
 			$('.auto_off_5').hide();
 			$('.auto_on').show();
+		} else if (selectOption.trim() == "5" && selectMode.trim() == "auto") {
+			$('.5').show();
+                        $('.2').hide();
+                        $('.auto_off').hide();
+                        $('.auto_off_5').hide();
+                        $('.auto_on').show();
 		}
 	})
 	

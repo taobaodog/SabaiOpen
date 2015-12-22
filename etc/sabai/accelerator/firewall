@@ -119,21 +119,56 @@ config 'zone'
         option forward 'REJECT'
         option output 'ACCEPT'
 
-config 'forwarding'
-        option src 'mainAP'
+config forwarding
+	option src 'mainAP'
+	option dest 'wan'
+
+config rule
+	option name 'Allow DNS Queries'
+	option src 'mainAP'
+	option dest_port '53'
+	option proto 'tcpudp'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow DHCP request'
+	option src 'mainAP'
+	option src_port '67-68'
+	option dest_port '67-68'
+	option proto 'udp'
+	option target 'ACCEPT'
+
+config zone
+	option name 'tor'
+	option input 'REJECT'
+	option output 'ACCEPT'
+	option forward 'REJECT'
+	option conntrack '1'
+	option network 'tor'
+
+config forwarding
+        option src 'tor'
         option dest 'wan'
 
-config 'rule'
-        option name 'Allow DNS Queries'
-        option src 'mainAP'
-        option dest_port '53'
-        option proto 'tcpudp'
-        option target 'ACCEPT'
+config rule
+	option target 'ACCEPT'
+	option src 'tor'
+	option proto 'udp'
+	option dest_port '67-68'
+	option src_port '67-68'
+	option name 'Allow Tor DHCP Requests'
 
-config 'rule'
-        option name 'Allow DHCP request'
-        option src 'mainAP'
-        option src_port '67-68'
-        option dest_port '67-68'
-        option proto 'udp'
-        option target 'ACCEPT'
+config rule
+	option target 'ACCEPT'
+	option src 'tor'
+	option proto 'tcp'
+	option dest_port '9040'
+	option name 'Allow Tor Transparent Proxy'
+
+config rule
+	option target 'ACCEPT'
+	option src 'tor'
+	option proto 'tcp'
+	option dest_port '9053'
+	option name 'Allow Tor DNS Proxy'
+
