@@ -6,22 +6,24 @@ start() {
 	logger "SABAI WL:> Setting up wireless."
 	dev="$(uci get system.@system[0].hostname)"
 
-	switch ($dev) {
-		case "SabaiOpen":
+	case $dev in
+		SabaiOpen)
 			if [ -z "$(ifconfig | grep wlan0)" ]; then
    				sh /www/bin/wireless_startup.sh start
         			return 0;
 			else
 				logger "SABAI WL:> Wireless interfaces are working."
 			fi
-		case "vpna":
+		;;
+		vpna)
 			if [ -z "$(ifconfig | grep wlan0)" ]; then
 				sh /www/bin/wireless_startup.sh acc
 				return 0;
 			else
 				logger "SABAI WL:> Wireless interfaces are working."
 			fi
-	}
+		;;
+	esac
 }
 
 stop() {

@@ -15,7 +15,7 @@ if [ $device = "SabaiOpen" ]; then
 	channel="$(iw list | grep "\[" | grep "disabled" | awk '{print $4}' | cut -d "[" -f2 | cut -d "]" -f1 | head -1)"
 	channel_aval="$(( channel-1 ))"
 
-elif [ $device = "vpna" ] && [ $freq = "2.4" ]; then
+elif [ $device = "vpna" ] && [ $freq = "2" ]; then
 	#get all channels for 2.4 GHz
 	iw list > /tmp/wl
 	sed -i '/Band\ 2\:/q' /tmp/wl

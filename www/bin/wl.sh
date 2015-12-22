@@ -32,7 +32,11 @@ if [ "$device" = "0" ]; then
 		uci set wireless.radio0.channel="$channel_freq"
 		uci commit wireless
 	else
-		uci set wireless.radio0.channel="auto"
+		if [ "$frequency" = "5" ]; then
+			uci set wireless.radio0.channel="36"
+		else
+			uci set wireless.radio0.channel="1"
+		fi
 	fi
 	
 	if [ "$frequency" = "5" ]; then
