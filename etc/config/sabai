@@ -93,7 +93,7 @@ config settings 'wlradio0'
 	option channel_freq '1'
 	option auto 'auto'
 	option freq '5'
-        option width '80
+        option width '80'
 
 config settings 'wlradio1'
 	option mode 'ap'
