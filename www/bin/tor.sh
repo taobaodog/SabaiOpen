@@ -13,7 +13,11 @@ config_file=sabai
 
 _off(){
 	/etc/init.d/tor stop
+	wifi down
 	uci set wireless.@wifi-iface[0].network="mainAP"
+	/etc/init.d/odhcp restart
+        /etc/init.d/dnsmasq restart
+	wifi up
 	logger "TOR turned OFF."
 }
 
