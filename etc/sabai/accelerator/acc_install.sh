@@ -38,8 +38,6 @@ rm $TOPDIR/files/www/v/security.upnp.php
 
 # Removing ../php/*.php
 rm $TOPDIR/files/www/php/lan.php
-rm $TOPDIR/files/www/php/get_wl_channel.php
-rm $TOPDIR/files/www/php/wl.php
 rm $TOPDIR/files/www/php/dhcp.php
 rm $TOPDIR/files/www/php/dmz.php
 rm $TOPDIR/files/www/php/firewall.php
@@ -48,8 +46,6 @@ rm $TOPDIR/files/www/php/upnp.php
 
 # Removing ../bin/*.sh
 rm $TOPDIR/files/www/bin/lan.sh
-rm $TOPDIR/files/www/bin/wl.sh
-rm $TOPDIR/files/www/bin/wl_channel.sh
 rm $TOPDIR/files/www/bin/dhcp.sh
 rm $TOPDIR/files/www/bin/dmz.sh
 rm $TOPDIR/files/www/bin/firewall.sh
