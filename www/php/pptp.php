@@ -7,7 +7,11 @@ $filter = array("<", ">","="," (",")",";","/","|");
 if (isset($_POST['check'])) {
 	$act=$_POST['check'];
 	$res=exec("sh /www/bin/pptp.sh $act");
-        echo $res;
+    echo $res;
+} else if (isset($_POST['switch']))	{
+	$act=$_POST['switch'];
+	exec("sh /www/bin/pptp.sh $act");
+	echo "res={ sabai: true, msg: 'PPTP stopped.' }";
 } else {
 	$_REQUEST['act']=str_replace ($filter, "#", $_REQUEST['act']);
 	$act=$_REQUEST['act'];
@@ -32,9 +36,9 @@ if ($user && $pass && $server) {
 			echo "res={ sabai: true, msg: 'PPTP starting.' }";
 			break;
 		case "stop":
-			exec("sh /www/bin/pptp.sh $act");
-			echo "res={ sabai: true, msg: 'PPTP stopped.' }";
-		    break;
+			$res=exec("sh /www/bin/pptp.sh $act");
+			echo $res;
+			break;
 		case "save":
 			echo "res={ sabai: true, msg: 'PPTP settings saved.' }";
 		    break;

@@ -5,6 +5,7 @@ UCI_PATH="-c /configs"
 
 action=$1
 status=$(uci get sabai.vpn.status)
+proto=$(uci get sabai.vpn.proto)
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };";
@@ -12,6 +13,11 @@ _return(){
 }
 
 _stop(){
+	if [ $proto = "none" ] || [ $proto = "pptp"]; then
+		logger "No OpenVPN is running."
+		_return 0 "No OpenVPN is running."
+	fi
+
 	_clear
 #	/etc/init.d/firewall restart
 	sleep 5
@@ -20,7 +26,6 @@ _stop(){
 }
 
 _start(){
-	proto=$(uci get sabai.vpn.proto)
         if [ $proto == "ovpn" ]; then
 		logger "Ovpn has been already running."
                 _return 0 "Ovpn has been already running."
@@ -29,8 +34,7 @@ _start(){
         if [ ! -e /etc/sabai/openvpn/ovpn.current ]; then
                 _return 0 "No file loaded."
         fi
-        uci $UCI_PATH set sabai.vpn.status=Starting
-        uci $UCI_PATH set sabai.vpn.proto=ovpn
+	
 	_config
 	/etc/init.d/openvpn start
 	/etc/init.d/openvpn enable
@@ -60,6 +64,9 @@ _save(){
 _config(){
         # stop other vpn's if running
         if [ $status != "none" ]; then
+		/www/bin/pptp.sh stop
+		uci $UCI_PATH set sabai.vpn.status=Starting
+	    	uci $UCI_PATH set sabai.vpn.proto=ovpn
                 uci $UCI_PATH commit sabai
                 uci delete network.vpn
                 uci commit network
@@ -141,6 +148,20 @@ _clear_all(){
 	_return 1 "OpenVPN settings cleared.";
 }
 
+_stat(){
+	ifconfig > /tmp/check
+	if [ "$(cat /tmp/check | grep tun0)" = "" ]; then
+		uci $UCI_PATH set sabai.vpn.status=Disconnected
+		logger "OpenVPN did not start. Please check your configuration."
+		_return 1 "OpenVPN did not start. Please check your configuration."
+	else
+		uci $UCI_PATH set sabai.vpn.status=Connected
+		logger "Openvpn started."
+		_return 1 "OpenVPN started."
+	fi
+	uci $UCI_PATH commit sabai
+}
+
 ls >/dev/null 2>/dev/null 
 
 case $action in
@@ -150,4 +171,5 @@ case $action in
 	save)	_save	;;
 	clear)  _clear_all  ;;
 	config) _config	;;
+	check) 	_stat	;;
 esac

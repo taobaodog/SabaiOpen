@@ -86,10 +86,42 @@
 
 		function OVPNsave(act){ 
 			hideUi("Adjusting OpenVPN..."); 
-			E("_act").value=act; 
-			que.drop( "php/ovpn.php", OVPNresp, $("#fe").serialize() ); 
+			E("_act").value=act;
+			if (act=='start') {
+				if (info.vpn.type == 'PPTP') {
+					hideUi("PPTP will be stopped.");
+					$.post('php/pptp.php', {'switch': 'stop'}, function(res){
+						if(res!=""){
+							eval(res);
+							hideUi(res.msg);
+							OVPNcall();
+						}
+					});
+				} else {
+					OVPNcall();
+				}
+			} else {
+				$.post("php/ovpn.php", $("#fe").serialize(), function(res){
+					if(res!=""){
+						OVPNresp(res);
+					}
+					showUi();
+				});  
+			}
 		}
 
+		function OVPNcall(){
+			$.post("php/ovpn.php", $("#fe").serialize(), function(res){
+				if(res!=""){
+					eval(res);
+					hideUi(res.msg);
+					setTimeout(function(){hideUi("Checking OVPN status...")},5000);
+					setTimeout(check,10000);
+				}
+			});
+		}
+
+		
 		function init(){ 
 			f = E('fe'); 
 			hidden = E('hideme'); 
@@ -98,6 +130,16 @@
 	   getUpdate();
 	   setInterval (getUpdate, 5000); 
 	}
+
+		function check(){
+			E("_act").value='check';
+			$.post('php/ovpn.php', $("#fe").serialize(), function(res){
+				if(res!=""){
+					OVPNresp(res);
+				}
+				showUi();
+			});
+		}
 
 	</script>
 <div class='pageTitle'>VPN: OpenVPN Client</div>
