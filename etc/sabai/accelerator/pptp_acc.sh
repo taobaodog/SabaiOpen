@@ -19,7 +19,7 @@ _return(){
 }
 
 _stop(){
-	if [ $proto = "none" ] || [ $proto = "ovpn"]; then
+	if [ $proto = "none" ] || [ $proto = "ovpn" ]; then
 		logger "No PPTP is running."
 		_return 0 "No PPTP is running."
 	fi
@@ -51,6 +51,11 @@ _stop(){
 }
 
 _start(){
+	if [ $proto == "pptp" ]; then
+	        logger "PPTP has been already running."
+	        _return 0 "PPTP has been already running."
+	fi
+
 	status=$(uci get sabai.vpn.status)
 	if [ $status != "none" ]; then
 	#ensure that openvpn is stopped
@@ -106,7 +111,10 @@ _start(){
         	/etc/init.d/firewall restart
 		sleep 2
 		/etc/init.d/network restart
-	fi  
+	fi 
+
+	logger "PPTP starts..."
+    _return 0 "PPTP starts..."
 }
 
 _clear(){

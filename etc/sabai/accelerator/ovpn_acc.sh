@@ -13,7 +13,7 @@ _return(){
 }
 
 _stop(){
-	if [ $proto = "none" ] || [ $proto = "pptp"]; then
+	if [ $proto = "none" ] || [ $proto = "pptp" ]; then
 		logger "No OpenVPN is running."
 		_return 0 "No OpenVPN is running."
 	fi
