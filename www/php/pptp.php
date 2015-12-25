@@ -32,8 +32,8 @@ if ($user && $pass && $server) {
 	//execute the action and give response to calling page
 	switch ($act) {
 		case "start":
-			exec("sh /www/bin/pptp.sh $act");
-			echo "res={ sabai: true, msg: 'PPTP starting.' }";
+			$res=exec("sh /www/bin/pptp.sh $act");
+			echo $res;
 			break;
 		case "stop":
 			$res=exec("sh /www/bin/pptp.sh $act");
