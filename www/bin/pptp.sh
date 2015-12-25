@@ -19,7 +19,7 @@ _return(){
 }
 
 _stop(){
-	if [ $proto = "none" ] || [ $proto = "ovpn"]; then
+	if [ $proto = "none" ] || [ $proto = "ovpn" ]; then
 		logger "No PPTP is running."
 		_return 0 "No PPTP is running."
 	fi
