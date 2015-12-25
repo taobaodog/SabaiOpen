@@ -100,15 +100,18 @@ function PPTPcall(act){
 	E("act").value=act;
 	// Pass the form values to the php file
 	if (act=='start') {
-		$.post('php/pptp.php', $("#fe").serialize(), function(res){
-			// Detect if values have been passed back   
-			if(res!=""){
-				eval(res);
-				hideUi(res.msg);
-				setTimeout(function(){hideUi("Checking PPTP status...")},5000);
-				setTimeout(check,10000);
-			}
-		});
+		if (info.vpn.type == 'OpenVPN') {
+			hideUi("OpenVPN will be stopped.");
+			$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
+				if(res!=""){
+					eval(res);
+					hideUi(res.msg);
+					PPTPstart();
+				}
+			});
+		} else {
+			PPTPstart();
+		}
 	} else {
 		$.post('php/pptp.php', $("#fe").serialize(), function(res){
 			if(res!=""){
@@ -125,6 +128,18 @@ function PPTPcall(act){
 return false;
 
 }; 
+
+function PPTPstart(){
+	$.post('php/pptp.php', $("#fe").serialize(), function(res){
+		// Detect if values have been passed back   
+		if(res!=""){
+			eval(res);
+			hideUi(res.msg);
+			setTimeout(function(){hideUi("Checking PPTP status...")},5000);
+			setTimeout(check,10000);
+		}
+	});
+}
 
 function check(){
 	$.post('php/pptp.php',{'check': 'status'}, function(res){

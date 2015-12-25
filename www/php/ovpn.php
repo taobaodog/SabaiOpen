@@ -5,11 +5,14 @@ header('Content-Type: application/javascript');
 $UCI_PATH="-c /configs";
 
 // Bring over variables from the openVPN
-
-$act=trim($_POST['act']);
-$VPNname=trim($_POST['VPNname']);
-$VPNpassword=trim($_POST['VPNpassword']);
-$conf=trim($_POST['conf']);
+if (isset($_POST['switch'])) {
+	$act=$_POST['switch'];
+} else {
+	$act=$_REQUEST['act'];
+	$VPNname=trim($_POST['VPNname']);
+	$VPNpassword=trim($_POST['VPNpassword']);
+	$conf=trim($_POST['conf']);
+}
 
 function newfile(){
  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
@@ -57,10 +60,10 @@ $password=$_REQUEST['VPNpassword'];
 }
 
 
-$act=$_REQUEST['act'];
+
 switch ($act){
   case "start":
-    if(!file_exists("/etc/sabai/openvpn/ovpn.current")){ echo "res={ sabai: false, msg: 'OpenVPN file missing.' };"; break; }
+    if(!file_exists("/etc/sabai/openvpn/ovpn.current")){ echo "res={ sabai: false, msg: 'OpenVPN file missing.' };"; break;}
   case "stop":
     $line=exec("sh /www/bin/ovpn.sh $act 2>&1",$out);
     $i=count($out)-1;
@@ -75,6 +78,9 @@ switch ($act){
   case "newfile": newfile(); break;
   case "save": savefile(); break;
   case "log": echo (file_exists("/etc/sabai/openvpn/ovpn.log") ? str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/etc/sabai/openvpn/ovpn.log")) : "No log."); break;
+  case "check": 
+  	$line=exec("sh /www/bin/ovpn.sh $act");
+  	echo $line; break;
 }
 
 ?>

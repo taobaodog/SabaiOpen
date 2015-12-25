@@ -1,6 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2015 Sabai Technology, LLC
+$UCI_PATH="-c /configs";
 
 exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
 $wan = " wan: {
@@ -20,10 +21,10 @@ switch($vo){
  case 'none': $vpn_type='-'; break;
  case 'pptp': 
  	$vpn_type='PPTP'; 
- 	$pptp_ifup=exec("ifconfig pptp-vpn | grep -e 'pptp-vpn' | awk -F: '{print $0}' | awk '{print $1}'");
- 	if($pptp_ifup == 'pptp-vpn') {
- 		$vpn_ip=exec("ifconfig pptp-vpn | grep inet | awk '{print $2}' | sed 's/addr://g' ");
- 		exec("uci $UCI_PATH set sabai.vpn.ip=$vpnip");
+ 	$vpn_ip=exec("ifconfig pptp-vpn | grep inet | awk '{print $2}' | sed 's/addr://g' ");
+ 	if($vpn_ip != '') {
+ 		exec("uci $UCI_PATH set sabai.vpn.ip=$vpn_ip");
+ 		exec("uci $UCI_PATH set sabai.vpn.status=Connected");
  		exec("uci $UCI_PATH commit sabai");
  	}
  	break;
@@ -31,8 +32,11 @@ switch($vo){
  case 'ovpn': 
  	$vpn_type='OpenVPN'; 
  	$vpn_ip=exec("ifconfig tun0 | grep inet | awk '{print $2}' | sed 's/addr://g' ");
- 	exec("uci $UCI_PATH set sabai.vpn.ip=$vpnip");
- 	exec("uci $UCI_PATH commit sabai");
+ 	if($vpn_ip != '') {
+ 		exec("uci $UCI_PATH set sabai.vpn.ip=$vpn_ip");
+ 		exec("uci $UCI_PATH set sabai.vpn.status=Connected");
+ 		exec("uci $UCI_PATH commit sabai");
+ 	}
  	break;
 }
 $vpn_status=exec("uci get sabai.vpn.status");

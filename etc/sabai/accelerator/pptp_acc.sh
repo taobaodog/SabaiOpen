@@ -5,6 +5,7 @@ UCI_PATH="-c /configs"
 
 act=$1
 config_act=$2
+proto=$(uci get sabai.vpn.proto)
 
 if [ $config_act = "update" ]; then
 	config_file="sabai-new"
@@ -14,9 +15,15 @@ fi
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };"
+	exit 0;
 }
 
 _stop(){
+	if [ $proto = "none" ] || [ $proto = "ovpn"]; then
+		logger "No PPTP is running."
+		_return 0 "No PPTP is running."
+	fi
+	
 	uci delete network.vpn
 	uci set network.vpn.proto=none
 	uci commit network
@@ -27,7 +34,7 @@ _stop(){
         else                                                                                                                                   
         	echo -e "\n"
 	fi                                                                                                                                     
-	uci commit firewall	
+	uci commit firewall
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.proto=none
 	uci $UCI_PATH commit sabai
@@ -39,13 +46,15 @@ _stop(){
 		sleep 5
 		/etc/init.d/network restart
 	fi
-   	logger "pptp is stopped and firewall restarted."
+	logger "PPTP is stopped."
+	_return 0 "PPTP is stopped."
 }
 
 _start(){
 	status=$(uci get sabai.vpn.status)
 	if [ $status != "none" ]; then
 	#ensure that openvpn is stopped
+		/www/bin/ovpn.sh stop
 		/etc/init.d/openvpn stop
 		/etc/init.d/openvpn disable
 	#ensure that openvpn settings removed
