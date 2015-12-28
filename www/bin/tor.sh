@@ -11,6 +11,11 @@ UCI_PATH="-c /configs"
 config_file=sabai
 
 
+_off_tun(){
+	/etc/init.d/tor stop
+	/etc/init.d/firewall restart
+}
+
 _off(){
 	/etc/init.d/tor stop
 	wifi down
@@ -53,9 +58,33 @@ _ap(){
 	logger "TOR turned ON. WIFI AP SSID is $(uci get $config_file.wlradio0.ssid)"
 }
 
+_tun() {
+	/etc/init.d/tor stop
+	sed -i '/VirtualAddrNetwork/,$d' /etc/tor/torrc
+	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)/10" >> /etc/tor/torrc
+	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
+	echo "TransPort 9040" >> /etc/tor/torrc
+	echo "TransListenAddress $(uci get network.wan.ipaddr)" >> /etc/tor/torrc
+        echo "DNSPort 53" >> /etc/tor/torrc
+        echo "DNSListenAddress $(uci get network.wan.ipaddr)" >> /etc/tor/torrc
+
+	# Tor's TransPort
+	_trans_port="9040"
+
+	# your internal interface
+	_int_if="eth0"
+	iptables -F
+	iptables -t nat -F
+	iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 53
+	iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
+	/etc/init.d/tor start
+	logger "TOR turned on as a tunnel."
+	logger "ALL traffic will be anonymized."
+}
 
 case $mode in
 	off)	_off	;;
+	off_tun) _off_tun ;;
 	ap)	_ap	;;
 	tun)	_tun	;;
 esac
