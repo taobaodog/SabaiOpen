@@ -11,18 +11,22 @@ UCI_PATH="-c /configs"
 config_file=sabai
 
 
-_off_tun(){
-	/etc/init.d/tor stop
-	/etc/init.d/firewall restart
-}
-
 _off(){
 	/etc/init.d/tor stop
-	wifi down
-	uci set wireless.@wifi-iface[0].network="mainAP"
-	/etc/init.d/odhcp restart
-        /etc/init.d/dnsmasq restart
-	wifi up
+
+	if [ "$(uci get sabai.tor.mode)" = "ap" ]; then
+		wifi down
+		uci set wireless.@wifi-iface[0].network="mainAP"
+		/etc/init.d/odhcp restart
+        	/etc/init.d/dnsmasq restart
+		wifi up
+	else
+		/etc/init.d/tor stop
+	        /etc/init.d/firewall restart
+	fi
+
+	uci $UCI_PATH set sabai.tor.mode="off"
+	uci $UCI_PATH commit sabai
 	logger "TOR turned OFF."
 }
 
@@ -75,6 +79,12 @@ _tun() {
 	_int_if="eth0"
 	iptables -F
 	iptables -t nat -F
+
+	iptables -t nat -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j RETURN
+	iptables -t nat -A PREROUTING -i eth0 -d "$(uci get $config_file.wan.ipaddr)" -j RETURN
+	iptables -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j ACCEPT
+	iptables -A OUTPUT -d 127.0.0.0/8 -j ACCEPT
+
 	iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 53
 	iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
 	/etc/init.d/tor start
@@ -84,7 +94,6 @@ _tun() {
 
 case $mode in
 	off)	_off	;;
-	off_tun) _off_tun ;;
 	ap)	_ap	;;
 	tun)	_tun	;;
 esac
