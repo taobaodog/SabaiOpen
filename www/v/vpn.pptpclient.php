@@ -79,7 +79,7 @@ function setUpdate(res){
 function getUpdate(ipref){ 
             que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
        $.get('php/get_remote_ip.php', function( data ) {
-         donde = $.parseJSON(data.substring(4));
+         donde = $.parseJSON(data);
          console.log(donde);
          for(i in donde) E('loc'+i).innerHTML = donde[i];
        });
@@ -103,6 +103,15 @@ function PPTPcall(act){
 		if (info.vpn.type == 'OpenVPN') {
 			hideUi("OpenVPN will be stopped.");
 			$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
+				if(res!=""){
+					eval(res);
+					hideUi(res.msg);
+					PPTPstart();
+				}
+			});
+		} else if (info.vpn.type == 'TOR') {
+			hideUi("TOR will be stopped.");
+			$.post('php/tor.php', {'switch': 'off'}, function(res){
 				if(res!=""){
 					eval(res);
 					hideUi(res.msg);

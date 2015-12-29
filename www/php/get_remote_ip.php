@@ -13,7 +13,7 @@ $arrContextOptions=array(
 # get the location update url
 $URIfile=exec("uci get sabai.general.updateuri");
 # if it doesn't exist, create it
-$URI=file_exists($URIfile)?file_get_contents($URIfile):'https://geoiplookup.wikimedia.org/';
+$URI=file_exists($URIfile)?file_get_contents($URIfile):'http://ip-api.com/json';
 #get current location
 $get_ip=file_get_contents($URI, false, stream_context_create($arrContextOptions));
 $ip=str_replace(

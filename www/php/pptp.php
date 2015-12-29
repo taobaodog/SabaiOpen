@@ -10,8 +10,8 @@ if (isset($_POST['check'])) {
     echo $res;
 } else if (isset($_POST['switch']))	{
 	$act=$_POST['switch'];
-	exec("sh /www/bin/pptp.sh $act");
-	echo "res={ sabai: true, msg: 'PPTP stopped.' }";
+	$res=exec("sh /www/bin/pptp.sh $act");
+	echo $res;
 } else {
 	$_REQUEST['act']=str_replace ($filter, "#", $_REQUEST['act']);
 	$act=$_REQUEST['act'];

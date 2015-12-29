@@ -67,7 +67,7 @@
 		function getUpdate(ipref){ 
 			que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
 	   $.get('php/get_remote_ip.php', function( data ) {
-	     donde = $.parseJSON(data.substring(4));
+	     donde = $.parseJSON(data);
 	     console.log(donde);
 	     for(i in donde) E('loc'+i).innerHTML = donde[i];
 	   });
@@ -92,6 +92,15 @@
 				if (info.vpn.type == 'PPTP') {
 					hideUi("PPTP will be stopped.");
 					$.post('php/pptp.php', {'switch': 'stop'}, function(res){
+						if(res!=""){
+							eval(res);
+							hideUi(res.msg);
+							OVPNcall();
+						}
+					});
+				} else if (info.vpn.type == 'TOR') {
+					hideUi("TOR will be stopped.");
+					$.post('php/tor.php', {'switch': 'off'}, function(res){
 						if(res!=""){
 							eval(res);
 							hideUi(res.msg);

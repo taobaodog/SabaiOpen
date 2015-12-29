@@ -44,23 +44,44 @@ var tor=$.parseJSON('{<?php
 
 
  function TORcall(torForm){ 
- 	hideUi("Adjusting Wireless settings..."); 
-    $(document).ready( function(){
-    	// Pass the form values to the php file 
-    	$.post('php/tor.php', $(torForm).serialize(), function(res){
-    	  // Detect if values have been passed back   
-    	    if(res!=""){
-    	      TORresp(res);
-    	    }
-    	      showUi();
-    	});
+ 	hideUi("Adjusting TOR settings...");
+ 	if (info.vpn.type == 'OpenVPN' && E("tor_mode").value != "off") {
+		hideUi("OpenVPN will be stopped.");
+		$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
+			if(res!=""){
+				eval(res);
+				hideUi(res.msg);
+				TORstart(torForm);
+			}
+		});
+ 	} else if (info.vpn.type == 'PPTP' && E("tor_mode").value != "off") {
+		hideUi("PPTP will be stopped.");
+		$.post('php/pptp.php', {'switch': 'stop'}, function(res){
+			if(res!=""){
+				eval(res);
+				hideUi(res.msg);
+				TORstart(torForm);
+			}
+		});
+	} else {
+		TORstart(torForm);
+	}
+
     	// Important stops the page refreshing
     	return false;
+ };
 
-    }); 
+function TORstart(torForm){
+	$.post('php/tor.php', $(torForm).serialize(), function(res){
+  	  // Detect if values have been passed back   
+  	    if(res!=""){
+  	      TORresp(res);
+  	    }
+  	      showUi();
+  	});
+}
 
- }
-
+ 
  function TORresp(res){ 
  	eval(res); 
     msg(res.msg); 

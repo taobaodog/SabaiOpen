@@ -9,9 +9,21 @@ mode=$1
 #path to config files
 UCI_PATH="-c /configs"
 config_file=sabai
+proto=$(uci get sabai.vpn.proto)
+mode_curr=$(uci get sabai.tor.mode)
 
+_return(){
+	echo "res={ sabai: $1, msg: '$2' };"
+	exit 0;
+}
 
 _off(){
+	if [ $proto != "tor" ]; then
+		logger "NO TOR is running."
+		_return 0 "NO TOR is running."
+	fi
+
+
 	/etc/init.d/tor stop
 
 	if [ "$(uci get sabai.tor.mode)" = "ap" ]; then
@@ -26,12 +38,22 @@ _off(){
 	fi
 
 	uci $UCI_PATH set sabai.tor.mode="off"
+	uci $UCI_PATH set sabai.vpn.proto="none"
+	uci $UCI_PATH set sabai.vpn.status="none"
 	uci $UCI_PATH commit sabai
+
 	logger "TOR turned OFF."
+	_return 0 "TOR turned OFF."
 }
 
 _ap(){
+	_check
+
 	wifi down
+	uci $UCI_PATH set sabai.tor.mode=$mode
+	uci $UCI_PATH set sabai.vpn.proto="tor"
+	uci $UCI_PATH set sabai.vpn.status="Anonymity"
+	uci $UCI_PATH commit sabai
 	uci set wireless.@wifi-iface[0].disabled=0
 	uci set wireless.@wifi-iface[0].mode="$(uci get $config_file.tor.mode)"
 	uci set wireless.@wifi-iface[0].ssid="$(uci get $config_file.wlradio0.ssid)"
@@ -60,9 +82,17 @@ _ap(){
 	/etc/init.d/tor enable
 	wifi up
 	logger "TOR turned ON. WIFI AP SSID is $(uci get $config_file.wlradio0.ssid)"
+	_return 0 "TOR turned ON. WIFI AP SSID is $(uci get $config_file.wlradio0.ssid)"
 }
 
 _tun() {
+	_check
+
+	uci $UCI_PATH set sabai.tor.mode=$mode
+	uci $UCI_PATH set sabai.vpn.proto="tor"
+	uci $UCI_PATH set sabai.vpn.status="Anonymity"
+	uci $UCI_PATH commit sabai
+
 	/etc/init.d/tor stop
 	sed -i '/VirtualAddrNetwork/,$d' /etc/tor/torrc
 	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)/10" >> /etc/tor/torrc
@@ -90,6 +120,30 @@ _tun() {
 	/etc/init.d/tor start
 	logger "TOR turned on as a tunnel."
 	logger "ALL traffic will be anonymized."
+	_return 0 "TOR turned on as a tunnel."
+}
+
+_check() {
+	if [ $proto = "pptp" ]; then
+		/www/bin/pptp.sh stop
+	elif [ $proto = "ovpn" ]; then
+		/www/bin/ovpn.sh stop
+	elif [ $proto = "tor" ] && [ $mode = "ap" ]; then
+		_check_tor
+	elif [ $proto = "tor" ] && [ $mode = "tun" ]; then
+		_check_tor
+	else
+		logger "No VPN is running."
+	fi
+}
+
+_check_tor() {
+	if [ $mode = $mode_curr ]; then
+		logger "TOR is running."
+		_return 0 "TOR is running."
+	else
+		logger "TOR will be restarted in another mode."
+	fi
 }
 
 case $mode in
