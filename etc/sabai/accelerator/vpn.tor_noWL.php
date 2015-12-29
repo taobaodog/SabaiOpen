@@ -94,10 +94,6 @@ $.widget("jai.tor_setup_wl", {
 	                .prop("text", 'Off')
 	              )
 	              .append( $(document.createElement('option'))
-	                .prop("value", "ap")
-	                .prop("text", 'Wireless Server')
-	              )
-	              .append( $(document.createElement('option'))
 	                .prop("value", "tun")
 	                .prop("text", 'Tunnel')
 	              )
@@ -148,7 +144,7 @@ $.widget("jai.tor_wl_config", {
 	  	              ) // end ip tr
 
 	  	            .append( $(document.createElement('tr'))
-	  	  				.append( $(document.createElement('td')).html('TOR Network Mask') 
+	  	  				.append( $(document.createElement('td')).html('TOR Network Mask')
 	  	  	  	                )
 	  	  	  	                .append( $(document.createElement('td') ) 
 	  	  	  	                  .append(
@@ -170,7 +166,7 @@ $.widget("jai.tor_wl_config", {
 	  		  	  	  	                      .prop("id","tor_server")
 	  		  	  	  	                      .prop("name","tor_server")
 	  		  	  	  	                      .prop("type","text")
-	  		  	  	  	                    )
+	  		  	  	  	                      	  		  	  	  	                  )
 	  		  	  	  	                )
 	  		  	  	  	              ) // end ip tr
 	      ) // end WPA tbody
@@ -190,7 +186,8 @@ $(function(){
 	  //instatiate widgets on document ready
 	  $('#tor_setup_wl').tor_setup_wl({ conf: 'tor'});
 	  $('#tor_wl_config').tor_wl_config({ conf: 'tor'});
-})
+	  $('#tor_wl_config').hide();
+	})
 
 </script>
 
