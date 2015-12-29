@@ -121,7 +121,7 @@ function goLog(n){
 		$.ajax("php/logs.php", {
 			success: function(data){
 				if (data.trim() == "false") {
-					hideUi("Log file is missed.");
+					hideUi("Log file is missing.");
 					setTimeout(function(){showUi()},4500);
 				} else {
 					window.location.href = data 
