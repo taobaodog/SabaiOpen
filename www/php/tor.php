@@ -19,5 +19,5 @@ exec("uci $UCI_PATH set sabai.tor.mode=\"" . $mode . "\"");
 exec("uci -c /configs commit sabai");
 exec($command);
 
-echo "res={ sabai: true, msg: 'TOR settings applied' }";
+echo "res={ sabai: true, msg: 'TOR tunnel started' }";
 ?>
