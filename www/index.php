@@ -24,7 +24,7 @@ function setUpdate(res){
 function getUpdate(ipref){ 
 	que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
 	$.get('php/get_remote_ip.php', function( data ) {
-		donde = $.parseJSON(data.substring(4));
+		donde = $.parseJSON(data);
 		console.log(donde);
 		for(i in donde) E('loc'+i).innerHTML = donde[i];
 	});
@@ -88,20 +88,27 @@ $(function(){
 				</div>
 
 				<div class='fright' id='locstats'>
-					<div id='locIP'></div>
+					<div id='locquery'></div>
 					<table>
 					<tr>
-					<td>
 					<div id='loccity'></div> 
-					</td>
-					<td>
+					</tr>
+					<tr>
 					<div id='loccountry'></div>
-					</td>
 					</tr>
 					</table>
 					<div class= 'noshow' id='locregion'></div>
 					<div class= 'noshow' id='loclat'></div>
 					<div class= 'noshow' id='loclon'></div>
+					<div class= 'noshow' id='locas'></div>
+					<div class= 'noshow' id='loccountryCode'></div>
+					<div class= 'noshow' id='locisp'></div>
+					<div class= 'noshow' id='locorg'></div>
+					<div class= 'noshow' id='locquery'></div>
+					<div class= 'noshow' id='locregionName'></div>
+					<div class= 'noshow' id='locstatus'></div>
+					<div class= 'noshow' id='loctimezone'></div>
+					<div class= 'noshow' id='loczip'></div>
 				</div>
 			<img id="helpButton" src="libs/img/help.png">
 			<div id="helpSection" class="ui-widget-content ui-corner-al">

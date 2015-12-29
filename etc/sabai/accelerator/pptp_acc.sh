@@ -6,6 +6,7 @@ UCI_PATH="-c /configs"
 act=$1
 config_act=$2
 proto=$(uci get sabai.vpn.proto)
+status=$(uci get sabai.vpn.status)
 
 if [ $config_act = "update" ]; then
 	config_file="sabai-new"
@@ -19,7 +20,7 @@ _return(){
 }
 
 _stop(){
-	if [ $proto = "none" ] || [ $proto = "ovpn" ]; then
+	if [ $proto = "none" ] || [ $proto = "ovpn" ] || [ $proto = "tor" ]; then
 		logger "No PPTP is running."
 		_return 0 "No PPTP is running."
 	fi
@@ -54,11 +55,8 @@ _start(){
 	if [ $proto == "pptp" ]; then
 	        logger "PPTP has been already running."
 	        _return 0 "PPTP has been already running."
-	fi
-
-	status=$(uci get sabai.vpn.status)
-	if [ $status != "none" ]; then
-	#ensure that openvpn is stopped
+	elif [ $proto = "ovpn" ]; then
+		#ensure that openvpn is stopped
 		/www/bin/ovpn.sh stop
 		/etc/init.d/openvpn stop
 		/etc/init.d/openvpn disable
@@ -71,6 +69,10 @@ _start(){
 		else
 			echo -e "\n"
 		fi
+	elif [ $proto = "tor" ]; then
+		/www/bin/tor.sh off
+	else
+		logger "No VPN is running."
 	fi
 	#get the pptp settings
         user=$(uci get $config_file.vpn.username)

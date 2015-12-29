@@ -13,7 +13,7 @@ _return(){
 }
 
 _stop(){
-	if [ $proto = "none" ] || [ $proto = "pptp" ]; then
+	if [ $proto = "none" ] || [ $proto = "pptp" ] || [ $proto = "tor" ]; then
 		logger "No OpenVPN is running."
 		_return 0 "No OpenVPN is running."
 	fi
@@ -63,10 +63,10 @@ _save(){
 
 _config(){
         # stop other vpn's if running
-        if [ $status != "none" ]; then
-		/www/bin/pptp.sh stop
-		uci $UCI_PATH set sabai.vpn.status=Starting
-	    	uci $UCI_PATH set sabai.vpn.proto=ovpn
+        if [ $proto = "pptp" ]; then
+				/www/bin/pptp.sh stop
+				uci $UCI_PATH set sabai.vpn.status=Starting
+	       		uci $UCI_PATH set sabai.vpn.proto=ovpn
                 uci $UCI_PATH commit sabai
                 uci delete network.vpn
                 uci commit network
@@ -77,7 +77,11 @@ _config(){
                 /etc/init.d/network restart                                                                           
                 logger "Vpn stopped and network restarted"                                                                                     
                 sleep 5                                                                                                                        
-        fi
+		elif [ $proto = "tor" ]; then
+			/www/bin/tor.sh off
+		else
+			logger "No VPN is running."
+		fi
 
 	#Removing old configuration if it is.                                                                                                  
         forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                         

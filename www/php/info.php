@@ -38,6 +38,9 @@ switch($vo){
  		exec("uci $UCI_PATH commit sabai");
  	}
  	break;
+ 	case 'tor':
+ 		$vpn_type='TOR';
+  	break;
 }
 $vpn_status=exec("uci get sabai.vpn.status");
 

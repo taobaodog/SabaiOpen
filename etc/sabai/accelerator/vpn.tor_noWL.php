@@ -44,23 +44,44 @@ var tor=$.parseJSON('{<?php
 
 
  function TORcall(torForm){ 
- 	hideUi("Adjusting Wireless settings..."); 
-    $(document).ready( function(){
-    	// Pass the form values to the php file 
-    	$.post('php/tor.php', $(torForm).serialize(), function(res){
-    	  // Detect if values have been passed back   
-    	    if(res!=""){
-    	      TORresp(res);
-    	    }
-    	      showUi();
-    	});
+ 	hideUi("Adjusting TOR settings...");
+ 	if (info.vpn.type == 'OpenVPN' && E("tor_mode").value != "off") {
+		hideUi("OpenVPN will be stopped.");
+		$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
+			if(res!=""){
+				eval(res);
+				hideUi(res.msg);
+				TORstart(torForm);
+			}
+		});
+ 	} else if (info.vpn.type == 'PPTP' && E("tor_mode").value != "off") {
+		hideUi("PPTP will be stopped.");
+		$.post('php/pptp.php', {'switch': 'stop'}, function(res){
+			if(res!=""){
+				eval(res);
+				hideUi(res.msg);
+				TORstart(torForm);
+			}
+		});
+	} else {
+		TORstart(torForm);
+	}
+
     	// Important stops the page refreshing
     	return false;
+ };
 
-    }); 
+function TORstart(torForm){
+	$.post('php/tor.php', $(torForm).serialize(), function(res){
+  	  // Detect if values have been passed back   
+  	    if(res!=""){
+  	      TORresp(res);
+  	    }
+  	      showUi();
+  	});
+}
 
- }
-
+ 
  function TORresp(res){ 
  	eval(res); 
     msg(res.msg); 
@@ -92,10 +113,6 @@ $.widget("jai.tor_setup_wl", {
 	              .append( $(document.createElement('option'))
 	                .prop("value", "off")
 	                .prop("text", 'Off')
-	              )
-	              .append( $(document.createElement('option'))
-	                .prop("value", "ap")
-	                .prop("text", 'Wireless Server')
 	              )
 	              .append( $(document.createElement('option'))
 	                .prop("value", "tun")
@@ -148,7 +165,7 @@ $.widget("jai.tor_wl_config", {
 	  	              ) // end ip tr
 
 	  	            .append( $(document.createElement('tr'))
-	  	  				.append( $(document.createElement('td')).html('TOR Network Mask') 
+	  	  				.append( $(document.createElement('td')).html('TOR Network Mask')
 	  	  	  	                )
 	  	  	  	                .append( $(document.createElement('td') ) 
 	  	  	  	                  .append(
@@ -170,7 +187,7 @@ $.widget("jai.tor_wl_config", {
 	  		  	  	  	                      .prop("id","tor_server")
 	  		  	  	  	                      .prop("name","tor_server")
 	  		  	  	  	                      .prop("type","text")
-	  		  	  	  	                    )
+	  		  	  	  	                      	  		  	  	  	                  )
 	  		  	  	  	                )
 	  		  	  	  	              ) // end ip tr
 	      ) // end WPA tbody
@@ -190,7 +207,8 @@ $(function(){
 	  //instatiate widgets on document ready
 	  $('#tor_setup_wl').tor_setup_wl({ conf: 'tor'});
 	  $('#tor_wl_config').tor_wl_config({ conf: 'tor'});
-})
+	  $('#tor_wl_config').hide();
+	})
 
 </script>
 
