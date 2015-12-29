@@ -118,9 +118,9 @@ _tun() {
 	iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 53
 	iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
 	/etc/init.d/tor start
-	logger "TOR turned on as a tunnel."
+	logger "TOR tunnel started."
 	logger "ALL traffic will be anonymized."
-	_return 0 "TOR turned on as a tunnel."
+	_return 0 "Tor tunnel started."
 }
 
 _check() {

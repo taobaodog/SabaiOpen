@@ -22,7 +22,6 @@ if (isset($_POST['switch']))	{
 	exec("uci $UCI_PATH set sabai.tor.network=\"" . $server . "\"");
 	exec("uci -c /configs commit sabai");
 	$res=exec($command);
-
 	echo $res;
 }
 ?>
