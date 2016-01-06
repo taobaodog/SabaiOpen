@@ -25,7 +25,7 @@ _off(){
 
 
 	/etc/init.d/tor stop
-
+	
 	if [ "$(uci get sabai.tor.mode)" = "ap" ]; then
 		wifi down
 		uci set wireless.@wifi-iface[0].network="mainAP"
@@ -33,7 +33,7 @@ _off(){
         	/etc/init.d/dnsmasq restart
 		wifi up
 	else
-		/etc/init.d/tor stop
+		iptables -t nat -F
 	        /etc/init.d/firewall restart
 	fi
 
@@ -94,30 +94,67 @@ _tun() {
 	uci $UCI_PATH commit sabai
 
 	/etc/init.d/tor stop
-	sed -i '/VirtualAddrNetwork/,$d' /etc/tor/torrc
+
+	#cat /dev/null  > /etc/tor/torrc
+	echo "# SABAI TOR CONFIG" > /etc/tor/torrc
+	echo "SocksPort 9050" >> /etc/tor/torrc
+	echo "SocksPort $(uci get network.wan.ipaddr):9050" >> /etc/tor/torrc
+	socks_network=$(uci get network.wan.ipaddr | sed 's/.$//')"0/24"
+        echo "SocksPolicy accept $socks_network" >> /etc/tor/torrc
+	echo "SocksPolicy accept 127.0.0.1" >> /etc/tor/torrc
+	echo "SocksPolicy reject *" >> /etc/tor/torrc
+
+	echo -e "\n" >> /etc/tor/torrc
+	echo "RunAsDaemon 1" >> /etc/tor/torrc
+        echo "DataDirectory /var/lib/tor" >> /etc/tor/torrc
+
+	echo -e "\n" >> /etc/tor/torrc
+	echo "CircuitBuildTimeout 30" >> /etc/tor/torrc
+	echo "KeepAlivePeriod 60" >> /etc/tor/torrc
+	echo "NewCircuitPeriod 15" >> /etc/tor/torrc
+	echo "NumEntryGuards 8" >> /etc/tor/torrc
+	echo "ConstrainedSockets 1" >> /etc/tor/torrc
+	echo "ConstrainedSockSize 8192" >> /etc/tor/torrc
+	echo "AvoidDiskWrites 1" >> /etc/tor/torrc
+
+	echo -e "\n" >> /etc/tor/torrc
+	echo "User tor" >> /etc/tor/torrc
+
+	echo -e "\n" >> /etc/tor/torrc
 	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)/10" >> /etc/tor/torrc
-	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
-	echo "TransPort 9040" >> /etc/tor/torrc
-	echo "TransListenAddress $(uci get network.wan.ipaddr)" >> /etc/tor/torrc
+        echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
+        echo "TransPort 9040" >> /etc/tor/torrc
+        echo "TransListenAddress $(uci get network.wan.ipaddr)" >> /etc/tor/torrc
         echo "DNSPort 53" >> /etc/tor/torrc
         echo "DNSListenAddress $(uci get network.wan.ipaddr)" >> /etc/tor/torrc
 
 	# Tor's TransPort
 	_trans_port="9040"
 
+	# Privoxy port
+	_privox_port="8080"
+
+	# Tor's ProxyPort
+        _tor_proxy_port="9050"
+
 	# your internal interface
 	_int_if="eth0"
-	iptables -F
-	iptables -t nat -F
+	#iptables -t nat -F
 
 	iptables -t nat -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j RETURN
 	iptables -t nat -A PREROUTING -i eth0 -d "$(uci get $config_file.wan.ipaddr)" -j RETURN
-	iptables -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j ACCEPT
+	#iptables -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j ACCEPT
 	iptables -A OUTPUT -d 127.0.0.0/8 -j ACCEPT
 
 	iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 53
 	iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
+	iptables -t nat -I PREROUTING --src 0/0 --dst "$(uci get $config_file.wan.ipaddr)" -p tcp --syn --dport $_privox_port -j REDIRECT --to-ports $_tor_proxy_port
+	
+	uci set privoxy.privoxy.listen_address="$(uci get $config_file.wan.ipaddr):$_privox_port $(uci get network.loopback.ipaddr):$_privox_port"
+	uci commit privoxy
+	
 	/etc/init.d/tor start
+	/etc/init.d/privoxy restart
 	logger "TOR tunnel started."
 	logger "ALL traffic will be anonymized."
 	_return 0 "Tor tunnel started."
