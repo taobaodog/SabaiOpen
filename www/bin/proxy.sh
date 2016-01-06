@@ -38,7 +38,7 @@ _proxystop(){
 _proxystart(){
     # replace the ip address and mask if necessary
     if [ "$iproutefix" != "$proxyroute" ]; then
-	logger "Proxy setup: address not equal" $proxyroute $iproute
+	logger "Proxy setup: address not equal" $proxyroute $iproutefix
 	sed -i "s#$proxyroute#$iproutefix#" /etc/config/privoxy
     fi
    uci set privoxy.privoxy.listen_address=$ipfix
