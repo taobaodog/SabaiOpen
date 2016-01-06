@@ -259,7 +259,7 @@ $("#loadConf").on("click", function() {
 				if(xhr.status == 200) {
                                 	data = xhr.responseText;
                                         if(data.trim() === "true") {
-                                                setTimeout(function(){hideUi("New configuration file was downloaded succesfully!")},3000);
+                                                setTimeout(function(){hideUi("New configuration file was downloaded successfully!")},3000);
                                                 setTimeout(function(){showUi()},7000);
                                                 setTimeout(function(){location.reload()},7100);
                                         } else {
@@ -297,7 +297,7 @@ $("#download").on("click", function(){
 						setTimeout(function(){hideUi("New firmware was downloaded succesfully!")},3000);
 						setTimeout(function(){showUi()},7000);
                                         } else {
-						setTimeout(function(){hideUi("Downlaod FAILED! Refresh page and try again.")},3000);
+						setTimeout(function(){hideUi("Download FAILED! Refresh page and try again.")},3000);
 						setTimeout(function(){showUi()},7000);
                                         }
                                 } else {
@@ -328,7 +328,7 @@ function Upgrade(act)	{
 			})
 			.fail(function() {
 				hideUi_timer("Firmware was transferred. Please wait. Upgrade in progress...", 270);
-				setTimeout(function(){hideUi("Please wait. Check installation status.")},271000);
+				setTimeout(function(){hideUi("Please wait. Checking installation status.")},271000);
 				setTimeout(function(){checkUpdate()}, 280000);
 			})
 	});
