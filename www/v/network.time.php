@@ -4,6 +4,7 @@ Sync time and zone with computer time/zone
   <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
   <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
   <script type='text/ecmascript' src='/libs/globalize.js'></script>
+  <script type="text/javascript" src="libs/jstimezonedetect/jstz.main.js"></script>
 <form id="fe">
 <div class='pageTitle'>Network: Time</div>
 <div class='controlBox'>
@@ -25,7 +26,24 @@ Sync time and zone with computer time/zone
 	</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Current Router Time and Timezone</span>
-  <div id='rt' class='controlBoxContent'>
+  <div class='controlBoxContent'>
+  <table class='controlTable'>
+ 	<tbody>
+      <tr>
+      	<td><div id='rt'></div></td>
+      	<td></td><td></td><td></td>
+  		<td> <input id='syncTime' name='syncTime' type='button' value='Synchronize' onclick='Sync()'/> </td>
+  				<div id='hideme'>
+        			<div class='centercolumncontainer'>
+            			<div class='middlecontainer'>
+                			<div id='hiddentext'>Please wait...</div>
+                			<br>
+            			</div>
+        			</div>
+    			</div>
+	  </tr>
+  	</tbody>
+  	</table>
   </div>
 </div>
 
@@ -40,7 +58,6 @@ Sync time and zone with computer time/zone
       <div id="timezone-picker">
       <img id="timezone-image" src="libs/images/world.jpg" width="600" height="300" usemap="#timezone-map" />
       <img class="timezone-pin" src="libs/images/pin.png" style="padding-top: 4px;" />
-
 <?php include 'libs/php/mapdata.php'; ?>
 </div>
 <fieldset id="timezone-settings">
@@ -68,8 +85,26 @@ Sync time and zone with computer time/zone
 </form>
 
 <script>
+var hidden, hide, pForm = {};
+var hidden = E('hideme');
+var hide = E('hiddentext');
+
+function Sync() {
+	hideUi("Synchronization in process ...");
+	var currTZ = jstz.determine();
+	$.post('php/time.php', {'sync': currTZ.name()}, function(res){
+		// Detect if values have been passed back   
+		    if(res!=""){
+		      TIMEresp(res);
+		    };
+		      showUi();
+		});
+	$('#edit-date-default-timezone').val(currTZ.name());
+	setTimeout("window.location.reload()",1000);
+}
 
 function display_computertime() {
+
 var strcount
 var cx = Date();
 document.getElementById('ct').innerHTML = cx;
