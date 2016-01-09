@@ -52,7 +52,7 @@ $password=$_REQUEST['VPNpassword'];
   file_put_contents("/etc/sabai/openvpn/ovpn.current",$_REQUEST['conf']);
   file_put_contents("/etc/sabai/openvpn/auth-pass",$name ."\n");
   file_put_contents("/etc/sabai/openvpn/auth-pass",$password, FILE_APPEND);
-  exec("sed -ir 's\auth-user-pass.*$\auth-user-pass /etc/sabai/openvpn/auth-pass\g' /etc/sabai/usr/ovpn.current");
+  exec("sed -ir 's/auth-user-pass.*$/auth-user-pass \/etc\/sabai\/openvpn\/auth-pass/g' /etc/sabai/openvpn/ovpn.current");
   echo "res={ sabai: true, msg: 'OpenVPN configuration saved.', reload: true };";
  }else{
   echo "res={ sabai: false, msg: 'Invalid configuration.' };";
@@ -77,7 +77,9 @@ switch ($act){
   break;
   case "newfile": newfile(); break;
   case "save": savefile(); break;
-  case "log": echo (file_exists("/etc/sabai/openvpn/ovpn.log") ? str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/etc/sabai/openvpn/ovpn.log")) : "No log."); break;
+  case "log": exec("echo \"$(cat /var/log/messages | grep openvpn)\" > /var/log/ovpn.log") ;
+  		echo (file_exists("/var/log/ovpn.log") ? str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/var/log/ovpn.log")) : "No log."); 
+  		break;  
   case "check": 
   	$line=exec("sh /www/bin/ovpn.sh $act");
   	echo $line; break;
