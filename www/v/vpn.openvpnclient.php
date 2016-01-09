@@ -20,11 +20,13 @@
 		 E('edit').className='';
 		 E('editButton').style.display='none';
 <?php
-                if (file_exists('/etc/sabai/openvpn/auth-pass')) {
-                                $authpass=explode("\n", file_get_contents('/etc/sabai/openvpn/auth-pass'));
-                                echo "uname =  \"$authpass[0]\"\npass = \"$authpass[1]\"";
+        if (file_exists('/etc/sabai/openvpn/auth-pass')) {
+                $authpass = file('/etc/sabai/openvpn/auth-pass');
+                echo "uname =  '";
+                echo rtrim($authpass[0]);
+                echo "';\npass = '" . rtrim($authpass[1]) . "';\n";
 }
-?> 
+?>
  	         typeof uname === 'undefined' || $('#VPNname').val(uname);
                  typeof pass === 'undefined'  || $('#VPNpassword').val(pass);		
 
