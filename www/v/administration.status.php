@@ -15,17 +15,14 @@
 </div>
 <!--	Removed for Accelerator
 <div class='controlBox'><span class='controlBoxTitle'>LAN</span>
-	<!-- this div gets populated by widget -->
   <div class='controlBoxContent' id='lan_build'>
 	</div>
 </div>
 <div class='controlBox'><span class='controlBoxTitle'>Wireless</span>
-	<!-- this div gets populated by widget -->
   <div class='controlBoxContent' id='wireless_build'>
 	</div>
--->
-	
 </div>
+-->
 <div class='controlBox'><span class='controlBoxTitle'>VPN</span>
   <!-- this div gets populated by widget -->
   <div class='controlBoxContent' id='vpn_build'>
