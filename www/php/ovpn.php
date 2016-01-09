@@ -16,6 +16,7 @@ if (isset($_POST['switch'])) {
 
 function newfile(){
  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
+  $file=str_replace(' ', '_', $file);
   exec("uci set openvpn.sabai.filename=$file");
   file_put_contents('/etc/sabai/openvpn/ovpn.filename', $file);
  $contents = ( array_key_exists('file',$_FILES) && array_key_exists('tmp_name',$_FILES['file']) ? file_get_contents($_FILES['file']['tmp_name']) : "" );
