@@ -58,7 +58,7 @@ function closeHelpSection() {
  $template = array_key_exists('t',$_REQUEST);
  $panel = ( array_key_exists('panel',$_REQUEST) ? preg_replace('/[^a-z\d]/i', '', $_REQUEST['panel']) : null );
  $section = ( array_key_exists('section',$_REQUEST) ? preg_replace('/[^a-z\d]/i', '', $_REQUEST['section']) : null );
- if( empty($panel) ){ $panel = 'network'; $section = 'wan'; }
+ if( empty($panel) ){ $panel = 'administration'; $section = 'status'; }
  $page = ( $template ?'m':'v') ."/$panel". ( empty($section) ? '' : ".$section") .".php";
  if(!file_exists($page)) $page = 'v/lorem.php';
  if($page == "192.168.199.1/php") $page = 'v/lorem.php';
