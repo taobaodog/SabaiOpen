@@ -13,6 +13,7 @@
   <div class='controlBoxContent' id='wan_build'>
 	</div>
 </div>
+<!--	Removed for Accelerator
 <div class='controlBox'><span class='controlBoxTitle'>LAN</span>
 	<!-- this div gets populated by widget -->
   <div class='controlBoxContent' id='lan_build'>
@@ -22,6 +23,8 @@
 	<!-- this div gets populated by widget -->
   <div class='controlBoxContent' id='wireless_build'>
 	</div>
+-->
+	
 </div>
 <div class='controlBox'><span class='controlBoxTitle'>VPN</span>
   <!-- this div gets populated by widget -->
@@ -334,8 +337,8 @@ $(function(){
   //instatiate widgets on document ready
   $('#system_build').system_build();
   $('#wan_build').wan_build();
-  $('#lan_build').lan_build();
-  $('#wireless_build').wireless_build();
+ // $('#lan_build').lan_build();
+ // $('#wireless_build').wireless_build();
   $('#vpn_build').vpn_build();
   $('#proxy_build').proxy_build();
 });
