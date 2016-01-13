@@ -74,7 +74,7 @@ $(function(){
 
 </script>
 </head><body onload='init()'>
-
+<br>
 <div id="backdrop">
 	<?php include('php/menu.php'); ?>
 
