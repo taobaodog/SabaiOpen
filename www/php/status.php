@@ -2,6 +2,9 @@
 // Sabai Technology - Apache v2 licence
 // Copyright 2015 Sabai Technology, LLC
 
+// Check type of device
+$dev=exec("uci get system.@system[0].hostname");
+
 //set system variables
  exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
 $sys = " \"sys\": {
@@ -26,7 +29,7 @@ $wan = " \"wan\": {
 },\n";
 
 unset($out);
-
+if ($dev != 'vpna')	{
 //set lan variables
  exec("/sbin/ifconfig br-lan | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
 $lan = " \"lan\": {
@@ -50,7 +53,26 @@ $wl0 = " \"wl0\": {
 },\n";
 
 unset($out);
-
+} else {
+	$lan = " \"lan\": {
+		\"mac\": \"none\",
+		\"ip\": \"none\",
+		\"subnet\": \"none\",
+		\"dhcp\": \"none \"
+	},\n";
+	unset($out);
+	
+	$wl0 = " \"wl0\": {
+		\"mac\": \"none\",
+		\"mode\": \"none\",
+ 		\"ssid\": \"none\",
+		\"security\": \"none\",
+ 		\"channel\": \"none\",
+ 		\"width\": \"none\"
+	},\n";
+	
+	unset($out);
+}
 //set vpn variables
 $vpn = " \"vpn\": {
   \"proto\": \"". exec("uci get sabai.vpn.proto") ."\",
