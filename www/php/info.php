@@ -22,9 +22,12 @@ switch($vo){
  case 'pptp': 
  	$vpn_type='PPTP'; 
  	$vpn_ip=exec("ifconfig pptp-vpn | grep inet | awk '{print $2}' | sed 's/addr://g' ");
- 	if($vpn_ip != '') {
+ 	if($vpn_ip) {
  		exec("uci $UCI_PATH set sabai.vpn.ip=$vpn_ip");
  		exec("uci $UCI_PATH set sabai.vpn.status=Connected");
+ 		exec("uci $UCI_PATH commit sabai");
+ 	} else {
+ 		exec("uci $UCI_PATH set sabai.vpn.status=Disconnected");
  		exec("uci $UCI_PATH commit sabai");
  	}
  	break;
@@ -32,15 +35,23 @@ switch($vo){
  case 'ovpn': 
  	$vpn_type='OpenVPN'; 
  	$vpn_ip=exec("ifconfig tun0 | grep inet | awk '{print $2}' | sed 's/addr://g' ");
- 	if($vpn_ip != '') {
+ 	if($vpn_ip) {
  		exec("uci $UCI_PATH set sabai.vpn.ip=$vpn_ip");
  		exec("uci $UCI_PATH set sabai.vpn.status=Connected");
+ 		exec("uci $UCI_PATH commit sabai");
+ 	} else {
+ 		exec("uci $UCI_PATH set sabai.vpn.status=Disconnected");
  		exec("uci $UCI_PATH commit sabai");
  	}
  	break;
  	case 'tor':
- 		$vpn_type='TOR';
-  	break;
+ 		$tor_stat=exec("/www/bin/tor.sh stat");
+ 		if($tor_stat) {
+ 			$vpn_type='TOR';
+ 		} else {
+ 			$vpn_type='-';
+ 		}  	
+ 		break;
 }
 $vpn_status=exec("uci get sabai.vpn.status");
 

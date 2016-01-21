@@ -18,8 +18,6 @@ echo "echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp" >> $TOPDIR/files/etc/rc.l
 
 # copy and rm sh
 mv $TOPDIR/files/etc/init.d/sabaifs_release $TOPDIR/files/etc/init.d/sabaifs
-mv $TOPDIR/files/etc/sabai/accelerator/ovpn_acc.sh $TOPDIR/files/www/bin/ovpn.sh
-mv $TOPDIR/files/etc/sabai/accelerator/pptp_acc.sh $TOPDIR/files/www/bin/pptp.sh
 
 # copy and rm php
 mv $TOPDIR/files/etc/sabai/accelerator/menu.php $TOPDIR/files/www/php/menu.php

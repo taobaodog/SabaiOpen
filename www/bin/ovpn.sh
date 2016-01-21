@@ -14,7 +14,8 @@ _return(){
 }
 
 _stop(){
-	if [ $proto = "none" ] || [ $proto = "pptp" ] || [ $proto = "tor" ]; then
+	ifconfig > /tmp/check
+	if [ ! "$(cat /tmp/check | grep tun0)" ]; then
 		logger "No OpenVPN is running."
 		_return 0 "No OpenVPN is running."
 	fi
@@ -27,7 +28,8 @@ _stop(){
 }
 
 _start(){
-        if [ $proto == "ovpn" ]; then
+	ifconfig > /tmp/check
+	if [ "$(cat /tmp/check | grep tun0)" ]; then
 		logger "Ovpn has been already running."
                 _return 0 "Ovpn has been already running."
         fi
@@ -42,20 +44,8 @@ _start(){
 
 	sleep 10
 
-	ifconfig > /tmp/check
-	if [ "$(cat /tmp/check | grep tun0)" == "" ]; then
-		uci $UCI_PATH set sabai.vpn.status=Disconnected
-		uci $UCI_PATH commit sabai
-		logger "OpenVPN did not start. Please check your configuration."
-		_return 1 "OpenVPN did not start. Please check your configuration."
-	else
-		uci $UCI_PATH set sabai.vpn.status=Connected
-		uci $UCI_PATH commit sabai
-		#adjusting ip rules
-		[ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
-		logger "Openvpn started."
-		_return 1 "OpenVPN started."
-	fi
+	_stat
+	[ "$(uci get sabai.vpn.status)" = "Connected" ] && [ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
 }
 
 _save(){
@@ -63,8 +53,10 @@ _save(){
 }
 
 _config(){
+	ifconfig > /tmp/check
+
         # stop other vpn's if running
-        if [ $proto = "pptp" ]; then
+        if [ "$(cat /tmp/check | grep pptp)" ]; then
 		/www/bin/pptp.sh stop
 		uci $UCI_PATH set sabai.vpn.status=Starting
 		uci $UCI_PATH set sabai.vpn.proto=ovpn
@@ -78,11 +70,11 @@ _config(){
                 /etc/init.d/network restart                                                                           
                 logger "Vpn stopped and network restarted"                                                                                     
                 sleep 5                                                                                                                        
-		elif [ $proto = "tor" ]; then
-			/www/bin/tor.sh off
-		else
-			logger "No VPN is running."
-		fi
+	elif [ "$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')" ]; then
+		/www/bin/tor.sh off
+	else
+		logger "No VPN is running."
+	fi
 
 	#Removing old configuration if it is.                                                                                                  
         forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                         
@@ -120,7 +112,7 @@ _config(){
         uci $UCI_PATH commit sabai
 
 	# check if log file is set
-	if [ ! $(cat /etc/sabai/openvpn/ovpn.current | grep log) ]; then
+	if [ ! "$(cat /etc/sabai/openvpn/ovpn.current | grep log)" ]; then
 		echo "log-append '$(uci get openvpn.sabai.log)'" >> /etc/sabai/openvpn/ovpn.current 
 		(cat /etc/sabai/openvpn/ovpn.current | grep verb) || echo "verb 3" >> /etc/sabai/openvpn/ovpn.current
 	fi
@@ -161,7 +153,7 @@ _clear_all(){
 
 _stat(){
 	ifconfig > /tmp/check
-	if [ "$(cat /tmp/check | grep tun0)" = "" ]; then
+	if [ ! "$(cat /tmp/check | grep tun0)" ]; then
 		uci $UCI_PATH set sabai.vpn.status=Disconnected
 		logger "OpenVPN did not start. Please check your configuration."
 		_return 1 "OpenVPN did not start. Please check your configuration."

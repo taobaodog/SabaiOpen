@@ -11,6 +11,7 @@ UCI_PATH="-c /configs"
 config_file=sabai
 proto=$(uci get sabai.vpn.proto)
 mode_curr=$(uci get sabai.tor.mode)
+tor_stat="$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')"
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };"
@@ -18,7 +19,7 @@ _return(){
 }
 
 _off(){
-	if [ $proto != "tor" ]; then
+	if [ ! $tor_stat ]; then
 		logger "NO TOR is running."
 		_return 0 "NO TOR is running."
 	fi
@@ -161,13 +162,14 @@ _tun() {
 }
 
 _check() {
-	if [ $proto = "pptp" ]; then
+	ifconfig > /tmp/check
+	if [ "$(cat /tmp/check | grep pptp)" ]; then
 		/www/bin/pptp.sh stop
-	elif [ $proto = "ovpn" ]; then
+	elif [ "$(cat /tmp/check | grep tun)" ]; then
 		/www/bin/ovpn.sh stop
-	elif [ $proto = "tor" ] && [ $mode = "ap" ]; then
+	elif [ $tor_stat ] && [ $mode = "ap" ]; then
 		_check_tor
-	elif [ $proto = "tor" ] && [ $mode = "tun" ]; then
+	elif [ $tor_stat ] && [ $mode = "tun" ]; then
 		_check_tor
 	else
 		logger "No VPN is running."
@@ -175,7 +177,7 @@ _check() {
 }
 
 _check_tor() {
-	if [ $mode = $mode_curr ]; then
+	if [ $tor_stat ]; then
 		logger "TOR is running."
 		_return 0 "TOR is running."
 	else
@@ -187,4 +189,5 @@ case $mode in
 	off)	_off	;;
 	ap)	_ap	;;
 	tun)	_tun	;;
+	stat)	_check_tor ;;
 esac
