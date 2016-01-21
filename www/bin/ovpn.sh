@@ -173,6 +173,10 @@ _stat(){
 	uci $UCI_PATH commit sabai
 }
 
+_log() {
+	sed -n '1{h;T;};G;h;$p;' /var/log/ovpn.log > /var/log/ovpn_web.log
+}
+
 ls >/dev/null 2>/dev/null 
 
 case $action in
@@ -183,4 +187,5 @@ case $action in
 	clear)  _clear_all  ;;
 	config) _config	;;
 	check) 	_stat	;;
+	log)	_log	;;
 esac
