@@ -19,7 +19,7 @@ _return(){
 }
 
 _off(){
-	if [ ! $tor_stat ]; then
+	if [ ! "$tor_stat" ]; then
 		logger "NO TOR is running."
 		_return 0 "NO TOR is running."
 	fi
@@ -167,9 +167,9 @@ _check() {
 		/www/bin/pptp.sh stop
 	elif [ "$(cat /tmp/check | grep tun)" ]; then
 		/www/bin/ovpn.sh stop
-	elif [ $tor_stat ] && [ $mode = "ap" ]; then
+	elif [ "$tor_stat" ] && [ $mode = "ap" ]; then
 		_check_tor
-	elif [ $tor_stat ] && [ $mode = "tun" ]; then
+	elif [ "$tor_stat" ] && [ $mode = "tun" ]; then
 		_check_tor
 	else
 		logger "No VPN is running."
@@ -177,7 +177,7 @@ _check() {
 }
 
 _check_tor() {
-	if [ $tor_stat ]; then
+	if [ "$tor_stat" ]; then
 		logger "TOR is running."
 		_return 0 "TOR is running."
 	else
