@@ -6,6 +6,7 @@ UCI_PATH="-c /configs"
 action=$1
 status=$(uci get sabai.vpn.status)
 proto=$(uci get sabai.vpn.proto)
+device=$(uci get system.@system[0].hostname)
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };";
@@ -13,7 +14,8 @@ _return(){
 }
 
 _stop(){
-	if [ $proto = "none" ] || [ $proto = "pptp" ] || [ $proto = "tor" ]; then
+	ifconfig > /tmp/check
+	if [ ! "$(cat /tmp/check | grep tun0)" ]; then
 		logger "No OpenVPN is running."
 		_return 0 "No OpenVPN is running."
 	fi
@@ -26,7 +28,8 @@ _stop(){
 }
 
 _start(){
-        if [ $proto == "ovpn" ]; then
+	ifconfig > /tmp/check
+	if [ "$(cat /tmp/check | grep tun0)" ]; then
 		logger "Ovpn has been already running."
                 _return 0 "Ovpn has been already running."
         fi
@@ -41,20 +44,8 @@ _start(){
 
 	sleep 10
 
-	ifconfig > /tmp/check
-	if [ "$(cat /tmp/check | grep tun0)" == "" ]; then
-		uci $UCI_PATH set sabai.vpn.status=Disconnected
-		uci $UCI_PATH commit sabai
-		logger "OpenVPN did not start. Please check your configuration."
-		_return 1 "OpenVPN did not start. Please check your configuration."
-	else
-		uci $UCI_PATH set sabai.vpn.status=Connected
-		uci $UCI_PATH commit sabai
-		#adjusting ip rules
-		/www/bin/gw.sh vpn_gw
-		logger "Openvpn started."
-		_return 1 "OpenVPN started."
-	fi
+	_stat
+	[ "$(uci get sabai.vpn.status)" = "Connected" ] && [ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
 }
 
 _save(){
@@ -62,12 +53,14 @@ _save(){
 }
 
 _config(){
+	ifconfig > /tmp/check
+
         # stop other vpn's if running
-        if [ $proto = "pptp" ]; then
-				/www/bin/pptp.sh stop
-				uci $UCI_PATH set sabai.vpn.status=Starting
-	       		uci $UCI_PATH set sabai.vpn.proto=ovpn
-                uci $UCI_PATH commit sabai
+        if [ "$(cat /tmp/check | grep pptp)" ]; then
+		/www/bin/pptp.sh stop
+		uci $UCI_PATH set sabai.vpn.status=Starting
+		uci $UCI_PATH set sabai.vpn.proto=ovpn
+		uci $UCI_PATH commit sabai
                 uci delete network.vpn
                 uci commit network
                 uci delete firewall.vpn
@@ -77,11 +70,11 @@ _config(){
                 /etc/init.d/network restart                                                                           
                 logger "Vpn stopped and network restarted"                                                                                     
                 sleep 5                                                                                                                        
-		elif [ $proto = "tor" ]; then
-			/www/bin/tor.sh off
-		else
-			logger "No VPN is running."
-		fi
+	elif [ "$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')" ]; then
+		/www/bin/tor.sh off
+	else
+		logger "No VPN is running."
+	fi
 
 	#Removing old configuration if it is.                                                                                                  
         forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                         
@@ -93,7 +86,7 @@ _config(){
         uci delete firewall.ovpn                                                                                                               
         uci commit firewall                                                                                                                    
         #Configuring openvpn profile.                                                                                 
-        uci set openvpn.sabai.log='/www/libs/data/stat/ovpn.log'                                                                               
+        uci set openvpn.sabai.log='/var/log/ovpn.log'                                                                               
         uci set openvpn.sabai.enabled=1                                                                                                        
 	uci set openvpn.sabai.filename="$(cat /etc/sabai/openvpn/ovpn.filename)"
         uci commit openvpn                                                                                                                     
@@ -111,12 +104,18 @@ _config(){
         uci set firewall.ovpn.network=sabai                                                                                                    
         uci set firewall.ovpn.masq=1
 	uci add firewall forwarding                                                                                                            
-        uci set firewall.@forwarding[-1].src=lan                                                                                               
+        [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
         uci set firewall.@forwarding[-1].dest=sabai                                                                                            
         uci commit firewall                                                                                           
         uci $UCI_PATH set sabai.vpn.status=Started                                                                                             
         uci $UCI_PATH set sabai.vpn.proto=ovpn                                                                                                 
         uci $UCI_PATH commit sabai
+
+	# check if log file is set
+	if [ ! "$(cat /etc/sabai/openvpn/ovpn.current | grep log)" ]; then
+		echo "log-append '$(uci get openvpn.sabai.log)'" >> /etc/sabai/openvpn/ovpn.current 
+		(cat /etc/sabai/openvpn/ovpn.current | grep verb) || echo "verb 3" >> /etc/sabai/openvpn/ovpn.current
+	fi
 }
 
 
@@ -154,7 +153,7 @@ _clear_all(){
 
 _stat(){
 	ifconfig > /tmp/check
-	if [ "$(cat /tmp/check | grep tun0)" = "" ]; then
+	if [ ! "$(cat /tmp/check | grep tun0)" ]; then
 		uci $UCI_PATH set sabai.vpn.status=Disconnected
 		logger "OpenVPN did not start. Please check your configuration."
 		_return 1 "OpenVPN did not start. Please check your configuration."
@@ -164,6 +163,10 @@ _stat(){
 		_return 1 "OpenVPN started."
 	fi
 	uci $UCI_PATH commit sabai
+}
+
+_log() {
+	sed -n '1{h;T;};G;h;$p;' /var/log/ovpn.log > /var/log/ovpn_web.log
 }
 
 ls >/dev/null 2>/dev/null 
@@ -176,4 +179,5 @@ case $action in
 	clear)  _clear_all  ;;
 	config) _config	;;
 	check) 	_stat	;;
+	log)	_log	;;
 esac

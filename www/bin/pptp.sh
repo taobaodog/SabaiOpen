@@ -7,6 +7,7 @@ act=$1
 config_act=$2
 proto=$(uci get sabai.vpn.proto)
 status=$(uci get sabai.vpn.status)
+device=$(uci get system.@system[0].hostname)
 
 if [ $config_act = "update" ]; then
 	config_file="sabai-new"
@@ -20,7 +21,8 @@ _return(){
 }
 
 _stop(){
-	if [ $proto = "none" ] || [ $proto = "ovpn" ] || [ $proto = "tor" ]; then
+	ifconfig > /tmp/check
+	if [ ! "$(cat /tmp/check | grep pptp)" ]; then
 		logger "No PPTP is running."
 		_return 0 "No PPTP is running."
 	fi
@@ -52,15 +54,16 @@ _stop(){
 }
 
 _start(){
-	if [ $proto == "pptp" ]; then
+	ifconfig > /tmp/check
+	if [ "$(cat /tmp/check | grep pptp)" ]; then
 	        logger "PPTP has been already running."
 	        _return 0 "PPTP has been already running."
-	elif [ $proto = "ovpn" ]; then
+	elif [ "$(cat /tmp/check | grep tun0)" ]; then
 		#ensure that openvpn is stopped
 		/www/bin/ovpn.sh stop
 		/etc/init.d/openvpn stop
 		/etc/init.d/openvpn disable
-		#ensure that openvpn settings removed
+	#ensure that openvpn settings removed
 		uci delete network.sabai
 		uci delete firewall.ovpn
 		forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
@@ -69,7 +72,7 @@ _start(){
 		else
 			echo -e "\n"
 		fi
-	elif [ $proto = "tor" ]; then
+	elif [ "$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')" ]; then
 		/www/bin/tor.sh off
 	else
 		logger "No VPN is running."
@@ -96,7 +99,7 @@ _start(){
 	uci set firewall.vpn.network=vpn
         uci set firewall.vpn.masq=1
 	uci add firewall forwarding 
-        uci set firewall.@forwarding[-1].src=lan
+        [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
         uci set firewall.@forwarding[-1].dest=vpn
     #commit all changed services
         uci commit firewall   
@@ -116,7 +119,7 @@ _start(){
 	fi 
 
 	logger "PPTP starts..."
-    _return 0 "PPTP starts..."
+	_return 0 "PPTP starts..."
 }
 
 _clear(){
@@ -144,7 +147,7 @@ _clear(){
 
 _stat(){
 	ifconfig > /tmp/check
-	if [ "$(cat /tmp/check | grep pptp-vpn)" = "" ]; then
+	if [ ! "$(cat /tmp/check | grep pptp)" ]; then
 		uci $UCI_PATH set sabai.vpn.status=Disconnected
 		logger "pptp is disconnected."
 		_return 1 "PPTP is disconnected."

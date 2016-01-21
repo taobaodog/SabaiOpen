@@ -78,8 +78,8 @@ switch ($act){
   break;
   case "newfile": newfile(); break;
   case "save": savefile(); break;
-  case "log": exec("echo \"$(cat /var/log/messages | grep openvpn)\" > /var/log/ovpn.log") ;
-  		echo (file_exists("/var/log/ovpn.log") ? str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/var/log/ovpn.log")) : "No log."); 
+  case "log": exec("/www/bin/ovpn.sh log") ;
+		echo (file_exists("/var/log/ovpn_web.log") ?  str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/var/log/ovpn_web.log")) : "No log."); 
   		break;  
   case "check": 
   	$line=exec("sh /www/bin/ovpn.sh $act");
