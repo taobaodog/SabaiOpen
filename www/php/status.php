@@ -13,7 +13,8 @@ $sys = " \"sys\": {
   \"time\": \"". exec("date") ."\",
   \"uptime\": \"". exec("uptime | awk '{print $3,$4}' | sed 's/\,//g'") ."\",
   \"cpuload\": \"". exec("uptime | awk -F: '{print $5,$6,$7}'") ."\",
-  \"mem\": \"". exec("cat /proc/meminfo |grep MemAvailable| awk '{print $2,$3}'") ."\"
+  \"mem\": \"". exec("cat /proc/meminfo |grep MemAvailable| awk '{print $2,$3}'") ."\",
+  \"gateway\": \"". exec("ip route show | grep default | awk '{print $3}'") ."\"
 },\n";
 
 unset($out);
@@ -25,7 +26,7 @@ $wan = " \"wan\": {
   \"connection\": \"". exec("uci get sabai.wan.proto") ."\",
   \"ip\": \"". str_replace("inet addr:","", ( array_key_exists(1,$out)? "$out[1]" : "-" ) ) ."\",
   \"subnet\": \"". exec("ifconfig eth0 | grep Mask | awk '{print $4}' |sed 's/Mask://g'") ."\",
-  \"gateway\": \"". exec("ip route show | grep default | awk '{print $3}'") ."\"
+  \"gateway\": \"". exec("route -n | grep eth0 | grep UGH | awk '{print $2}'") ."\"
 },\n";
 
 unset($out);

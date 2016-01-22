@@ -48,6 +48,7 @@ function getStats(){
                     $("#sys_uptime").text(fullinfo.sys.uptime);
                     $("#sys_cpuload").text(fullinfo.sys.cpuload);
                     $("#sys_mem").text(fullinfo.sys.mem);
+                    $("#sys_gateway").text(fullinfo.sys.gateway);
                     //set wan elements
                     $("#wan_mac").text(fullinfo.wan.mac);
                     $("#wan_connection").text(fullinfo.wan.connection);
@@ -128,6 +129,12 @@ $.widget("jai.system_build", {
           .append( $(document.createElement('td')).html('Free Mem') 
           )
           .append( $(document.createElement('td')).html('<div id=sys_mem></div>') 
+          )
+        )
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td')).html('Sys Gateway') 
+          )
+          .append( $(document.createElement('td')).html('<div id=sys_gateway></div>') 
           )
         )
       ) //end tbody
