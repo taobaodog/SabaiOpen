@@ -30,12 +30,12 @@ _stop(){
 _start(){
 	ifconfig > /tmp/check
 	if [ "$(cat /tmp/check | grep tun0)" ]; then
-		logger "Ovpn has been already running."
-                _return 0 "Ovpn has been already running."
+		logger "OpenVPN is already running."
+                _return 0 "OpenVPN is already running."
         fi
 
         if [ ! -e /etc/sabai/openvpn/ovpn.current ]; then
-                _return 0 "No file loaded."
+                _return 0 "No file is loaded."
         fi
 	
 	_config
