@@ -112,6 +112,7 @@ _config(){
         uci $UCI_PATH commit sabai
 
 	# check if log file is set
+	[ -e /var/log/ovpn.log ] || touch /var/log/ovpn.log
 	if [ ! "$(cat /etc/sabai/openvpn/ovpn.current | grep log)" ]; then
 		echo "log-append '$(uci get openvpn.sabai.log)'" >> /etc/sabai/openvpn/ovpn.current 
 		(cat /etc/sabai/openvpn/ovpn.current | grep verb) || echo "verb 3" >> /etc/sabai/openvpn/ovpn.current
