@@ -11,6 +11,7 @@ DDNS: { ip, interval, services }
   </div>
 </div>
 
+
 <div class='controlBox'>
   <span class='controlBoxTitle'>DNS</span>
   <div class='controlBoxContent'>
