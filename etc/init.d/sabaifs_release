@@ -90,9 +90,11 @@ make_filesystems() {
                         	umount /dev/sda1
 
 				echo "SABAI:> Creating directory configuration' storage."
-				mkdir /configs
+				[ -d "/configs" ] || mkdir /configs
 				mount -t ext4 /dev/sda6 /configs
-				mv /etc/config/sabai /configs
+				cp -r /configs/backup/config /etc
+				cp -r /configs/backup/openvpn /etc/sabai
+				[ -e "/etc/config/sabai" ] || mv /etc/config/sabai /configs
 				ln -s /configs/sabai /etc/config/sabai
 				ln -s /configs/ /www/configs
 				echo "SABAI:> Configuration Sabai is allocated."
