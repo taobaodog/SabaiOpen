@@ -11,10 +11,8 @@ function upload_config(){
 if (!empty($_FILES['_browse1']['tmp_name'])) {
 	$uploadfile = preg_replace("/[^a-zA-Z0-9.]/", "_", $_FILES['_browse1']['name']);
 	$tmp="/tmp/".$uploadfile;
-	exec("logger $uploadfile");
 	copy($_FILES['_browse1']['tmp_name'], $tmp) or die( "Could not copy file!");
 	$file_type = pathinfo($tmp, PATHINFO_EXTENSION);
-	exec("logger $uploadfile $file_type");	
 	if ($file_type == "tar") {
 		$name = str_replace(".tar", "", $uploadfile);
 		$check = strpos($name, "backup_");
@@ -26,7 +24,7 @@ if (!empty($_FILES['_browse1']['tmp_name'])) {
 		exec("mkdir /tmp/$name");
 		exec("tar -xvf $tmp -C /tmp/$name");
 		if (copy("/tmp/" . $name . "/configs/" . $name, "/configs/".$name)) {
-			if (file_exists($uploaddir.$name)) {
+			if (file_exists("/configs/".$name)) {
 				$get_version = exec("uci -c /configs get $name.general.version");
 				if ($get_version != "") {
 					$ovpn_tmp = "/tmp/" . $name . "/configs/ovpn_backup/";
