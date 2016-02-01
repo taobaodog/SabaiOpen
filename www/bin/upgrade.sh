@@ -10,10 +10,6 @@ mkdir /configs/backup
 cp -r /etc/config /configs/backup/
 cp -r /etc/sabai/openvpn /configs/backup/
 
-# disable openvpn autostart
-uci set openvpn.sabai.enabled='0'
-uci commit openvpn
-
 CURRENT_KERNEL=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
 echo **Current kernel is $CURRENT_KERNEL > /dev/kmsg
 
