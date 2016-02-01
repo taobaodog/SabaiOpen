@@ -94,7 +94,7 @@ make_filesystems() {
 				mount -t ext4 /dev/sda6 /configs
 				cp -r /configs/backup/config /etc
 				cp -r /configs/backup/openvpn /etc/sabai
-				[ -e "/etc/config/sabai" ] || mv /etc/config/sabai /configs
+				[ -h "/etc/config/sabai" ] || mv /etc/config/sabai /configs
 				ln -s /configs/sabai /etc/config/sabai
 				ln -s /configs/ /www/configs
 				echo "SABAI:> Configuration Sabai is allocated."
