@@ -4,6 +4,7 @@ noipdefault
 noaccomp
 nopcomp
 nocrtscts
+refuse-eap
 lock
 maxfail 0
 lcp-echo-failure 5
