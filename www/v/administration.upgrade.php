@@ -22,7 +22,8 @@
     	<input id='browse' name='_browse' type='file' hidden='true' onchange="fileInput(this, 'tar');"/><t>
     	<input id='fileName' name='_fileName' type='text'>
     	<input id='download' type='button' name='submit' value='Download'/><br><br>
-    	<input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/><br>
+    	<input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/>
+    	<input type='button' id='revert' name='Revert' value='Revert Update'/><br>
         	<div id='hideme'>
             	<div class='centercolumncontainer'>
                 	<div class='middlecontainer'>
@@ -301,8 +302,8 @@ $("#download").on("click", function(){
 						setTimeout(function(){showUi()},7000);
                                         }
                                 } else {
-					setTimeout(function(){hideUi(xhr.status)},3000);
-                                        setTimeout(function(){showUi()},7000);
+									setTimeout(function(){hideUi(xhr.status)},3000);
+ 									setTimeout(function(){showUi()},7000);
 				}
 
                         }
@@ -344,7 +345,7 @@ function checkUpdate() {
 				setTimeout(function(){showUi()},5000);
 			} else {
 				setTimeout(function(){hideUi("Something went wrong.")},2000);
-	                	setTimeout(function(){showUi()},5000);
+	            setTimeout(function(){showUi()},5000);
 			}
 		})
 		.fail(function() {
@@ -352,6 +353,24 @@ function checkUpdate() {
 			setTimeout(function(){showUi()},5000);
 		})
 }
+
+$("#revert").on("click", function () {
+	$(document).ready( function() {
+		hideUi("Please wait. System Restore is in progress...");
+		$.get('php/revert.php')
+			.done(function(res) {
+				eval(res); 
+				if (res != '')	{
+					setTimeout(function(){hideUi(res.msg)},2000);
+					setTimeout(function(){showUi()},5000);
+				}
+			})
+			.fail(function() {
+				setTimeout(function(){hideUi("Something went wrong. System Restore is failed.")},2000);
+            	setTimeout(function(){showUi()},5000);
+			})
+	})
+});
 
 $.widget("jai.config", {
 	_create: function(){

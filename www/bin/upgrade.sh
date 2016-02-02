@@ -1,6 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2015 Sabai Technology
+UCI_PATH="-c /configs"
 
 echo "SABAI:> Simulate OS upgrade"
 TMP_FILE='/tmp/upgrade/tmp.txt'
@@ -9,6 +10,10 @@ TMP_FILE='/tmp/upgrade/tmp.txt'
 mkdir /configs/backup
 cp -r /etc/config /configs/backup/
 cp -r /etc/sabai/openvpn /configs/backup/
+
+# disable openvpn autostart
+uci set openvpn.sabai.enabled='0'
+uci commit openvpn
 
 CURRENT_KERNEL=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
 echo **Current kernel is $CURRENT_KERNEL > /dev/kmsg
@@ -70,6 +75,10 @@ grub-editenv /mnt/grubenv set is_upgrade=1
 umount /dev/sda5
 
 rm /tmp/upgrade/*
+
+#enable system restore
+uci $UCI_PATH set sabai.general.revert='1'
+uci $UCI_PATH commit sabai
 
 echo "SABAI:> Booting new OS...."
 reboot
