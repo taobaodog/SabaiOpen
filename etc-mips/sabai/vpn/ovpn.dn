@@ -1,0 +1,3 @@
+#!/bin/sh
+sh /www/bin/firewall.sh &
+rm /www/stat/ovpn.connected

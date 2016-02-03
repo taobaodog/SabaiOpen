@@ -1,0 +1,8 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+. /lib/functions.sh
+chmod +x /update.sh
+# Recover ip rules
+sleep 20
+. /www/bin/gw.sh start boot 
+exit 0
