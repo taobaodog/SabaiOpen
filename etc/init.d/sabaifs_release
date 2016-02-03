@@ -4,6 +4,14 @@ START=13
 
 USE_PROCD=1
 
+_copy_config() {
+        cp -r /configs/custom_$1/config /etc
+        cp -r /configs/custom_$1/openvpn /etc/sabai
+        mv /etc/config/sabai /configs
+        ln -s /configs/sabai /etc/config/sabai
+        ln -s /configs/ /www/configs
+}
+
 create_partitions() {
 	CMD=$( ls /dev/sda5 )
         if [ $? = 0 ]; then
@@ -63,11 +71,13 @@ make_filesystems() {
 		PREV_KERNEL=$(grub-editenv /mnt/grubenv list | grep prev_kernel | awk -F "=" '{print $2}')
 		SAVE_DEFAULT=$(grub-editenv /mnt/grubenv list | grep save_default | awk -F "=" '{print $2}')
 		BOOT_ENTRY=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
+		REVERT_IN_PROGRESS=$(grub-editenv /mnt/grubenv list | grep is_revert | awk -F "=" '{print $2}')
 
-		if [ "$UPGRADE_IN_PROGRESS" = "1" ]; then
+		if [ "$UPGRADE_IN_PROGRESS" = "1" ] || [ "$REVERT_IN_PROGRESS" = "1" ]; then
 			if [ "$SAVE_DEFAULT" = "1" ]; then
-				echo "SABAI:> Sucessfully booted into after firmware upgrade" > /www/resUpgrade.txt
-				
+				[ "$UPGRADE_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into after firmware upgrade" > /www/resUpgrade.txt
+				[ "$REVERT_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into previous firmware upgrade" > /www/resUpgrade.txt				
+
 				# Sucessfully booted, so, cleanup savedefault entry
                			if [ "$BOOT_ENTRY" = "1" ]; then
                         		grub-editenv /mnt/grubenv set boot_entry=0
@@ -92,11 +102,16 @@ make_filesystems() {
 				echo "SABAI:> Creating directory configuration' storage."
 				[ -d "/configs" ] || mkdir /configs
 				mount -t ext4 /dev/sda6 /configs
-				cp -r /configs/backup/config /etc
-				cp -r /configs/backup/openvpn /etc/sabai
-				[ -e "/etc/config/sabai" ] || mv /etc/config/sabai /configs
-				ln -s /configs/sabai /etc/config/sabai
-				ln -s /configs/ /www/configs
+				
+				if [ "$REVERT_IN_PROGRESS" = "0" ]; then
+					# save new system config
+					[ -d "/config/system_$BOOT_ENTRY" ] mkdir /config/system_$BOOT_ENTRY
+					cp -r /etc/config /config/system_$BOOT_ENTRY
+					cp -r /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
+					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 || _copy_config 0
+				else			
+					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 || _copy_config 1
+				fi
 				echo "SABAI:> Configuration Sabai is allocated."
 			else
 				echo "SABAI:> Upgrade failed. Fallback to old kernel"
