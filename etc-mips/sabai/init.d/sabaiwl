@@ -1,0 +1,13 @@
+#!/bin/sh /etc/rc.common
+
+START=63
+
+wireless=$(ifconfig | grep wlan0)
+echo "setting up wireless"
+if [ -z $wireless ]; then
+   sh /www/bin/wireless_startup.sh
+        return 0;
+fi
+
+exit 0
+

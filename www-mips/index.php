@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--Sabai Technology - Apache v2 licence
+    copyright 2014 Sabai Technology -->
+<meta charset="utf-8"><html><head>
+<title id="mainTitle">SabaiOpen</title>
+
+<link rel="stylesheet" type="text/css" href="libs/jqueryui.css">
+<link rel="stylesheet" type="text/css" href="libs/jai-widgets.css">
+<link rel="stylesheet" type="text/css" href="libs/css/main.css">
+
+<?php include("php/libs.php"); ?>
+<script>
+var hidden,hide,f,oldip='',logon=false,info=null;
+
+function setUpdate(res){
+			if(info) oldip = info.vpn.ip; 
+			eval(res); 
+			for(i in info.vpn){ 
+		 		E('vpn'+i).innerHTML = info.vpn[i]; 
+		 	}
+		 	$('#proxy').text(info.proxy.status);
+}
+
+function getUpdate(ipref){ 
+	que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
+	$.get('php/get_remote_ip.php', function( data ) {
+		donde = $.parseJSON(data);
+		console.log(donde);
+		for(i in donde) E('loc'+i).innerHTML = donde[i];
+	});
+}
+
+function init(){ 
+   <?php if (file_exists('/etc/sabai/stat/ip') && file_get_contents("/etc/sabai/stat/ip") != '') {
+	   echo "donde = $.parseJSON('" . strstr(file_get_contents("/etc/sabai/stat/ip"), "{") . "');\n";
+	   echo "for(i in donde){E('loc'+i).innerHTML = donde[i];}"; } ?>
+	   getUpdate();
+	   setInterval (getUpdate, 5000); 
+	   setInterval (setUpdate, 5000);
+	   $('#status').addClass('active')
+	 }
+
+function toggleHelpSection() {
+	$( "#helpClose").show();
+	$( "#helpSection" ).toggle( "slide", { direction: "right" }, 500 );
+	$( "#helpButton" ).hide();
+	return false;
+};
+
+function closeHelpSection() {
+	$( "#helpClose").hide();
+	$( "#helpSection" ).toggle( "slide", { direction: "right" }, 500 );
+	$( "#helpButton" ).show();
+	return false;
+}
+
+<?php
+ $template = array_key_exists('t',$_REQUEST);
+ $panel = ( array_key_exists('panel',$_REQUEST) ? preg_replace('/[^a-z\d]/i', '', $_REQUEST['panel']) : null );
+ $section = ( array_key_exists('section',$_REQUEST) ? preg_replace('/[^a-z\d]/i', '', $_REQUEST['section']) : null );
+ if( empty($panel) ){ $panel = 'administration'; $section = 'status'; }
+ $page = ( $template ?'m':'v') ."/$panel". ( empty($section) ? '' : ".$section") .".php";
+ if(!file_exists($page)) $page = 'v/lorem.php';
+ if($page == "192.168.199.1/php") $page = 'v/lorem.php';
+ echo "var template = ". ($template?'true':'false') ."; var panel = '$panel'; var section = '$section';\n";
+?>
+
+$(function(){
+	$("#goToHelp").attr("href", "?panel=help#" + section);
+	$("#goToWiki").attr("href", "http://wiki.jairoproject.com" + location.search);
+	$( "#helpButton" ).click(toggleHelpSection);
+	$( "#helpClose").click(closeHelpSection)
+});
+
+</script>
+</head><body onload='init()'>
+<br>
+<div id="backdrop">
+	<?php include('php/menu.php'); ?>
+
+	<div id="panelContainer">
+
+		<div id="helpArea">
+					<div class='fright' id='vpnstats'>
+					<div id='vpntype'></div>
+					<div id='vpnstatus'></div>
+					<div id='vpnip'></div>
+				</div>
+
+				<div class='fright' id='locstats'>
+					<div id='locquery'></div>
+					<table>
+					<tr>
+					<div id='loccity'></div> 
+					</tr>
+					<tr>
+					<div id='loccountry'></div>
+					</tr>
+					</table>
+					<div class= 'noshow' id='locregion'></div>
+					<div class= 'noshow' id='loclat'></div>
+					<div class= 'noshow' id='loclon'></div>
+					<div class= 'noshow' id='locas'></div>
+					<div class= 'noshow' id='loccountryCode'></div>
+					<div class= 'noshow' id='locisp'></div>
+					<div class= 'noshow' id='locorg'></div>
+					<div class= 'noshow' id='locquery'></div>
+					<div class= 'noshow' id='locregionName'></div>
+					<div class= 'noshow' id='locstatus'></div>
+					<div class= 'noshow' id='loctimezone'></div>
+					<div class= 'noshow' id='loczip'></div>
+				</div>
+			<img id="helpButton" src="libs/img/help.png">
+			<div id="helpSection" class="ui-widget-content ui-corner-al">
+		<!-- 		<a href="#" id="closeHelp" class="xsmallText fright">Close</a> -->
+				Display Inline Help
+				<a id="helpClose" class="noshow xsmallText" href="#">Close</a>
+				<input name="inlineHelp" id="inlineHelp" type="checkbox" checked="checked"><br><br>
+				<span style="text-decoration: underline">Links:</span><br>
+				<a id="goToHelp" href="#">Help Page</a><br>
+				<a id="goToWiki" href="#">Wiki Page</a>
+			</div>
+		</div>
+		<div id="panel">
+			<?php include($page); ?>
+		</div>
+	</div>
+</div>
+
+</body></html>
