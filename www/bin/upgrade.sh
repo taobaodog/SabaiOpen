@@ -5,6 +5,11 @@
 echo "SABAI:> Simulate OS upgrade"
 TMP_FILE='/tmp/upgrade/tmp.txt'
 
+# Copy current config
+mkdir /configs/backup
+cp -r /etc/config /configs/backup/
+cp -r /etc/sabai/openvpn /configs/backup/
+
 CURRENT_KERNEL=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
 echo **Current kernel is $CURRENT_KERNEL > /dev/kmsg
 
