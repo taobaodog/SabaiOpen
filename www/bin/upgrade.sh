@@ -77,7 +77,9 @@ uci commit openvpn
 
 # Copy current custom config
 [ -e /configs/custom_$CURRENT_KERNEL ] ||  mkdir /configs/custom_$CURRENT_KERNEL
+rm -r /etc/config/sabai
 cp -r /etc/config /configs/custom_$CURRENT_KERNEL
+cp /configs/sabai /configs/custom_$CURRENT_KERNEL/config
 cp -r /etc/sabai/openvpn /configs/custom_$CURRENT_KERNEL/
 
 echo "SABAI:> Booting new OS...."
