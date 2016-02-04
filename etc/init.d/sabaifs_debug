@@ -9,7 +9,7 @@ _copy_config() {
         cp -r /configs/custom_$1/openvpn /etc/sabai
         mv /etc/config/sabai /configs
         ln -s /configs/sabai /etc/config/sabai
-        ln -s /configs/ /www/configs
+        [ -h /www/configs ] || ln -s /configs /www/configs
 }
 
 create_partitions() {
@@ -34,7 +34,7 @@ create_partitions() {
 
 make_filesystems() {
 
-        echo "SABAI:> making filesystems"
+        logger "SABAI:> making filesystems"
 	mount -t ext2 /dev/sda1 /mnt
 	CMD_FILE=$(ls /mnt/boot/vmlinuz2)
 	umount /dev/sda1
@@ -65,7 +65,7 @@ make_filesystems() {
 		ln -s /configs/ /www/configs
 		echo "SABAI:> Configuration Sabai is allocated."
         else
-		echo "SABAI:> Filesystems already created"
+		logger "SABAI:> Filesystems already created"
 		mount -t ext4 /dev/sda5 /mnt
 		UPGRADE_IN_PROGRESS=$(grub-editenv /mnt/grubenv list | grep is_upgrade | awk -F "=" '{print $2}')
 		PREV_KERNEL=$(grub-editenv /mnt/grubenv list | grep prev_kernel | awk -F "=" '{print $2}')
@@ -75,8 +75,8 @@ make_filesystems() {
 
 		if [ "$UPGRADE_IN_PROGRESS" = "1" ] || [ "$REVERT_IN_PROGRESS" = "1" ]; then
 			if [ "$SAVE_DEFAULT" = "1" ]; then
-				[ "$UPGRADE_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into after firmware upgrade. DEBUG VERSION." > /www/resUpgrade.txt
-				[ "$REVERT_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into previous firmware upgrade. DEBUG VERSION." > /www/resUpgrade.txt				
+				[ "$UPGRADE_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into after firmware upgrade" > /www/resUpgrade.txt
+				[ "$REVERT_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into previous firmware upgrade" > /www/resUpgrade.txt				
 
 				# Sucessfully booted, so, cleanup savedefault entry
                			if [ "$BOOT_ENTRY" = "1" ]; then
@@ -86,7 +86,7 @@ make_filesystems() {
                 		fi
 				grub-editenv /mnt/grubenv set save_default=0
         		        grub-editenv /mnt/grubenv set is_upgrade=0
-
+				grub-editenv /mnt/grubenv set is_revert=0
 				umount /dev/sda5
 
 				mount -t ext2 /dev/sda1 /mnt
@@ -99,27 +99,27 @@ make_filesystems() {
 				sed -i "s/tempstring/function savedefault/g" /mnt/boot/grub/grub.cfg
                         	umount /dev/sda1
 
-				echo "SABAI:> Creating directory configuration' storage."
+				logger "SABAI:> Creating directory configuration' storage."
 				[ -d "/configs" ] || mkdir /configs
 				mount -t ext4 /dev/sda6 /configs
 				
-				if [ "$REVERT_IN_PROGRESS" = "0" ]; then
+				if [ "$REVERT_IN_PROGRESS" != "1" ]; then
 					# save new system config
-					[ -d "/config/system_$BOOT_ENTRY" ] mkdir /config/system_$BOOT_ENTRY
+					[ -d "/config/system_$BOOT_ENTRY" ] || mkdir /config/system_$BOOT_ENTRY
 					cp -r /etc/config /config/system_$BOOT_ENTRY
 					cp -r /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 || _copy_config 0
 				else			
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 || _copy_config 1
 				fi
-				echo "SABAI:> Configuration Sabai is allocated."
+				logger "SABAI:> Configuration Sabai is allocated."
 			else
-				echo "SABAI:> Upgrade failed. Fallback to old kernel"
+				logger "SABAI:> Upgrade failed. Fallback to old kernel"
 				grub-editenv /mnt/grubenv set is_upgrade=0
 				umount /dev/sda5
 			fi
 		else
-			echo "SABAI:> Regular boot. DEBUG SW VERSION."
+			logger "SABAI:> Regular boot"
 			umount /dev/sda5
 			mount -t ext4 /dev/sda6 /configs
 		fi
@@ -134,5 +134,6 @@ start_service() {
         create_partitions
         make_filesystems
         mount -t ext4 /dev/sda5 /mnt
+		logger "BOOT FINISHED"
 }
 
