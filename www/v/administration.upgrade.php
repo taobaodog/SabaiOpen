@@ -367,7 +367,7 @@ $("#revert").on("click", function () {
 				}
 			})
 			.fail(function() {
-				setTimeout(function(){hideUi("Something went wrong. System Restore is failed.")},2000);
+				setTimeout(function(){hideUi("Something went wrong. System Restore has failed.")},2000);
             	setTimeout(function(){showUi()},5000);
 			})
 	})
@@ -388,7 +388,7 @@ $("#reset").on("click", function () {
 				}
 			})
 			.fail(function() {
-				setTimeout(function(){hideUi("Something went wrong. Factory Reset is failed.")},2000);
+				setTimeout(function(){hideUi("Something went wrong. Factory Reset has failed.")},2000);
             	setTimeout(function(){showUi()},5000);
 			})
 	})
