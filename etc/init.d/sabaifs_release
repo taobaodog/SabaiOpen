@@ -9,7 +9,7 @@ _copy_config() {
         cp -r /configs/custom_$1/openvpn /etc/sabai
         mv /etc/config/sabai /configs
         ln -s /configs/sabai /etc/config/sabai
-        ln -s /configs/ /www/configs
+        [ -h /www/configs ] || ln -s /configs /www/configs
 }
 
 create_partitions() {
@@ -86,7 +86,7 @@ make_filesystems() {
                 		fi
 				grub-editenv /mnt/grubenv set save_default=0
         		        grub-editenv /mnt/grubenv set is_upgrade=0
-
+				grub-editenv /mnt/grubenv set is_revert=0
 				umount /dev/sda5
 
 				mount -t ext2 /dev/sda1 /mnt
@@ -105,7 +105,7 @@ make_filesystems() {
 				
 				if [ "$REVERT_IN_PROGRESS" != "1" ]; then
 					# save new system config
-					[ -d "/config/system_$BOOT_ENTRY" ] mkdir /config/system_$BOOT_ENTRY
+					[ -d "/config/system_$BOOT_ENTRY" ] || mkdir /config/system_$BOOT_ENTRY
 					cp -r /etc/config /config/system_$BOOT_ENTRY
 					cp -r /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 || _copy_config 0
