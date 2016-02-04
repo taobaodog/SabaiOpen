@@ -23,7 +23,8 @@
     	<input id='fileName' name='_fileName' type='text'>
     	<input id='download' type='button' name='submit' value='Download'/><br><br>
     	<input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/>
-    	<input type='button' id='revert' name='Revert' value='Revert Update'/><br>
+    	<input type='button' id='revert' name='Revert' value='Revert Update'/>
+    	<input type='button' id='reset' name='Reset' value='Factory Reset'/><br>
         	<div id='hideme'>
             	<div class='centercolumncontainer'>
                 	<div class='middlecontainer'>
@@ -362,11 +363,32 @@ $("#revert").on("click", function () {
 				eval(res); 
 				if (res != '')	{
 					setTimeout(function(){hideUi(res.msg)},2000);
-					setTimeout(function(){showUi()},5000);
+					setTimeout(function(){checkUpdate()},10000);
 				}
 			})
 			.fail(function() {
 				setTimeout(function(){hideUi("Something went wrong. System Restore is failed.")},2000);
+            	setTimeout(function(){showUi()},5000);
+			})
+	})
+});
+
+$("#reset").on("click", function () {
+	$(document).ready( function() {
+		hideUi("Please wait. Factory Reset is in progress...");
+		$.get('php/reset.php')
+			.done(function(res) {
+				eval(res); 
+				if (res.msg.indexOf("NOT") < 0)	{
+					setTimeout(function(){hideUi(res.msg)},2000);
+					setTimeout(function(){checkUpdate()},10000);
+				} else {
+					setTimeout(function(){hideUi(res.msg)},2000);
+					setTimeout(function(){showUi()},5000);
+				}
+			})
+			.fail(function() {
+				setTimeout(function(){hideUi("Something went wrong. Factory Reset is failed.")},2000);
             	setTimeout(function(){showUi()},5000);
 			})
 	})
