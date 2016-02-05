@@ -360,10 +360,13 @@ $("#revert").on("click", function () {
 		hideUi("Please wait. System Restore is in progress...");
 		$.get('php/revert.php')
 			.done(function(res) {
-				eval(res); 
-				if (res != '')	{
+				eval(res);
+				if (res.msg.indexOf("NOT") < 0)	{
 					setTimeout(function(){hideUi(res.msg)},2000);
 					setTimeout(function(){checkUpdate()},10000);
+				} else {
+					setTimeout(function(){hideUi(res.msg)},2000);
+                                        setTimeout(function(){showUi()},5000);
 				}
 			})
 			.fail(function() {
