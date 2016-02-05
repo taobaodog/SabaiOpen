@@ -35,5 +35,5 @@ if [ "$revert_enabled" = "1" ]; then
 	reboot
 	_return 0 "SABAI:> Booting previous OS ..."
 else
-	_return 0 "System Restore is not available."
+	_return 0 "System Restore is NOT available."
 fi
