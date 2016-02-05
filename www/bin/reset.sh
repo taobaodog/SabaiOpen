@@ -9,11 +9,14 @@ _return(){
 }
 
 CURRENT_KERNEL=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
+revert_enabled="$(uci get sabai.general.revert)"
 
 if [ -e "/configs/system_$CURRENT_KERNEL" ]; then
 	cp -r /configs/system_$CURRENT_KERNEL/config /etc
 	cp -r /configs/system_$CURRENT_KERNEL/openvpn cp -r /etc/sabai/
 	mv /etc/config/sabai /configs
+	uci $UCI_PATH  set sabai.general.revert=$revert_enabled
+	uci $UCI_PATH commit
 	ln -s /configs/sabai /etc/config/sabai
 
 	logger "SABAI:> Factory reset in process. Rebooting ..."
