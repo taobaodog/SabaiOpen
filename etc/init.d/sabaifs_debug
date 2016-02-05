@@ -58,6 +58,8 @@ make_filesystems() {
                 umount /dev/sda5
 
 		echo "SABAI:> Creating directory configuration' storage."
+		uci set sabai.general.revert='0'
+        uci commit sabai
 		mkdir /configs
 		mount -t ext4 /dev/sda6 /configs
 		mv /etc/config/sabai /configs
