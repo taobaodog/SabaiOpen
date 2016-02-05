@@ -5,8 +5,8 @@ START=13
 USE_PROCD=1
 
 _copy_config() {
-        cp -r /configs/custom_$1/config /etc
-        cp -r /configs/custom_$1/openvpn /etc/sabai
+        cp -fR /configs/custom_$1/config /etc
+        cp -fR /configs/custom_$1/openvpn /etc/sabai
         mv /etc/config/sabai /configs
         ln -s /configs/sabai /etc/config/sabai
         [ -h /www/configs ] || ln -s /configs /www/configs
@@ -59,7 +59,7 @@ make_filesystems() {
 
 		echo "SABAI:> Creating directory configuration' storage."
 		uci set sabai.general.revert='0'
-        uci commit sabai
+                uci commit sabai
 		mkdir /configs
 		mount -t ext4 /dev/sda6 /configs
 		mv /etc/config/sabai /configs
@@ -108,8 +108,8 @@ make_filesystems() {
 				if [ "$REVERT_IN_PROGRESS" != "1" ]; then
 					# save new system config
 					[ -d "/configs/system_$BOOT_ENTRY" ] || mkdir /configs/system_$BOOT_ENTRY
-					cp -r /etc/config /configs/system_$BOOT_ENTRY
-					cp -r /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
+					cp -fR /etc/config /configs/system_$BOOT_ENTRY
+					cp -fR /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 || _copy_config 0
 				else			
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 || _copy_config 1
