@@ -54,7 +54,11 @@ function getStats(){
                     $("#wan_connection").text(fullinfo.wan.connection);
                     $("#wan_ip").text(fullinfo.wan.ip);
                     $("#wan_subnet").text(fullinfo.wan.subnet);
-                    $("#wan_gateway").text(fullinfo.wan.gateway);
+		    if (fullinfo.wan.gateway)	{
+                    	$("#wan_gateway").text(fullinfo.wan.gateway);
+		    }	else 	{
+			$("#wan_gateway").text(fullinfo.sys.gateway);
+		    }
                     //set lan elements
                     $("#lan_mac").text(fullinfo.lan.mac);
                     $("#lan_ip").text(fullinfo.lan.ip);
