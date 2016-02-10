@@ -38,6 +38,14 @@ _off(){
 	        /etc/init.d/firewall restart
 	fi
 
+	uci delete privoxy.privoxy.forward_socks5t
+	uci delete privoxy.privoxy.forward_socks5
+	uci delete privoxy.privoxy.forward_socks4
+	uci delete privoxy.privoxy.forward_socks4a
+	uci delete privoxy.privoxy.forward
+	uci commit privoxy
+	/etc/init.d/privoxy restart
+
 	uci $UCI_PATH set sabai.tor.mode="off"
 	uci $UCI_PATH set sabai.vpn.proto="none"
 	uci $UCI_PATH set sabai.vpn.status="none"
@@ -143,15 +151,25 @@ _tun() {
 	#iptables -t nat -F
 
 	iptables -t nat -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j RETURN
+	iptables -t nat -A OUTPUT -d 127.0.0.0/8 -j RETURN
 	iptables -t nat -A PREROUTING -i eth0 -d "$(uci get $config_file.wan.ipaddr)" -j RETURN
-	#iptables -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j ACCEPT
+	iptables -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j ACCEPT
 	iptables -A OUTPUT -d 127.0.0.0/8 -j ACCEPT
 
 	iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 53
 	iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
-	iptables -t nat -I PREROUTING --src 0/0 --dst "$(uci get $config_file.wan.ipaddr)" -p tcp --syn --dport $_privox_port -j REDIRECT --to-ports $_tor_proxy_port
 	
+	_forward_socks="/	127.0.0.1:9050	."
 	uci set privoxy.privoxy.listen_address="$(uci get $config_file.wan.ipaddr):$_privox_port $(uci get network.loopback.ipaddr):$_privox_port"
+	uci set privoxy.privoxy.permit_access="$socks_network"
+	uci set privoxy.privoxy.forward_socks5t="$_forward_socks"
+	uci set privoxy.privoxy.forward_socks5="$_forward_socks"
+	uci set privoxy.privoxy.forward_socks4="$_forward_socks"
+	uci set privoxy.privoxy.forward_socks4a="$_forward_socks"
+	uci add_list privoxy.privoxy.forward="192.168.*.*/	."
+	uci add_list privoxy.privoxy.forward="10.*.*.*/	." 
+	uci add_list privoxy.privoxy.forward="127.*.*.*/	."
+	uci add_list privoxy.privoxy.forward="localhost/     ."
 	uci commit privoxy
 	
 	/etc/init.d/tor start
@@ -178,7 +196,6 @@ _check() {
 
 _check_tor() {
 	if [ "$tor_stat" ]; then
-		logger "TOR is running."
 		_return 0 "TOR is running."
 	else
 		logger "TOR will be restarted in another mode."
