@@ -70,6 +70,7 @@
 ##
 ## User privilege specification
 ##
+root ALL=(ALL) ALL
 admin ALL=(ALL) ALL
 
 ## Uncomment to allow members of group wheel to execute any command
