@@ -33,6 +33,12 @@ _updatepass(){
          sleep 1
          echo $pass
 )|passwd root
+(
+         echo $pass
+         sleep 1
+         echo $pass
+)|passwd admin
+
 	rm /tmp/hold
 	_return 1 "Password Changed"
 }
