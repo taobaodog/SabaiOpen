@@ -54,6 +54,10 @@ $password=$_REQUEST['VPNpassword'];
   file_put_contents("/etc/sabai/openvpn/auth-pass",$name ."\n");
   file_put_contents("/etc/sabai/openvpn/auth-pass",$password, FILE_APPEND);
   exec("sed -ir 's/auth-user-pass.*$/auth-user-pass \/etc\/sabai\/openvpn\/auth-pass/g' /etc/sabai/openvpn/ovpn.current");
+  // Removing extra windows charachters
+  exec("sed -i 's/explicit-exit-notify\ 2/\;explicit-exit-notify\ 2/g' /etc/sabai/openvpn/ovpn.currentr");
+  exec("sed -i 's/receive-dns/\;receive-dns/g' /etc/sabai/openvpn/ovpn.currentr");
+  exec("cat /etc/sabai/openvpn/ovpn.currentr | sed 's/^M//g' > /etc/sabai/openvpn/ovpn.current");
   echo "res={ sabai: true, msg: 'OpenVPN configuration saved.', reload: true };";
  }else{
   echo "res={ sabai: false, msg: 'Invalid configuration.' };";
