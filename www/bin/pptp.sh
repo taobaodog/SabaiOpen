@@ -56,8 +56,8 @@ _stop(){
 _start(){
 	ifconfig > /tmp/check
 	if [ "$(cat /tmp/check | grep pptp)" ]; then
-	        logger "PPTP has been already running."
-	        _return 0 "PPTP has been already running."
+	        logger "PPTP is already running."
+	        _return 0 "PPTP is already running."
 	elif [ "$(cat /tmp/check | grep tun0)" ]; then
 		#ensure that openvpn is stopped
 		/www/bin/ovpn.sh stop
