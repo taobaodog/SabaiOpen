@@ -27,8 +27,8 @@ _stop(){
 
 _start(){
         if [ $proto == "ovpn" ]; then
-		logger "Ovpn has been already running."
-                _return 0 "Ovpn has been already running."
+		logger "Ovpn is already running."
+                _return 0 "Ovpn is already running."
         fi
 
         if [ ! -e /etc/sabai/openvpn/ovpn.current ]; then
