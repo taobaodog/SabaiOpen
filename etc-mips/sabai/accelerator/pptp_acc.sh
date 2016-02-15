@@ -53,8 +53,8 @@ _stop(){
 
 _start(){
 	if [ $proto == "pptp" ]; then
-	        logger "PPTP has been already running."
-	        _return 0 "PPTP has been already running."
+	        logger "PPTP is already running."
+	        _return 0 "PPTP is already running."
 	elif [ $proto = "ovpn" ]; then
 		#ensure that openvpn is stopped
 		/www/bin/ovpn.sh stop
