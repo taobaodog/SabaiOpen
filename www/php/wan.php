@@ -16,7 +16,7 @@ exec("uci $UCI_PATH set sabai.wan.proto=\"" . $proto . "\"");
 exec("uci $UCI_PATH set sabai.wan.ipaddr=\"" . $ip . "\"");
 exec("uci $UCI_PATH set sabai.wan.netmask=\"" . $mask . "\"");
 exec("uci $UCI_PATH set sabai.wan.gateway=\"" . $gateway . "\"");
-exec("uci $UCI_PATH set sabai.wan.mac=\"" . $mac . "\"");
+exec("uci $UCI_PATH set sabai.wan.macaddr=\"" . $mac . "\"");
 exec("uci $UCI_PATH set sabai.wan.mtu=\"" . $mtu . "\"");
 exec("uci $UCI_PATH set sabai.wan.dns=\"" . $dns . "\"");
 exec("uci $UCI_PATH commit sabai");

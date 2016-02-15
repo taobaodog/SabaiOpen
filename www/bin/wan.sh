@@ -15,7 +15,7 @@ _dhcp(){
 	done
 	uci set network.wan.proto="$(uci get $config_file.wan.proto)";
 	uci set network.wan.mtu="$(uci get $config_file.wan.mtu)";
-	uci set network.wan.mac="$(uci get $config_file.wan.mac)";
+	uci set network.wan.macaddr="$(uci get $config_file.wan.mac)";
 	uci set network.wan.dns="$(uci get $config_file.wan.dns)";
 	uci commit
 	ifconfig $(uci get network.wan.ifname) up
