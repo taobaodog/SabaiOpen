@@ -6,13 +6,23 @@
 		ip="$(ifconfig -a eth0 | grep -F "inet addr" | awk '{print $2}' | tr -d 'addr:')"
 		gateway="$( route -n | grep eth0 | grep "UG" | awk '{print $2}')"
 		mask="$( route -n | grep eth0 | grep "UH" | awk '{print $3}')"
+		macaddr="$(ifconfig eth0 | awk '/HWaddr/ { print $5 }')"
 		uci set network.wan.ipaddr=$ip
 		uci set network.wan.gateway=$gateway
 		uci set network.wan.netmask=$mask
+		uci set network.wan.macaddr=$macaddr
 		uci commit network
 		uci -c /configs set sabai.wan.ipaddr=$ip
 		uci -c /configs set sabai.wan.gateway=$gateway
 		uci -c /configs set sabai.wan.netmask=$mask
+		uci -c /configs set sabai.wan.macaddr=$macaddr
 		uci -c /configs commit sabai
+		uci set uhttpd.main.listen_http=$ip':80'
+		uci set uhttpd.main.listen_https=$ip':443'
+		uci commit uhttpd
+		echo "listen-address=$ip"> /etc/dnsmasq.conf
+		echo "bind-interfaces" >> /etc/dnsmasq.conf
+		/etc/init.d/uhttpd restart
+		/etc/init.d/dnsmasq restart
 	}
 }

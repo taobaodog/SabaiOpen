@@ -20,7 +20,7 @@ config interface 'wan'
 	option ipaddr '192.168.200.254'
 	option gateway '192.168.200.1'
 	option dns '8.8.8.8 8.8.4.4 4.2.2.2 198.6.1.4'
-	option mac '00:07:32:2c:ff:b8'
+	option macaddr ''
 	option mtu '1500'
 	option proto 'dhcp'
 

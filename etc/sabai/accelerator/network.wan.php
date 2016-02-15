@@ -57,8 +57,8 @@ var wan=$.parseJSON('{<?php
           $ip=trim(exec("uci get sabai.wan.ipaddr"));
           $mask=trim(exec("uci get sabai.wan.netmask"));
           $gateway=trim(exec("uci get sabai.wan.gateway"));
-          if (exec("uci show network | grep macaddr") != ""){
-                $mac=trim(exec("uci get sabai.wan.mac"));
+          if (exec("uci get network.wan.macaddr") != ""){
+                $mac=trim(exec("uci get network.wan.macaddr"));
           } else {
             $mac=trim(exec("ifconfig eth0 | awk '/HWaddr/ { print $5 }'"));
           }

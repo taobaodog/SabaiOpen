@@ -22,7 +22,7 @@ config interface 'wan'
 	option gateway '192.168.200.1'
 	option dns '8.8.8.8 8.8.4.4 4.2.2.2 198.6.1.4'
 	option mtu '1500'
-	option mac '00:07:32:2c:ff:b8'
+	option mac ''
 	option proto 'dhcp'
 
 config interface 'sabai'
