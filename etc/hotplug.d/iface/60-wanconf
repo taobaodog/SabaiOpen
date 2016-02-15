@@ -17,5 +17,8 @@
 		uci -c /configs set sabai.wan.netmask=$mask
 		uci -c /configs set sabai.wan.macaddr=$macaddr
 		uci -c /configs commit sabai
+		uci set uhttpd.main.listen_http=$ip':80'
+		uci set uhttpd.main.listen_https=$ip':443'
+		uci commit uhttpd
 	}
 }
