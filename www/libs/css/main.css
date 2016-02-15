@@ -822,8 +822,8 @@ color: blue;
 
 .error {
     font-weight: bold;
-    color: #262262;
-    padding: 15px;
+    color: red;
+    padding-right: 25px;
 }
 
 .fields {
@@ -986,4 +986,11 @@ textarea {
 #footer {
 	text-align: left;
         font: 12px Arial,Helvetica,sans-serif;
+}
+
+.dns-delete {
+	vertical-align: middle;
+	height: 12px;
+	position: relative;
+	left: -15px;
 }
