@@ -11,7 +11,6 @@ DDNS: { ip, interval, services }
   </div>
 </div>
 
-
 <div class='controlBox'>
   <span class='controlBoxTitle'>DNS</span>
   <div class='controlBoxContent'>
@@ -19,7 +18,20 @@ DDNS: { ip, interval, services }
       <tbody>
       <tr>
         <td>DNS Servers</td>
-        <td><div><ul id='dns_servers'></ul></div></td>
+        <td>
+        	<div>
+        		<ul id='dns_servers'>
+        			<li><input type='text' placeholder='DNS 1' name='dns_server1'><img src='/libs/img/delete.png' height=12 class='dns-delete' ></li>
+        			<li><input type='text' placeholder='DNS 2' name='dns_server2'><img src='/libs/img/delete.png' height=12 class='dns-delete'></li>
+        			<li><input type='text' placeholder='DNS 3' name='dns_server3'><img src='/libs/img/delete.png' height=12 class='dns-delete'></li>
+        			<li><input type='text' placeholder='DNS 4' name='dns_server4'><img src='/libs/img/delete.png' height=12 class='dns-delete'></li>
+        		</ul>
+        		<input type='hidden' name='dns_servers[]'>
+        		<input type='hidden' name='dns_servers[]'>
+        		<input type='hidden' name='dns_servers[]'>
+        		<input type='hidden' name='dns_servers[]'>
+        	</div>
+        </td>
           <div id="editableListDescription">
             <span class ='xsmallText'>(These are the DNS servers the DHCP server will provide for devices also on the LAN)
             </span><br><br>
@@ -45,7 +57,43 @@ DDNS: { ip, interval, services }
 </p>
 </form>
 <script>
-
+var validator;
+$(function() {
+    validator = $( "#fe" ).validate({
+    	ignore: [],
+		rules: {
+			wan_mtu: {
+				required: true,
+				min: 576,
+				max:1500
+			},
+			wan_mac: {
+				required: true,
+				macchecker: true 
+			},
+			dns_server1: {
+				required: true,
+				validip: true
+			},
+			dns_server2: {
+				required: false,
+				validip: true
+			},
+			dns_server3: {
+				required: false,
+				validip: true
+			},
+			dns_server4: {
+				required: false,
+				validip: true
+			}
+		},
+		messages: {
+			wan_mtu: "Please enter number between 576 and 1500"
+		}
+	});
+	//validator.form();
+});
 
 var hidden, hide, pForm = {};
 
@@ -58,8 +106,8 @@ var wan=$.parseJSON('{<?php
           $ip=trim(exec("uci get sabai.wan.ipaddr"));
           $mask=trim(exec("uci get sabai.wan.netmask"));
           $gateway=trim(exec("uci get sabai.wan.gateway"));
-          if (exec("uci show network | grep macaddr") != ""){
-                $mac=trim(exec("uci get sabai.wan.mac"));
+          if (exec("uci get network.wan.macaddr") != ""){
+                $mac=trim(exec("uci get network.wan.macaddr"));
           } else {
             $mac=trim(exec("ifconfig eth0 | awk '/HWaddr/ { print $5 }'"));
           }
@@ -75,11 +123,31 @@ var dnsfin= "{\"servers\"" + ":" + array + "}";
 var dns = $.parseJSON(dnsfin);
  
 function WANcall(act){ 
+if( validator.numberOfInvalids() > 0){
+	alert("Please fill the fields correctly.");
+	return;
+}
   hideUi("Adjusting WAN settings..."); 
 E("act").value=act;
 $(document).ready( function(){
 // Pass the form values to the php file 
+
+
+
+var dns1 = $('#dns_servers').find('li').eq(0).find('input').val();
+var dns2 = $('#dns_servers').find('li').eq(1).find('input').val();
+var dns3 = $('#dns_servers').find('li').eq(2).find('input').val();
+var dns4 = $('#dns_servers').find('li').eq(3).find('input').val();
+
+
+$('#dns_servers').parent().find('input').eq(4).val(dns1);
+$('#dns_servers').parent().find('input').eq(5).val(dns2);
+$('#dns_servers').parent().find('input').eq(6).val(dns3);
+$('#dns_servers').parent().find('input').eq(7).val(dns4);
+
+
 $.post('php/wan.php', $("#fe").serialize(), function(res){
+
   // Detect if values have been passed back   
     if(res!=""){
       WANresp(res);
@@ -139,14 +207,6 @@ $.widget("jai.wansetup", {
               .append( $(document.createElement('option'))
                 .prop("value", "dhcp")
                 .prop("text", 'DHCP')
-              )
-              .append( $(document.createElement('option'))
-                .prop("value", "static")
-                .prop("text", 'Static')
-              )
-              .append( $(document.createElement('option'))
-                .prop("value", "lan")
-                .prop("text", 'LAN')
               )
             )
 
@@ -243,9 +303,14 @@ $.widget("jai.wansetup", {
 });
 
 $(function(){
-  //instatiate widgets on document ready
-  $('#wansetup').wansetup({ conf: wan });
-  $('#dns_servers').oldeditablelist({ list: dns.servers, fixed: false })
+	//instatiate widgets on document ready
+	$('#wansetup').wansetup({ conf: wan });
+	for (i=0; i<4; i++){
+		$('#dns_servers').find('li').eq(i).find('input').val(dns.servers[i]);
+		$('#dns_servers').find('li').eq(i).find('img').click(function(el){
+			$(el.target).parent().find('input').val('');
+		});
+	}
 })
 
 
