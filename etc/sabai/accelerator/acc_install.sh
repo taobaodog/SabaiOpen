@@ -24,7 +24,7 @@ mv $TOPDIR/files/etc/sabai/accelerator/menu.php $TOPDIR/files/www/php/menu.php
 mv $TOPDIR/files/etc/sabai/accelerator/network.wan.php $TOPDIR/files/www/v/network.wan.php
 mv $TOPDIR/files/etc/sabai/accelerator/menuHeader.png $TOPDIR/files/www/libs/img
 mv $TOPDIR/files/etc/sabai/accelerator/network.radio.php $TOPDIR/files/www/v/
-mv $TOPDIR/files/etc/sabai/accelerator/help_ACC.php $TOPDIR/files/www/php/help.php
+mv $TOPDIR/files/etc/sabai/accelerator/help_ACC.php $TOPDIR/files/www/v/help.php
 
 # Removing ../v/*.php
 rm $TOPDIR/files/www/v/network.lan.php
