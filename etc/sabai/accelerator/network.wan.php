@@ -21,10 +21,10 @@ DDNS: { ip, interval, services }
         <td>
         	<div>
         		<ul id='dns_servers'>
-        			<li><input type='text' placeholder='DNS 1' name='dns_server1'><img src='/libs/img/delete.png' height=12 class='dns-delete' ></li>
-        			<li><input type='text' placeholder='DNS 2' name='dns_server2'><img src='/libs/img/delete.png' height=12 class='dns-delete'></li>
-        			<li><input type='text' placeholder='DNS 3' name='dns_server3'><img src='/libs/img/delete.png' height=12 class='dns-delete'></li>
-        			<li><input type='text' placeholder='DNS 4' name='dns_server4'><img src='/libs/img/delete.png' height=12 class='dns-delete'></li>
+        			<li><input type='text' placeholder='DNS 1' name='dns_server1'><img src='/libs/img/delete.gif' height=12 class='dns-delete' ></li>
+        			<li><input type='text' placeholder='DNS 2' name='dns_server2'><img src='/libs/img/delete.gif' height=12 class='dns-delete'></li>
+        			<li><input type='text' placeholder='DNS 3' name='dns_server3'><img src='/libs/img/delete.gif' height=12 class='dns-delete'></li>
+        			<li><input type='text' placeholder='DNS 4' name='dns_server4'><img src='/libs/img/delete.gif' height=12 class='dns-delete'></li>
         		</ul>
         		<input type='hidden' name='dns_servers[]'>
         		<input type='hidden' name='dns_servers[]'>
