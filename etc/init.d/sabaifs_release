@@ -5,10 +5,16 @@ START=13
 USE_PROCD=1
 
 _copy_config() {
-        cp -fR /configs/custom_$1/config /etc
-        cp -fR /configs/custom_$1/openvpn /etc/sabai
-        mv /etc/config/sabai /configs
-        ln -s /configs/sabai /etc/config/sabai
+	if [ -e "/configs/backup" ]; then
+		cp -fR /configs/backup/config /etc
+		cp -fR /configs/backup/openvpn /etc/sabai
+		rm /etc/config/sabai
+	else
+        	cp -fR /configs/custom_$1/config /etc
+        	cp -fR /configs/custom_$1/openvpn /etc/sabai
+		mv /etc/config/sabai /configs
+	fi
+        [ -h "/etc/config/sabai" ] || ln -s /configs/sabai /etc/config/sabai
         [ -h /www/configs ] || ln -s /configs /www/configs
 }
 
@@ -64,7 +70,7 @@ make_filesystems() {
 		mkdir /configs
 		mount -t ext4 /dev/sda6 /configs
 
-		# sabe factory settings
+		# save factory settings
 		mkdir /configs/system_$BOOT_ENTRY
                 cp -r /etc/config /configs/system_$BOOT_ENTRY
                 cp -r /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
