@@ -44,6 +44,7 @@ function getStats(){
                     //set sys elements
                     $("#sys_name").text(fullinfo.sys.name);
                     $("#sys_model").text(fullinfo.sys.model);
+		    $("#sys_version").text(fullinfo.sys.version);
                     $("#sys_time").text(fullinfo.sys.time);
                     $("#sys_uptime").text(fullinfo.sys.uptime);
                     $("#sys_cpuload").text(fullinfo.sys.cpuload);
@@ -110,6 +111,12 @@ $.widget("jai.system_build", {
           )
           .append( $(document.createElement('td')).html('<div id=sys_model></div>') 
           )
+        )
+	.append( $(document.createElement('tr'))                           
+          .append( $(document.createElement('td')).html('Version Build')                          
+          )                                                            
+          .append( $(document.createElement('td')).html('<div id=sys_version></div>')
+          )                                                                
         )
         .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('Time') 
