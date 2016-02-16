@@ -57,6 +57,9 @@ DDNS: { ip, interval, services }
 </p>
 </form>
 <script>
+
+
+
 var validator;
 $(function() {
     validator = $( "#fe" ).validate({
@@ -305,8 +308,21 @@ $.widget("jai.wansetup", {
 $(function(){
 	//instatiate widgets on document ready
 	$('#wansetup').wansetup({ conf: wan });
+	
+	//alert(('input[name=dns_server1]').val());
+	//alert();
 	for (i=0; i<4; i++){
-		$('#dns_servers').find('li').eq(i).find('input').val(dns.servers[i]);
+		//$('#dns_servers').find('li').eq(i).find('input').val(dns.servers[i]);
+		$('input[name=dns_server'+ (i+1) +']').ipspinner({
+		min: '0.0.0.1',
+		max: '255.255.255.254',
+		change: function(event,ui){ 
+			spinnerConstraint(this);
+		}
+	}).ipspinner('value',dns.servers[i]);
+	
+	
+		
 		$('#dns_servers').find('li').eq(i).find('img').click(function(el){
 			$(el.target).parent().find('input').val('');
 		});
