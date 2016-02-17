@@ -994,3 +994,37 @@ textarea {
 	position: relative;
 	left: -40px;
 }
+
+#dns_servers {
+	 list-style-type: none;
+}
+
+#dns_servers input{
+	 color: #4DA5E0;
+
+}
+
+#dns_servers li span {
+ background: #F0F3F6;
+ background: hsl(210, 25%, 95%);
+ color: #4DA5E0;
+ background: -webkit-linear-gradient(top, #F0F3F6 50%, #E5E5E5 99%);
+ background: -ms-linear-gradient(top, #F0F3F6 50%, #E5E5E5 99%); 
+ background: -moz-linear-gradient(top, #F0F3F6 50%, #E5E5E5 99%);
+ background: -o-linear-gradient(top, #F0F3F6 50%, #E5E5E5 99%); 
+ background: linear-gradient(top, #F0F3F6 50%, #E5E5E5 99%);
+}
+
+#dns_servers li span.ui-icon-triangle-1-n {
+	background-image : url(/libs/images/ui-icons_228ef1_256x240.png);
+	background-position: 0 -16px;
+}
+
+#dns_servers li span.ui-icon-triangle-1-s {
+	background-image : url(/libs/images/ui-icons_228ef1_256x240.png);
+	background-position: -65px -16px;
+}
+
+.deleteDNS{
+	color: #4DA5E0; 
+}
