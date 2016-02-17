@@ -119,8 +119,8 @@ make_filesystems() {
 				if [ "$REVERT_IN_PROGRESS" != "1" ]; then
 					# save new system config
 					[ -d "/configs/system_$BOOT_ENTRY" ] || mkdir /configs/system_$BOOT_ENTRY
-					mv /etc/config /configs/system_$BOOT_ENTRY
-					mv /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
+					cp /etc/config /configs/system_$BOOT_ENTRY
+					cp /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 || _copy_config 0
 				else			
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 || _copy_config 1
