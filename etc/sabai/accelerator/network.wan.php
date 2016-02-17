@@ -126,40 +126,42 @@ var dnsfin= "{\"servers\"" + ":" + array + "}";
 var dns = $.parseJSON(dnsfin);
  
 function WANcall(act){ 
-if( validator.numberOfInvalids() > 0){
-	alert("Please fill the fields correctly.");
-	return;
-}
-  hideUi("Adjusting WAN settings..."); 
-E("act").value=act;
-$(document).ready( function(){
-// Pass the form values to the php file 
+	if( validator.numberOfInvalids() > 0){
+		alert("Please fill the fields correctly.");
+		return;
+	}
+	hideUi("Adjusting WAN settings..."); 
+	E("act").value=act;
+	$(document).ready( function(){
+		// Pass the form values to the php file 
+
+		var dns1 = $('#dns_servers').find('li').eq(0).find('input').val();
+		var dns2 = $('#dns_servers').find('li').eq(1).find('input').val();
+		var dns3 = $('#dns_servers').find('li').eq(2).find('input').val();
+		var dns4 = $('#dns_servers').find('li').eq(3).find('input').val();
 
 
-
-var dns1 = $('#dns_servers').find('li').eq(0).find('input').val();
-var dns2 = $('#dns_servers').find('li').eq(1).find('input').val();
-var dns3 = $('#dns_servers').find('li').eq(2).find('input').val();
-var dns4 = $('#dns_servers').find('li').eq(3).find('input').val();
-
-
-$('#dns_servers').parent().find('input').eq(4).val(dns1);
-$('#dns_servers').parent().find('input').eq(5).val(dns2);
-$('#dns_servers').parent().find('input').eq(6).val(dns3);
-$('#dns_servers').parent().find('input').eq(7).val(dns4);
+		$('#dns_servers').parent().find('input').eq(4).val(dns1);
+		$('#dns_servers').parent().find('input').eq(5).val(dns2);
+		$('#dns_servers').parent().find('input').eq(6).val(dns3);
+		$('#dns_servers').parent().find('input').eq(7).val(dns4);
 
 
-$.post('php/wan.php', $("#fe").serialize(), function(res){
-
-  // Detect if values have been passed back   
-    if(res!=""){
-      WANresp(res);
-    }
-      showUi();
-});
+		$.post('php/wan.php', $("#fe").serialize())
+			.done(function(res){
+				// Detect if values have been passed back   
+				if(res!=""){
+					WANresp(res);
+    			}
+				showUi();
+			})
+			.fail(function() {
+				setTimeout(function(){hideUi("WAN settings was applied. Your device might have new IP address. Refresh the page.")}, 7000);
+				setTimeout(function(){showUi()}, 12000);
+			})
  
-// Important stops the page refreshing
-return false;
+	// Important stops the page refreshing
+	return false;
 
 }); 
 

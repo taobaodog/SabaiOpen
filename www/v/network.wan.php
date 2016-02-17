@@ -123,40 +123,42 @@ var dnsfin= "{\"servers\"" + ":" + array + "}";
 var dns = $.parseJSON(dnsfin);
  
 function WANcall(act){ 
-if( validator.numberOfInvalids() > 0){
-	alert("Please fill the fields correctly.");
-	return;
-}
-  hideUi("Adjusting WAN settings..."); 
-E("act").value=act;
-$(document).ready( function(){
-// Pass the form values to the php file 
+	if( validator.numberOfInvalids() > 0){
+		alert("Please fill the fields correctly.");
+		return;
+	}
+	hideUi("Adjusting WAN settings..."); 
+	E("act").value=act;
+	$(document).ready( function(){
+		// Pass the form values to the php file 
+
+		var dns1 = $('#dns_servers').find('li').eq(0).find('input').val();
+		var dns2 = $('#dns_servers').find('li').eq(1).find('input').val();
+		var dns3 = $('#dns_servers').find('li').eq(2).find('input').val();
+		var dns4 = $('#dns_servers').find('li').eq(3).find('input').val();
 
 
-
-var dns1 = $('#dns_servers').find('li').eq(0).find('input').val();
-var dns2 = $('#dns_servers').find('li').eq(1).find('input').val();
-var dns3 = $('#dns_servers').find('li').eq(2).find('input').val();
-var dns4 = $('#dns_servers').find('li').eq(3).find('input').val();
-
-
-$('#dns_servers').parent().find('input').eq(4).val(dns1);
-$('#dns_servers').parent().find('input').eq(5).val(dns2);
-$('#dns_servers').parent().find('input').eq(6).val(dns3);
-$('#dns_servers').parent().find('input').eq(7).val(dns4);
+		$('#dns_servers').parent().find('input').eq(4).val(dns1);
+		$('#dns_servers').parent().find('input').eq(5).val(dns2);
+		$('#dns_servers').parent().find('input').eq(6).val(dns3);
+		$('#dns_servers').parent().find('input').eq(7).val(dns4);
 
 
-$.post('php/wan.php', $("#fe").serialize(), function(res){
-
-  // Detect if values have been passed back   
-    if(res!=""){
-      WANresp(res);
-    }
-      showUi();
-});
+		$.post('php/wan.php', $("#fe").serialize())
+			.done(function(res){
+				// Detect if values have been passed back   
+				if(res!=""){
+					WANresp(res);
+    			}
+				showUi();
+			})
+			.fail(function() {
+				setTimeout(function(){hideUi("WAN settings was applied. Your device might have new IP address. Refresh the page.")}, 7000);
+				setTimeout(function(){showUi()}, 12000);
+			})
  
-// Important stops the page refreshing
-return false;
+	// Important stops the page refreshing
+	return false;
 
 }); 
 
@@ -305,8 +307,21 @@ $.widget("jai.wansetup", {
 $(function(){
 	//instatiate widgets on document ready
 	$('#wansetup').wansetup({ conf: wan });
+	
+	//alert(('input[name=dns_server1]').val());
+	//alert();
 	for (i=0; i<4; i++){
-		$('#dns_servers').find('li').eq(i).find('input').val(dns.servers[i]);
+		//$('#dns_servers').find('li').eq(i).find('input').val(dns.servers[i]);
+		$('input[name=dns_server'+ (i+1) +']').ipspinner({
+		min: '0.0.0.1',
+		max: '255.255.255.254',
+		change: function(event,ui){ 
+			spinnerConstraint(this);
+		}
+	}).ipspinner('value',dns.servers[i]);
+	
+	
+		
 		$('#dns_servers').find('li').eq(i).find('img').click(function(el){
 			$(el.target).parent().find('input').val('');
 		});
