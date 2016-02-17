@@ -8,6 +8,7 @@ mv $TOPDIR/files/etc/sabai/accelerator/firewall $TOPDIR/files/etc/config/firewal
 mv $TOPDIR/files/etc/sabai/accelerator/firewall.user $TOPDIR/files/etc/firewall.user
 mv $TOPDIR/files/etc/sabai/accelerator/uhttpd $TOPDIR/files/etc/config/uhttpd
 mv $TOPDIR/files/etc/sabai/accelerator/dhcp $TOPDIR/files/etc/config/dhcp
+mv $TOPDIR/files/etc/sabai/accelerator/dropbear $TOPDIR/files/etc/config/dropbear
 
 # changing config
 sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/system
