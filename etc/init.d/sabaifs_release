@@ -8,6 +8,8 @@ _copy_config() {
 	if [ ! -e "/configs/custom_$1" ]; then
 		rm /etc/config/sabai
 	else
+		rm -r /etc/config
+		rm -r /etc/sabai/openvpn
         	cp -fR /configs/custom_$1/config /etc
         	cp -fR /configs/custom_$1/openvpn /etc/sabai
 		mv /etc/config/sabai /configs
@@ -119,8 +121,8 @@ make_filesystems() {
 				if [ "$REVERT_IN_PROGRESS" != "1" ]; then
 					# save new system config
 					[ -d "/configs/system_$BOOT_ENTRY" ] || mkdir /configs/system_$BOOT_ENTRY
-					cp -r /etc/config /configs/system_$BOOT_ENTRY
-					cp -r /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
+					cp -fR /etc/config /configs/system_$BOOT_ENTRY
+					cp -fR /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 || _copy_config 0
 				else			
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 || _copy_config 1
