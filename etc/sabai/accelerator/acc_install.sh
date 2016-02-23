@@ -16,6 +16,8 @@ sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc
 sed -i "s/option hostname 'SabaiOpen'/option hostname 'vpna'/" $TOPDIR/files/etc/config/network
 sed -i '5,8d' $TOPDIR/files/etc/rc.local
 echo "echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp" >> $TOPDIR/files/etc/rc.local
+echo ". /etc/init.d/dropbear enable" >> $TOPDIR/files/etc/rc.local
+echo ". /etc/init.d/dropbear start" >> $TOPDIR/files/etc/rc.local
 
 # copy and rm sh
 mv $TOPDIR/files/etc/init.d/sabaifs_release $TOPDIR/files/etc/init.d/sabaifs
