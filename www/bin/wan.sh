@@ -15,8 +15,10 @@ _dhcp(){
 	done
 	uci set network.wan.proto="$(uci get $config_file.wan.proto)";
 	uci set network.wan.mtu="$(uci get $config_file.wan.mtu)";
-	uci set network.wan.macaddr="$(uci get $config_file.wan.mac)";
+	uci set network.wan.macaddr="$(uci get $config_file.wan.macaddr)";
 	uci set network.wan.dns="$(uci get $config_file.wan.dns)";
+	uci set network.wan.hostname="$(uci get $config_file.wan.hostname)";
+	uci set system.@system[0].hostname="$(uci get $config_file.wan.hostname)";
 	uci commit
 	ifconfig $(uci get network.wan.ifname) up
 	if [ $action = "update" ]; then
@@ -41,8 +43,10 @@ _static(){
 	uci set network.wan.netmask="$(uci get $config_file.wan.netmask)";
 	uci set network.wan.gateway="$(uci get $config_file.wan.gateway)";
 	uci set network.wan.mtu="$(uci get $config_file.wan.mtu)";
-	uci set network.wan.mac="$(uci get $config_file.wan.mac)";
+	uci set network.wan.macaddr="$(uci get $config_file.wan.macaddr)";
 	uci set network.wan.dns="$(uci get $config_file.wan.dns)";
+	uci set network.wan.hostname="$(uci get $config_file.wan.hostname)";
+        uci set system.@system[0].hostname="$(uci get $config_file.wan.hostname)";
 	uci commit;
 	ifconfig $(uci get network.wan.ifname) up;
 	if [ $action = "update" ]; then

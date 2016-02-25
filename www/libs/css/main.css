@@ -265,6 +265,11 @@ input {
 	border-width: 0; 
 	border-radius: 0 8px 8px 0; 
 }
+.radioSwitch > li:only-child {  
+        border-width: 0;
+        border-radius: 8px 8px 8px 8px;
+}
+
 
  /* radioSwitch END */
 
@@ -300,12 +305,16 @@ input {
 }
 
 .radioSwitchH > li:first-child {
-        border-radius: 8px 8px 0 0; }
+        border-radius: 8px 8px 0 0; 
+}
 .radioSwitchH > li:last-child {
         border-width: 0;
         border-radius: 0px 0px 8px 8px;
 }
-
+.radioSwitchH > li:only-child {
+        border-width: 0;
+        border-radius: 8px 8px 8px 8px;
+}
  /* radioSwitchH END */
 
 

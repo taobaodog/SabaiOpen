@@ -14,6 +14,19 @@ if (isset($_POST['switch'])) {
 	$conf=trim($_POST['conf']);
 }
 
+function fixFile(){
+	// Removing extra windows charachters
+	$ovpn_file=file_get_contents("/etc/sabai/openvpn/ovpn.current");
+	if( strpos($ovpn_file,$_GET[';explicit-exit-notify']) == false ) {
+	$ovpn_file_fixed=str_replace(
+			array("explicit-exit-notify", "receive-dns"),
+			array(";explicit-exit-notify", ";receive-dns"),
+			$ovpn_file
+	);
+	file_put_contents("/etc/sabai/openvpn/ovpn.current",$ovpn_file_fixed);
+	}
+}
+
 function newfile(){
  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
   $file=preg_replace("/[^a-zA-Z0-9.]/", "_", $file);
@@ -43,6 +56,7 @@ function newfile(){
    file_put_contents("/etc/sabai/usr/ovpn","{ file: '', res: { sabai: false, msg: 'OpenVPN file failed.' } }");
   }
  }
+ fixFile();
  header("Location: /?panel=vpn&section=openvpnclient");
 }
 
@@ -54,13 +68,7 @@ $password=$_REQUEST['VPNpassword'];
   file_put_contents("/etc/sabai/openvpn/auth-pass",$name ."\n");
   file_put_contents("/etc/sabai/openvpn/auth-pass",$password, FILE_APPEND);
   exec("sed -ir 's/auth-user-pass.*$/auth-user-pass \/etc\/sabai\/openvpn\/auth-pass/g' /etc/sabai/openvpn/ovpn.current");
-  // Removing extra windows charachters
-  $ovpn_file=file_get_contents("/etc/sabai/openvpn/ovpn.currentr");                                                                                     
-  if( strpos($ovpn_file,$_GET[';explicit-exit-notify']) !== false ) {                    
-        exec("sed -i 's/explicit-exit-notify\ 2/\;explicit-exit-notify\ 2/g' /etc/sabai/openvpn/ovpn.currentr");     
-        exec("sed -i 's/receive-dns/\;receive-dns/g' /etc/sabai/openvpn/ovpn.currentr");                       
-  }
-  exec("cat /etc/sabai/openvpn/ovpn.currentr | sed 's/^M//g' > /etc/sabai/openvpn/ovpn.current");
+  fixFile();
   echo "res={ sabai: true, msg: 'OpenVPN configuration saved.', reload: true };";
  }else{
   echo "res={ sabai: false, msg: 'Invalid configuration.' };";

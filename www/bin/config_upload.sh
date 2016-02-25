@@ -66,37 +66,51 @@ for i in $CONFIG_SECTIONS; do
 				/www/bin/wan.sh update
 				/www/bin/lan.sh update
 			;;
+			tor)
+				echo "in TOR"
+			;;
 			vpn) 
 				echo "in vpn" 
 				old_proto=$(uci get sabai.vpn.proto)
 				proto=$(uci get sabai-new.vpn.proto)
-				if [ "$old_proto" = "pptp"] && [ "$proto" = "pptp" ]; then
-					#stop all vpn connections
-					/www/bin/pptp.sh stop update
-					#start pptp 
-					/www/bin/pptp.sh start update
-				elif [ "$old_proto" = "pptp"] && [ "$proto" = "ovpn" ]; then
-					cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename
-					cp $ovpn_config /etc/sabai/openvpn/ovpn.current
-					cp $ovpn_msg /etc/sabai/openvpn/ovpn
-					/www/bin/ovpn.sh start
-				elif [ "$old_proto" = "ovpn"] && [ "$proto" = "ovpn" ]; then
-					#stop all vpn connections         
-					/www/bin/ovpn.sh stop
-					cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename                  
-					cp $ovpn_config /etc/sabai/openvpn/ovpn.current   
-					cp $ovpn_msg /etc/sabai/openvpn/ovpn
-					/www/bin/ovpn.sh start
-				elif [ "$old_proto" = "ovpn"] && [ "$proto" = "pptp" ]; then
-					/www/bin/ovpn.sh stop
-					/www/bin/ovpn.sh start update
-				else
-					/www/bin/ovpn.sh stop
-					cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename
-					cp $ovpn_config /etc/sabai/openvpn/ovpn.current
-					cp $ovpn_msg /etc/sabai/openvpn/ovpn 
-					/www/bin/pptp.sh stop update
-				fi
+				case "$old_proto" in
+					ovpn)
+						/www/bin/ovpn.sh stop
+					;;
+					pptp)
+						/www/bin/pptp.sh stop update
+					;;
+					tor)
+						/www/bin/tor.sh off
+					;;
+					none)
+						logger "No VPN is running before update."
+					;;
+				esac				
+				case "$proto" in
+					ovpn)
+						cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename
+						cp $ovpn_config /etc/sabai/openvpn/ovpn.current
+						cp $ovpn_msg /etc/sabai/openvpn/ovpn
+						/www/bin/ovpn.sh start
+					;;
+					pptp)
+						/www/bin/pptp.sh start update
+					;;
+					tor)
+						echo "in tor" >> /tmp/.restart_service
+						logger "TOR will be restarted."
+					;;
+					none)
+						/www/bin/ovpn.sh stop
+						cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename
+						cp $ovpn_config /etc/sabai/openvpn/ovpn.current
+						cp $ovpn_msg /etc/sabai/openvpn/ovpn
+						/www/bin/pptp.sh stop update
+						/www/bin/tor.sh off
+						logger "No VPN will be started after update."
+					;;
+				esac
 				echo "vpn" >> /tmp/.etc_service
 			;;
 			dns) 
@@ -178,6 +192,8 @@ for i in $SERVICES; do
         fi
 done
 
+mv /etc/config/sabai-new /configs/sabai
 rm -f /tmp/.restart_services
 
-mv /etc/config/sabai-new /configs/sabai
+#restart tor 
+[ $(echo $SERVICES | grep tor) ] && /www/bin/tor.sh tun
