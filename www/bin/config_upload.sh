@@ -66,6 +66,9 @@ for i in $CONFIG_SECTIONS; do
 				/www/bin/wan.sh update
 				/www/bin/lan.sh update
 			;;
+			tor)
+				echo "in TOR"
+			;;
 			vpn) 
 				echo "in vpn" 
 				old_proto=$(uci get sabai.vpn.proto)
