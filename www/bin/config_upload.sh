@@ -47,30 +47,30 @@ for i in $CONFIG_SECTIONS; do
 		uci show sabai-new.$i | awk -F. '{$1=""; print $0}' > /tmp/$i.new
 		cmp /tmp/$i.orig /tmp/$i.new
 		if [ "$i" = "vpn" ] && [ $? = 0 ]; then
-			cmp /etc/sabai/openvpn/ovpn.current $ovpn_config
+			[ -e "/etc/sabai/openvpn/ovpn.current" ] && cmp /etc/sabai/openvpn/ovpn.current $ovpn_config
 		fi
 		if [ $? != 0 ]; then
-			echo "config $i differ"
+			logger "config $i differ"
 			case "$i" in
 			lan) 
-				echo "in lan" 
+				logger "in lan" 
 				/www/bin/lan.sh update
 			;;
 			dhcp) 
-				echo "in dhcp" 
+				logger "in dhcp" 
 				/www/bin/lan.sh update
 				/www/bin/dhcp.sh update	
 			;;
 			wan) 
-				echo "in wan"
+				logger "in wan"
 				/www/bin/wan.sh update
 				/www/bin/lan.sh update
 			;;
 			tor)
-				echo "in TOR"
+				logger "in TOR"
 			;;
 			vpn) 
-				echo "in vpn" 
+				logger "in vpn" 
 				old_proto=$(uci get sabai.vpn.proto)
 				proto=$(uci get sabai-new.vpn.proto)
 				case "$old_proto" in
@@ -103,9 +103,11 @@ for i in $CONFIG_SECTIONS; do
 					;;
 					none)
 						/www/bin/ovpn.sh stop
-						cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename
-						cp $ovpn_config /etc/sabai/openvpn/ovpn.current
-						cp $ovpn_msg /etc/sabai/openvpn/ovpn
+						if [ -e "$ovpn_config" ]; then 
+							cp $ovpn_filename /etc/sabai/openvpn/ovpn.filename
+							cp $ovpn_config /etc/sabai/openvpn/ovpn.current
+							cp $ovpn_msg /etc/sabai/openvpn/ovpn
+						fi
 						/www/bin/pptp.sh stop update
 						/www/bin/tor.sh off
 						logger "No VPN will be started after update."
@@ -114,51 +116,51 @@ for i in $CONFIG_SECTIONS; do
 				echo "vpn" >> /tmp/.etc_service
 			;;
 			dns) 
-				echo "in dns"
+				logger "in dns"
 				/www/bin/wan.sh update
 			;;
 			time) 
-				echo "in time"
+				logger "in time"
 				/www/bin/time.sh update
 			;;
 			firewall) 
-				echo "in firewall"
+				logger "in firewall"
 				/www/bin/firewall.sh update
  			;;
 			dmz)
-				echo "in dmz"
+				logger "in dmz"
 				/www/bin/dmz.sh update
 			;;
 			upnp)
-				echo "in upnp"
+				logger "in upnp"
 				/www/bin/upnp.sh update
 			;;
 			pf)
-				echo "in pf"
+				logger "in pf"
 				/www/bin/portforwarding.sh update
 			;;
 			wlradio0)
-				echo "in wlradio0"
+				logger "in wlradio0"
 				/www/bin/wl.sh update 0
 			;;
 			wlradio1)
-				echo "in wlradio1"
+				logger "in wlradio1"
 				/www/bin/wl.sh update 1
 			;;
 			loopback)
-				echo "loopback" >> /tmp/.etc_services
+				logger "loopback" >> /tmp/.etc_services
 			;;
 			general)
-				echo "general" >> /tmp/.etc_service
+				logger "general" >> /tmp/.etc_service
 			;;
 			dmz)
-				echo "dmz" >> /tmp/.etc_service
+				logger "dmz" >> /tmp/.etc_service
 			;;
 			proxy)
-				echo "proxy" >> /tmp/.etc_service
+				logger "proxy" >> /tmp/.etc_service
 			;;
 			dhcphost)
-				echo "dhcphost" >> /tmp/.etc_service
+				logger "dhcphost" >> /tmp/.etc_service
 			;;
 			esac
 		fi
@@ -166,20 +168,20 @@ for i in $CONFIG_SECTIONS; do
 done
 
 if [ ! -e /tmp/.restart_services ] && [ ! -e /tmp/.etc_service ]; then
-	echo "Nothing to update in config files" 
+	logger "Nothing to update in config files" 
 	exit 0
 elif [ ! -e /tmp/.restart_services ] && [ -e /tmp/.etc_service ]; then
-	echo "Copying new config . . ."
+	logger "Copying new config . . ."
 else
 	SERVICES=`sort -u /tmp/.restart_services`
-	echo "SERVICES TO RESTART : $SERVICES"
+	logger "SERVICES TO RESTART : $SERVICES"
 fi
 
 
 #restart affected services
 for i in $SERVICES; do
-        echo "checking section $i"
-        echo "restart $i service to apply new config settings"
+        logger "checking section $i"
+        logger "restart $i service to apply new config settings"
         if [ $i = "time" ]; then
 	        /etc/init.d/ntpd restart
 	elif [ $i = "network" ]; then

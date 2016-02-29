@@ -23,6 +23,7 @@
 		#echo "listen-address=$ip"> /etc/dnsmasq.conf
 		#echo "bind-interfaces" >> /etc/dnsmasq.conf
 		/etc/init.d/uhttpd restart
+		/etc/init.d/dropbear restart
 		#/etc/init.d/dnsmasq restart
 	}
 }
