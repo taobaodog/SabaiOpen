@@ -15,11 +15,11 @@ if(isset($_POST['loadFile'])) {
 		case "sabai":
 			$date = exec("date '+%B %d' | tr -d ' ' ");
 			$File = '/configs/'.$file_name.$date;
+			exec("cp /configs/$name /configs/$name$date");
 			if (file_exists("/etc/sabai/openvpn/ovpn.current")) {
 				exec("cp /etc/sabai/openvpn/ovpn.current /configs/ovpn_backup/ovpn.config_$name$date");
 				exec("cp /etc/sabai/openvpn/ovpn /configs/ovpn_backup/ovpn.msg_$name$date");
 				exec("cp /etc/sabai/openvpn/ovpn /configs/ovpn_backup/ovpn.filename_$name$date");
-				exec("cp /configs/$name /configs/$name$date");
 				$config="/configs/ovpn_backup/ovpn.config_$name$date";                          
 				$msg="/configs/ovpn_backup/ovpn.msg_$name$date";                                
 				$ovpn_filename="/configs/ovpn_backup/ovpn.filename_$name$date";
