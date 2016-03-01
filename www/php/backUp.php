@@ -7,7 +7,7 @@ if(isset($_POST['newName'])) {
 		echo "false";
 	} else {
 		exec("cp /configs/sabai /configs/backup_$file_name");
-		if ( 0 == filesize("/etc/sabai/openvpn/ovpn.filename")) {
+		if ( ! file_exists("/etc/sabai/openvpn/ovpn.current")) {
 			exec("logger BACKUP_msg: No ovpn configuration was backuped.");
 		} else {
 			exec("mkdir /configs/ovpn_backup/");

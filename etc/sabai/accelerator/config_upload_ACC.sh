@@ -44,26 +44,18 @@ for i in $CONFIG_SECTIONS; do
 		logger "section: $i" 
 		uci show sabai.$i | awk -F. '{$1=""; print $0}' > /tmp/$i.orig
 		uci show sabai-new.$i | awk -F. '{$1=""; print $0}' > /tmp/$i.new
-		diff="$(cmp /tmp/$i.orig /tmp/$i.new)"
-		if [ "$i" = "vpn" ] && [ $? = 0 ]; then
+		cmp /tmp/$i.orig /tmp/$i.new
+		diff=$?
+		if [ "$i" = "vpn" ] && [ $diff = 0 ]; then
 			[ -e "/etc/sabai/openvpn/ovpn.current" ] && cmp /etc/sabai/openvpn/ovpn.current $ovpn_config
+			diff=$?
 		fi
-		if [ "$diff" ] || [ $? != 0 ]; then
+		if [ $diff != 0 ]; then
 			logger "config $i differ"
 			case "$i" in
-			lan) 
-				logger "in lan" 
-				/www/bin/lan.sh update
-			;;
-			dhcp) 
-				logger "in dhcp" 
-				/www/bin/lan.sh update
-				/www/bin/dhcp.sh update	
-			;;
 			wan) 
 				logger "in wan"
 				/www/bin/wan.sh update
-				/www/bin/lan.sh update
 			;;
 			tor)
 				logger "in TOR"
@@ -90,6 +82,8 @@ for i in $CONFIG_SECTIONS; do
 					rm -r /etc/sabai/openvpn/ovpn.filename
 					rm -r /etc/sabai/openvpn/ovpn.current
 					rm -r /etc/sabai/openvpn/ovpn
+					uci set openvpn.sabai.filename="none"
+					uci commit openvpn
 				fi				
 				case "$proto" in
 					ovpn)
@@ -131,45 +125,14 @@ for i in $CONFIG_SECTIONS; do
 				logger "in time"
 				/www/bin/time.sh update
 			;;
-			firewall) 
-				logger "in firewall"
-				/www/bin/firewall.sh update
- 			;;
-			dmz)
-				logger "in dmz"
-				/www/bin/dmz.sh update
-			;;
-			upnp)
-				logger "in upnp"
-				/www/bin/upnp.sh update
-			;;
-			pf)
-				logger "in pf"
-				/www/bin/portforwarding.sh update
-			;;
-			wlradio0)
-				logger "in wlradio0"
-				/www/bin/wl.sh update 0
-			;;
-			wlradio1)
-				logger "in wlradio1"
-				/www/bin/wl.sh update 1
-			;;
 			loopback)
 				logger "loopback" >> /tmp/.etc_services
 			;;
 			general)
 				logger "general" >> /tmp/.etc_service
 			;;
-			dmz)
-				logger "dmz" >> /tmp/.etc_service
-			;;
 			proxy)
 				logger "proxy" >> /tmp/.etc_service
-			;;
-			dhcphost)
-				logger "dhcphost" >> /tmp/.etc_service
-			;;
 			esac
 		fi
 #	rm /tmp/$i.orig /tmp/$i.new 
@@ -192,10 +155,6 @@ for i in $SERVICES; do
         logger "restart $i service to apply new config settings"
         if [ $i = "time" ]; then
 	        /etc/init.d/ntpd restart
-	elif [ $i = "network" ]; then
-                /etc/init.d/$i restart
-		ifup wan
-		ifup wan
         else
         	echo "service $i restart"
 		/etc/init.d/$i restart

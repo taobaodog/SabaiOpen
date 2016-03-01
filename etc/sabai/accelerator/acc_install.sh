@@ -21,6 +21,7 @@ echo ". /etc/init.d/dropbear start" >> $TOPDIR/files/etc/rc.local
 
 # copy and rm sh
 mv $TOPDIR/files/etc/init.d/sabaifs_release $TOPDIR/files/etc/init.d/sabaifs
+mv $TOPDIR/files/etc/sabai/accelerator/config_upload_ACC.sh $TOPDIR/files/www/bin/config_upload.sh
 
 # copy and rm php
 mv $TOPDIR/files/etc/sabai/accelerator/menu.php $TOPDIR/files/www/php/menu.php
