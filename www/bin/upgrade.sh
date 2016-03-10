@@ -74,6 +74,10 @@ uci $UCI_PATH commit sabai
 # disable openvpn autostart
 uci set openvpn.sabai.enabled='0'
 uci commit openvpn
+uci $UCI_PATH set sabai.vpn.proto='none'                                                                 
+uci $UCI_PATH set sabai.vpn.status='none'
+uci $UCI_PATH set sabai.vpn.ip=''                                                                      
+uci $UCI_PATH commit sabai
 
 # Copy current custom config
 [ -e /configs/custom_$CURRENT_KERNEL ] ||  mkdir /configs/custom_$CURRENT_KERNEL

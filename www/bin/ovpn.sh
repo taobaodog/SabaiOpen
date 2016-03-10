@@ -22,6 +22,9 @@ _stop(){
 
 	_clear
 #	/etc/init.d/firewall restart
+	#prevent ovpn start during the boot
+        uci set openvpn.sabai.enabled='0'
+        uci commit openvpn
 	sleep 5
 	logger "Openvpn stopped"
 	_return 1 "OpenVPN stopped."

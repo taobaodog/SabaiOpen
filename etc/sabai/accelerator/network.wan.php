@@ -262,6 +262,7 @@ $.widget("jai.wansetup", {
                 .prop("id","wan_mtu")
                 .prop("name","wan_mtu")
                 .prop("type","text")
+                .prop("readonly","readonly")
             )
           )
         ) //end MTU row
@@ -273,6 +274,7 @@ $.widget("jai.wansetup", {
                 .prop("id","wan_mac")
                 .prop("name","wan_mac")
                 .prop("type","text")
+                .prop("readonly","readonly")
             )
           )
         ) //end Mac row
@@ -296,8 +298,8 @@ $.widget("jai.wansetup", {
     }).maskspinner('value',this.options.conf.mask);
 
 
-    $('#wan_mac').macspinner().macspinner('value',wan.mac);
-    $('#wan_mtu').spinner({ min: 576, max: 1500 }).spinner('value',wan.mtu);
+    $('#wan_mac').val(wan.mac);
+    $('#wan_mtu').val(wan.mtu);
     $('#wan_gateway').ipspinner().ipspinner('value',wan.gateway);
     $('#wan_mask').maskspinner().maskspinner('value',wan.mask);
     $('#wan_ip').ipspinner().ipspinner('value',wan.ip);

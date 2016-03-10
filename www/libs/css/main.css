@@ -602,6 +602,11 @@ text-decoration: none;
 color: blue;
 }
 
+#goToWiki {
+text-decoration: none;
+color: blue;
+}
+
 #helpArea {
  	position: relative;
 	float:right;
