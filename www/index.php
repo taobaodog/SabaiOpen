@@ -12,6 +12,25 @@
 <script>
 var hidden,hide,f,oldip='',logon=false,info=null;
 
+function cancelLogin(){
+	E('username').value = "";
+	E('password').value = "";
+	init();
+}
+
+function okLogin(){
+	var userName=$("#username").val();
+	var userPass=$("#password").val();
+	
+	if( userName =='' || userPass ==''){
+		$('input[type="text"],input[type="password"]').css("border","2px solid red");
+		$('input[type="text"],input[type="password"]').css("box-shadow","0 0 3px red");
+		alert("Please fill all fields !!!");
+	} else {
+		//$.post("login.php",{ 'name': userName, pass: userPass}
+	}
+}
+
 function setUpdate(res){
 			if(info) oldip = info.vpn.ip; 
 			eval(res); 
@@ -30,15 +49,28 @@ function getUpdate(ipref){
 	});
 }
 
-function init(){ 
-   <?php if (file_exists('/etc/sabai/stat/ip') && file_get_contents("/etc/sabai/stat/ip") != '') {
-	   echo "donde = $.parseJSON('" . strstr(file_get_contents("/etc/sabai/stat/ip"), "{") . "');\n";
-	   echo "for(i in donde){E('loc'+i).innerHTML = donde[i];}"; } ?>
-	   getUpdate();
-	   setInterval (getUpdate, 5000); 
-	   setInterval (setUpdate, 5000);
-	   $('#status').addClass('active')
-	 }
+function init() { 
+	$(document).ready(function() {
+		$("#backdrop").hide();
+    	$("#login").dialog({
+    		autoOpen: true,
+    		modal: true,
+    	    resizable: false,
+    	    draggable: false,
+    		buttons:{ 
+					"Cancel": {
+		            	text: "Cancel",
+		            	click: function() { cancelLogin(); }
+		          	},
+					"OK": {
+						text: "OK",
+    		            click: function() { okLogin(); }
+    		          }
+    		    	}
+        });
+   	});
+}
+
 
 function toggleHelpSection() {
 	$( "#helpClose").show();
@@ -74,6 +106,25 @@ $(function(){
 
 </script>
 </head><body onload='init()'>
+<div hidden="true" id="login" title="Authentification required">Please insert username and password to login.
+    <form id="auth" method="post" enctype="multipart/form-data" >
+		<table>
+            <tr>
+                <td>User Name:</td>
+                <td>
+                    <input id="username" name="username" type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <input id="password" name="password" type="password" />
+                </td>
+            </tr>
+        </table>
+    </form>
+		</div>
+			
 <br>
 <div id="backdrop">
 	<?php include('php/menu.php'); ?>

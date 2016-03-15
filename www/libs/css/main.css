@@ -1042,3 +1042,8 @@ textarea {
 .deleteDNS{
 	color: #4DA5E0; 
 }
+
+.ui-dialog-titlebar-close {                                         
+  visibility: hidden;                                                                                        
+}  
+
