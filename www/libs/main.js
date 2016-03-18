@@ -180,6 +180,9 @@ $.peekaboo = $.fn.peekaboo = function(test){
 function showSubMenu(){ $( "#sub"+ $(this).attr("id") ).slideToggle(500); }
 
 $(function(){
+ if(E('panel').value =='auth') {
+	 panel=E('panel').value;
+ } else {
  if(panel==""){ panel = "network"; section = "wan"; };
  $("#mainTitle").append(" - "+$(".pageTitle").html());
  $(".subMenu").hide();
@@ -187,6 +190,7 @@ $(function(){
  $("#submenu_"+ panel).show();
  $("#menu_"+ panel +((section)?("_"+ section):"") ).addClass("buttonSelected");
  $.peekaboo();
+ }
 });
 
 //ipv4 address validation from https://gist.github.com/bcoughlan/2649187
