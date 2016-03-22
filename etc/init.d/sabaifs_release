@@ -16,6 +16,8 @@ _copy_config() {
 	fi
         [ -h "/etc/config/sabai" ] || ln -s /configs/sabai /etc/config/sabai
         [ -h /www/configs ] || ln -s /configs /www/configs
+	echo $2 > /etc/version
+	uci -c /configs set sabai.general.version="$2"
 }
 
 create_partitions() {
@@ -78,6 +80,8 @@ make_filesystems() {
 		mv /etc/config/sabai /configs
 		ln -s /configs/sabai /etc/config/sabai
 		ln -s /configs/ /www/configs
+		version="$(uci get sabai.general.version)"
+		echo $version > /etc/version
 		echo "SABAI:> Configuration Sabai is allocated."
         else
 		logger "SABAI:> Filesystems already created"
@@ -119,13 +123,15 @@ make_filesystems() {
 				mount -t ext4 /dev/sda6 /configs
 
 				if [ "$REVERT_IN_PROGRESS" != "1" ]; then
+					version="$(uci get sabai.general.version)"
 					# save new system config
 					[ -d "/configs/system_$BOOT_ENTRY" ] || mkdir /configs/system_$BOOT_ENTRY
 					cp -fR /etc/config /configs/system_$BOOT_ENTRY
 					cp -fR /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
-					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 || _copy_config 0
-				else			
-					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 || _copy_config 1
+					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 $version || _copy_config 0 $version
+				else
+					version="$(cat /etc/version)"			
+					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 $version || _copy_config 1 $version
 				fi
 				logger "SABAI:> Configuration Sabai is allocated."
 			else
