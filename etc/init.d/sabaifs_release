@@ -20,6 +20,26 @@ _copy_config() {
 	uci -c /configs commit sabai
 }
 
+_reset() {
+	first_boot="$(head -n 1 /etc/sabai/sys_reset)"
+	last_boot="$(tail -1 /etc/sabai/sys_reset)"
+	diff=$(( $last_boot - $first_boot ))
+
+	if [ $diff -gt 300 ]; then
+		# reset curr partition to factory
+		# set default pass
+		pass="sabaipass123"             
+		logger "<<<-------- FACTORY RESET PROCEDURE -------->>>"
+		echo "<<<-------- FACTORY RESET PROCEDURE -------->>>" > /dev/kmsg
+		echo "root:$pass" | chpasswd 
+		echo "admin:$pass" | chpasswd
+		/www/bin/reset.sh     
+	else                          
+		# clear chache        
+		> /etc/sabai/sys_reset
+	fi
+}
+
 create_partitions() {
 	CMD=$( ls /dev/sda5 )
         if [ $? = 0 ]; then
@@ -155,5 +175,6 @@ start_service() {
         make_filesystems
         mount -t ext4 /dev/sda5 /mnt
 	logger "BOOT FINISHED"
+	[ $(grep -c "." /etc/sabai/sys_reset) -eq 5 ] && _reset
 }
 
