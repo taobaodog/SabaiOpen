@@ -82,6 +82,7 @@ make_filesystems() {
 		ln -s /configs/ /www/configs
 		version="$(uci get sabai.general.version)"
 		echo $version > /etc/version
+		touch /etc/sabai/sys_reset
 		echo "SABAI:> Configuration Sabai is allocated."
         else
 		logger "SABAI:> Filesystems already created"

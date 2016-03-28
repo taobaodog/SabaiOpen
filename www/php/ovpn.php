@@ -17,7 +17,7 @@ if (isset($_POST['switch'])) {
 function fixFile(){
 	// Removing extra windows charachters
 	$ovpn_file=file_get_contents("/etc/sabai/openvpn/ovpn.current");
-	if( strpos($ovpn_file,$_GET[';explicit-exit-notify']) == false ) {
+	if( strpos($ovpn_file,$_GET[';explicit-exit-notify']) == "FALSE" ) {
 	$ovpn_file_fixed=str_replace(
 			array("explicit-exit-notify", "receive-dns"),
 			array(";explicit-exit-notify", ";receive-dns"),
