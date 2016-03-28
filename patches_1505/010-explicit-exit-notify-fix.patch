@@ -4,7 +4,7 @@
  	option comp_lzo			"yes"
  	option verb			"3"
          option mssfix			"1420"
-+	option explicit-exit-notify     "2"
++	option explicit_exit_notify     "2"
  
  #
  # Routed point-to-point client
@@ -12,7 +12,7 @@
  	option nobind			"1"
  	option comp_lzo			"yes"
  	option verb			"3"
-+	option explicit-exit-notify     "2"
++	option explicit_exit_notify     "2"
  
  #
  # Routed multi-client server
@@ -20,7 +20,7 @@
  	option comp_lzo			"yes"
  	option verb			"3"
          option mssfix			"1420"
-+	option explicit-exit-notify     "2"
++	option explicit_exit_notify     "2"
  
  #
  # Routed client
@@ -28,7 +28,7 @@
  	option verb			"3"
  	option reneg_sec		"0"
  	option float			"1"
-+	option explicit-exit-notify     "2"
++	option explicit_exit_notify     "2"
  
  #
  # Multi-client ethernet bridge server
@@ -36,7 +36,7 @@
  	option comp_lzo			"yes"
  	option verb			"3"
          option mssfix			"1420"
-+	option explicit-exit-notify     "2"
++	option explicit_exit_notify     "2"
  
  #
  # Ethernet bridge client
@@ -44,5 +44,5 @@
  	option verb			"3"
  	option reneg_sec		"0"
  	option float			"1"
-+	option explicit-exit-notify	"2"
++	option explicit_exit_notify	"2"
  

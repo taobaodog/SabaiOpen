@@ -16,7 +16,6 @@ _copy_config() {
 	fi
         [ -h "/etc/config/sabai" ] || ln -s /configs/sabai /etc/config/sabai
         [ -h /www/configs ] || ln -s /configs /www/configs
-	echo $2 > /etc/version
 	uci -c /configs set sabai.general.version="$2"
 	uci -c /configs commit sabai
 }
@@ -83,6 +82,7 @@ make_filesystems() {
 		ln -s /configs/ /www/configs
 		version="$(uci get sabai.general.version)"
 		echo $version > /etc/version
+		touch /etc/sabai/sys_reset
 		echo "SABAI:> Configuration Sabai is allocated."
         else
 		logger "SABAI:> Filesystems already created"
