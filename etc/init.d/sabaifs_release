@@ -154,6 +154,7 @@ make_filesystems() {
 					version="$(cat /etc/version)"			
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 $version || _copy_config 1 $version
 				fi
+				touch /etc/sabai/sys_reset
 				logger "SABAI:> Configuration Sabai is allocated."
 			else
 				logger "SABAI:> Upgrade failed. Fallback to old kernel"

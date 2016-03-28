@@ -110,7 +110,7 @@ function setPass(){
 }
 </script>
 </head><body onload='init()'>
-<div hidden="true" id="login" title="Authentification required">Please insert username and password to login.
+<div hidden="true" id="login" title="Authentication required">Please insert username and password to login.
     <form id="auth" method="post" enctype="multipart/form-data" >
 		<table>
             <tr>
