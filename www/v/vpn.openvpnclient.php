@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=vpn&section=openvpnclient";
+	header( "Location: $url" );     
+}
+?>
 <!--Sabai Technology - Apache v2 licence
     Copyright 2015 Sabai Technology -->
 	<script type='text/javascript'>

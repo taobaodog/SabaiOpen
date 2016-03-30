@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=administration&section=status";
+	header( "Location: $url" );     
+}
+?>
 <div class='pageTitle'>Network: Status</div>
 <!--	TODO:
 

@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=administration&section=about";
+	header( "Location: $url" );     
+}
+?>
 <div class='pageTitle'>About</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>About SabaiOpen</span>

@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=diagnostics&section=nslookup";
+	header( "Location: $url" );     
+}
+?>
 <form id='fe'>
 <div class='pageTitle'>Diagnostics: NS Lookup</div>
 <!-- 

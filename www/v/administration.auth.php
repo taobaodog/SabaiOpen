@@ -5,7 +5,7 @@ if (isset($_SESSION['login'])){
 		$url = "/index.php?panel=network&section=wankilroy";
 		header( "Location: $url" );     
 	}                                       
-}                                               
+}                                              
 include("$_SERVER[DOCUMENT_ROOT]/php/libs.php");
 ?>
 <!DOCTYPE html>

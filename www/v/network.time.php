@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=network&section=time";
+	header( "Location: $url" );     
+}
+?>
 <!--  TODO:
 Sync time and zone with computer time/zone
 -->

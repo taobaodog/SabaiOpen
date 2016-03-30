@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=network&section=wan";
+	header( "Location: $url" );     
+}
+?>
 <!--  TODO:
 WAN PPPoE { username, password, options, mode/interval } and IPv6
 DDNS: { ip, interval, services }

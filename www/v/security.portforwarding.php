@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=security&section=portforwarding";
+	header( "Location: $url" );     
+}
+?>
 <form id="fe">
   <input type='hidden' id='pftable' name='pftable'>
   
