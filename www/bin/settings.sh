@@ -28,8 +28,8 @@ _halt(){
 
 _updatepass(){
 	pass=$(cat /tmp/hold)
-	echo "root:$pass" | chpasswd
-        echo "admin:$pass" | chpasswd
+	echo "root:$pass" | chpasswd -m
+        echo "admin:$pass" | chpasswd -m
 	rm /tmp/hold
 	_return 1 "Password Changed"
 }

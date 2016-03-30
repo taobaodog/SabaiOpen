@@ -1,3 +1,13 @@
+<?php
+session_start();                                           
+if (isset($_SESSION['login'])){                                    
+	if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+		$url = "/index.php?panel=network&section=wankilroy";
+		header( "Location: $url" );     
+	}                                       
+}                                               
+include("$_SERVER[DOCUMENT_ROOT]/php/libs.php");
+?>
 <!DOCTYPE html>
 <!--Sabai Technology - Apache v2 licence
     copyright 2014 Sabai Technology -->
@@ -5,9 +15,6 @@
 <link rel="stylesheet" type="text/css" href="/libs/jqueryui.css">
 <link rel="stylesheet" type="text/css" href="/libs/jai-widgets.css">
 <link rel="stylesheet" type="text/css" href="/libs/css/main.css">
-<?php 
-include("$_SERVER[DOCUMENT_ROOT]/php/libs.php");
-?>
 <script>
 
 function init() { 
@@ -18,10 +25,6 @@ function init() {
     	    resizable: false,
     	    draggable: false,
     		buttons:{ 
-					"Cancel": {
-		            	text: "Cancel",
-		            	click: function() { cancelLogin(); }
-		          	},
 					"OK": {
 						text: "OK",
     		            click: function() { okLogin(); }
@@ -31,22 +34,18 @@ function init() {
    	});
 }
 
-function resetPass() {
-	$(document).ready(function() {
-		$("#reset").dialog({
-    		autoOpen: true,
-    		modal: true,
-    	    resizable: false,
-    	    draggable: false,
-    		buttons:{ 
-					"OK": {
-						text: "OK",
-    		            click: function() { setPass(); }
-    		          }
-    		    	}
-        });
-   	});
-}
+$('#login').on('keypress', function(e) {
+	 var code = (e.keyCode ? e.keyCode : e.which);
+	 if(code == 13) {
+		 okLogin();
+	 }
+});
+
+$(document).keypress(function(e) {
+    if(e.which == 13) {
+    	okLogin();
+    }
+});
 
 function cancelLogin(){
 	E('username').value = "";
@@ -68,9 +67,7 @@ function okLogin(){
 				if (data.indexOf("incorrect") >=0) {
 					alert(data);
 				} else if (data.indexOf("reset") >=0) {
-					alert("You can reset your password.");
-					$("#login").dialog('close');
-					resetPass();
+					alert("You can reset your password with Hard reset procedure.");
 				} else {
 					//start session
 					$("#login").dialog('close');
@@ -83,31 +80,6 @@ function okLogin(){
 	}
 }
 
-function setPass(){
-	var newPass_1=$("#pass_1").val();
-	var newPass_2=$("#pass_2").val();
-	
-	if( newPass_1 =='' || newPass_2 ==''){
-		$('input[type="text"],input[type="password"]').css("border","2px solid red");
-		$('input[type="text"],input[type="password"]').css("box-shadow","0 0 3px red");
-		alert("Please fill all fields !!!");
-	} else if ( newPass_1 != newPass_2 ) {
-		$('input[type="text"],input[type="password"]').css("border","2px solid blue");
-		$('input[type="text"],input[type="password"]').css("box-shadow","0 0 3px blue");
-		alert("Passwords differ.");
-	} else {
-		$.post("resetPass.php",{ 'pass': newPass_1} )
-		.done(function(data) {
-			alert(data);
-			$("#reset").dialog('close');
-			window.location.href = "/";
-		})
-		.fail(function(data) {
-			alert("Password changing is FAILED.");
-		})
-	} 
-
-}
 </script>
 </head><body onload='init()'>
 <div hidden="true" id="login" title="Authentication required">Please insert username and password to login.
