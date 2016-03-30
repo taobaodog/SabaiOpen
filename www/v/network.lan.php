@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=network&section=lan";
+	header( "Location: $url" );     
+}
+?>
 <!-- TODO:
 WINS?
 ADD VALIDATION

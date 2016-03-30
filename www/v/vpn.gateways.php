@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=vpn&section=gateways";
+	header( "Location: $url" );     
+}
+?>
 <!--
  DHCP Leases
  ARP List

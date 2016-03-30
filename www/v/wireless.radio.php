@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=wireless&section=radio";
+	header( "Location: $url" );     
+}
+?>
 <div class='pageTitle'>Wireless: Radio</div>
 <!--	TODO: align td widths-->
 <form id="fe">

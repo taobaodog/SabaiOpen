@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=diagnostics&section=logs";
+	header( "Location: $url" );     
+}
+?>
 <style type='text/css'>
 
 .shortInput { width: 2.5em; }

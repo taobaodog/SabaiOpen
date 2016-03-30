@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=security&section=upnp";
+	header( "Location: $url" );     
+}
+?>
 <form id="fe">
 <div class='pageTitle'>Security: UPnP</div>
 

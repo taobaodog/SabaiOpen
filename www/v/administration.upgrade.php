@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=administration&section=upgrade";
+	header( "Location: $url" );     
+}
+?>
 <form id='fe' method="post" enctype="multipart/form-data">
 <input type='hidden' name='version' id='_version'>
 <input type='hidden' id='act' name='act'>

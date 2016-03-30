@@ -25,14 +25,15 @@ _reset() {
 	last_boot="$(tail -1 /etc/sabai/sys_reset)"
 	diff=$(( $last_boot - $first_boot ))
 
-	if [ $diff -gt 300 ]; then
+	if [ $diff -lt 600 ]; then
 		# reset curr partition to factory
 		# set default pass
 		pass="sabaipass123"             
 		logger "<<<-------- FACTORY RESET PROCEDURE -------->>>"
 		echo "<<<-------- FACTORY RESET PROCEDURE -------->>>" > /dev/kmsg
-		echo "root:$pass" | chpasswd 
-		echo "admin:$pass" | chpasswd
+		echo "root:$pass" | chpasswd -m 
+		echo "admin:$pass" | chpasswd -m
+		> /etc/sabai/sys_reset
 		/www/bin/reset.sh     
 	else                          
 		# clear chache        

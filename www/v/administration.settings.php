@@ -1,4 +1,10 @@
-<?php $proxystatus = exec("uci get sabai.proxy.status"); ?>
+<?php 
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
+	$url = "/index.php?panel=administration&section=settings";
+	header( "Location: $url" );
+}
+$proxystatus = exec("uci get sabai.proxy.status"); 
+?>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>Settings</div>

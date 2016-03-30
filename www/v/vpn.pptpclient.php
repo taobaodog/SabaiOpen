@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=vpn&section=pptpclient";
+	header( "Location: $url" );     
+}
+?>
 <!DOCTYPE html>
 <html>
 <!--Sabai Technology - Apache v2 licence
