@@ -7,7 +7,7 @@ action=$1
 status=$(uci get sabai.vpn.status)
 proto=$(uci get sabai.vpn.proto)
 device=$(uci get system.@system[0].hostname)
-
+start_time="$(date '+%H:%M')"
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };";
 	exit 0;
@@ -21,11 +21,10 @@ _stop(){
 	fi
 
 	_clear
-#	/etc/init.d/firewall restart
+	/etc/init.d/firewall restart
 	#prevent ovpn start during the boot
         uci set openvpn.sabai.enabled='0'
         uci commit openvpn
-	sleep 5
 	logger "Openvpn stopped"
 	_return 1 "OpenVPN stopped."
 }
@@ -48,7 +47,6 @@ _start(){
 	sleep 10
 
 	_stat
-	[ "$(uci get sabai.vpn.status)" = "Connected" ] && [ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
 }
 
 _save(){
@@ -116,7 +114,7 @@ _config(){
 
 	# check if log file is set
 	[ -e /var/log/ovpn.log ] || touch /var/log/ovpn.log
-	if [ ! "$(cat /etc/sabai/openvpn/ovpn.current | grep log)" ]; then
+	if [ ! "$(cat /etc/sabai/openvpn/ovpn.current | grep log-)" ]; then
 		echo -e "\n log-append '$(uci get openvpn.sabai.log)'" >> /etc/sabai/openvpn/ovpn.current 
 		(cat /etc/sabai/openvpn/ovpn.current | grep verb) || echo "verb 3" >> /etc/sabai/openvpn/ovpn.current
 	fi
@@ -137,7 +135,10 @@ _clear(){
 	uci commit firewall                                                                         
 	uci $UCI_PATH set sabai.vpn.proto=none                                                     
 	uci $UCI_PATH set sabai.vpn.status=none
+	uci $UCI_PATH set sabai.vpn.dns='0'
 	uci $UCI_PATH commit sabai                                                                  
+	uci delete dhcp.@dnsmasq[0].server
+	uci commit dhcp
 	/etc/init.d/openvpn stop                                                                    
 	/etc/init.d/openvpn disable
 }
@@ -159,14 +160,43 @@ _stat(){
 	ifconfig > /tmp/check
 	if [ ! "$(cat /tmp/check | grep tun0)" ]; then
 		uci $UCI_PATH set sabai.vpn.status=Disconnected
+		uci $UCI_PATH commit sabai
 		logger "OpenVPN did not start. Please check your configuration."
 		_return 1 "OpenVPN did not start. Please check your configuration."
 	else
 		uci $UCI_PATH set sabai.vpn.status=Connected
+		uci $UCI_PATH commit sabai
+
+		[ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
+		
 		logger "Openvpn started."
 		_return 1 "OpenVPN started."
 	fi
+}
+
+_dns_fix(){
+	log_line_1="$(awk '/OpenVPN 2.3.6/{ print NR; }' /var/log/ovpn.log | tail -1)"
+	log_line_2="$(awk '/Sequence Completed/{ print NR; }' /var/log/ovpn.log | tail -1)"
+
+	check="$(cat /var/log/ovpn.log | awk '{if((NR>'$log_line_1')&&(NR<'$log_line_2')) print}' | grep DNS)"
+
+	if [ "$check" ]; then
+		tun_dns_1="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | grep -v 10. | awk 'FNR == 1 {print}')"
+		tun_dns_2="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | grep -v 10. | awk 'FNR == 2 {print}')"
+
+		if [ "$tun_dns_1" !=  "$tun_dns_2" ]; then
+			iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_2"
+			uci add_list dhcp.@dnsmasq[0].server="$tun_dns_2"
+		fi
+		iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_1"
+		uci add_list dhcp.@dnsmaddsq[0].server="$tun_dns_1"
+		uci commit dhcp
+		uci $UCI_PATH set sabai.vpn.dns='1'
+	else
+		uci $UCI_PATH set sabai.vpn.dns='0'
+	fi
 	uci $UCI_PATH commit sabai
+	logger "DNS for VPN was set."
 }
 
 _log() {
@@ -180,8 +210,9 @@ case $action in
 	stop)	_stop	;;
 	update) _start  ;;
 	save)	_save	;;
-	clear)  _clear_all  ;;
+	clear)  _clear_all;;
 	config) _config	;;
 	check) 	_stat	;;
+	dns)	_dns_fix;;
 	log)	_log	;;
 esac

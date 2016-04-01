@@ -17,7 +17,7 @@ if (isset($_POST['switch'])) {
 function fixFile(){
 	// Removing extra windows charachters
 	$ovpn_file=file_get_contents("/etc/sabai/openvpn/ovpn.current");
-	if( strpos($ovpn_file,$_GET[';explicit-exit-notify']) == "FALSE" ) {
+	if( strpos($ovpn_file,';explicit-exit-notify') == false ) {
 	$ovpn_file_fixed=str_replace(
 			array("explicit-exit-notify", "receive-dns"),
 			array(";explicit-exit-notify", ";receive-dns"),
@@ -56,7 +56,7 @@ function newfile(){
    file_put_contents("/etc/sabai/usr/ovpn","{ file: '', res: { sabai: false, msg: 'OpenVPN file failed.' } }");
   }
  }
- fixFile();
+ 
  header("Location: /?panel=vpn&section=openvpnclient");
 }
 
@@ -91,13 +91,16 @@ switch ($act){
     exec("sh /www/bin/ovpn.sh clear 2>&1");
     echo "res={ sabai: true, msg: 'OpenVPN file removed.', reload: true };";
   break;
-  case "newfile": newfile(); break;
+  case "newfile": newfile(); fixFile(); break;
   case "save": savefile(); break;
   case "log": exec("/www/bin/ovpn.sh log") ;
 		echo (file_exists("/var/log/ovpn_web.log") ?  str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/var/log/ovpn_web.log")) : "No log."); 
   		break;  
   case "check": 
   	$line=exec("sh /www/bin/ovpn.sh $act");
+  	if( strpos($line,'started.') == true ) {
+  		exec("sh /www/bin/ovpn.sh dns");
+  	}
   	echo $line; break;
 }
 
