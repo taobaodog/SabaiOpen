@@ -28,7 +28,6 @@ _stop(){
 	fi
 	
 	uci delete network.vpn
-	uci set network.vpn.proto=none
 	uci commit network
 	uci delete firewall.vpn
 	forward=$(uci show firewall | grep forwarding | grep dest=\'vpn\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                           
@@ -38,9 +37,6 @@ _stop(){
         	echo -e "\n"
 	fi                                                                                                                                     
 	uci commit firewall
-	uci $UCI_PATH set sabai.vpn.status=none
-	uci $UCI_PATH set sabai.vpn.proto=none
-	uci $UCI_PATH commit sabai
 	if [ $config_act = "update" ]; then
 		echo "network" >> /tmp/.restart_services   
 		echo "firewall" >> /tmp/.restart_services
@@ -49,6 +45,9 @@ _stop(){
 		sleep 5
 		/etc/init.d/network restart
 	fi
+	uci $UCI_PATH set sabai.vpn.status=none
+	uci $UCI_PATH set sabai.vpn.proto=none
+	uci $UCI_PATH commit sabai
 	logger "PPTP is stopped."
 	_return 0 "PPTP is stopped."
 }
