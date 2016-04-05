@@ -189,7 +189,7 @@ _dns_fix(){
 			uci add_list dhcp.@dnsmasq[0].server="$tun_dns_2"
 		fi
 		iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_1"
-		uci add_list dhcp.@dnsmaddsq[0].server="$tun_dns_1"
+		uci add_list dhcp.@dnsmasq[0].server="$tun_dns_1"
 		uci commit dhcp
 		uci $UCI_PATH set sabai.vpn.dns='1'
 	else

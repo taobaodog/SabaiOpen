@@ -47,6 +47,7 @@ _stop(){
 	fi
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.proto=none
+	uci $UCI_PATH set sabai.vpn.ip=none
 	uci $UCI_PATH commit sabai
 	logger "PPTP is stopped."
 	_return 0 "PPTP is stopped."
@@ -144,6 +145,30 @@ _clear(){
         logger "pptp cleared and firewall restarted."
 }
 
+_dns_fix() {
+	log_line_1="$(awk '/starts/{ print NR; }' /var/log/messages | tail -1)"
+	log_line_2="$(awk '/connected/{ print NR; }' /var/log/messages | tail -1)"
+
+	check="$(cat /var/log/messages | awk '{if((NR>'$log_line_1')&&(NR<'$log_line_2')) print}' | grep "primary   DNS")"
+
+	if [ "$check" ]; then
+		tun_dns_1="$(cat /var/log/messages | grep 'primary   DNS address' | tail -1 | awk -F]: '{print $2}' | awk '{print $4}')"
+		tun_dns_2="$(cat /var/log/messages | grep 'secondary DNS address' | tail -1 | awk -F]: '{print $2}' | awk '{print $4}')"
+		
+		if [ "$tun_dns_1" !=  "$tun_dns_2" ]; then
+			iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_2"
+			uci add_list dhcp.@dnsmasq[0].server="$tun_dns_2"
+		fi
+		iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_1"
+		uci add_list dhcp.@dnsmasq[0].server="$tun_dns_1"
+		uci commit dhcp
+		logger "DNS for VPN was set."
+	else
+		logger "DNS is default."
+	fi
+}
+
+
 _stat(){
 	ifconfig > /tmp/check
 	if [ ! "$(cat /tmp/check | grep pptp)" ]; then
@@ -164,5 +189,6 @@ case $act in
     start)  _start  ;;
     stop)   _stop   ;;
     status) _stat   ;;
+    dns)    _dns_fix ;;
     clear)  _clear  ;;
 esac

@@ -7,7 +7,10 @@ $filter = array("<", ">","="," (",")",";","/","|");
 if (isset($_POST['check'])) {
 	$act=$_POST['check'];
 	$res=exec("sh /www/bin/pptp.sh $act");
-    echo $res;
+	if( strpos($res,'connected.') == true ) {
+  		exec("sh /www/bin/pptp.sh dns");
+  	}
+	echo $res;
 } else if (isset($_POST['switch']))	{
 	$act=$_POST['switch'];
 	$res=exec("sh /www/bin/pptp.sh $act");
