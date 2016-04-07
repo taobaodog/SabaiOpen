@@ -150,7 +150,7 @@ function PPTPstart(){
 		if(res!=""){
 			eval(res);
 			hideUi(res.msg);
-			setTimeout(function(){hideUi("Checking PPTP status...")},5000);
+			setTimeout(function(){hideUi("Checking PPTP status...")},10000);
 			setTimeout(check,10000);
 		}
 	});
