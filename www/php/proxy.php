@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology, LLC
+// Copyright 2016 Sabai Technology, LLC
 
 header('Content-Type: application/javascript');
 $filter = array("<", ">","="," (",")",";","/","|");

@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology
+// Copyright 2016 Sabai Technology
 $UCI_PATH="-c /configs";
  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
   exec("uci set openvpn.sabai.filename=$file");

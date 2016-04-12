@@ -1,6 +1,6 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
-# Copyright 2015 Sabai Technology
+# Copyright 2016 Sabai Technology
 if [ $1 != "update" ]; then
 	status=$1
 	destination=$2

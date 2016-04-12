@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology, LLC
+// Copyright 2016 Sabai Technology, LLC
 $UCI_PATH="-c /configs";
 
 exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);

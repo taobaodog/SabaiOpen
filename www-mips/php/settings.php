@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology
+// Copyright 2016 Sabai Technology
  header("Content-type: text/plain");
 $UCI_PATH="-c /etc/config"; 
 if(isset($_REQUEST['act']) && $_REQUEST['act']!="")

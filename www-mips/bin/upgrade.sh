@@ -1,6 +1,6 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
-# Copyright 2015 Sabai Technology
+# Copyright 2016 Sabai Technology
 
 echo "SABAI:> Simulate OS upgrade"
 TMP_FILE='/tmp/upgrade/tmp.txt'

@@ -1,6 +1,6 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
-# Copyright 2015 Sabai Technology
+# Copyright 2016 Sabai Technology
 
 # logFile=/tmp/update.$(head -c8 /dev/urandom | md5sum | tr -d " -" | head -c8).log
 

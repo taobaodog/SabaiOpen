@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology
+// Copyright 2016 Sabai Technology
 
 # Currently this file just accumulates all the files included in it
 # Later, we may want to cache them or do some other wizardry

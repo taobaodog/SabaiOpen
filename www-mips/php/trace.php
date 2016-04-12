@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology 
+// Copyright 2016 Sabai Technology 
 // TODO: validate numbers and IP address
 
   header('Content-type: text/ecmascript');

@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology
+// Copyright 2016 Sabai Technology
 	$filter = array("<", ">","="," (",")",";","/","|");
 	$_REQUEST['ns_domain']=str_replace ($filter, "#", $_REQUEST['ns_domain']);
 	$lookupAddress=$_REQUEST['ns_domain'];

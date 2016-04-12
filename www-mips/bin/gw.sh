@@ -1,6 +1,6 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
-# Copyright 2015 Sabai Technology
+# Copyright 2016 Sabai Technology
 UCI_PATH="-c /etc/config"
 
 # send messages to log file but clear log file on each new setup of gw.sh
