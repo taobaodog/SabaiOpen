@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology
+// Copyright 2016 Sabai Technology
 $UCI_PATH="-c /configs";
 // Bring over variables from the UPNP page
 $enable=trim($_POST['enableToggle']);

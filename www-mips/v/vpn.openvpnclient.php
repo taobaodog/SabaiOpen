@@ -1,5 +1,5 @@
 <!--Sabai Technology - Apache v2 licence
-    Copyright 2015 Sabai Technology -->
+    Copyright 2016 Sabai Technology -->
 	<script type='text/javascript'>
 
 		var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
@@ -206,6 +206,6 @@
         </div>
     </div>
     <p>
-        <div id='footer'>Copyright © 2015 Sabai Technology, LLC</div>
+        <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
     </p>
 </body>

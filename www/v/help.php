@@ -156,7 +156,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     Settings, UPNP Ports
   </div>
 </div>
-<div id='footer'> Copyright © 2015 Sabai Technology, LLC </div>
+<div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
 
 
 <script type='text/ecmascript' src='/libs/jeditable.js'></script>

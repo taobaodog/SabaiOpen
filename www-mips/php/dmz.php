@@ -1,6 +1,6 @@
 <?php 
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology
+// Copyright 2016 Sabai Technology
 $UCI_PATH="-c /etc/config";
 $filter = array("<", ">","="," (",")",";","/","|");
 $_REQUEST['dmzToggle']=str_replace ($filter, "#", $_REQUEST['dmzToggle']);

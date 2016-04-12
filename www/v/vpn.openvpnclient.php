@@ -5,7 +5,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 }
 ?>
 <!--Sabai Technology - Apache v2 licence
-    Copyright 2015 Sabai Technology -->
+    Copyright 2016 Sabai Technology -->
 	<script type='text/javascript'>
 
 		var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
@@ -212,6 +212,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </div>
     </div>
     <p>
-        <div id='footer'>Copyright © 2015 Sabai Technology, LLC</div>
+        <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
     </p>
 </body>

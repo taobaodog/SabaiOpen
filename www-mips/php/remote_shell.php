@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology
+// Copyright 2016 Sabai Technology
  
   define ('APP_NAME', 'phpRemoteShell');
   define ('APP_VERSION', '0.5.2');

@@ -1,6 +1,6 @@
 #!/bin/sh
 # Sabai Technology - Apache v2 licence
-# Copyright 2015 Sabai Technology
+# Copyright 2016 Sabai Technology
 
 UCI_PATH="-c /configs" 
 # this script allows 2 variables to be passed to it, as documented below:

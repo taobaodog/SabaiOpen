@@ -1,7 +1,7 @@
 #!/usr/bin/php-cli
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology, LLC
+// Copyright 2016 Sabai Technology, LLC
     foreach (file("/tmp/dhcp.leases") as $line) {
         $fields = explode(" ", $line);
         $data[] = Array($fields[0], $fields[1], $fields[2], $fields[3]);

@@ -40,7 +40,7 @@ DDNS: { ip, interval, services }
     </div>
     </div>
     <p>
-        <div id='footer'>Copyright © 2015 Sabai Technology, LLC</div>
+        <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
 <script>

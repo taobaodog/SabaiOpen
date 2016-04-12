@@ -1,6 +1,6 @@
 <?php
 // Sabai Technology - Apache v2 licence
-// Copyright 2015 Sabai Technology
+// Copyright 2016 Sabai Technology
 function remove($arg) {                                              
         if (file_exists("/configs/ovpn_backup/ovpn.filename_$arg")) {
                 exec("rm /configs/ovpn_backup/ovpn.filename_$arg");  
