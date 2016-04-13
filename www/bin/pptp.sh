@@ -49,6 +49,8 @@ _stop(){
 	uci $UCI_PATH set sabai.vpn.proto=none
 	uci $UCI_PATH set sabai.vpn.ip=none
 	uci $UCI_PATH commit sabai
+	uci delete dhcp.@dnsmasq[0].server
+	uci commit dhcp
 	logger "PPTP is stopped."
 	_return 0 "PPTP is stopped."
 }

@@ -26,6 +26,15 @@ function listFiles($path, $prefix = '', $sublist = false, $pathName = ''){
 	if($sublist) echo "$prefix</li>\n";
 }
 
+function kernelLog(){
+	if (file_exists("/configs/log/kernel_log")) {
+		exec("dmesg >> /configs/log/kernel_log");
+	} else {
+		exec("mkdir /configs/log/");
+		exec("dmesg > /configs/log/kernel_log");
+	}
+}
+
 $act=array_key_exists('act', $_REQUEST) ? $_REQUEST['act'] : null;
 $log=array_key_exists('log', $_REQUEST) ? $_REQUEST['log'] : null;
 $detail=array_key_exists('detail', $_REQUEST) ? $_REQUEST['detail'] : null;
@@ -53,11 +62,18 @@ switch ($act) {
 	case 'grep':
 		passthru( $isZipped ? "gunzip -c $validPath | $act $detail" : "$act $detail $validPath" );
 	break;
+	case 'dmesg':
+		kernelLog();
+		readfile("/configs/log/kernel_log");
+	break;
 	case 'download':
 		if (file_exists("/var/log/messages")) {
 			exec("mkdir /configs/log/");
-			exec("cat /var/log/messages > /configs/log/syslog");
-			$pathToFile = "/configs/log/syslog";
+			exec("cat /var/log/messages >> /configs/log/syslog");
+			kernelLog();
+			exec("rm /configs/logs.tar");
+			exec("tar -cvf /configs/logs.tar /configs/log/syslog /configs/log/kernel_log");
+			$pathToFile = "/configs/logs.tar";
 		} else {
 			$pathToFile = "false";
 		}

@@ -158,8 +158,10 @@ function PPTPstart(){
 
 function check(){
 	$.post('php/pptp.php',{'check': 'status'}, function(res){
-		if(res!=""){
+		if(res.indexOf("disconnected") < 0){
 			PPTPresp(res);
+		} else {
+			setTimeout(check,10000);
 		}
 		showUi();
 	});
