@@ -38,10 +38,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                     </tr>
                 </tbody>
             </table>
-            <input type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>
-            <input type='button' value='Stop' onclick='PPTPcall("stop")'>
-            <input type='button' value='Save' onclick='PPTPcall("save")'>
-            <input type='button' value='Clear' onclick='PPTPcall("clear")'> <span id='messages'>&nbsp;</span>
+            <input id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>
+            <input id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>
+            <input id='save' type='button' value='Save' onclick='PPTPcall("save")'>
+            <input id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'> <span id='messages'>&nbsp;</span>
             <br>
         </div>
         </form>
@@ -80,6 +80,11 @@ function setUpdate(res){
             for(i in info.vpn){ 
                 E('vpn'+i).innerHTML = info.vpn[i]; 
             }
+	    if (info.vpn.status == "Connected" && info.vpn.type == 'PPTP') {
+		E('clear').hidden = true;;
+	    } else {
+		E('clear').hidden = false;
+	    }
 }
 
 function getUpdate(ipref){ 

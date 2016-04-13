@@ -69,6 +69,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 			for(i in info.vpn){ 
 		 		E('vpn'+i).innerHTML = info.vpn[i]; 
 		 	} 
+
+			if (info.vpn.status == "Connected" && info.vpn.type == 'OpenVPN') {
+				E('clear').hidden = true;
+	    		} else {
+				E('clear').hidden = false;
+			}
 		}
 
 		function getUpdate(ipref){ 
@@ -189,7 +195,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 							<input type='hidden' id='_act' name='act' value=''>
 							<input type='button' value='Start' onclick='OVPNsave("start");'>
 							<input type='button' value='Stop' onclick='OVPNsave("stop");'>
-							<input type='button' value='Clear' onclick='OVPNsave("clear");'></span>
+							<input id='clear' type='button' value='Clear' onclick='OVPNsave("clear");'></span>
 							<input type='button' value='Show Log' id='logButton' onclick='toggleLog();'>
 							<input type='button' value='Edit Config' id='editButton' onclick='toggleEdit();'>
 						</div>
