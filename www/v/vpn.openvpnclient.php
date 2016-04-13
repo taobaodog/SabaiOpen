@@ -9,6 +9,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	<script type='text/javascript'>
 
 		var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
+		var ovpnTry = 0;
 
 		function setLog(res){ 
 			E('response').value = res; 
@@ -150,10 +151,18 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 		function check(){
 			E("_act").value='check';
 			$.post('php/ovpn.php', $("#fe").serialize(), function(res){
-				if(res!=""){
+				if(res.indexOf("not start") < 0){
 					OVPNresp(res);
+					showUi();
+				} else {
+					if (ovpnTry < 3) {
+						setTimeout(check,10000);
+						ovpnTry++;
+					} else {
+						OVPNresp(res);
+						showUi();
+					}
 				}
-				showUi();
 			});
 		}
 

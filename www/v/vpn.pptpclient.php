@@ -60,7 +60,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <script type='text/javascript'>
     var hidden, hide, f,oldip='',limit=10,info=null,ini=false;
-
+    var pptpTry = 0;
     pptp = {<?php
         $user=trim(exec("uci get sabai.vpn.username"));
         $pass=trim(exec("uci get sabai.vpn.password"));
@@ -160,10 +160,16 @@ function check(){
 	$.post('php/pptp.php',{'check': 'status'}, function(res){
 		if(res.indexOf("disconnected") < 0){
 			PPTPresp(res);
+			showUi();
 		} else {
-			setTimeout(check,10000);
+			if (pptpTry < 3) {
+				setTimeout(check,10000);
+				pptpTry++;
+			} else {
+				PPTPresp(res);
+				showUi();
+			}
 		}
-		showUi();
 	});
 }
 
