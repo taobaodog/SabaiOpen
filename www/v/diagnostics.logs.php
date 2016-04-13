@@ -93,6 +93,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	 		<option value='all'>View all</option>
 	 		<option value='head'>View first</option>
 	 		<option value='tail' selected>View last</option>
+			<option value='dmesg'>View kernel log</option>
 	 		<option value='grep'>Search for</option>
 	 		<option value='download'>Download file</option>
 	 	</select>

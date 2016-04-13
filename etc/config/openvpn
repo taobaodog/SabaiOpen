@@ -5,5 +5,6 @@ config openvpn 'sabai'
 	option enabled '1'
 	option config '/etc/sabai/openvpn/ovpn.current'
 	option dev 'tun'
+	option explicit_exit_notify '2'
 
 

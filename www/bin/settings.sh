@@ -6,9 +6,12 @@ act=$1
 
 _hostname(){
 	name=$(uci get sabai.general.hostname)
-	uci $UCI_PATH set system.@system[0].hostname="$(uci get sabai.general.hostname)";
-	uci $UCI_PATH commit sabai
+	uci set system.@system[0].hostname="$(uci get sabai.general.hostname)"
+	uci commit system
+	uci set network.wan.hostname="$(uci get sabai.general.hostname)"
+	uci commit network
 	echo $(uci get system.@system[0].hostname) > /proc/sys/kernel/hostname
+	/etc/init.d/network restart
 }
 
 _return(){
