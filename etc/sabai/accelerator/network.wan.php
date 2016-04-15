@@ -187,6 +187,7 @@ function WANresp(res){
   } 
 }
 
+
 function spinnerConstraint(spinner){
   var curv = $(spinner).ipspinner('value');
   if( curv < $(spinner).ipspinner('option','min') ) 
@@ -218,13 +219,13 @@ $.widget("jai.wansetup", {
               .append( $(document.createElement('option'))
                 .prop("value", "dhcp")
                 .prop("text", 'DHCP')
-              )
+		)
             )
 
           )
         ) // end proto tr
       ) // end first tbody
-      .append( $(document.createElement('tbody')).addClass("wan_proto wan_proto-static") 
+      .append( $(document.createElement('tbody'))
         .append( $(document.createElement('tr') )
           .append( $(document.createElement('td')).html('IP') )
           .append( $(document.createElement('td') )
@@ -233,31 +234,19 @@ $.widget("jai.wansetup", {
                 .prop("id","wan_ip")
                 .prop("name","wan_ip")
                 .prop("type","text")
+		.prop("readonly","readonly")
+            )
+          )
+	.append( $(document.createElement('td') )
+            .append(
+              $(document.createElement('input'))
+                .prop("id","dhcp_renew")
+                .prop("name","dhcp_renew")
+		.prop("type","button")
+                .prop("value","Update")
             )
           )
         ) // end ip row
-        .append( $(document.createElement('tr') )
-          .append( $(document.createElement('td')).html('Network Mask') )
-          .append( $(document.createElement('td') )
-            .append(
-              $(document.createElement('input'))
-                .prop("id","wan_mask")
-                .prop("name","wan_mask")
-                .prop("type","text")
-            )
-          )
-        ) // end nmask row
-        .append( $(document.createElement('tr') )
-          .append( $(document.createElement('td')).html('Gateway') )
-          .append( $(document.createElement('td') )
-            .append(
-              $(document.createElement('input'))
-                .prop("id","wan_gateway")
-                .prop("name","wan_gateway")
-                .prop("type","text")
-            )
-          )
-        ) // end gateway row
       ) // end 2nd table body
       .append( $(document.createElement('tbody')) 
         .append( $(document.createElement('tr') )
@@ -287,15 +276,6 @@ $.widget("jai.wansetup", {
       ) // end bottom table body
     ) // end table
 
-    // call ipspinner widget
-    $('#wan_ip').ipspinner({
-      min: '0.0.0.1', max: '255.255.255.254',
-      page: Math.pow(2,(32-mask2cidr(this.options.conf.mask))),
-      change: function(event,ui){ 
-        spinnerConstraint(this);
-      }
-    }).ipspinner('value',this.options.conf.ip);
-
     // call maskspinner widget
     $('#wan_mask').maskspinner({
       spin: function(event,ui){ 
@@ -304,16 +284,23 @@ $.widget("jai.wansetup", {
     }).maskspinner('value',this.options.conf.mask);
 
 
+    $('#dhcp_renew').on("click", function(){
+	hideUi("Updating ...");
+	WANcall("update");
+    });
+
     $('#wan_mac').val(wan.mac);
     $('#wan_mtu').val(wan.mtu);
     $('#wan_gateway').ipspinner().ipspinner('value',wan.gateway);
     $('#wan_mask').maskspinner().maskspinner('value',wan.mask);
-    $('#wan_ip').ipspinner().ipspinner('value',wan.ip);
+    $('#wan_ip').val(wan.ip);
     $('#wan_proto').radioswitch({ value: wan.proto, hasChildren: true });
     
     this._super();
   },
 });
+
+
 
 $(function(){
 	//instatiate widgets on document ready
