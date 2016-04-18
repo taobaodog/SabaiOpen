@@ -39,6 +39,7 @@ DDNS: { ip, interval, services }
         	</div>
         </td>
           <div id="editableListDescription">
+          	<span id='dns_stat' color="red"></span><br><br>
             <span class ='xsmallText'>(These are the DNS servers the DHCP server will provide for devices also on the LAN)
             </span><br><br>
           </div>

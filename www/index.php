@@ -28,6 +28,11 @@ function setUpdate(res){
 		 		E('vpn'+i).innerHTML = info.vpn[i]; 
 		 	}
 		 	$('#proxy').text(info.proxy.status);
+
+		 	if (info.vpn.status == "Connected"){
+		 		$('#dns_stat').text("VPN is runnig. Check DNS servers on the status page. ");
+		 	}
+		 	
 }
 
 function getUpdate(ipref){ 
