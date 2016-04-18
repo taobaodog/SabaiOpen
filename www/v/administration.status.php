@@ -43,6 +43,21 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <script>
 var data, fullinfo;
+var dnsraw='<?php
+	$vpn_stat=exec("uci get sabai.vpn.status");
+	$servers=exec("uci get dhcp.@dnsmasq[0].server");
+	if ( ($vpn_stat == 'Connected') &&  ($servers != '') ) {
+		echo "$servers";
+	} else {
+		$servers=exec("cat /tmp/resolv.conf.auto | grep nameserver | awk '{print $2}' | tr '\n' ' ' ");
+    	echo "$servers";
+	}
+    ?>';
+var array = JSON.stringify(dnsraw.split(" "));
+var dnsfin= "{\"servers\"" + ":" + array + "}";
+var dns = $.parseJSON(dnsfin);
+
+
 function getStats(){ 
     $.get("php/status.php", function(data)
       {
@@ -62,9 +77,9 @@ function getStats(){
                     $("#wan_ip").text(fullinfo.wan.ip);
                     $("#wan_subnet").text(fullinfo.wan.subnet);
 		    if (fullinfo.wan.gateway)	{
-                    	$("#wan_gateway").text(fullinfo.wan.gateway);
+				$("#wan_gateway").text(fullinfo.wan.gateway);
 		    }	else 	{
-			$("#wan_gateway").text(fullinfo.sys.gateway);
+				$("#wan_gateway").text(fullinfo.sys.gateway);
 		    }
                     //set lan elements
                     $("#lan_mac").text(fullinfo.lan.mac);
@@ -86,12 +101,12 @@ function getStats(){
                     $("#vpn_status").text(fullinfo.vpn.status);
                     //set proxy elements
                     $("#proxy_status").text(fullinfo.proxy.status);
-                    $("#proxy_port").text(fullinfo.proxy.port);
+                    $("#proxy_port").text(fullinfo.proxy.port);       
                     setTimeout("getStats()",5000);
       });
   };
 $("document").ready(function(){
-    getStats();
+    getStats(); 
     return false;
   });
 
@@ -198,6 +213,12 @@ $.widget("jai.wan_build", {
           .append( $(document.createElement('td')).html('Gateway') 
           )
           .append( $(document.createElement('td')).html('<div id=wan_gateway></div>') 
+          )
+        )
+		.append( $(document.createElement('tr'))
+          .append( $(document.createElement('td')).html('DNS') 
+          )
+          .append( $(document.createElement('td')).html('<div id=dns></div>') 
           )
         )
       ) //end tbody
@@ -362,6 +383,13 @@ $(function(){
  // $('#wireless_build').wireless_build();
   $('#vpn_build').vpn_build();
   $('#proxy_build').proxy_build();
+  
+  for (i=0; i<dns.servers.length; i++){
+  	$("#dns").append( $(document.createElement('tr'))
+  		.append( $(document.createElement('td')).text(dns.servers[i]) 
+      	)
+      )
+  } 
 });
 
 </script>
