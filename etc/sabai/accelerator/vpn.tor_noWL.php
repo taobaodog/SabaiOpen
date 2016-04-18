@@ -29,7 +29,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	<td><div id='torWarn'>Using Tor protects you against a common form of Internet surveillance known as "traffic analysis." Traffic analysis can be used to infer who is talking to whom over a public network. Knowing the source and destination of your Internet traffic allows others to track your behavior and interests.</div></br>
 	<div id='torUse'>Turn on TOR by choosing "Tunnel" and push "Save". It is possible to access TOR feature on proxy port 8080 or by setting accelerator as a gateway on the router.</div>
 	</td>
-	<td><div><a href='https://www.torproject.org/'><img id='torLogo' src='https://media.torproject.org/image/official-images/2011-tor-logo-flat.svg'></a></div> </td>
 </div>
 </table>
     <p>
