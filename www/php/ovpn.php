@@ -19,8 +19,8 @@ function fixFile(){
 	$ovpn_file=file_get_contents("/etc/sabai/openvpn/ovpn.current");
 	if( strpos($ovpn_file,';explicit-exit-notify') == false ) {
 	$ovpn_file_fixed=str_replace(
-			array("explicit-exit-notify", "receive-dns"),
-			array(";explicit-exit-notify", ";receive-dns"),
+			array("explicit-exit-notify", "receive-dns", "crl-verify crl.pem"),
+			array(";explicit-exit-notify", ";receive-dns", ";crl-verify crl.pem"),
 			$ovpn_file
 	);
 	file_put_contents("/etc/sabai/openvpn/ovpn.current",$ovpn_file_fixed);
