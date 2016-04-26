@@ -181,8 +181,13 @@ _dns_fix(){
 	check="$(cat /var/log/ovpn.log | awk '{if((NR>'$log_line_1')&&(NR<'$log_line_2')) print}' | grep DNS)"
 
 	if [ "$check" ]; then
-		tun_dns_1="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | grep -v 10. | awk 'FNR == 1 {print}')"
-		tun_dns_2="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | grep -v 10. | awk 'FNR == 2 {print}')"
+		ip_gateway="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | sed 's/.*route-gateway //' | awk -F, '{print $1}')"
+		ip_curr="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | sed 's/.*ifconfig //' | awk  '{print $1}')"
+		ip_mask="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | sed 's/.*ifconfig //' | awk  '{print $2}')"
+		dns_raw="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | sed s/"$ip_gateway"/""/g | sed s/"$ip_curr"/""/g | sed s/"$ip_mask"/""/g)" 				
+
+		tun_dns_1="$(echo $dns_raw | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | awk 'FNR == 1 {print}')"
+		tun_dns_2="$(echo $dns_raw | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | awk 'FNR == 2 {print}')"
 
 		if [ "$tun_dns_1" !=  "$tun_dns_2" ]; then
 			iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_2"
