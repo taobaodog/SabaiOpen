@@ -27,10 +27,10 @@ DDNS: { ip, interval, services }
         <td>
         	<div>
         		<ul id='dns_servers'>
-        			<li><input type='text' placeholder='DNS 1' name='dns_server1'><img src='/libs/img/delete.gif' height=12 class='dns-delete' ></li>
-        			<li><input type='text' placeholder='DNS 2' name='dns_server2'><img src='/libs/img/delete.gif' height=12 class='dns-delete'></li>
-        			<li><input type='text' placeholder='DNS 3' name='dns_server3'><img src='/libs/img/delete.gif' height=12 class='dns-delete'></li>
-        			<li><input type='text' placeholder='DNS 4' name='dns_server4'><img src='/libs/img/delete.gif' height=12 class='dns-delete'></li>
+        			<li><input type='text' placeholder='DNS 1' name='dns_server1'><a class='dns-delete deleteDNS'>✖</a></li>
+        			<li><input type='text' placeholder='DNS 2' name='dns_server2'><a class='dns-delete deleteDNS'>✖</a></li>
+        			<li><input type='text' placeholder='DNS 3' name='dns_server3'><a class='dns-delete deleteDNS'>✖</a></li>
+        			<li><input type='text' placeholder='DNS 4' name='dns_server4'><a class='dns-delete deleteDNS'>✖</a></li>
         		</ul>
         		<input type='hidden' name='dns_servers[]'>
         		<input type='hidden' name='dns_servers[]'>
@@ -39,6 +39,7 @@ DDNS: { ip, interval, services }
         	</div>
         </td>
           <div id="editableListDescription">
+          	<span id='dns_stat' color="red"></span><br><br>
             <span class ='xsmallText'>(These are the DNS servers the DHCP server will provide for devices also on the LAN)
             </span><br><br>
           </div>
@@ -63,6 +64,9 @@ DDNS: { ip, interval, services }
 </p>
 </form>
 <script>
+
+
+
 var validator;
 $(function() {
     validator = $( "#fe" ).validate({
@@ -184,6 +188,7 @@ function WANresp(res){
   } 
 }
 
+
 function spinnerConstraint(spinner){
   var curv = $(spinner).ipspinner('value');
   if( curv < $(spinner).ipspinner('option','min') ) 
@@ -215,6 +220,14 @@ $.widget("jai.wansetup", {
               .append( $(document.createElement('option'))
                 .prop("value", "dhcp")
                 .prop("text", 'DHCP')
+              )
+			  .append( $(document.createElement('option'))
+                .prop("value", "static")
+                .prop("text", 'Static')
+              )
+              .append( $(document.createElement('option'))
+                .prop("value", "lan")
+                .prop("text", 'LAN')
               )
             )
 
@@ -282,15 +295,6 @@ $.widget("jai.wansetup", {
       ) // end bottom table body
     ) // end table
 
-    // call ipspinner widget
-    $('#wan_ip').ipspinner({
-      min: '0.0.0.1', max: '255.255.255.254',
-      page: Math.pow(2,(32-mask2cidr(this.options.conf.mask))),
-      change: function(event,ui){ 
-        spinnerConstraint(this);
-      }
-    }).ipspinner('value',this.options.conf.ip);
-
     // call maskspinner widget
     $('#wan_mask').maskspinner({
       spin: function(event,ui){ 
@@ -328,7 +332,7 @@ $(function(){
 	
 	
 		
-		$('#dns_servers').find('li').eq(i).find('img').click(function(el){
+		$('#dns_servers').find('li').eq(i).find('a').click(function(el){
 			$(el.target).parent().find('input').val('');
 		});
 	}
