@@ -20,9 +20,8 @@ exec("uci $UCI_PATH set sabai.dhcp.leasetime=\"" . $lease . "\"");
 exec("uci $UCI_PATH set sabai.dhcp.start=\"" . $start . "\"");
 exec("uci $UCI_PATH set sabai.dhcp.limit=\"" . $limit . "\"");
 exec("uci $UCI_PATH  commit sabai");
-exec($command);
+$res=exec($command);
  
 // Send completion message back to UI
-//echo "res={ sabai: true, msg: 'LAN settings applied' }";
-
+echo $res;
 ?>

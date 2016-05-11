@@ -273,11 +273,11 @@ $.widget("jai.dhcpserver", {
     //  $("#dhcpEdit").attr("checked", false)
     //set initial valies for lease/range inputs
     $('#dhcp_lease').spinner({ min: 1, max: 72 });
-    $('#dhcp_lease').spinner('value',24);
-    $('#dhcp_start').spinner('value', 100 );
+    $('#dhcp_lease').spinner('value', dhcp.lease );
+    $('#dhcp_start').spinner('value', dhcp.start );
     
     
-    $('#dhcp_limit').spinner('value', 199 );
+    $('#dhcp_limit').spinner('value', dhcp.limit );
 
 
     // $('#dhcp_lease').spinner('option','disabled', true );
