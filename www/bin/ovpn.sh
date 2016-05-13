@@ -195,11 +195,12 @@ _dns_fix(){
 			uci commit dhcp
 		done
 		uci $UCI_PATH set sabai.vpn.dns='1'
+		logger "DNS for VPN was set."
 	else
 		uci $UCI_PATH set sabai.vpn.dns='0'
+		logger "DNS is default."
 	fi
 	uci $UCI_PATH commit sabai
-	logger "DNS for VPN was set."
 }
 
 _log() {

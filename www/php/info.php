@@ -21,7 +21,7 @@ switch($vo){
  case 'none': $vpn_type='-'; break;
  case 'pptp': 
  	$vpn_type='PPTP'; 
- 	$vpn_ip=exec("ifconfig pptp-vpn | grep inet | awk '{print $2}' | sed 's/addr://g' ");
+ 	$vpn_ip=exec("ifconfig pptp-vpn | grep inet\ addr | awk '{print $2}' | sed 's/addr://g' ");
  	if($vpn_ip) {
  		exec("uci $UCI_PATH set sabai.vpn.ip=$vpn_ip");
  		exec("uci $UCI_PATH set sabai.vpn.status=Connected");
