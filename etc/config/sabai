@@ -39,7 +39,7 @@ config settings 'general'
 	option version_uri 'https://raw.githubusercontent.com/sabaitechnology/SabaiOpen/master/version/'
 	option hostname 'SabaiOpen'
 	option ac_ip '2'
-	option version '3.0.1'
+	option version '3.0.2'
 
 config interface 'dns'
 	option servers '8.8.8.8 4.2.2.2 8.8.4.4 198.6.1.4'
