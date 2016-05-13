@@ -1,6 +1,12 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology, LLC
+error_reporting(0);
+session_start();
+if (!isset($_SESSION['count_vpn'])) {
+		$_SESSION['count_vpn'] = 1;
+}
+
 $UCI_PATH="-c /configs";
 
 exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
@@ -29,6 +35,7 @@ switch($vo){
  	} else {
  		exec("uci $UCI_PATH set sabai.vpn.status=Disconnected");
  		exec("uci $UCI_PATH commit sabai");
+ 		$_SESSION['count_vpn']++;
  	}
  	break;
  case 'l2tp': $vpn_type='L2TP'; break;
@@ -42,6 +49,7 @@ switch($vo){
  	} else {
  		exec("uci $UCI_PATH set sabai.vpn.status=Disconnected");
  		exec("uci $UCI_PATH commit sabai");
+ 		$_SESSION['count_vpn']++;
  	}
  	break;
  	case 'tor':
@@ -58,6 +66,19 @@ $vpn_status=exec("uci get sabai.vpn.status");
 $vpn = ",\n vpn: {\n type: '". $vpn_type ."',
   status: '". (($vpn_type=='-')?'-': $vpn_status) ."',
   ip: '". $vpn_ip ."' \n },";
+
+if ($_SESSION['count_vpn'] == 10) {
+	if ($vpn_type == 'PPTP') {
+		exec("/www/bin/pptp.sh stop");
+		$_SESSION['count_vpn'] = 0;
+	} elseif ($vpn_type='OpenVPN') {
+		exec("/www/bin/ovpn.sh stop");
+		$_SESSION['count_vpn'] = 0;
+	} else {
+		$_SESSION['count_vpn'] = 0;
+	}
+
+}
 
 echo "info = {\n"
 .$wan
