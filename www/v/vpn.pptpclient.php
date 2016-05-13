@@ -70,30 +70,25 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     ?>}
 
 function setUpdate(res){
-            if(info) oldip = info.vpn.ip; 
-            eval(res); 
-            if(oldip!='' && info.vpn.ip==oldip){ 
-                limit--; 
-            }; 
-            if(limit<0) return; 
-
-            for(i in info.vpn){ 
-                E('vpn'+i).innerHTML = info.vpn[i]; 
-            }
-	    if (info.vpn.status == "Connected" && info.vpn.type == 'PPTP') {
-		E('clear').hidden = true;;
-	    } else {
-		E('clear').hidden = false;
-	    }
+    if(info) oldip = info.vpn.ip; 
+    eval(res); 
+    for(i in info.vpn){ 
+        E('vpn'+i).innerHTML = info.vpn[i]; 
+    }
+    if (info.vpn.status == "Connected" && info.vpn.type == 'PPTP') {
+        E('clear').hidden = true;;
+    } else {
+        E('clear').hidden = false;
+    }
 }
 
 function getUpdate(ipref){ 
-            que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
-       $.get('php/get_remote_ip.php', function( data ) {
-         donde = $.parseJSON(data);
-         console.log(donde);
-         for(i in donde) E('loc'+i).innerHTML = donde[i];
-       });
+    que.drop('php/info.php',setUpdate,ipref?'do=ip':null); 
+    $.get('php/get_remote_ip.php', function( data ) {
+        donde = $.parseJSON(data);
+        console.log(donde);
+        for(i in donde) E('loc'+i).innerHTML = donde[i];
+    });
 }
 
 function PPTPresp(res){ 
