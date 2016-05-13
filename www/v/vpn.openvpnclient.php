@@ -61,15 +61,9 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 		function setUpdate(res){ 
 			if(info) oldip = info.vpn.ip; 
 			eval(res); 
-			if(oldip!='' && info.vpn.ip==oldip){ 
-				limit--; 
-			}; 
-			if(limit<0) return; 
-
 			for(i in info.vpn){ 
 		 		E('vpn'+i).innerHTML = info.vpn[i]; 
 		 	} 
-
 			if (info.vpn.status == "Connected" && info.vpn.type == 'OpenVPN') {
 				E('clear').hidden = true;
 	    		} else {

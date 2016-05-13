@@ -20,68 +20,67 @@ _return(){
 	exit 0;
 }
 
+_rm_nw_fw(){
+	proto=$1
+	uci delete network.$proto
+	uci commit network
+	uci delete firewall.$proto
+	forward=$(uci show firewall | grep forwarding | grep dest=\'$proto\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
+	if [ "$forward" != "" ]; then
+		uci delete firewall.@forwarding["$forward"]
+	fi
+	uci commit firewall
+}
+
 _stop(){
 	ifconfig > /tmp/check
-	if [ ! "$(cat /tmp/check | grep pptp)" ]; then
+	if [ ! "$(cat /tmp/check | grep pptp)" ] && [ "$(uci get sabai.vpn.proto)" != "pptp" ]; then
 		logger "No PPTP is running."
 		_return 0 "No PPTP is running."
-	fi
-	
-	uci delete network.vpn
-	uci commit network
-	uci delete firewall.vpn
-	forward=$(uci show firewall | grep forwarding | grep dest=\'vpn\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)                           
-        if [ "$forward" != "" ]; then                                                                                                          
-                uci delete firewall.@forwarding["$forward"]                                                                                    
-        else                                                                                                                                   
-        	echo -e "\n"
-	fi                                                                                                                                     
-	uci commit firewall
-	if [ $config_act = "update" ]; then
-		echo "network" >> /tmp/.restart_services   
-		echo "firewall" >> /tmp/.restart_services
 	else
-		/etc/init.d/firewall restart
-		sleep 5
-		/etc/init.d/network restart
+		_rm_nw_fw vpn
+		if [ $config_act = "update" ]; then
+			echo "network" >> /tmp/.restart_services   
+			echo "firewall" >> /tmp/.restart_services
+		else
+			/etc/init.d/firewall restart
+			sleep 5
+			/etc/init.d/network restart
+		fi
+		uci $UCI_PATH set sabai.vpn.status=none
+		uci $UCI_PATH set sabai.vpn.proto=none
+		uci $UCI_PATH set sabai.vpn.ip=none
+		uci $UCI_PATH set sabai.vpn.dns='0'
+		uci $UCI_PATH commit sabai
+		uci delete dhcp.@dnsmasq[0].server
+		uci commit dhcp
+		logger "DNS is default."
+		logger "PPTP is stopped."
+		_return 0 "PPTP is stopped."
 	fi
-	uci $UCI_PATH set sabai.vpn.status=none
-	uci $UCI_PATH set sabai.vpn.proto=none
-	uci $UCI_PATH set sabai.vpn.ip=none
-	uci $UCI_PATH commit sabai
-	uci delete dhcp.@dnsmasq[0].server
-	uci commit dhcp
-	logger "PPTP is stopped."
-	_return 0 "PPTP is stopped."
 }
 
 _start(){
 	ifconfig > /tmp/check
-	if [ "$(cat /tmp/check | grep pptp)" ]; then
+	if [ "$(cat /tmp/check | grep pptp)" ] && [ "$(uci get sabai.vpn.proto)" = "pptp" ]; then
 	        logger "PPTP is already running."
 	        _return 0 "PPTP is already running."
-	elif [ "$(cat /tmp/check | grep tun0)" ]; then
+	elif [ "$(cat /tmp/check | grep tun0)" ] || [ "$(uci get sabai.vpn.proto)" = "ovpn" ]; then
 		#ensure that openvpn is stopped
 		/www/bin/ovpn.sh stop
 		/etc/init.d/openvpn stop
 		/etc/init.d/openvpn disable
-	#ensure that openvpn settings removed
-		uci delete network.sabai
-		uci delete firewall.ovpn
-		forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
-		if [ "$forward" != ""  ]; then
-			uci delete firewall.@forwarding["$forward"]
-		else
-			echo -e "\n"
-		fi
+		#ensure that openvpn settings removed
 	elif [ "$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')" ]; then
 		/www/bin/tor.sh off
+	elif [ "$(uci get sabai.vpn.proto)" = "pptp" ]; then
+		_rm_nw_fw vpn
 	else
 		logger "No VPN is running."
 	fi
 	#get the pptp settings
-        user=$(uci get $config_file.vpn.username)
-        pass=$(uci get $config_file.vpn.password)
+	user=$(uci get $config_file.vpn.username)
+	pass=$(uci get $config_file.vpn.password)
 	server=$(uci get $config_file.vpn.server)
     #set the network vpn settings
         uci set network.vpn=interface
@@ -125,26 +124,27 @@ _start(){
 }
 
 _clear(){
-        uci delete network.vpn
-        uci delete firewall.vpn
-	uci set network.vpn.proto=none
-        uci commit network
-	uci delete firewall.vpn
-	forward=$(uci show firewall | grep forwarding | grep dest=\'vpn\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
-	if [ "$forward" != "" ]; then                                                                                                          
-                uci delete firewall.@forwarding["$forward"]                                                                                    
-        else                                                                                                                                   
-        	echo -e "\n"
-	fi
-	uci commit firewall
-        uci $UCI_PATH delete sabai.vpn.username          
-        uci $UCI_PATH delete sabai.vpn.password          
-        uci $UCI_PATH delete sabai.vpn.server
-        uci $UCI_PATH set sabai.vpn.status=none
-        uci $UCI_PATH set sabai.vpn.proto=none
+	_rm_nw_fw vpn
+	uci $UCI_PATH delete sabai.vpn.username          
+	uci $UCI_PATH delete sabai.vpn.password          
+ 	uci $UCI_PATH delete sabai.vpn.server
+	uci $UCI_PATH set sabai.vpn.status=none
+	uci $UCI_PATH set sabai.vpn.proto=none
 	uci $UCI_PATH commit sabai
-        /etc/init.d/firewall restart
-        logger "pptp cleared and firewall restarted."
+	check=$(uci show firewall | grep forwarding | grep dest=\'vpn\' | cut -d "[" -f2 | cut -d "]" -f1 | wc -l)
+	echo "$check"
+	if [ "$check" != "0" ]; then
+		i=1
+		while [ $i -le $check ]; do
+			num=$(uci show firewall | grep forwarding | grep dest=\'vpn\' | cut -d "[" -f2 | cut -d "]" -f1 | awk -v i=$i 'NR==$i')
+			uci delete firewall.@forwarding["$num"]
+			uci commit firewall
+			echo "$num"
+			i=$(( $i + 1 ))
+		done
+	fi
+	/etc/init.d/firewall restart
+	logger "pptp cleared and firewall restarted."
 }
 
 _dns_fix() {
@@ -164,10 +164,13 @@ _dns_fix() {
 		iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_1"
 		uci add_list dhcp.@dnsmasq[0].server="$tun_dns_1"
 		uci commit dhcp
+		uci $UCI_PATH set sabai.vpn.dns='1'
 		logger "DNS for VPN was set."
 	else
+		uci $UCI_PATH set sabai.vpn.dns='0'
 		logger "DNS is default."
 	fi
+	uci $UCI_PATH commit sabai
 }
 
 
