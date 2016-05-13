@@ -154,6 +154,7 @@ function toggleDetail(){
 	$('#detailSuffix').html('');
 	switch($('#act').val()){
 		case 'all':
+		case 'dmesg':
 		case 'download':
 			$('#detail').hide();
 		break;

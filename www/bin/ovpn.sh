@@ -179,23 +179,21 @@ _dns_fix(){
 	log_line_2="$(awk '/Sequence Completed/{ print NR; }' /var/log/ovpn.log | tail -1)"
 
 	check="$(cat /var/log/ovpn.log | awk '{if((NR>'$log_line_1')&&(NR<'$log_line_2')) print}' | grep DNS)"
-
 	if [ "$check" ]; then
-		ip_gateway="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | sed 's/.*route-gateway //' | awk -F, '{print $1}')"
-		ip_curr="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | sed 's/.*ifconfig //' | awk  '{print $1}')"
-		ip_mask="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | sed 's/.*ifconfig //' | awk  '{print $2}')"
-		dns_raw="$(cat /var/log/ovpn.log | grep "dhcp-option DNS" | tail -1 | sed s/"$ip_gateway"/""/g | sed s/"$ip_curr"/""/g | sed s/"$ip_mask"/""/g)" 				
+		count="$(echo $check | grep -o 'DNS' | wc -l)"
+		i="1"
+		while [ "$i" -le "$count" ]
+		do
+			#eval "tun_dns_$i=$(echo $check | grep -o 'dhcp.*' | awk -F',' -v i=$i '{print $i}' | awk -F' ' '{print $3}')"
+			tun_dns="$tun_dns $(echo $check | grep -o 'dhcp.*' | awk -F',' -v i=$i '{print $i}' | awk -F' ' '{print $3}')"
+			i=$(( $i + 1 ))
+		done
 
-		tun_dns_1="$(echo $dns_raw | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | awk 'FNR == 1 {print}')"
-		tun_dns_2="$(echo $dns_raw | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | awk 'FNR == 2 {print}')"
-
-		if [ "$tun_dns_1" !=  "$tun_dns_2" ]; then
-			iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_2"
-			uci add_list dhcp.@dnsmasq[0].server="$tun_dns_2"
-		fi
-		iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_1"
-		uci add_list dhcp.@dnsmasq[0].server="$tun_dns_1"
-		uci commit dhcp
+		for i in $tun_dns; do
+			iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$i"
+			uci add_list dhcp.@dnsmasq[0].server="$i"
+			uci commit dhcp
+		done
 		uci $UCI_PATH set sabai.vpn.dns='1'
 	else
 		uci $UCI_PATH set sabai.vpn.dns='0'
