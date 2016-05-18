@@ -39,6 +39,10 @@ _stop(){
 		_return 0 "No PPTP is running."
 	else
 		_rm_nw_fw vpn
+		uci $UCI_PATH set sabai.vpn.status=none
+		uci $UCI_PATH commit sabai
+		uci delete dhcp.@dnsmasq[0].server
+		uci commit dhcp
 		if [ $config_act = "update" ]; then
 			echo "network" >> /tmp/.restart_services   
 			echo "firewall" >> /tmp/.restart_services
@@ -47,13 +51,10 @@ _stop(){
 			sleep 5
 			/etc/init.d/network restart
 		fi
-		uci $UCI_PATH set sabai.vpn.status=none
 		uci $UCI_PATH set sabai.vpn.proto=none
 		uci $UCI_PATH set sabai.vpn.ip=none
 		uci $UCI_PATH set sabai.vpn.dns='0'
 		uci $UCI_PATH commit sabai
-		uci delete dhcp.@dnsmasq[0].server
-		uci commit dhcp
 		logger "DNS is default."
 		logger "PPTP is stopped."
 		_return 0 "PPTP is stopped."
