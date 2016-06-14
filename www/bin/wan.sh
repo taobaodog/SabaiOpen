@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 _set_mac(){
 	macaddr="$(ifconfig eth0 | awk '/HWaddr/ { print $5 }')"
@@ -10,6 +10,7 @@ _set_mac(){
 	uci $UCI_PATH set sabai.wan.macaddr=$macaddr
 	uci $UCI_PATH set sabai.wan.factory_mac=$macaddr
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 }
 
 _factory(){

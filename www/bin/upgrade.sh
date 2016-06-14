@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 echo "SABAI:> Simulate OS upgrade"
 TMP_FILE='/tmp/upgrade/tmp.txt'
@@ -70,6 +70,7 @@ rm /tmp/upgrade/*
 #enable system restore
 uci $UCI_PATH set sabai.general.revert='1'
 uci $UCI_PATH commit sabai
+cp -r /etc/config/sabai /configs/
 
 # disable openvpn autostart
 uci set openvpn.sabai.enabled='0'
@@ -78,6 +79,7 @@ uci $UCI_PATH set sabai.vpn.proto='none'
 uci $UCI_PATH set sabai.vpn.status='none'
 uci $UCI_PATH set sabai.vpn.ip=''                                                                      
 uci $UCI_PATH commit sabai
+cp -r /etc/config/sabai /configs/
 
 # Copy current custom config
 [ -e /configs/custom_$CURRENT_KERNEL ] ||  mkdir /configs/custom_$CURRENT_KERNEL

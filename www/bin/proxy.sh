@@ -2,7 +2,8 @@
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
 
-UCI_PATH="-c /configs" 
+# UCI_PATH="-c /configs"
+UCI_PATH="" 
 # this script allows 2 variables to be passed to it, as documented below:
 # act variable is the action sent into the script
 
@@ -29,10 +30,11 @@ _return(){
 }
 
 _proxystop(){
-   uci $UCI_PATH set sabai.proxy.status="Off"
-   uci $UCI_PATH commit sabai
-   /etc/init.d/privoxy stop
-   _return 1 "Proxy Stopped"
+  uci $UCI_PATH set sabai.proxy.status="Off"
+  uci $UCI_PATH commit sabai
+  cp -r /etc/config/sabai /configs/sabai
+  /etc/init.d/privoxy stop
+  _return 1 "Proxy Stopped"
 }
 
 _proxystart(){
@@ -45,6 +47,7 @@ _proxystart(){
    uci commit privoxy
    uci $UCI_PATH set sabai.proxy.status="On"
    uci $UCI_PATH commit sabai
+   cp -r /etc/config/sabai /configs/sabai
    
    /etc/init.d/privoxy start
    _return 1 "Proxy Started"

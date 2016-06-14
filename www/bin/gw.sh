@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 # send messages to log file but clear log file on each new setup of gw.sh
 #rm /var/log/sabaigw.log; exec 2>&1; exec 1>/var/log/sabaigw.log;
@@ -64,6 +64,7 @@ _start(){
 	if [ "$(uci get sabai.general.ac_ip)" = "" ]; then
 		uci $UCI_PATH set sabai.general.ac_ip=2
 		uci $UCI_PATH commit sabai
+		cp -r /etc/config/sabai /configs/
 	fi
 	# adding route to the accelerator to 2 table 
 	

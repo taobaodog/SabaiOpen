@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 action=$1
 if [ $action = "update" ]; then
         config_file=sabai-new
@@ -13,9 +13,10 @@ location=$(uci get $config_file.time.location)
 
 # Set time on system
 uci $UCI_PATH set sabai.time.timezone="$(cat /www/libs/timezones.data | grep -w "$location" | awk '{print $2}')"
-uci $UCI_PATH commit sabai;
-uci set system.@system[0].timezone="$(uci get $config_file.time.timezone)";
-uci set system.ntp.server="$(uci get $config_file.time.servers)";
+uci $UCI_PATH commit sabai
+cp -r /etc/config/sabai /configs/
+uci set system.@system[0].timezone="$(uci get $config_file.time.timezone)"
+uci set system.ntp.server="$(uci get $config_file.time.servers)"
 uci commit system
 echo $(uci get $config_file.time.timezone) > /etc/TZ
 if [ $action = "update" ]; then

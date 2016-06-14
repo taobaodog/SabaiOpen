@@ -2,7 +2,7 @@
 # Sabai Technology - Apache v2 licence                                                                
 # Copyright 2016 Sabai Technology 
 
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 device="$(uci get system.@system[0].hostname)"
 freq="$(uci get sabai.wlradio0.freq)"
@@ -53,4 +53,5 @@ channel_curr=$(iw dev wlan0 info | grep "channel" | awk '{print $2}')
 uci $UCI_PATH set sabai.wlradio0.channel_freq="$channel_curr"
 uci $UCI_PATH set sabai.wlradio0.channels_qty="$channel_aval"
 uci $UCI_PATH commit sabai
+cp -r /etc/config/sabai /configs/
 	

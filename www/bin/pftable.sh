@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 #convert table to single line json aaData variable
 #calling program has already put table into /tmp/table1
@@ -17,7 +17,7 @@ jsData=$(cat /tmp/table2)
 uci $UCI_PATH set sabai.pf.tablejs="$jsData"
 uci $UCI_PATH set sabai.pf.table="$aaData"
 uci $UCI_PATH commit sabai
-
+cp -r /etc/config/sabai /configs/
 #cleanup
 rm /tmp/table*
 
