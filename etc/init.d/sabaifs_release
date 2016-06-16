@@ -10,11 +10,10 @@ _copy_config() {
 	else
 		rm -r /etc/config
 		rm -r /etc/sabai/openvpn
-        	cp -fR /configs/custom_$1/config /etc
-        	cp -fR /configs/custom_$1/openvpn /etc/sabai
-		mv /etc/config/sabai /configs
+        cp -fR /configs/custom_$1/config /etc
+        cp -fR /configs/custom_$1/openvpn /etc/sabai
+		cp /etc/config/sabai /configs
 	fi
-        [ -h "/etc/config/sabai" ] || ln -s /configs/sabai /etc/config/sabai
         [ -h /www/configs ] || ln -s /configs /www/configs
 	uci -c /configs set sabai.general.version="$2"
 	uci -c /configs commit sabai
@@ -134,11 +133,11 @@ make_filesystems() {
 				# switching between entries requires calling "savedefault" function
 				# on entry, which is going to be used after upgrade
 				sed -i "s/function savedefault/tempstring/g" /mnt/boot/grub/grub.cfg
-                        	sed -i "s/# savedefault/Savedefault/g" /mnt/boot/grub/grub.cfg
-                        	sed -i "s/savedefault/# savedefault/g" /mnt/boot/grub/grub.cfg
-                        	sed -i "s/Savedefault/savedefault/g" /mnt/boot/grub/grub.cfg
+				sed -i "s/# savedefault/Savedefault/g" /mnt/boot/grub/grub.cfg
+				sed -i "s/savedefault/# savedefault/g" /mnt/boot/grub/grub.cfg
+				sed -i "s/Savedefault/savedefault/g" /mnt/boot/grub/grub.cfg
 				sed -i "s/tempstring/function savedefault/g" /mnt/boot/grub/grub.cfg
-                        	umount /dev/sda1
+ 				umount /dev/sda1
 
 				logger "SABAI:> Creating directory configuration' storage."
 				[ -d "/configs" ] || mkdir /configs
