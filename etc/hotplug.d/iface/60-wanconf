@@ -11,10 +11,10 @@
 		uci set network.wan.gateway=$gateway
 		uci commit network
 		[ $(uci -c /configs get sabai.wan.factory_mac) ] || /www/bin/wan.sh set_mac
-		uci -c /configs set sabai.wan.ipaddr=$ip
-		uci -c /configs set sabai.wan.gateway=$gateway
-		uci -c /configs set sabai.wan.netmask=$mask
-		uci -c /configs commit sabai
+		uci set sabai.wan.ipaddr=$ip
+		uci set sabai.wan.gateway=$gateway
+		uci set sabai.wan.netmask=$mask
+		uci commit sabai
 		uci set uhttpd.main.listen_http=$ip':80'
 		uci set uhttpd.main.listen_https=$ip':443'
 		uci commit uhttpd
