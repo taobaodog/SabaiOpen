@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 action=$1
 status=$(uci get sabai.vpn.status)
@@ -61,7 +61,8 @@ _config(){
 		/www/bin/pptp.sh stop
 		uci $UCI_PATH set sabai.vpn.status=Starting
 		uci $UCI_PATH set sabai.vpn.proto=ovpn
-		uci $UCI_PATH commit sabai                                                                           
+		uci $UCI_PATH commit sabai
+		cp -r /etc/config/sabai /configs/sabai                                                                          
 		logger "Vpn stopped and network restarted"                                                                                     
 		sleep 5                                                                                                                        
 	elif [ "$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')" ]; then
@@ -98,6 +99,7 @@ _config(){
 	uci $UCI_PATH set sabai.vpn.status=Started                                                                                             
 	uci $UCI_PATH set sabai.vpn.proto=ovpn                                                                                                 
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/sabai
 
 	# check if log file is set
 	[ -e /var/log/ovpn.log ] || touch /var/log/ovpn.log
@@ -121,7 +123,8 @@ _clear(){
 	uci $UCI_PATH set sabai.vpn.proto=none                                                     
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.dns='0'
-	uci $UCI_PATH commit sabai                                                                  
+	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/sabai
 	uci delete dhcp.@dnsmasq[0].server
 	uci commit dhcp
 	/etc/init.d/openvpn stop                                                                    
@@ -158,11 +161,13 @@ _stat(){
 	if [ ! "$(cat /tmp/check | grep tun0)" ]; then
 		uci $UCI_PATH set sabai.vpn.status=Disconnected
 		uci $UCI_PATH commit sabai
+		cp -r /etc/config/sabai /configs/sabai
 		logger "OpenVPN did not start. Please check your configuration."
 		_return 1 "OpenVPN did not start. Please check your configuration."
 	else
 		uci $UCI_PATH set sabai.vpn.status=Connected
 		uci $UCI_PATH commit sabai
+		cp -r /etc/config/sabai /configs/sabai
 
 		[ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
 		
@@ -197,6 +202,7 @@ _dns_fix(){
 		logger "DNS is default."
 	fi
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/sabai
 }
 
 _log() {

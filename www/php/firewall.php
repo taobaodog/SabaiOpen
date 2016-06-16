@@ -1,7 +1,7 @@
 <?php 
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology, LLC
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 $filter = array("<", ">","="," (",")",";","/","|");
     
 $icmp=str_replace ($filter, "#", $_REQUEST['respondToggle']);
@@ -16,6 +16,7 @@ exec("uci $UCI_PATH set sabai.firewall.multicast=\"" . $multicast . "\"");
 exec("uci $UCI_PATH set sabai.firewall.cookies=\"" . $cookies . "\"");
 exec("uci $UCI_PATH set sabai.firewall.wanroute=\"" . $wanroute . "\"");
 exec("uci $UCI_PATH commit sabai");
+exec("cp -r /etc/config/sabai /configs/");
 
 if ($icmp == '') $icmp="off" ;
 if ($multicast == '') $multicast="off" ;

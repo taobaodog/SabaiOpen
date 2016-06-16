@@ -7,7 +7,7 @@
 mode=$1
 
 #path to config files
-UCI_PATH="-c /configs"
+UCI_PATH=""
 config_file=sabai
 proto=$(uci get sabai.vpn.proto)
 mode_curr=$(uci get sabai.tor.mode)
@@ -50,6 +50,7 @@ _off(){
 	uci $UCI_PATH set sabai.vpn.proto="none"
 	uci $UCI_PATH set sabai.vpn.status="none"
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 
 	logger "TOR turned OFF."
 	_return 0 "TOR turned OFF."
@@ -63,6 +64,7 @@ _ap(){
 	uci $UCI_PATH set sabai.vpn.proto="tor"
 	uci $UCI_PATH set sabai.vpn.status="Anonymity"
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 	uci set wireless.@wifi-iface[0].disabled=0
 	uci set wireless.@wifi-iface[0].mode="$(uci get $config_file.tor.mode)"
 	uci set wireless.@wifi-iface[0].ssid="$(uci get $config_file.wlradio0.ssid)"
@@ -85,7 +87,7 @@ _ap(){
 	echo "DNSListenAddress $(uci get $config_file.tor.ipaddr)" >> /etc/tor/torrc
 	
 	/etc/init.d/firewall reload
-    	/etc/init.d/firewall restart
+    /etc/init.d/firewall restart
 	/etc/init.d/odhcp restart
 	/etc/init.d/dnsmasq restart
 	/etc/init.d/tor enable
@@ -101,6 +103,7 @@ _tun() {
 	uci $UCI_PATH set sabai.vpn.proto="tor"
 	uci $UCI_PATH set sabai.vpn.status="Anonymity"
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 
 	/etc/init.d/tor stop
 
@@ -109,13 +112,13 @@ _tun() {
 	echo "SocksPort 9050" >> /etc/tor/torrc
 	echo "SocksPort $(uci get network.wan.ipaddr):9050" >> /etc/tor/torrc
 	socks_network=$(uci get network.wan.ipaddr | sed 's/.$//')"0/24"
-        echo "SocksPolicy accept $socks_network" >> /etc/tor/torrc
+	echo "SocksPolicy accept $socks_network" >> /etc/tor/torrc
 	echo "SocksPolicy accept 127.0.0.1" >> /etc/tor/torrc
 	echo "SocksPolicy reject *" >> /etc/tor/torrc
 
 	echo -e "\n" >> /etc/tor/torrc
 	echo "RunAsDaemon 1" >> /etc/tor/torrc
-        echo "DataDirectory /var/lib/tor" >> /etc/tor/torrc
+	echo "DataDirectory /var/lib/tor" >> /etc/tor/torrc
 
 	echo -e "\n" >> /etc/tor/torrc
 	echo "CircuitBuildTimeout 30" >> /etc/tor/torrc

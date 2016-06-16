@@ -2,7 +2,7 @@
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
 
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 
 // Bring over variables from the LAN page
 $act=trim($_POST['act']);
@@ -20,6 +20,7 @@ exec("uci $UCI_PATH set sabai.dhcp.leasetime=\"" . $lease . "\"");
 exec("uci $UCI_PATH set sabai.dhcp.start=\"" . $start . "\"");
 exec("uci $UCI_PATH set sabai.dhcp.limit=\"" . $limit . "\"");
 exec("uci $UCI_PATH  commit sabai");
+exec("cp -r /etc/config/sabai /configs/");
 $res=exec($command);
  
 // Send completion message back to UI

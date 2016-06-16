@@ -10,7 +10,7 @@
 action=$1
 
 #path to config files
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 #Set config for static attribute
 _static_on(){                                                                                                                                  
@@ -24,7 +24,8 @@ _static_on(){
 	uci $UCI_PATH set sabai.@dhcphost[-1].mac=$2                                                                                           
 	uci $UCI_PATH set sabai.@dhcphost[-1].name="$3"                             
 	uci $UCI_PATH set sabai.@dhcphost[-1].route=$4                                          
-	uci $UCI_PATH commit sabai 
+	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 }
 
 _vpn_on(){
@@ -88,6 +89,7 @@ _close() {
 	uci $UCI_PATH set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
 	uci $UCI_PATH set sabai.dhcp.tablejs="$(cat /tmp/dhcptable)"
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 	#clear tmp files
 	rm /tmp/dhcptable
 	logger "EXECUTED!"
@@ -169,6 +171,7 @@ do
 	echo "deleting rule  #$i:"
 	uci $UCI_PATH delete sabai.@dhcphost["$hosts"]
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 	hosts=$(( $hosts - 1 ))
 done
 
@@ -257,6 +260,7 @@ _json() {
 	uci $UCI_PATH set sabai.dhcp.tablejs="$jsData"
 	uci $UCI_PATH set sabai.dhcp.table="$aaData"
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 
 	#save for web
 	uci $UCI_PATH get sabai.dhcp.table > /www/libs/data/dhcp.json

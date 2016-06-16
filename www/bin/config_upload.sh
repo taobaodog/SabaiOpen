@@ -202,7 +202,8 @@ for i in $SERVICES; do
         fi
 done
 
-mv /etc/config/sabai-new /configs/sabai
+mv /etc/config/sabai-new /etc/config/sabai
+cp -r /etc/config/sabai /etc/configs
 rm -f /tmp/.restart_services
 
 #restart tor 

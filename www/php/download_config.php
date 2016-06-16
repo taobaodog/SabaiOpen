@@ -2,7 +2,7 @@
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology, LLC
 
-$UCI_PATH = "-c /configs";
+$UCI_PATH = "";
 
 $uploaddir = "/configs/";
 $ovpn_dir = $uploaddir . "ovpn_backup/";

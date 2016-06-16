@@ -2,7 +2,7 @@
 header('Content-Type: application/javascript');
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 
 // Bring over variables from the openVPN
 if (isset($_POST['switch'])) {

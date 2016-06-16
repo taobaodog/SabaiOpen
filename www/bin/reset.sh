@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 _return(){
         echo "res={ sabai: $1, msg: '$2' };"
@@ -21,10 +21,9 @@ if [ -e "/configs/system_$CURRENT_KERNEL" ]; then
 	rm -r /etc/config /etc/sabai/openvpn
 	cp -fR /configs/system_$CURRENT_KERNEL/config /etc/
 	cp -fR /configs/system_$CURRENT_KERNEL/openvpn /etc/sabai/
-	mv /etc/config/sabai /configs/
-	uci $UCI_PATH  set sabai.general.revert=$revert_enabled
-	uci $UCI_PATH commit
-	ln -s /configs/sabai /etc/config/sabai
+	uci $UCI_PATH set sabai.general.revert=$revert_enabled
+	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
 	logger "SABAI:> Factory reset in process. Rebooting ..."
 	echo "SABAI:> Sucessfully booted after factory reset." > /www/resUpgrade.txt
 	reboot

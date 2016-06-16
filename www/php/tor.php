@@ -1,7 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 $prefix="tor";
 
 if (isset($_POST['switch']))	{
@@ -21,6 +21,7 @@ if (isset($_POST['switch']))	{
 	exec("uci $UCI_PATH set sabai.tor.netmask=\"" . $mask . "\"");
 	exec("uci $UCI_PATH set sabai.tor.network=\"" . $server . "\"");
 	exec("uci -c /configs commit sabai");
+	exec("cp -r /etc/config/sabai /configs/");
 	$res=exec($command);
 	echo $res;
 }

@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 act=$1
 config_act=$2
@@ -41,6 +41,7 @@ _stop(){
 		_rm_nw_fw vpn
 		uci $UCI_PATH set sabai.vpn.status=none
 		uci $UCI_PATH commit sabai
+		cp -r /etc/config/sabai /configs/sabai
 		uci delete dhcp.@dnsmasq[0].server
 		uci commit dhcp
 		if [ $config_act = "update" ]; then
@@ -55,6 +56,7 @@ _stop(){
 		uci $UCI_PATH set sabai.vpn.ip=none
 		uci $UCI_PATH set sabai.vpn.dns='0'
 		uci $UCI_PATH commit sabai
+		cp -r /etc/config/sabai /configs/sabai
 		logger "DNS is default."
 		logger "PPTP is stopped."
 		_return 0 "PPTP is stopped."
@@ -109,7 +111,8 @@ _start(){
         uci $UCI_PATH set sabai.vpn.proto=pptp
         uci $UCI_PATH set sabai.vpn.status=Starting
         uci $UCI_PATH set sabai.vpn.status=pptp
-	uci $UCI_PATH commit sabai
+		uci $UCI_PATH commit 
+		cp -r /etc/config/sabai /configs/sabai
     #restart services
 	if [ $config_act = "update" ]; then         
 		echo "network" >> /tmp/.restart_services
@@ -132,6 +135,7 @@ _clear(){
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.proto=none
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/sabai
 	check=$(uci show firewall | grep forwarding | grep dest=\'vpn\' | cut -d "[" -f2 | cut -d "]" -f1 | wc -l)
 	echo "$check"
 	if [ "$check" != "0" ]; then
@@ -172,6 +176,7 @@ _dns_fix() {
 		logger "DNS is default."
 	fi
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/sabai
 }
 
 
@@ -187,6 +192,7 @@ _stat(){
 		_return 1 "PPTP is connected."
 	fi
 	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/sabai
 }
 
 ls >/dev/null 2>/dev/null 

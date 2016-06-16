@@ -1,7 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 // Bring over variables from the UPNP page
 $enable=trim($_POST['enableToggle']);
 $natpmp=trim($_POST['natpmpToggle']);
@@ -23,6 +23,7 @@ exec("uci $UCI_PATH set sabai.upnp.intmax=\"" . $intmax . "\"");
 exec("uci $UCI_PATH set sabai.upnp.extmin=\"" . $extmin . "\"");
 exec("uci $UCI_PATH set sabai.upnp.extmax=\"" . $extmax . "\"");
 exec("uci $UCI_PATH commit sabai");
+exec("cp -r /etc/config/sabai /configs/");
 exec($command);
 
 // Send completion message back to UI
