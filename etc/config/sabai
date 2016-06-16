@@ -107,8 +107,9 @@ config settings 'proxy'
 	option status 'Off'
 	
 config settings 'vpn'
-        option proto 'none'
-        option status 'none'
-        option ip ''
-
+	option proto 'none'
+	option status 'none'
+	option ip ''
+	option req_mppe_128 '1'
+	option mppe_stateless '1'
 

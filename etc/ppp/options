@@ -1,5 +1,5 @@
-#debug
-logfile /dev/null
+debug
+logfile /var/log/pptp.log
 noipdefault
 noaccomp
 nopcomp
