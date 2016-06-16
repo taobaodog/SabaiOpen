@@ -1,7 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 $filter = array("<", ">","="," (",")",";","/","|");
 
 if (isset($_POST['check'])) {
@@ -31,6 +31,7 @@ if ($user && $pass && $server) {
 	exec("uci $UCI_PATH set sabai.vpn.password=\"" . $pass . "\"");
 	exec("uci $UCI_PATH set sabai.vpn.server=\"" . $server . "\"");
 	exec("uci $UCI_PATH commit sabai");
+	exec("cp -r /etc/config/sabai /configs/");
 
 	//execute the action and give response to calling page
 	switch ($act) {

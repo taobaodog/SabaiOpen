@@ -1,7 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 // Bring over variables from the WAN page
 $proto=trim($_POST['wan_proto']);
 $ip=trim($_POST['wan_ip']);
@@ -20,6 +20,7 @@ exec("uci $UCI_PATH set sabai.wan.mac=\"" . $mac . "\"");
 exec("uci $UCI_PATH set sabai.wan.mtu=\"" . $mtu . "\"");
 exec("uci $UCI_PATH set sabai.wan.dns=\"" . $dns . "\"");
 exec("uci $UCI_PATH commit sabai");
+exec("cp -r /etc/config/sabai /configs/");
 exec($command);
 
 // Send completion message back to UI

@@ -1,7 +1,7 @@
 <?php 
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 $filter = array("<", ">","="," (",")",";","/","|");
 $_REQUEST['dmzToggle']=str_replace ($filter, "#", $_REQUEST['dmzToggle']);
 $_REQUEST['dmz_destination']=str_replace ($filter, "#", $_REQUEST['dmz_destination']);
@@ -13,6 +13,7 @@ if ($status == '') $status="off" ;
 exec("uci $UCI_PATH set sabai.dmz.status=\"" . $status . "\"");
 exec("uci $UCI_PATH set sabai.dmz.destination=\"" . $destination . "\"");
 exec("uci $UCI_PATH commit sabai");
+exec("cp -r /etc/config/sabai /configs/");
 
 $toDo=exec("sh /www/bin/dmz.sh $status $destination",$out);
 echo $toDo;

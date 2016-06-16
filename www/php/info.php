@@ -7,7 +7,7 @@ if (!isset($_SESSION['count_vpn'])) {
 		$_SESSION['count_vpn'] = 1;
 }
 
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 
 exec("/sbin/ifconfig eth0 | egrep -o \"HWaddr [A-Fa-f0-9:]*|inet addr:[0-9:.]*|UP BROADCAST RUNNING MULTICAST\"",$out);
 $wan = " wan: {
@@ -32,9 +32,11 @@ switch($vo){
  		exec("uci $UCI_PATH set sabai.vpn.ip=$vpn_ip");
  		exec("uci $UCI_PATH set sabai.vpn.status=Connected");
  		exec("uci $UCI_PATH commit sabai");
+ 		exec("cp -r /etc/config/sabai /configs/");
  	} else {
  		exec("uci $UCI_PATH set sabai.vpn.status=Disconnected");
  		exec("uci $UCI_PATH commit sabai");
+ 		exec("cp -r /etc/config/sabai /configs/");
  		$_SESSION['count_vpn']++;
  	}
  	break;
@@ -46,9 +48,11 @@ switch($vo){
  		exec("uci $UCI_PATH set sabai.vpn.ip=$vpn_ip");
  		exec("uci $UCI_PATH set sabai.vpn.status=Connected");
  		exec("uci $UCI_PATH commit sabai");
+ 		exec("cp -r /etc/config/sabai /configs/");
  	} else {
  		exec("uci $UCI_PATH set sabai.vpn.status=Disconnected");
  		exec("uci $UCI_PATH commit sabai");
+ 		exec("cp -r /etc/config/sabai /configs/");
  		$_SESSION['count_vpn']++;
  	}
  	break;

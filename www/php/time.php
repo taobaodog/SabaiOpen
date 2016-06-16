@@ -1,13 +1,14 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="-c /configs";
-$command="sh /www/bin/time.sh";
+$UCI_PATH="";
+$command="/www/bin/time.sh";
 
 if (isset($_POST['sync'])) {
 	$location=$_POST['sync'];
 	exec("uci $UCI_PATH set sabai.time.location=\"" . $location . "\"");
 	exec("uci $UCI_PATH commit sabai");
+	exec("cp -r /etc/config/sabai /configs/");
 	exec($command);
 } else {
 	// Bring over variables from the Time page
@@ -17,6 +18,7 @@ if (isset($_POST['sync'])) {
 	exec("uci $UCI_PATH set sabai.time.servers=\"" . $ntp . "\"");
 	exec("uci $UCI_PATH set sabai.time.location=\"" . $location . "\"");
 	exec("uci $UCI_PATH commit sabai");
+	exec("cp -r /etc/config/sabai /configs/");
 	exec($command);
 }
 

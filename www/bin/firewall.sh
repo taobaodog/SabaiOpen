@@ -10,7 +10,7 @@
 #on or off according to user input 
 ###################################################
 
-UCI_PATH="-c /configs"
+UCI_PATH=""
 
 ###################################
 #SCRIPT HELP 
@@ -56,6 +56,7 @@ EOF
 	uci set $UCI_PATH $config_file.firewall.cookies=$cookies
 	uci set $UCI_PATH $config_file.firewall.wanroute=$wanroute
 	uci $UCI_PATH commit $config_file
+	cp -r /etc/config/sabai /configs/
 fi
 
 #wanport=$(uci get network.wan.ifname);

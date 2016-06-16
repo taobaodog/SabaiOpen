@@ -1,7 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="-c /configs";
+$UCI_PATH="";
 
 function setVar($prefix, $option){
 	// Bring over variables from the Wireless page
@@ -40,7 +40,8 @@ function setVar($prefix, $option){
 		exec("uci $UCI_PATH set sabai.wlradio$option.freq=\"" . $freq . "\"");
 		exec("uci $UCI_PATH set sabai.wlradio$option.width=\"" . $width . "\"");
 	};
-	exec("uci -c /configs commit sabai");
+	exec("uci $UCI_PATH commit sabai");
+	exec("cp -r /etc/config/sabai /configs/");
 	exec($command);
 
 // Send completion message back to UI

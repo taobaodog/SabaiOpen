@@ -1,7 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology, LLC
-	$UCI_PATH = "-c /configs";
+	$UCI_PATH = "";
 
 	# allow HTTPS comunication
 	$arrContextOptions=array(
@@ -28,6 +28,7 @@
 		exec("uci $UCI_PATH set sabai.general.new_version=\"" . $version . "\"");
 		exec("uci $UCI_PATH set sabai.general.download_uri=\"" . $link . "\"");
 		exec("uci $UCI_PATH commit sabai");
+		exec("cp -r /etc/config/sabai /configs/");
 		echo $version;
 	} else {
 		echo "false";
