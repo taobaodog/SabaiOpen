@@ -31,11 +31,10 @@ _off(){
 		wifi down
 		uci set wireless.@wifi-iface[0].network="mainAP"
 		/etc/init.d/odhcp restart
-        	/etc/init.d/dnsmasq restart
+		/etc/init.d/dnsmasq restart
 		wifi up
 	else
 		iptables -t nat -F
-	        /etc/init.d/firewall restart
 	fi
 
 	uci delete privoxy.privoxy.forward_socks5t
@@ -51,6 +50,8 @@ _off(){
 	uci $UCI_PATH set sabai.vpn.status="none"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
+	# must be after sabai changing 
+	/etc/init.d/firewall restart
 
 	logger "TOR turned OFF."
 	_return 0 "TOR turned OFF."
