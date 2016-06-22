@@ -13,9 +13,9 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <div class='pageTitle'>VPN: PPTP Client</div>
 <div class='controlBox'><span class='controlBoxTitle'>PPTP Settings</span>
     <div class='controlBoxContent'>
-<body onload='init();' id='topmost'>
+        <body onload='init();' id='topmost'>
         <input type='hidden' id='act' name='act'>
-        <div class='section'>
+ 
             <table class="fields">
                 <tbody>
                     <tr>
@@ -36,15 +36,23 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                             <input name="pass" id="pass" class='longinput' autocomplete="off" onfocus='peekaboo("pass")' onblur='peekaboo("pass")' type="password">
                         </td>
                     </tr>
+                    <tr>
+                        <td class="title indent1 shortWidth"> MPPE-128 </td>
+                        <td class="content">
+                            <input type='radio' name='mppe' value='stateless' checked="checked">Stateless<br>
+                            <input type='radio' name='mppe' value='stateful' >Stateful   
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <input id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>
             <input id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>
             <input id='save' type='button' value='Save' onclick='PPTPcall("save")'>
-            <input id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'> <span id='messages'>&nbsp;</span>
-            <br>
-        </div>
-        </form>
+            <input id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>
+            <span id='messages'>&nbsp;</span>
+    </div>
+</div>
+</form>
     <div id='hideme'>
         <div class='centercolumncontainer'>
             <div class='middlecontainer'>
