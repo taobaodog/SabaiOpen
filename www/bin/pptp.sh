@@ -9,7 +9,7 @@ proto=$(uci get sabai.vpn.proto)
 status=$(uci get sabai.vpn.status)
 device=$(uci get system.@system[0].hostname)
 
-if [ $config_act = "update" ]; then
+if [ "$config_act" = "update" ]; then
 	config_file="sabai-new"
 else
 	config_file="sabai"
@@ -38,19 +38,23 @@ _stop(){
 		logger "No PPTP is running."
 		_return 0 "No PPTP is running."
 	else
-		_rm_nw_fw vpn
+		
 		uci $UCI_PATH set sabai.vpn.status=none
 		uci $UCI_PATH commit sabai
 		cp -r /etc/config/sabai /configs/sabai
 		uci delete dhcp.@dnsmasq[0].server
 		uci commit dhcp
 		if [ $config_act = "update" ]; then
-			echo "network" >> /tmp/.restart_services   
+			_rm_nw_fw vpn
+			echo "network" >> /tmp/.restart_services
 			echo "firewall" >> /tmp/.restart_services
 		else
+			env -i /sbin/ifdown vpn
+			# Update routing table
+			udhcpc
+			# rm pprp settings only after ifdown
+			_rm_nw_fw vpn
 			/etc/init.d/firewall restart
-			sleep 5
-			/etc/init.d/network restart
 		fi
 		uci $UCI_PATH set sabai.vpn.proto=none
 		uci $UCI_PATH set sabai.vpn.ip=none
@@ -66,8 +70,8 @@ _stop(){
 _start(){
 	ifconfig > /tmp/check
 	if [ "$(cat /tmp/check | grep pptp)" ] && [ "$(uci get sabai.vpn.proto)" = "pptp" ]; then
-	        logger "PPTP is already running."
-	        _return 0 "PPTP is already running."
+		logger "PPTP is already running."
+		_return 0 "PPTP is already running."
 	elif [ "$(cat /tmp/check | grep tun0)" ] || [ "$(uci get sabai.vpn.proto)" = "ovpn" ]; then
 		#ensure that openvpn is stopped
 		/www/bin/ovpn.sh stop
@@ -86,42 +90,60 @@ _start(){
 	pass=$(uci get $config_file.vpn.password)
 	server=$(uci get $config_file.vpn.server)
     #set the network vpn settings
-        uci set network.vpn=interface
-        uci set network.vpn.ifname=pptp-vpn
-        uci set network.vpn.proto=pptp
-        uci set network.vpn.username="$user"
-        uci set network.vpn.password="$pass"
-        uci set network.vpn.server="$server"
-        uci set network.vpn.buffering=1
+	uci set network.vpn=interface
+	uci set network.vpn.ifname=pptp-vpn
+	uci set network.vpn.proto=pptp
+	uci set network.vpn.username="$user"
+	uci set network.vpn.password="$pass"
+	uci set network.vpn.server="$server"
+	uci set network.vpn.buffering=1
 	uci commit network
+
+    #set pptp mppe settings
+	req_mppe_128=$(uci get $config_file.vpn.req_mppe_128)
+	mppe_stateless=$(uci get $config_file.vpn.mppe_stateless)
+
+	tmp='required'
+	sed -ni '/mppe/!p' /etc/ppp/options.pptp
+
+	if [ "$req_mppe_128" = "1" ]; then
+		tmp=$tmp",no40,no56"
+	fi
+
+	if [ "$mppe_stateless" = "1" ]; then
+		tmp=$tmp",stateless"
+  fi
+
+	echo "mppe $tmp" >> /etc/ppp/options.pptp
     #set the firewall
-        uci set firewall.vpn=zone
-        uci set firewall.vpn.name=vpn
-        uci set firewall.vpn.input=ACCEPT
-        uci set firewall.vpn.output=ACCEPT
-        uci set firewall.vpn.forward=ACCEPT
+	uci set firewall.vpn=zone
+	uci set firewall.vpn.name=vpn
+	uci set firewall.vpn.input=ACCEPT
+	uci set firewall.vpn.output=ACCEPT
+	uci set firewall.vpn.forward=ACCEPT
 	uci set firewall.vpn.network=vpn
-        uci set firewall.vpn.masq=1
-	uci add firewall forwarding 
-        [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
-        uci set firewall.@forwarding[-1].dest=vpn
+	uci set firewall.vpn.masq=1
+	uci add firewall forwarding
+	[ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
+	uci set firewall.@forwarding[-1].dest=vpn
     #commit all changed services
-        uci commit firewall   
+	uci commit firewall
     #set sabai vpn settings
-        uci $UCI_PATH set sabai.vpn.proto=pptp
-        uci $UCI_PATH set sabai.vpn.status=Starting
-        uci $UCI_PATH set sabai.vpn.status=pptp
-		uci $UCI_PATH commit 
+	uci $UCI_PATH set sabai.vpn.proto=pptp
+	uci $UCI_PATH set sabai.vpn.status=Starting
+	uci $UCI_PATH set sabai.vpn.status=pptp
+		uci $UCI_PATH commit
 		cp -r /etc/config/sabai /configs/sabai
     #restart services
-	if [ $config_act = "update" ]; then         
+	if [ $config_act = "update" ]; then
 		echo "network" >> /tmp/.restart_services
-        	echo "firewall" >> /tmp/.restart_services
-	else                                         
-        	/etc/init.d/firewall restart
+		echo "firewall" >> /tmp/.restart_services
+	else
+		/etc/init.d/firewall restart
 		sleep 2
-		/etc/init.d/network restart
-	fi 
+		# /etc/init.d/network restart
+		env -i /sbin/ifup vpn
+	fi
 
 	logger "PPTP starts..."
 	_return 0 "PPTP starts..."
@@ -129,8 +151,8 @@ _start(){
 
 _clear(){
 	_rm_nw_fw vpn
-	uci $UCI_PATH delete sabai.vpn.username          
-	uci $UCI_PATH delete sabai.vpn.password          
+	uci $UCI_PATH delete sabai.vpn.username
+	uci $UCI_PATH delete sabai.vpn.password
  	uci $UCI_PATH delete sabai.vpn.server
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.proto=none
@@ -161,7 +183,7 @@ _dns_fix() {
 	if [ "$check" ]; then
 		tun_dns_1="$(cat /var/log/messages | grep 'primary   DNS address' | tail -1 | awk -F]: '{print $2}' | awk '{print $4}')"
 		tun_dns_2="$(cat /var/log/messages | grep 'secondary DNS address' | tail -1 | awk -F]: '{print $2}' | awk '{print $4}')"
-		
+
 		if [ "$tun_dns_1" !=  "$tun_dns_2" ]; then
 			iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$tun_dns_2"
 			uci add_list dhcp.@dnsmasq[0].server="$tun_dns_2"
@@ -195,12 +217,12 @@ _stat(){
 	cp -r /etc/config/sabai /configs/sabai
 }
 
-ls >/dev/null 2>/dev/null 
+ls >/dev/null 2>/dev/null
 
 case $act in
-    start)  _start  ;;
-    stop)   _stop   ;;
-    status) _stat   ;;
-    dns)    _dns_fix ;;
-    clear)  _clear  ;;
+	start)  _start   ;;
+	stop)   _stop    ;;
+	status) _stat    ;;
+	dns)    _dns_fix ;;
+	clear)  _clear   ;;
 esac
