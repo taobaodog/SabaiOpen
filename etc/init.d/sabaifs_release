@@ -14,9 +14,9 @@ _copy_config() {
         cp -fR /configs/custom_$1/openvpn /etc/sabai
 		cp /etc/config/sabai /configs
 	fi
-        [ -h /www/configs ] || ln -s /configs /www/configs
-	uci -c /configs set sabai.general.version="$2"
-	uci -c /configs commit sabai
+	[ -h /www/configs ] || ln -s /configs /www/configs
+	uci set sabai.general.version="$2"
+	uci commit sabai
 }
 
 _reset() {
