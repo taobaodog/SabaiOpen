@@ -39,8 +39,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                     <tr>
                         <td class="title indent1 shortWidth"> MPPE-128 </td>
                         <td class="content">
-                            <input type='radio' name='mppe' value='stateless' checked="checked">Stateless<br>
-                            <input type='radio' name='mppe' value='stateful' >Stateful   
+                            <div class='radioSwitchElement' id='mppe_conf'></div>   
                         </td>
                     </tr>
                 </tbody>
@@ -73,9 +72,34 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         $user=trim(exec("uci get sabai.vpn.username"));
         $pass=trim(exec("uci get sabai.vpn.password"));
         $server=trim(exec("uci get sabai.vpn.server"));
-        if( $user!="" ) echo "\n\tuser: '". $user ."',\n\tpass: '". $pass ."',\n\tserver: '". $server ."'\n";
-        else echo " user: '', pass: '', server: '' ";
+        $mppe=trim(exec("uci get sabai.vpn.mppe_mode"));
+        if( $user!="" ) echo "\n\tuser: '". $user ."',\n\tpass: '". $pass ."',\n\tserver: '". $server ."',\n\tmppe: '". $mppe ."'\n";
+        else echo " user: '', pass: '', server: '', mppe: '' ";
     ?>}
+
+$.widget("jai.mppe", {
+    _create: function(){
+        $(this.element)
+            .append(
+                $(document.createElement('select'))
+                    .prop("id","mppe")
+                    .prop("name","mppe")
+                    .prop("class", "radioSwitchElement")
+                .append( $(document.createElement('option'))
+                    .prop("value", "stateless")
+                    .prop("text", 'Stateless')
+                )
+                .append( $(document.createElement('option'))
+                    .prop("value", "stateful")
+                    .prop("text", 'Stateful')
+                )
+            )
+
+    $('#mppe').radioswitch({ value: pptp.mppe, hasChildren: true });
+},
+});
+
+
 
 function setUpdate(res){
     if(info) oldip = info.vpn.ip; 
@@ -180,6 +204,9 @@ function check(){
 		}
 	});
 }
+$(function(){
+    $('#mppe_conf').mppe({ conf: pptp });
+})
 
 function init(){ 
     f = E('fe'); 
@@ -193,6 +220,7 @@ function init(){
        echo "for(i in donde){E('loc'+i).innerHTML = donde[i];}"; } ?>
        getUpdate();
        setInterval (getUpdate, 5000)
+       
 }
   
 </script>

@@ -221,7 +221,7 @@ $.widget("jai.wansetup", {
                 .prop("value", "dhcp")
                 .prop("text", 'DHCP')
               )
-			  .append( $(document.createElement('option'))
+              .append( $(document.createElement('option'))
                 .prop("value", "static")
                 .prop("text", 'Static')
               )
