@@ -24,13 +24,15 @@ $user=trim($_REQUEST['user']);
 $pass=trim($_REQUEST['pass']);
 $server=trim($_REQUEST['server']);
 $serverip=trim(gethostbyname($server));
+$mppe_mode=trim($_REQUEST['mppe']);
 
 if ($user && $pass && $server) {
 	// Set the Sabai config to reflect latest settings
-	exec("uci $UCI_PATH set sabai.vpn.username=\"" . $user . "\"");
-	exec("uci $UCI_PATH set sabai.vpn.password=\"" . $pass . "\"");
-	exec("uci $UCI_PATH set sabai.vpn.server=\"" . $server . "\"");
-	exec("uci $UCI_PATH commit sabai");
+	exec("uci set sabai.vpn.username=\"" . $user . "\"");
+	exec("uci set sabai.vpn.password=\"" . $pass . "\"");
+	exec("uci set sabai.vpn.server=\"" . $server . "\"");
+	exec("uci set sabai.vpn.mppe_mode=\"" . $mppe_mode . "\"");
+	exec("uci commit sabai");
 	exec("cp -r /etc/config/sabai /configs/");
 
 	//execute the action and give response to calling page

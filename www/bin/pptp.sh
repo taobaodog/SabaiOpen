@@ -101,20 +101,11 @@ _start(){
 
     #set pptp mppe settings
 	req_mppe_128=$(uci get $config_file.vpn.req_mppe_128)
-	mppe_stateless=$(uci get $config_file.vpn.mppe_stateless)
-
-	tmp='required'
+	mppe_mode=$(uci get $config_file.vpn.mppe_mode)
+	
 	sed -ni '/mppe/!p' /etc/ppp/options.pptp
-
-	if [ "$req_mppe_128" = "1" ]; then
-		tmp=$tmp",no40,no56"
-	fi
-
-	if [ "$mppe_stateless" = "1" ]; then
-		tmp=$tmp",stateless"
-  fi
-
-	echo "mppe $tmp" >> /etc/ppp/options.pptp
+	mppe_config="$req_mppe_128,$mppe_mode"
+ 	echo "mppe $mppe_config" >> /etc/ppp/options.pptp
     #set the firewall
 	uci set firewall.vpn=zone
 	uci set firewall.vpn.name=vpn

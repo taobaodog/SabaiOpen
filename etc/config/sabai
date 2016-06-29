@@ -110,6 +110,6 @@ config settings 'vpn'
 	option proto 'none'
 	option status 'none'
 	option ip ''
-	option req_mppe_128 '1'
-	option mppe_stateless '1'
+	option req_mppe_128 'required,no40,no56'
+	option mppe_mode 'stateless'
 

@@ -1,4 +1,4 @@
-debug
+#debug
 logfile /var/log/pptp.log
 noipdefault
 noaccomp
