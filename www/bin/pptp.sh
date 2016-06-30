@@ -38,11 +38,12 @@ _stop(){
 		logger "No PPTP is running."
 		_return 0 "No PPTP is running."
 	else
-		
 		uci $UCI_PATH set sabai.vpn.status=none
 		uci $UCI_PATH commit sabai
 		cp -r /etc/config/sabai /configs/sabai
-		uci delete dhcp.@dnsmasq[0].server
+		# uci delete dhcp.@dnsmasq[0].server
+    	#unset dns for pptp
+		uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.auto'
 		uci commit dhcp
 		if [ $config_act = "update" ]; then
 			_rm_nw_fw vpn
@@ -54,6 +55,7 @@ _stop(){
 			udhcpc
 			# rm pprp settings only after ifdown
 			_rm_nw_fw vpn
+			/etc/init.d/dnsmasq restart
 			/etc/init.d/firewall restart
 		fi
 		uci $UCI_PATH set sabai.vpn.proto=none
@@ -95,14 +97,15 @@ _start(){
 	uci set network.vpn.proto=pptp
 	uci set network.vpn.username="$user"
 	uci set network.vpn.password="$pass"
-	uci set network.vpn.server="$server"
+	#ip needed so dnsmasq can be restarted safely
+	uci set network.vpn.server=`dig +short $server` 
 	uci set network.vpn.buffering=1
 	uci commit network
 
     #set pptp mppe settings
 	req_mppe_128=$(uci get $config_file.vpn.req_mppe_128)
 	mppe_mode=$(uci get $config_file.vpn.mppe_mode)
-	
+
 	sed -ni '/mppe/!p' /etc/ppp/options.pptp
 	if [ "$mppe_mode" = "nomppe" ]; then
 		echo "nomppe" >> /etc/ppp/options.pptp
@@ -124,6 +127,9 @@ _start(){
 	uci set firewall.@forwarding[-1].dest=vpn
     #commit all changed services
 	uci commit firewall
+    #set dns for pptp
+	uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.ppp'
+	uci commit dhcp
     #set sabai vpn settings
 	uci $UCI_PATH set sabai.vpn.proto=pptp
 	uci $UCI_PATH set sabai.vpn.status=Starting
@@ -137,6 +143,7 @@ _start(){
 	else
 		/etc/init.d/firewall restart
 		sleep 2
+		/etc/init.d/dnsmasq restart
 		# /etc/init.d/network restart
 		env -i /sbin/ifup vpn
 	fi
