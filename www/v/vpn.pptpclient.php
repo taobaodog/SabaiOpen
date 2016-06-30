@@ -90,8 +90,8 @@ $.widget("jai.mppe", {
                     .prop("text", 'Stateless')
                 )
                 .append( $(document.createElement('option'))
-                    .prop("value", "stateful")
-                    .prop("text", 'Stateful')
+                    .prop("value", "nomppe")
+                    .prop("text", 'No mppe')
                 )
             )
 
