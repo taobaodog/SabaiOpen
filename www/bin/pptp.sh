@@ -104,8 +104,13 @@ _start(){
 	mppe_mode=$(uci get $config_file.vpn.mppe_mode)
 	
 	sed -ni '/mppe/!p' /etc/ppp/options.pptp
-	mppe_config="$req_mppe_128,$mppe_mode"
- 	echo "mppe $mppe_config" >> /etc/ppp/options.pptp
+	if [ "$mppe_mode" = "nomppe" ]; then
+		echo "nomppe" >> /etc/ppp/options.pptp
+	else
+		mppe_config="$req_mppe_128,$mppe_mode"
+ 		echo "mppe $mppe_config" >> /etc/ppp/options.pptp
+    fi
+    
     #set the firewall
 	uci set firewall.vpn=zone
 	uci set firewall.vpn.name=vpn

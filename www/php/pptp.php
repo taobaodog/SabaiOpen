@@ -32,6 +32,11 @@ if ($user && $pass && $server) {
 	exec("uci set sabai.vpn.password=\"" . $pass . "\"");
 	exec("uci set sabai.vpn.server=\"" . $server . "\"");
 	exec("uci set sabai.vpn.mppe_mode=\"" . $mppe_mode . "\"");
+	if ($mppe_mode == 'stateless') {
+		exec("uci set sabai.vpn.req_mppe_128=\"required,no40,no56\"");
+	} else {
+		exec("uci set sabai.vpn.req_mppe_128=\"\"");
+	}
 	exec("uci commit sabai");
 	exec("cp -r /etc/config/sabai /configs/");
 
