@@ -68,7 +68,8 @@ var wl0=$.parseJSON('{<?php
           $channels_qty=trim(exec("uci get sabai.wlradio0.channels_qty"));      
           $channel=trim(exec("uci get sabai.wlradio0.channel_freq"));
           $auto=trim(exec("uci get sabai.wlradio0.auto"));
-          echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_type\": \"$wpa_type\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"wpa_rekey\": \"$wpa_rekey\", \"channel\": \"$channel\", \"auto\": \"$auto\", \"channels_qty\": \"$channels_qty\"";
+          $width=trim(exec("uci get sabai.wlradio0.width"));
+          echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_type\": \"$wpa_type\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"wpa_rekey\": \"$wpa_rekey\", \"channel\": \"$channel\", \"auto\": \"$auto\", \"channels_qty\": \"$channels_qty\", \"width\": \"$width\"";
       ?>}');
 
 var wl0_wepkeyraw='<?php
@@ -87,6 +88,7 @@ var wl1=$.parseJSON('{<?php
 	$wpa_psk=trim(exec("uci get sabai.wlradio1.wpa_psk"));
 	$channel=trim(exec("uci get sabai.wlradio1.channel_freq"));
 	$auto=trim(exec("uci get sabai.wlradio1.auto"));
+  
 	echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"channel\": \"$channel\", \"auto\": \"$auto\"";?>}');
 
 //TODO: remove everything from here. Dublicated.
@@ -225,8 +227,28 @@ $.widget("jai.wl_wl0", {
             )                                                                                                    
           )
 
-)
-	
+
+  )
+  .append( $(document.createElement('tr'))
+      .append( $(document.createElement('td')).html('Channel width')                                                          
+      )
+      .append( $(document.createElement('td'))
+        .append(                                                                                                     
+            $(document.createElement('select'))                                                                        
+                .prop("id", "channel_width")                                                                                                     
+                .prop("name", "channel_width")
+                .prop("class", "radioSwitchElement")                                                                           
+            .append( $(document.createElement('option'))
+                .prop("value", "20")
+                .prop("text", "20 MGz")
+            )
+            .append( $(document.createElement('option'))
+                .prop("value", "40")
+                .prop("text", "40 MGz")
+            )
+            )
+        )
+      )	
 	
         .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('Encryption') 
@@ -325,6 +347,7 @@ $.widget("jai.wl_wl0", {
               $(document.createElement('input'))
                 .prop("id","wl_wpa_psk")
                 .prop("name","wl_wpa_psk")
+                .prop("type", "password")
             )
           )
         ) // end PSK tr
@@ -384,6 +407,10 @@ $.widget("jai.wl_wl0", {
 
 	$('#wl_channel').spinner({ min: 1, max: wl0.channels_qty }).spinner('value',wl0.channel);
 	$('#wl_channel_msg').val(wl0.channel);
+
+  $('#channel_width').radioswitch({ 
+    value: wl0.width
+  });
 
 	$('#wl_encryption').radioswitch({
 		value: wl0.encryption
@@ -485,17 +512,9 @@ $.widget("jai.wl_wl1", {
 									.prop("value", "none")
 									.prop("text", 'None')
 								)
-				              	.append( $(document.createElement('option'))
-						            .prop("value", "psk")
-						            .prop("text", 'WPA')
-						        )
-						        .append( $(document.createElement('option'))
-								    .prop("value", "psk2")
-								    .prop("text", 'WPA2')
-								)
-								.append( $(document.createElement('option'))
-									.prop("value", "mixed-psk")
-				                	.prop("text", 'WPA/WPA2')
+                .append( $(document.createElement('option'))
+									.prop("value", "psk2")
+				                	.prop("text", 'WPA2')
 				              	)
 				            )
 				          ) // end td
@@ -548,6 +567,7 @@ $.widget("jai.wl_wl1", {
 													$(document.createElement('input'))
 														.prop("id","wl1_wpa_psk")
 														.prop("name","wl1_wpa_psk")
+                            .prop("type", "password")
 												)
 											)
 									) // end PSK tr

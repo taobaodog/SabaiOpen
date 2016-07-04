@@ -16,13 +16,15 @@ function setVar($prefix, $option){
 	};
 	$auto=trim($_POST['channel_mode']);
 	$freq=trim($_POST['channel_freq']);
-	if ($freq == '2') {
-		$width=trim($_POST['channel_width_2']);
-		$channel=trim($_POST[$prefix.'_channel']);
-	} else {
-		$width=trim($_POST['channel_width_5']);
-		$channel=trim($_POST[$prefix.'_channel_5']);
-	}
+	$width=trim($_POST['channel_width']);
+	$channel=trim($_POST[$prefix.'_channel']);
+	//if ($freq == '2') {
+	//$width=trim($_POST['channel_width_2']);
+	//$channel=trim($_POST[$prefix.'_channel']);
+	//} else {
+	//	$width=trim($_POST['channel_width_5']);
+	//	$channel=trim($_POST[$prefix.'_channel_5']);
+	//}
 	
 	$command="sh /www/bin/wl.sh save $option";
 
