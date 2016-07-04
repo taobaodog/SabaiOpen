@@ -4,7 +4,7 @@
 
 # act=acc if configured device is VPNA
 act="$1" 
-dev="uci get system.@system[0].hostname"
+dev="$(uci get system.@system[0].hostname)"
 
 # remove any prior wireless configuration
 rm -f /etc/config/wireless
@@ -39,6 +39,6 @@ fi
 sleep 15
 
 [ -z "$(ifconfig | grep wlan0)" ] && [ "$(uci get sabai.wlradio0.mode)" != "off" ] && logger "ERROR WIFI: wlradio0 configurations were corrupted."
-[ -z "$(ifconfig | grep wlan1)" ] && [ "$(uci get sabai.wlradio1.mode)" != "off" ] && logger "ERROR WIFI: wlradio0 configurations were corrupted."
+[ -z "$(ifconfig | grep wlan1)" ] && [ "$(uci get sabai.wlradio1.mode)" != "off" ] && logger "ERROR WIFI: wlradio1 configurations were corrupted."
 #log the finish
 logger "Wireless configuration completed."
