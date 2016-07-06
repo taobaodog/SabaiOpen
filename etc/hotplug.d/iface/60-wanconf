@@ -15,10 +15,13 @@
 		uci set sabai.wan.gateway=$gateway
 		uci set sabai.wan.netmask=$mask
 		uci commit sabai
+		if [ "SabaiOpen" = "$(uci get system.@system[0].hostname)" ]; then
+			ip=$(ifconfig -a br-lan | grep -F "inet addr" | awk '{print $2}' | tr -d 'addr:')
+		fi
 		uci set uhttpd.main.listen_http=$ip':80'
 		uci set uhttpd.main.listen_https=$ip':443'
 		uci commit uhttpd
-		uci set privoxy.privoxy.listen_address=$ip':8080 127.0.0.1:8080'		
+		uci set privoxy.privoxy.listen_address=$ip':8080 127.0.0.1:8080'
 		uci commit privoxy
 		#echo "listen-address=$ip"> /etc/dnsmasq.conf
 		#echo "bind-interfaces" >> /etc/dnsmasq.conf

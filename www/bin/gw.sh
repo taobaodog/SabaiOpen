@@ -43,6 +43,13 @@ _vpn_config(){
 	ip route | grep $1 | while read vpn_rt; do ip route add $vpn_rt table vpn; done
 	ip route del $2 dev $1
 	#ensure all vpn users get proper dns
+	for i in $(uci show firewall | grep -e "dest_port='5353'" | cut -d "[" -f2 | cut -d "]" -f1 | sort -r)
+	do
+		# logger "### MORE DEBUG $i"
+		uci delete firewall.@redirect[$i]
+		uci commit firewall
+	done
+
 	for mac in $(_get_mac)
 	do
 		uci add firewall redirect > /dev/null
