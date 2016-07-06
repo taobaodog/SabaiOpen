@@ -42,7 +42,7 @@ _stop(){
 		uci $UCI_PATH commit sabai
 		cp -r /etc/config/sabai /configs/sabai
 		# uci delete dhcp.@dnsmasq[0].server
-    	#unset dns for pptp
+		#unset dns for pptp
 		uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.auto'
 		uci commit dhcp
 		if [ $config_act = "update" ]; then
@@ -98,7 +98,7 @@ _start(){
 	uci set network.vpn.username="$user"
 	uci set network.vpn.password="$pass"
 	#ip needed so dnsmasq can be restarted safely
-	uci set network.vpn.server=`dig +short $server` 
+	uci set network.vpn.server=`dig +short $server`
 	uci set network.vpn.buffering=1
 	uci commit network
 
@@ -111,9 +111,9 @@ _start(){
 		echo "nomppe" >> /etc/ppp/options.pptp
 	else
 		mppe_config="$req_mppe_128,$mppe_mode"
- 		echo "mppe $mppe_config" >> /etc/ppp/options.pptp
-    fi
-    
+		echo "mppe $mppe_config" >> /etc/ppp/options.pptp
+	fi
+
     #set the firewall
 	uci set firewall.vpn=zone
 	uci set firewall.vpn.name=vpn
@@ -156,7 +156,7 @@ _clear(){
 	_rm_nw_fw vpn
 	uci $UCI_PATH delete sabai.vpn.username
 	uci $UCI_PATH delete sabai.vpn.password
- 	uci $UCI_PATH delete sabai.vpn.server
+	uci $UCI_PATH delete sabai.vpn.server
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.proto=none
 	uci $UCI_PATH commit sabai
@@ -209,15 +209,20 @@ _stat(){
 	ifconfig > /tmp/check
 	if [ ! "$(cat /tmp/check | grep pptp)" ]; then
 		uci $UCI_PATH set sabai.vpn.status=Disconnected
+		uci $UCI_PATH commit sabai
+		cp -r /etc/config/sabai /configs/sabai
 		logger "pptp is disconnected."
 		_return 1 "PPTP is disconnected."
 	else
 		uci $UCI_PATH set sabai.vpn.status=Connected
+		uci $UCI_PATH commit sabai
+		cp -r /etc/config/sabai /configs/sabai
+
+		[ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
+
 		logger "pptp is connected."
 		_return 1 "PPTP is connected."
 	fi
-	uci $UCI_PATH commit sabai
-	cp -r /etc/config/sabai /configs/sabai
 }
 
 ls >/dev/null 2>/dev/null

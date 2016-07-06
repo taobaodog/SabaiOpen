@@ -3,11 +3,14 @@
 # Copyright 2016 Sabai Technology
 UCI_PATH=""
 
+#Include JSON parser for OpenWrt
+. /usr/share/libubox/jshn.sh
+
 # send messages to log file but clear log file on each new setup of gw.sh
 #rm /var/log/sabaigw.log; exec 2>&1; exec 1>/var/log/sabaigw.log;
 
 #find our local network, minus last octet.  For example 192.168.199.1 becomes 192.168.199
-lan_prefix="$(uci get network.lan.ipaddr | cut -d '.' -f1,2,3)"; 
+lan_prefix="$(uci get network.lan.ipaddr | cut -d '.' -f1,2,3)";
 
 #TODO: Unused functionality for now.
 #get the current server address for sabaitechnology.biz for address services
@@ -17,24 +20,58 @@ _check_static(){
 	[ -n "$(uci show sabai | grep $1)" ] && sed -i "8i\/usr/sbin/ip rule add from "$1" table $2" /etc/rc.local
 }
 
+#return macs of all clients whose route is not local (need special vpn dns)
+_get_mac(){
+	data=$(uci get sabai.dhcp.tablejs)
+	json_load "$data"
+	json_get_keys keys
+	num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
+	i=1
+	for i in $(seq 1 $num_items)
+	do
+		json_select $i
+		json_get_var mac mac
+		json_get_var route route
+		[ ! "$route" == "local" ] && echo $mac
+		json_select ..
+	done
+}
+
 #configure vpn route table
 _vpn_config(){
-  	ip route add $2 dev $1
+	ip route add $2 dev $1
 	ip route | grep $1 | while read vpn_rt; do ip route add $vpn_rt table vpn; done
 	ip route del $2 dev $1
+	#ensure all vpn users get proper dns
+	for mac in $(_get_mac)
+	do
+		uci add firewall redirect > /dev/null
+		uci set firewall.@redirect[-1].src='lan'
+		uci set firewall.@redirect[-1].dest='wan'
+		uci set firewall.@redirect[-1].src_mac=$mac
+		uci set firewall.@redirect[-1].src_dport='53'
+		uci set firewall.@redirect[-1].proto='tcpudp'
+		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
+		# uci set firewall.@redirect[-1].dest_ip='98.158.112.14'
+		uci set firewall.@redirect[-1].dest_port='5353'
+		uci set firewall.@redirect[-1].target='DNAT'
+	done
+	uci commit firewall
+  logger "Restarting firewall"
+  /etc/init.d/firewall restart > /dev/null
 }
 
 _vpn_start(){
 	if [ "$(ifconfig | grep tun0)" != "" ]; then
 		vpn_device="tun0"
 		vpn_gateway="$(ifconfig tun0 | grep P-t-P: | awk '{print $3}' | sed 's/P-t-P://g')"
-                _vpn_config $vpn_device $vpn_gateway
+		_vpn_config $vpn_device $vpn_gateway
 	elif [ "$(ifconfig | grep pptp-vpn)" != "" ]; then
 		vpn_device="pptp-vpn";
 		vpn_gateway="$(ifconfig pptp-vpn | grep P-t-P: | awk '{print $3}' | sed 's/P-t-P://g')";
 		_vpn_config $vpn_device $vpn_gateway
-        else
-                logger "NO VPN route table was added."
+	else
+		logger "NO VPN route table was added."
 	fi
 }
 
@@ -59,27 +96,27 @@ _start(){
 	for i in wan acc vpn; do ip route add "$lan_prefix.0/24" dev br-lan table $i; done
 	wan_gateway="$(uci get network.wan.gateway)"; wan_iface="$(uci get network.wan.ifname)";
 	#adding wan route to 1 table
-	[ -n "$wan_iface" ] && ([ -n "$wan_gateway" ] && [ "$wan_gateway" != "0.0.0.0" ]) && ip route add default via $wan_gateway dev $wan_iface table wan 
+	[ -n "$wan_iface" ] && ([ -n "$wan_gateway" ] && [ "$wan_gateway" != "0.0.0.0" ]) && ip route add default via $wan_gateway dev $wan_iface table wan
 	#ensure that accelerator IP is set
 	if [ "$(uci get sabai.general.ac_ip)" = "" ]; then
 		uci $UCI_PATH set sabai.general.ac_ip=2
 		uci $UCI_PATH commit sabai
 		cp -r /etc/config/sabai /configs/
 	fi
-	# adding route to the accelerator to 2 table 
-	
+	# adding route to the accelerator to 2 table
+
 	ip route add default via "$lan_prefix.$(uci get sabai.general.ac_ip)" dev br-lan table acc
 	# adding VPN route to table 3
 	_vpn_start
 }
 
 _ip_rules(){
-	#setting priority 
+	#setting priority
 	val_prio=2
-        #assign statics to ip rules                                                                                                            
+	#assign statics to ip rules
 	case $1 in
 		local)
-			ip rule add prio $val_prio from "$2" table wan 
+			ip rule add prio $val_prio from "$2" table wan
 			_check_static $2 wan
 		;;
 		vpn_fallback)
@@ -95,7 +132,7 @@ _ip_rules(){
 			ip rule add prio $val_prio from "$2" table acc
 			_check_static $2 acc
 		;;
-        esac
+	esac
 
 	_fin
 

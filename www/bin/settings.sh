@@ -1,7 +1,7 @@
 #!/bin/ash
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
-UCI_PATH="-c /configs"
+UCI_PATH=""
 act=$1
 
 _hostname(){

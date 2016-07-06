@@ -35,7 +35,7 @@ if (!empty($_FILES['_browse1']['tmp_name'])) {
 						echo "true";
 					} else {
 						echo "OVPN configuration was not uploaded.";
-					} 
+					}
 				} else {
 					exec("rm /configs/$name");
 					echo "Failed.You tried to upload some wrong configuration.";
@@ -56,12 +56,12 @@ if (!empty($_FILES['_browse1']['tmp_name'])) {
 			} else {
 				exec("rm /configs/$uploadfile");
 				echo "Failed.You tried to upload some wrong configuration.";
-			} 
+			}
 		} else {
 			echo "Something went wrong. No file was uploaded.";
 		}
 		exec("rm /tmp/$uploadfile");
-		exec("rm /etc/config/$uploadfile");		
+		exec("rm /etc/config/$uploadfile");
 	}
 } else {
         echo "false";
