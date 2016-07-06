@@ -1,7 +1,7 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology, LLC
-$UCI_PATH = "-c /configs";
+$UCI_PATH = "";
 //receive action requested from GUI
 $act = $_POST['act'];
 
@@ -9,9 +9,9 @@ if ($act == "save") {
 	//receive datatables information from GUI
 	$json = json_decode($_POST['dhcptable'], true);
 
-	//set file to be used to process data into effective json format 
-	$file = '/tmp/table1';  
-	unset ($json[0]); //MAKE BIG SENSE 
+	//set file to be used to process data into effective json format
+	$file = '/tmp/table1';
+	unset ($json[0]); //MAKE BIG SENSE
 	$aaData=json_encode($json);
 
 	//write initial json data into file for dhcptable.sh to work on
@@ -29,11 +29,11 @@ if ($act == "save") {
 	//cleanup workspace
 	//exec("rm /tmp/table*");
 
-	// Send completion message back to UI                                
-	echo $res; 
+	// Send completion message back to UI
+	echo $res;
 
 } elseif ($act == "get") {
-	//sabai.dhcp.table is constructed and assigned 
+	//sabai.dhcp.table is constructed and assigned
 	exec("sh /www/bin/dhcp.sh get");
 }
-?>  
+?>

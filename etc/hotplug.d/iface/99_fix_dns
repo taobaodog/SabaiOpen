@@ -1,0 +1,9 @@
+[ "$ACTION" = "ifdown" -a "$INTERFACE" = "vpn" ] && {
+	logger "####### DEBUG ########"
+	for i in $(uci show firewall | grep -e "dest_port='5353'" | cut -d "[" -f2 | cut -d "]" -f1 | sort -r)
+	do
+      # logger "### MORE DEBUG $i"
+		uci delete firewall.@redirect[$i]
+		uci commit firewall
+	done
+}

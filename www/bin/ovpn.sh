@@ -18,7 +18,7 @@ _stop(){
 	if [ ! "$(cat /tmp/check | grep tun0)" ] && [ "$(uci get sabai.vpn.proto)" != "ovpn" ]; then
 		logger "No OpenVPN is running."
 		_return 0 "No OpenVPN is running."
-	else 
+	else
 		_clear
 		/etc/init.d/firewall restart
 		#prevent ovpn start during the boot
@@ -39,7 +39,7 @@ _start(){
 	if [ ! -e /etc/sabai/openvpn/ovpn.current ]; then
 		_return 0 "No file is loaded."
 	fi
-	
+
 	_config
 	/etc/init.d/openvpn start
 	/etc/init.d/openvpn enable
@@ -62,72 +62,72 @@ _config(){
 		uci $UCI_PATH set sabai.vpn.status=Starting
 		uci $UCI_PATH set sabai.vpn.proto=ovpn
 		uci $UCI_PATH commit sabai
-		cp -r /etc/config/sabai /configs/sabai                                                                          
-		logger "Vpn stopped and network restarted"                                                                                     
-		sleep 5                                                                                                                        
+		cp -r /etc/config/sabai /configs/sabai
+		logger "Vpn stopped and network restarted"
+		sleep 5
 	elif [ "$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')" ]; then
 		/www/bin/tor.sh off
 	elif [ "$(uci get sabai.vpn.proto)" = "ovpn" ]; then
-		#Removing old configuration.                                                                                                  
-        _clear 
+		#Removing old configuration.
+        _clear
 	else
 		logger "No VPN is running."
 	fi
-	                                                                                                                  
- 	#Configuring openvpn profile.                                                                                 
-	uci set openvpn.sabai.log='/var/log/ovpn.log'                                                                               
-	uci set openvpn.sabai.enabled=1                                                                                                        
+
+ 	#Configuring openvpn profile.
+	uci set openvpn.sabai.log='/var/log/ovpn.log'
+	uci set openvpn.sabai.enabled=1
 	uci set openvpn.sabai.filename="$(cat /etc/sabai/openvpn/ovpn.filename)"
-	uci commit openvpn                                                                                                                     
-	#Configuring network interface                                                                                
-	uci set network.sabai=interface                                                                                                        
-	uci set network.sabai.ifname='tun0'                                                                                                    
-	uci set network.sabai.proto='none'                                                                                                     
- 	uci commit network                                                                                            
-	#Firewall settings                                                                                                                     
-	uci set firewall.ovpn=zone                                                                                                             
-	uci set firewall.ovpn.name=sabai                                                                                                       
-	uci set firewall.ovpn.input=ACCEPT                                                                            
-	uci set firewall.ovpn.output=ACCEPT                                                                                                    
-	uci set firewall.ovpn.forward=ACCEPT                                                                                                   
-	uci set firewall.ovpn.network=sabai                                                                                                    
+	uci commit openvpn
+	#Configuring network interface
+	uci set network.sabai=interface
+	uci set network.sabai.ifname='tun0'
+	uci set network.sabai.proto='none'
+ 	uci commit network
+	#Firewall settings
+	uci set firewall.ovpn=zone
+	uci set firewall.ovpn.name=sabai
+	uci set firewall.ovpn.input=ACCEPT
+	uci set firewall.ovpn.output=ACCEPT
+	uci set firewall.ovpn.forward=ACCEPT
+	uci set firewall.ovpn.network=sabai
 	uci set firewall.ovpn.masq=1
-	uci add firewall forwarding                                                                                                            
+	uci add firewall forwarding
 	[ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
-	uci set firewall.@forwarding[-1].dest=sabai                                                                                            
-	uci commit firewall                                                                                           
-	uci $UCI_PATH set sabai.vpn.status=Started                                                                                             
-	uci $UCI_PATH set sabai.vpn.proto=ovpn                                                                                                 
+	uci set firewall.@forwarding[-1].dest=sabai
+	uci commit firewall
+	uci $UCI_PATH set sabai.vpn.status=Started
+	uci $UCI_PATH set sabai.vpn.proto=ovpn
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/sabai
 
 	# check if log file is set
 	[ -e /var/log/ovpn.log ] || touch /var/log/ovpn.log
 	if [ ! "$(cat /etc/sabai/openvpn/ovpn.current | grep log-)" ]; then
-		echo -e "\n log-append '$(uci get openvpn.sabai.log)'" >> /etc/sabai/openvpn/ovpn.current 
+		echo -e "\n log-append '$(uci get openvpn.sabai.log)'" >> /etc/sabai/openvpn/ovpn.current
 		(cat /etc/sabai/openvpn/ovpn.current | grep verb) || echo "verb 3" >> /etc/sabai/openvpn/ovpn.current
 	fi
 }
 
 
 _clear(){
-	uci delete network.sabai                                                                    
-	uci commit network                                                                          
-	#Removing configuration of firewall.                                                        
+	uci delete network.sabai
+	uci commit network
+	#Removing configuration of firewall.
 	forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
-	if [ "$forward" != "" ]; then                                                                                             
+	if [ "$forward" != "" ]; then
                 uci delete firewall.@forwarding["$forward"]
 	fi
-	uci delete firewall.ovpn                                                                    
-	uci commit firewall                                                                         
-	uci $UCI_PATH set sabai.vpn.proto=none                                                     
+	uci delete firewall.ovpn
+	uci commit firewall
+	uci $UCI_PATH set sabai.vpn.proto=none
 	uci $UCI_PATH set sabai.vpn.status=none
 	uci $UCI_PATH set sabai.vpn.dns='0'
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/sabai
 	uci delete dhcp.@dnsmasq[0].server
 	uci commit dhcp
-	/etc/init.d/openvpn stop                                                                    
+	/etc/init.d/openvpn stop
 	/etc/init.d/openvpn disable
 	check=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | wc -l)
 	echo "$check"
@@ -170,7 +170,7 @@ _stat(){
 		cp -r /etc/config/sabai /configs/sabai
 
 		[ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
-		
+
 		logger "Openvpn started."
 		_return 1 "OpenVPN started."
 	fi
@@ -209,7 +209,7 @@ _log() {
 	sed -n '1{h;T;};G;h;$p;' /var/log/ovpn.log > /var/log/ovpn_web.log
 }
 
-ls >/dev/null 2>/dev/null 
+ls >/dev/null 2>/dev/null
 
 case $action in
 	start)	_start	;;

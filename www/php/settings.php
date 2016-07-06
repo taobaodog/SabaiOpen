@@ -2,7 +2,7 @@
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
  header("Content-type: text/plain");
-$UCI_PATH=""; 
+$UCI_PATH="";
 if(isset($_REQUEST['act']) && $_REQUEST['act']!="")
 {
 $filter = array("<", ">","="," (",")",";","/","|");

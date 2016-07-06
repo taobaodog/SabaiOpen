@@ -13,27 +13,27 @@ action=$1
 UCI_PATH=""
 
 #Set config for static attribute
-_static_on(){                                                                                                                                  
-        uci add dhcp host                                                                                                                      
-        uci set dhcp.@host[-1].ip=$1                                                                                                           
-        uci set dhcp.@host[-1].mac=$2                                                                                                          
-        uci set dhcp.@host[-1].name="$3"                                                                                                       
-        uci commit dhcp                                                                                                                        
-	uci $UCI_PATH add sabai dhcphost                                                        
-	uci $UCI_PATH set sabai.@dhcphost[-1].ip=$1                                                                                            
-	uci $UCI_PATH set sabai.@dhcphost[-1].mac=$2                                                                                           
-	uci $UCI_PATH set sabai.@dhcphost[-1].name="$3"                             
-	uci $UCI_PATH set sabai.@dhcphost[-1].route=$4                                          
+_static_on(){
+	uci add dhcp host
+	uci set dhcp.@host[-1].ip=$1
+	uci set dhcp.@host[-1].mac=$2
+	uci set dhcp.@host[-1].name="$3"
+	uci commit dhcp
+	uci $UCI_PATH add sabai dhcphost
+	uci $UCI_PATH set sabai.@dhcphost[-1].ip=$1
+	uci $UCI_PATH set sabai.@dhcphost[-1].mac=$2
+	uci $UCI_PATH set sabai.@dhcphost[-1].name="$3"
+	uci $UCI_PATH set sabai.@dhcphost[-1].route=$4
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
 }
 
 _vpn_on(){
-	if [ "$(uci get sabai.vpn.status)" != none ]; then                              
-		/www/bin/gw.sh iprules $route $ip                                                                                      
-		logger "$1 has vpn route."                                                                                            
-	else                                                                            
-		logger "VPN is off. $1 has default route."                                                                            
+	if [ "$(uci get sabai.vpn.status)" != none ]; then
+		/www/bin/gw.sh iprules $route $ip
+		logger "$1 has vpn route."
+	else
+		logger "VPN is off. $1 has default route."
 	fi
 }
 
@@ -110,8 +110,8 @@ _get(){
 			#backup last data
 			cp /tmp/dhcp.leases /tmp/dhcp.leases_backup
 		else
-	        	logger "DHCP table has no changes."
-        	fi
+			logger "DHCP table has no changes."
+		fi
 	else
 		echo -n '{"aaData": ['> /www/libs/data/dhcp.json
 		echo -n '{' > /tmp/dhcptable
@@ -158,7 +158,7 @@ fi
 #delete old dhcp settings
 hosts=$(uci show dhcp | grep =host | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 while [ $hosts -ge 0 ]
-do	
+do
 	echo "deleting rule  #$i:"
 	uci delete dhcp.@host["$hosts"]
 	uci commit dhcp
@@ -167,7 +167,7 @@ done
 #delete old sabai dhcp settings
 hosts=$(uci $UCI_PATH show sabai | grep =dhcphost | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 while [ $hosts -ge 0 ]
-do	
+do
 	echo "deleting rule  #$i:"
 	uci $UCI_PATH delete sabai.@dhcphost["$hosts"]
 	uci $UCI_PATH commit sabai
@@ -181,16 +181,16 @@ done
 #parsing data from WEB UI
 data="$(cat /tmp/tmpdhcptable)"
 json_load "$data"
-json_select 1 
+json_select 1
 json_select ..
 json_get_keys keys
 num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
 i=1
 while [ $i -le $num_items ]
-do	
+do
 	echo "processing rule  #$i:"
-	json_select $i                           
-        json_get_var static static
+	json_select $i
+	json_get_var static static
 	json_get_var route route
 	json_get_var ip ip
 	json_get_var mac mac
@@ -201,14 +201,14 @@ do
 	rule_name=$(uci show firewall | grep "$ip" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 	[ -n "$rule_name" ] && uci delete firewall.@rule[$rule_name] && uci commit firewall
 
-        if [ "$static" = "on" ]; then                                                                                                          
-                _static_on $ip $mac $name $route                                                                                               
-                logger "$ip set to Static IP."                                      
-        else                                                                                    
-                logger "$ip is not Static."                                                                                                    
-        fi
+	if [ "$static" = "on" ]; then
+		_static_on $ip $mac $name $route
+		logger "$ip set to Static IP."
+	else
+		logger "$ip is not Static."
+	fi
 	#defining route
-	if [ "$route" = "vpn_fallback" ]; then 
+	if [ "$route" = "vpn_fallback" ]; then
 		_vpn_on $ip
 	elif [ "$route" = "vpn_only" ]; then
 		_vpn_on $ip
@@ -237,7 +237,7 @@ else
 	/etc/init.d/firewall restart
 	logger "dhcp settings applied and firewall restarted"
 
-	ls >/dev/null 2>/dev/null 
+	ls >/dev/null 2>/dev/null
 
 	# Send completion message back to UI
 	echo "res={ sabai: 1, msg: 'DHCP settings applied' }"
@@ -267,7 +267,7 @@ _json() {
 }
 
 
-ls >/dev/null 2>/dev/null 
+ls >/dev/null 2>/dev/null
 
 case $action in
 	json)	_json	;;
