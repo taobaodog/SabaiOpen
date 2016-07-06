@@ -43,8 +43,8 @@ _stop(){
 		cp -r /etc/config/sabai /configs/sabai
 		# uci delete dhcp.@dnsmasq[0].server
 		#unset dns for pptp
-		uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.auto'
-		uci commit dhcp
+		# uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.auto'
+		# uci commit dhcp
 		if [ $config_act = "update" ]; then
 			_rm_nw_fw vpn
 			echo "network" >> /tmp/.restart_services
@@ -53,9 +53,9 @@ _stop(){
 			env -i /sbin/ifdown vpn
 			# Update routing table
 			udhcpc
-			# rm pprp settings only after ifdown
+			# rm pptp settings only after ifdown
 			_rm_nw_fw vpn
-			/etc/init.d/dnsmasq restart
+			# /etc/init.d/dnsmasq restart
 			/etc/init.d/firewall restart
 		fi
 		uci $UCI_PATH set sabai.vpn.proto=none
@@ -98,7 +98,7 @@ _start(){
 	uci set network.vpn.username="$user"
 	uci set network.vpn.password="$pass"
 	#ip needed so dnsmasq can be restarted safely
-	uci set network.vpn.server=`dig +short $server`
+	uci set network.vpn.server="$server"
 	uci set network.vpn.buffering=1
 	uci commit network
 
@@ -128,8 +128,8 @@ _start(){
     #commit all changed services
 	uci commit firewall
     #set dns for pptp
-	uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.ppp'
-	uci commit dhcp
+	# uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.ppp'
+	# uci commit dhcp
     #set sabai vpn settings
 	uci $UCI_PATH set sabai.vpn.proto=pptp
 	uci $UCI_PATH set sabai.vpn.status=Starting
@@ -143,7 +143,7 @@ _start(){
 	else
 		/etc/init.d/firewall restart
 		sleep 2
-		/etc/init.d/dnsmasq restart
+		# /etc/init.d/dnsmasq restart
 		# /etc/init.d/network restart
 		env -i /sbin/ifup vpn
 	fi
