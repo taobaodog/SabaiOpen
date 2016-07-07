@@ -6,6 +6,8 @@
 # put custom rules into the root chains e.g. INPUT or FORWARD or into the
 # special user chains, e.g. input_wan_rule or postrouting_lan_rule.
 
+echo 1 > /proc/sys/net/ipv4/conf/all/route_localnet
+
 # allow traffic forwarding to the tunnel
 route="$(ip route | grep eth0 | grep '.0/' | awk '{print $1}')"
 iptables -I FORWARD -s $route -o tun+ -j ACCEPT
@@ -14,16 +16,7 @@ iptables -t nat -I POSTROUTING -o pptp-vpn  -j MASQUERADE
 iptables -t nat -I POSTROUTING -o tun+  -j MASQUERADE
 
 # change DNS rules if VPN is running 
-if [ "$(uci get sabai.vpn.status)" = "Connected" ] && [ "$(uci show dhcp.@dnsmasq[0].server)" != "" ]; then
-        dns_servers="$(uci get dhcp.@dnsmasq[0].server)"
-        set -- $dns_servers
-        dns_num=$(echo $#)
-        for i in $dns_servers
-        do
-                iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$i"
-        done
-        logger "DNS rules was changed according VPN protocol."
-elif  [ "$(uci get sabai.vpn.status)" = "Anonymity" ]; then
+if [ "$(uci get sabai.vpn.status)" = "Anonymity" ]; then
 	/www/bin/tor.sh tun
 else
         logger "DNS rules are default."
