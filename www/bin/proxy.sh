@@ -14,13 +14,16 @@ act=$1
 if [ "vpna" = "$(uci get system.@system[0].hostname)" ]; then
 	# the ip address of the device
 	ip="$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'):8080"
-
 	# the ip address and mask of the device
 	iproute="'$(ip route | grep -e "/24 dev eth0" | awk -F: '{print $0}' | awk '{print $1}')'"
-
 	# the proxy address and mask in the configuration file
 	proxyroute=$(cat /etc/config/privoxy | grep -e "permit_access" | awk -F: '{print $0}' | awk '{print $3}')
+else
+	ip="$(ifconfig br-lan | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'):8080"
+	iproute="'$(ip route | grep -e "/24 dev br-lan" | awk -F: '{print $0}' | awk '{print $1}')'"
+	proxyroute=$(cat /etc/config/privoxy | grep -e "permit_access" | awk -F: '{print $0}' | awk '{print $3}')
 fi
+
 
 
 _return(){
