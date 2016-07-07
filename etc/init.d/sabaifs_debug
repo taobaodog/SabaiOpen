@@ -10,56 +10,56 @@ _copy_config() {
 		cp -fR /configs/backup/openvpn /etc/sabai
 		rm /etc/config/sabai
 	else
-        	cp -fR /configs/custom_$1/config /etc
-        	cp -fR /configs/custom_$1/openvpn /etc/sabai
+		cp -fR /configs/custom_$1/config /etc
+		cp -fR /configs/custom_$1/openvpn /etc/sabai
 		mv /etc/config/sabai /configs
 	fi
-        [ -h "/etc/config/sabai" ] || ln -s /configs/sabai /etc/config/sabai
-        [ -h /www/configs ] || ln -s /configs /www/configs
+	[ -h "/etc/config/sabai" ] || ln -s /configs/sabai /etc/config/sabai
+	[ -h /www/configs ] || ln -s /configs /www/configs
 }
 
 create_partitions() {
 	CMD=$( ls /dev/sda5 )
-        if [ $? = 0 ]; then
-                echo "SABAI:> Found sabai partitions. Nothing to do"
-                return 0;
-        fi
+	if [ $? = 0 ]; then
+		echo "SABAI:> Found sabai partitions. Nothing to do"
+		return 0;
+	fi
 
-        echo "+++++++++++++++++++++++++++++++++++++++++++++"
-        echo "Sabai Networks 1st boot. Creating filesystems"
-        echo "+++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Sabai Networks 1st boot. Creating filesystems"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++"
 
-        /etc/init.d/fdisker
+	/etc/init.d/fdisker
 
 	echo "SABAI:> partitions created"
 
-        reboot
-        exit 0
+	reboot
+	exit 0
 
 }
 
 make_filesystems() {
 
-        logger "SABAI:> making filesystems"
+	logger "SABAI:> making filesystems"
 	mount -t ext2 /dev/sda1 /mnt
 	CMD_FILE=$(ls /mnt/boot/vmlinuz2)
 	umount /dev/sda1
-        if [ -z "$CMD_FILE" ]; then
-                echo "SABAI:> Found sabai partitions. Creating filesystems"
-                mkfs.ext4 -F /dev/sda5
-                mkfs.ext4 -F /dev/sda6
-                mkfs.ext4 -F /dev/sda7
-                echo "SABAI:> Copying kernel partition"
-                mount -t ext4 /dev/sda1 /mnt
-                cp -f /mnt/boot/vmlinuz /mnt/boot/vmlinuz2
+	if [ -z "$CMD_FILE" ]; then
+		echo "SABAI:> Found sabai partitions. Creating filesystems"
+		mkfs.ext4 -F /dev/sda5
+		mkfs.ext4 -F /dev/sda6
+		mkfs.ext4 -F /dev/sda7
+		echo "SABAI:> Copying kernel partition"
+		mount -t ext4 /dev/sda1 /mnt
+		cp -f /mnt/boot/vmlinuz /mnt/boot/vmlinuz2
 		mv /mnt/boot/vmlinuz /mnt/boot/vmlinuz1
 
-                cp -f /etc/sabai/grub.cfg.sabai /mnt/boot/grub/grub.cfg
-                umount /dev/sda1
+		cp -f /etc/sabai/grub.cfg.sabai /mnt/boot/grub/grub.cfg
+		umount /dev/sda1
 
-                mount -t ext4 /dev/sda5 /mnt
-                grub-editenv /mnt/grubenv create
-                grub-editenv /mnt/grubenv set boot_entry=0
+		mount -t ext4 /dev/sda5 /mnt
+		grub-editenv /mnt/grubenv create
+		grub-editenv /mnt/grubenv set boot_entry=0
 		grub-editenv /mnt/grubenv set is_upgrade=0
 		BOOT_ENTRY=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
                 umount /dev/sda5
