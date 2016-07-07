@@ -15,7 +15,7 @@
 		uci commit uhttpd
 
 		uci set privoxy.privoxy.permit_access=$permit_access
-		uci set privoxy.privoxy.listen_address=$ip':8080 127.0.0.1:8080'
+		uci set privoxy.privoxy.listen_address=$ip_lan':8080 127.0.0.1:8080'
 		uci commit privoxy
 
 		uci set dropbear.@dropbear[0].Interface='lan'

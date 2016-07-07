@@ -10,7 +10,7 @@
 		ip_wan="$(ifconfig -a eth0 | grep -F "inet addr" | awk '{print $2}' | tr -d 'addr:')"
 		gateway_wan="$( route -n | grep eth0 | grep "UG" | awk '{print $2}')"
 		mask_wan="$( route -n | grep eth0 | grep "UH" | awk '{print $3}')"
-		
+
 		uci set network.wan.ipaddr=$ip_wan
 		uci set network.wan.gateway=$gateway_wan
 		uci set network.wan.netmask=$mask_wan
@@ -32,7 +32,7 @@
 			uci commit uhttpd
 
 			uci set privoxy.privoxy.permit_access=$permit_access
-			uci set privoxy.privoxy.listen_address=$ip':8080 127.0.0.1:8080'
+			uci set privoxy.privoxy.listen_address=$ip_wan':8080 127.0.0.1:8080'
 			uci commit privoxy
 		fi
 
