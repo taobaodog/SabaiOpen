@@ -36,6 +36,7 @@ function newfile(){
     $filelocation='/etc/sabai/openvpn/ovpn.current';
    $contents = preg_replace(array("/^script-security.*/m","/^route-up .*/m","/^up .*/m","/^down .*/m"),"",$contents);
   file_put_contents($filelocation, $contents);
+  file_put_contents($filelocation, "script-security 2\ndown /www/bin/flush_dns_fix.sh", FILE_APPEND);
  $type = strrchr($file,".");
  file_put_contents('/etc/sabai/openvpn/auth-pass', '');
   exec("uci set openvpn.sabai.filetype=$type");

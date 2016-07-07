@@ -22,8 +22,8 @@ _stop(){
 		_clear
 		/etc/init.d/firewall restart
 		#prevent ovpn start during the boot
-        uci set openvpn.sabai.enabled='0'
-        uci commit openvpn
+		uci set openvpn.sabai.enabled='0'
+		uci commit openvpn
 		logger "Openvpn stopped"
 		_return 1 "OpenVPN stopped."
 	fi
@@ -69,7 +69,7 @@ _config(){
 		/www/bin/tor.sh off
 	elif [ "$(uci get sabai.vpn.proto)" = "ovpn" ]; then
 		#Removing old configuration.
-        _clear
+		_clear
 	else
 		logger "No VPN is running."
 	fi
@@ -93,9 +93,21 @@ _config(){
 	uci set firewall.ovpn.network=sabai
 	uci set firewall.ovpn.masq=1
 	uci add firewall forwarding
-	[ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
+	if [ "$device" = "vpna" ]; then
+		uci add firewall redirect > /dev/null
+		uci set firewall.@redirect[-1].src='wan'
+		uci set firewall.@redirect[-1].src_dport='53'
+		uci set firewall.@redirect[-1].proto='tcpudp'
+		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
+		uci set firewall.@redirect[-1].dest_port='5353'
+		uci set firewall.@redirect[-1].target='DNAT'
+	else
+		uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
+	fi
+	# [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
 	uci set firewall.@forwarding[-1].dest=sabai
 	uci commit firewall
+	/etc/init.d/firewall restart
 	uci $UCI_PATH set sabai.vpn.status=Started
 	uci $UCI_PATH set sabai.vpn.proto=ovpn
 	uci $UCI_PATH commit sabai
@@ -116,7 +128,7 @@ _clear(){
 	#Removing configuration of firewall.
 	forward=$(uci show firewall | grep forwarding | grep dest=\'sabai\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 	if [ "$forward" != "" ]; then
-                uci delete firewall.@forwarding["$forward"]
+		uci delete firewall.@forwarding["$forward"]
 	fi
 	uci delete firewall.ovpn
 	uci commit firewall

@@ -91,7 +91,7 @@ _start(){
 	user=$(uci get $config_file.vpn.username)
 	pass=$(uci get $config_file.vpn.password)
 	server=$(uci get $config_file.vpn.server)
-    #set the network vpn settings
+	#set the network vpn settings
 	uci set network.vpn=interface
 	uci set network.vpn.ifname=pptp-vpn
 	uci set network.vpn.proto=pptp
@@ -102,7 +102,7 @@ _start(){
 	uci set network.vpn.buffering=1
 	uci commit network
 
-    #set pptp mppe settings
+	#set pptp mppe settings
 	req_mppe_128=$(uci get $config_file.vpn.req_mppe_128)
 	mppe_mode=$(uci get $config_file.vpn.mppe_mode)
 
@@ -114,7 +114,7 @@ _start(){
 		echo "mppe $mppe_config" >> /etc/ppp/options.pptp
 	fi
 
-    #set the firewall
+	#set the firewall
 	uci set firewall.vpn=zone
 	uci set firewall.vpn.name=vpn
 	uci set firewall.vpn.input=ACCEPT
@@ -123,20 +123,31 @@ _start(){
 	uci set firewall.vpn.network=vpn
 	uci set firewall.vpn.masq=1
 	uci add firewall forwarding
-	[ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
+	if [ "$device" = "vpna" ]; then
+		uci add firewall redirect > /dev/null
+		uci set firewall.@redirect[-1].src='wan'
+		uci set firewall.@redirect[-1].src_dport='53'
+		uci set firewall.@redirect[-1].proto='tcpudp'
+		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
+		uci set firewall.@redirect[-1].dest_port='5353'
+		uci set firewall.@redirect[-1].target='DNAT'
+	else
+		uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
+	fi
+	# [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
 	uci set firewall.@forwarding[-1].dest=vpn
-    #commit all changed services
+	#commit all changed services
 	uci commit firewall
-    #set dns for pptp
+	#set dns for pptp
 	# uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.ppp'
 	# uci commit dhcp
-    #set sabai vpn settings
+	#set sabai vpn settings
 	uci $UCI_PATH set sabai.vpn.proto=pptp
 	uci $UCI_PATH set sabai.vpn.status=Starting
 	uci $UCI_PATH set sabai.vpn.status=pptp
-		uci $UCI_PATH commit
-		cp -r /etc/config/sabai /configs/sabai
-    #restart services
+	uci $UCI_PATH commit
+	cp -r /etc/config/sabai /configs/sabai
+	#restart services
 	if [ $config_act = "update" ]; then
 		echo "network" >> /tmp/.restart_services
 		echo "firewall" >> /tmp/.restart_services
