@@ -3,7 +3,7 @@
 # Copyright 2016 Sabai Technology
 
 # UCI_PATH="-c /configs"
-UCI_PATH="" 
+UCI_PATH=""
 # this script allows 2 variables to be passed to it, as documented below:
 # act variable is the action sent into the script
 
@@ -47,10 +47,10 @@ _proxystart(){
  	fi
 	uci set privoxy.privoxy.listen_address=$ip
 	uci commit privoxy
- 	uci $UCI_PATH set sabai.proxy.status="On"
+	uci $UCI_PATH set sabai.proxy.status="On"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/sabai
-   
+
 	/etc/init.d/privoxy start
 	_return 1 "Proxy Started"
 }

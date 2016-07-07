@@ -1,6 +1,1 @@
-[ "$ACTION" = "ifdown" -a \( "$INTERFACE" = "vpn" -o "$INTERFACE" = "tun0" \) ] && {
-	for i in $(uci show firewall | grep -e "dest_port='5353'" | cut -d "[" -f2 | cut -d "]" -f1 | sort -r); do
-		uci delete firewall.@redirect[$i]
-		uci commit firewall
-	done
-}
+[ "$ACTION" = "ifdown" -a "$INTERFACE" = "vpn" ] && /www/bin/flush_dns_fix.sh
