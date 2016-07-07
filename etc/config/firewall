@@ -139,7 +139,7 @@ config 'rule'
 	option dest_port '53'
 	option proto 'tcpudp'
 	option target 'ACCEPT'
-  
+
 config 'rule'
 	option name 'Allow DHCP request'
 	option src 'guest'

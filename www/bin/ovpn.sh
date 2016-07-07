@@ -190,10 +190,9 @@ _dns_fix(){
 			i=$(( $i + 1 ))
 		done
 
+		cp /dev/null /tmp/resolv.conf.vpn
 		for i in $tun_dns; do
-			iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j DNAT --to "$i"
-			uci add_list dhcp.@dnsmasq[0].server="$i"
-			uci commit dhcp
+			echo $i >> /tmp/resolv.conf.vpn
 		done
 		uci $UCI_PATH set sabai.vpn.dns='1'
 		logger "DNS for VPN was set."

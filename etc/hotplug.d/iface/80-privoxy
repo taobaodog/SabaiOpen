@@ -25,5 +25,5 @@ if [ $status ]; then
 	uci -c /configs commit sabai
 else
 	uci -c /configs set sabai.proxy.status="Off"
-        uci -c /configs commit sabai
+	uci -c /configs commit sabai
 fi

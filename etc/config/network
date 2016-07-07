@@ -30,7 +30,6 @@ config interface 'sabai'
 	option proto 'none'
 
 config 'interface' 'guest'
-        option 'proto' 'static'
-        option 'ipaddr' '10.0.0.1'
-        option 'netmask' '255.255.255.0'
-
+	option 'proto' 'static'
+	option 'ipaddr' '10.0.0.1'
+	option 'netmask' '255.255.255.0'

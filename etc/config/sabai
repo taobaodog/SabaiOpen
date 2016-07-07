@@ -26,8 +26,8 @@ config interface 'wan'
 
 config interface 'tor'
 	option proto 'static'
- 	option ipaddr '20.0.0.1'
- 	option netmask '255.255.255.0'
+	option ipaddr '20.0.0.1'
+	option netmask '255.255.255.0'
 	option network '10.192.0.0'
 	option mode 'off'
 
@@ -105,7 +105,7 @@ config settings 'wlradio1'
 
 config settings 'proxy'
 	option status 'Off'
-	
+
 config settings 'vpn'
 	option proto 'none'
 	option status 'none'
