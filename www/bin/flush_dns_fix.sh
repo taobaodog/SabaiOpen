@@ -3,3 +3,4 @@ for i in $(uci show firewall | grep -e "dest_port='5353'" | cut -d "[" -f2 | cut
 	uci delete firewall.@redirect[$i]
 	uci commit firewall
 done
+/etc/init.d/firewall restart > /dev/null

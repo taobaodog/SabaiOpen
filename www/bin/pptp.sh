@@ -56,7 +56,7 @@ _stop(){
 			# rm pptp settings only after ifdown
 			_rm_nw_fw vpn
 			# /etc/init.d/dnsmasq restart
-			/etc/init.d/firewall restart
+			/etc/init.d/firewall restart > /dev/null
 		fi
 		uci $UCI_PATH set sabai.vpn.proto=none
 		uci $UCI_PATH set sabai.vpn.ip=none
@@ -131,8 +131,9 @@ _start(){
 		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
+		uci set firewall.@forwarding[-1].src=wan
 	else
-		uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
+		uci set firewall.@forwarding[-1].src=lan
 	fi
 	# [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
 	uci set firewall.@forwarding[-1].dest=vpn
@@ -152,7 +153,7 @@ _start(){
 		echo "network" >> /tmp/.restart_services
 		echo "firewall" >> /tmp/.restart_services
 	else
-		/etc/init.d/firewall restart
+		/etc/init.d/firewall restart > /dev/null
 		sleep 2
 		# /etc/init.d/dnsmasq restart
 		# /etc/init.d/network restart
@@ -184,7 +185,7 @@ _clear(){
 			i=$(( $i + 1 ))
 		done
 	fi
-	/etc/init.d/firewall restart
+	/etc/init.d/firewall restart > /dev/null
 	logger "pptp cleared and firewall restarted."
 }
 

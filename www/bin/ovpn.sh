@@ -20,7 +20,7 @@ _stop(){
 		_return 0 "No OpenVPN is running."
 	else
 		_clear
-		/etc/init.d/firewall restart
+		/etc/init.d/firewall restart > /dev/null
 		#prevent ovpn start during the boot
 		uci set openvpn.sabai.enabled='0'
 		uci commit openvpn
@@ -101,13 +101,14 @@ _config(){
 		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
+		uci set firewall.@forwarding[-1].src=wan
 	else
-		uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
+		uci set firewall.@forwarding[-1].src=lan
 	fi
 	# [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
 	uci set firewall.@forwarding[-1].dest=sabai
 	uci commit firewall
-	/etc/init.d/firewall restart
+	/etc/init.d/firewall restart > /dev/null
 	uci $UCI_PATH set sabai.vpn.status=Started
 	uci $UCI_PATH set sabai.vpn.proto=ovpn
 	uci $UCI_PATH commit sabai
@@ -204,7 +205,7 @@ _dns_fix(){
 
 		cp /dev/null /tmp/resolv.conf.vpn
 		for i in $tun_dns; do
-			echo $i >> /tmp/resolv.conf.vpn
+			echo "nameserver $i" >> /tmp/resolv.conf.vpn
 		done
 		uci $UCI_PATH set sabai.vpn.dns='1'
 		logger "DNS for VPN was set."
