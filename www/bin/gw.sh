@@ -61,10 +61,11 @@ _vpn_config(){
 		# uci set firewall.@redirect[-1].dest_ip='98.158.112.14'
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
+		uci set firewall.@redirect[-1].reflection='0'
 	done
 	uci commit firewall
-  logger "Restarting firewall"
-  /etc/init.d/firewall restart > /dev/null
+	logger "Restarting firewall"
+	/etc/init.d/firewall restart > /dev/null
 }
 
 _vpn_start(){
