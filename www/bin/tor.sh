@@ -24,9 +24,8 @@ _off(){
 		_return 0 "NO TOR is running."
 	fi
 
-
 	/etc/init.d/tor stop
-	
+
 	if [ "$(uci get sabai.tor.mode)" = "ap" ]; then
 		wifi down
 		uci set wireless.@wifi-iface[0].network="mainAP"
@@ -50,7 +49,7 @@ _off(){
 	uci $UCI_PATH set sabai.vpn.status="none"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
-	# must be after sabai changing 
+	# must be after sabai changing
 	/etc/init.d/firewall restart
 
 	logger "TOR turned OFF."
@@ -78,18 +77,17 @@ _ap(){
 	src_dip=$(uci get $config_file.tor.ipaddr | sed 's/.$//' )
 	uci set firewall.@redirect["$redirect"].src_dip='!'$src_dip'0/24'
 	uci commit firewall
-	# ajusting tor deamon	
-	sed -i '/VirtualAddrNetwork/,$d' /etc/tor/torrc	
+	# ajusting tor deamon
+	sed -i '/VirtualAddrNetwork/,$d' /etc/tor/torrc
 	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)" >> /etc/tor/torrc
 	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
 	echo "TransPort 9040" >> /etc/tor/torrc
 	echo "TransListenAddress $(uci get $config_file.tor.ipaddr)" >> /etc/tor/torrc
 	echo "DNSPort 9053" >> /etc/tor/torrc
 	echo "DNSListenAddress $(uci get $config_file.tor.ipaddr)" >> /etc/tor/torrc
-	
-	/etc/init.d/firewall reload
-    /etc/init.d/firewall restart
-	/etc/init.d/odhcp restart
+
+	/etc/init.d/firewall restart
+	/etc/init.d/odhcpd restart
 	/etc/init.d/dnsmasq restart
 	/etc/init.d/tor enable
 	wifi up
@@ -108,11 +106,17 @@ _tun() {
 
 	/etc/init.d/tor stop
 
+	if [ "$device" = "vpna" ]; then
+		ipaddr=$(uci get network.wan.ipaddr)
+	else
+		ipaddr=$(uci get network.lan.ipaddr)
+	fi
+
 	#cat /dev/null  > /etc/tor/torrc
 	echo "# SABAI TOR CONFIG" > /etc/tor/torrc
 	echo "SocksPort 9050" >> /etc/tor/torrc
-	echo "SocksPort $(uci get network.wan.ipaddr):9050" >> /etc/tor/torrc
-	socks_network=$(uci get network.wan.ipaddr | sed 's/.$//')"0/24"
+	echo "SocksPort $ipaddr:9050" >> /etc/tor/torrc
+	socks_network=$(echo $ipaddr | sed 's/.$//')"0/24"
 	echo "SocksPolicy accept $socks_network" >> /etc/tor/torrc
 	echo "SocksPolicy accept 127.0.0.1" >> /etc/tor/torrc
 	echo "SocksPolicy reject *" >> /etc/tor/torrc
@@ -135,11 +139,9 @@ _tun() {
 
 	echo -e "\n" >> /etc/tor/torrc
 	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)/10" >> /etc/tor/torrc
-        echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
-        echo "TransPort 9040" >> /etc/tor/torrc
-        echo "TransListenAddress $(uci get network.wan.ipaddr)" >> /etc/tor/torrc
-        echo "DNSPort 53" >> /etc/tor/torrc
-        echo "DNSListenAddress $(uci get network.wan.ipaddr)" >> /etc/tor/torrc
+	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
+	echo "TransPort $ipaddr:9040" >> /etc/tor/torrc
+	echo "DNSPort $ipaddr:53" >> /etc/tor/torrc
 
 	# Tor's TransPort
 	_trans_port="9040"
@@ -148,36 +150,42 @@ _tun() {
 	_privox_port="8080"
 
 	# Tor's ProxyPort
-        _tor_proxy_port="9050"
+	_tor_proxy_port="9050"
 
 	# your internal interface
-	_int_if="eth0"
+	if [ "$device" = "vpna" ]; then
+		_int_if="eth0"
+	else
+		_int_if="br-lan"
+	fi
 	#iptables -t nat -F
 
-	iptables -t nat -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j RETURN
+	iptables -t nat -A OUTPUT -d "$ipaddr" -j RETURN
 	iptables -t nat -A OUTPUT -d 127.0.0.0/8 -j RETURN
-	iptables -t nat -A PREROUTING -i eth0 -d "$(uci get $config_file.wan.ipaddr)" -j RETURN
-	iptables -A OUTPUT -d "$(uci get $config_file.wan.ipaddr)" -j ACCEPT
+	iptables -t nat -A PREROUTING -i $_int_if -d "$ipaddr" -j RETURN
+	iptables -A OUTPUT -d "$ipaddr" -j ACCEPT
 	iptables -A OUTPUT -d 127.0.0.0/8 -j ACCEPT
 
 	iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 53
 	iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
-	
+
 	_forward_socks="/	127.0.0.1:9050	."
-	uci set privoxy.privoxy.listen_address="$(uci get $config_file.wan.ipaddr):$_privox_port $(uci get network.loopback.ipaddr):$_privox_port"
+	uci set privoxy.privoxy.listen_address="$ipaddr:$_privox_port $(uci get network.loopback.ipaddr):$_privox_port"
 	uci set privoxy.privoxy.permit_access="$socks_network"
 	uci set privoxy.privoxy.forward_socks5t="$_forward_socks"
 	uci set privoxy.privoxy.forward_socks5="$_forward_socks"
 	uci set privoxy.privoxy.forward_socks4="$_forward_socks"
 	uci set privoxy.privoxy.forward_socks4a="$_forward_socks"
 	uci add_list privoxy.privoxy.forward="192.168.*.*/	."
-	uci add_list privoxy.privoxy.forward="10.*.*.*/	." 
+	uci add_list privoxy.privoxy.forward="10.*.*.*/	."
 	uci add_list privoxy.privoxy.forward="127.*.*.*/	."
 	uci add_list privoxy.privoxy.forward="localhost/     ."
 	uci commit privoxy
-	
+
 	/etc/init.d/tor start
-	/etc/init.d/privoxy restart
+	#	/etc/init.d/privoxy restart
+	/www/bin/proxy.sh proxystop
+	/www/bin/proxy.sh proxystart
 	logger "TOR tunnel started."
 	logger "ALL traffic will be anonymized."
 	_return 0 "Tor tunnel started."
