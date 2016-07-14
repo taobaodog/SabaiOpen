@@ -32,7 +32,7 @@ _get_mac(){
 		json_select $i
 		json_get_var mac mac
 		json_get_var route route
-		[ ! "$route" == "local" ] && echo $mac
+		[ "$route" == "default" -o "$route" == "vpn_only" -o "$route" == "vpn_fallback" ] && echo $mac
 		json_select ..
 	done
 }
@@ -45,7 +45,6 @@ _vpn_config(){
 	#ensure all vpn users get proper dns
 	for i in $(uci show firewall | grep -e "dest_port='5353'" | cut -d "[" -f2 | cut -d "]" -f1 | sort -r)
 	do
-		# logger "### MORE DEBUG $i"
 		uci delete firewall.@redirect[$i]
 		uci commit firewall
 	done
