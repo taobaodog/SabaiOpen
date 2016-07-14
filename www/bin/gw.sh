@@ -17,7 +17,7 @@ lan_prefix="$(uci get network.lan.ipaddr | cut -d '.' -f1,2,3)";
 #sabaibiz="$(nslookup sabaitechnology.biz | grep "Address 1:" | cut -d':' -f2 | awk '{print $1}' | awk '{print $1}' | tail -n 1)";
 
 _check_static(){
-	[ -n "$(uci show sabai | grep $1)" ] && sed -i "8i\/usr/sbin/ip rule add from "$1" table $2" /etc/rc.local
+	[ -n "$(uci show sabai | grep $1)" ] && sed -i "8i\/usr/sbin/ip rule add from "$1" prio "$2" table $3" /etc/rc.local
 }
 
 #return macs of all clients whose route is not local (need special vpn dns)
@@ -124,20 +124,20 @@ _ip_rules(){
 	case $1 in
 		local)
 			ip rule add prio $val_prio from "$2" table wan
-			_check_static $2 wan
+			_check_static $2 $val_prio wan
 		;;
 		vpn_fallback)
 			ip rule add prio $val_prio from "$2" table vpn
-			_check_static $2 vpn
+			_check_static $2 $val_prio vpn
 			logger "$2 is connected to vpn_fallback option."
 		;;
 		vpn_only)
 			ip rule add prio $val_prio from "$2" table vpn
-			_check_static $2 vpn
+			_check_static $2 $val_prio vpn
 		;;
 		accelerator)
 			ip rule add prio $val_prio from "$2" table acc
-			_check_static $2 acc
+			_check_static $2 $val_prio acc
 		;;
 	esac
 
