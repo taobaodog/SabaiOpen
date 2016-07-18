@@ -203,6 +203,7 @@ do
 
 	if [ "$static" = "on" ]; then
 		_static_on $ip $mac $name $route
+		 =1
 		logger "$ip set to Static IP."
 	else
 		logger "$ip is not Static."
@@ -235,6 +236,7 @@ if [ $action = "update" ]; then
 	echo "dnsmasq" >> /tmp/.restart_services
 else
 	/etc/init.d/firewall restart
+	[ -n $dns_restart ] && /etc/init.d/dnsmasq restart
 	logger "dhcp settings applied and firewall restarted"
 
 	ls >/dev/null 2>/dev/null
