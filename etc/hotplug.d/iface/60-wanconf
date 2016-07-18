@@ -17,9 +17,9 @@
 		uci commit network
 
 		[ $(uci get sabai.wan.factory_mac) ] || /www/bin/wan.sh set_mac
-		uci set sabai.wan.ipaddr=$ip
-		uci set sabai.wan.gateway=$gateway
-		uci set sabai.wan.netmask=$mask
+		uci set sabai.wan.ipaddr=$ip_wan
+		uci set sabai.wan.gateway=$gateway_wan
+		uci set sabai.wan.netmask=$mask_wan
 		uci commit sabai
 
 		if [ "vpna" = "$(uci get system.@system[0].hostname)" ]; then
