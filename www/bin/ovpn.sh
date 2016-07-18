@@ -101,6 +101,7 @@ _config(){
 		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
+		uci set firewall.@redirect[-1].reflection='0'
 		uci set firewall.@forwarding[-1].src=wan
 	else
 		uci set firewall.@forwarding[-1].src=lan
