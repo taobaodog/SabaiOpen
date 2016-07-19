@@ -46,8 +46,8 @@ _vpn_config(){
 	for i in $(uci show firewall | grep -e "dest_port='5353'" | cut -d "[" -f2 | cut -d "]" -f1 | sort -r)
 	do
 		uci delete firewall.@redirect[$i]
-		uci commit firewall
 	done
+	uci commit firewall
 
 	for mac in $(_get_mac)
 	do
@@ -118,8 +118,13 @@ _start(){
 }
 
 _ip_rules(){
-	#setting priority
-	val_prio=2
+	#counter via tmp file so priorities are unique
+	if [ -f "/tmp/prioctr" -a -n "$(ip rule show | grep ^256:)" ]; then
+		val_prio="$(cat /tmp/prioctr)"
+	else
+		val_prio=256
+	fi
+
 	#assign statics to ip rules
 	case $1 in
 		local)
@@ -141,7 +146,7 @@ _ip_rules(){
 		;;
 	esac
 
-	_fin
+	echo "$(( $val_prio+1 ))" > /tmp/prioctr
 
 }
 
