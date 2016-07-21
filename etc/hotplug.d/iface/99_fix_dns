@@ -1,1 +1,2 @@
 [ "$ACTION" = "ifdown" -a "$INTERFACE" = "vpn" ] && /www/bin/flush_dns_fix.sh
+[ "$ACTION" = "ifup" -a "$INTERFACE" = "vpn" ] && /www/bin/gw.sh vpn_gw

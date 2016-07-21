@@ -2,8 +2,11 @@ noipdefault
 noauth
 nobsdcomp
 nodeflate
+refuse-pap
 refuse-eap
 idle 0
+refuse-chap
+refuse-mschap
 mppe required,no40,no56,stateless
 maxfail 0
 logfile /var/log/pptp.log

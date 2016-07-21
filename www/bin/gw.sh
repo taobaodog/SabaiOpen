@@ -65,7 +65,7 @@ _vpn_config(){
 	done
 	uci commit firewall
 	logger "Restarting firewall"
-	/etc/init.d/firewall restart > /dev/null
+	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 }
 
 _vpn_start(){
@@ -82,23 +82,13 @@ _vpn_start(){
 	fi
 }
 
-#clear the old ip routes
-_fin(){ ip route flush cache; }
-
-#flush the tables on stopping gateways
-_stop(){
-	start_line=8
-	for i in wan acc vpn; do ip route flush table $i; done
-	ip rule | grep "$lan_prefix" | cut -d':' -f2 | while read old_rule; do ip rule del $old_rule; done
-	ip_rules="$(grep -n -m 1 "exit 0" /etc/rc.local |sed  's/\([0-9]*\).*/\1/')"
-	echo $ip_rules
-	[ -n "$ip_rules" ] && [ "$ip_rules" -gt "$start_line" ] && sed -i ""$start_line","$(( ip_rules - 1 ))"d" /etc/rc.local
-	_fin
+_depopulate_route(){
+	for i in wan acc vpn; do
+		ip route flush table $i;
+	done
 }
 
-_start(){
-	#clear old settings
-	[ -z "$1" ] && _stop
+_populate_route(){
 	#add routing tables
 	for i in wan acc vpn; do ip route add "$lan_prefix.0/24" dev br-lan table $i; done
 	wan_gateway="$(uci get network.wan.gateway)"; wan_iface="$(uci get network.wan.ifname)";
@@ -115,6 +105,26 @@ _start(){
 	ip route add default via "$lan_prefix.$(uci get sabai.general.ac_ip)" dev br-lan table acc
 	# adding VPN route to table 3
 	_vpn_start
+}
+
+#clear the old ip routes
+_fin(){ ip route flush cache; }
+
+#flush the tables on stopping gateways
+_stop(){
+	start_line=8
+	_depopulate_route
+	ip rule | grep "$lan_prefix" | cut -d':' -f2 | while read old_rule; do ip rule del $old_rule; done
+	ip_rules="$(grep -n -m 1 "exit 0" /etc/rc.local |sed  's/\([0-9]*\).*/\1/')"
+	echo $ip_rules
+	[ -n "$ip_rules" ] && [ "$ip_rules" -gt "$start_line" ] && sed -i ""$start_line","$(( ip_rules - 1 ))"d" /etc/rc.local
+	_fin
+}
+
+_start(){
+	#clear old settings
+	[ -z "$1" ] && _stop
+	_populate_route
 }
 
 _ip_rules(){
@@ -148,14 +158,17 @@ _ip_rules(){
 
 	echo "$(( $val_prio+1 ))" > /tmp/prioctr
 
+	_fin
 }
 
 _ds(){ /etc/init.d/dnsmasq restart; _start; }
 
 case $1 in
-	stop)	_stop		;;
-	start)	_start $2	;;
-	ds)	_ds		;;
-	vpn_gw)	_vpn_start	;;
-	iprules) _ip_rules $2 $3 ;;
+	stop)	_stop				;;
+	start)	_start $2			;;
+	ds)	_ds				;;
+	vpn_gw)	_vpn_start			;;
+	iprules) _ip_rules $2 $3		;;
+	depopulate_route) _depopulate_route	;;
+	populate_route) _populate_route		;;
 esac

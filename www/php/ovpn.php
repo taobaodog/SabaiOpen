@@ -28,17 +28,17 @@ function fixFile(){
 }
 
 function newfile(){
- $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
+  $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
   $file=preg_replace("/[^a-zA-Z0-9.]/", "_", $file);
-  exec("uci set openvpn.sabai.filename=$file");
   file_put_contents('/etc/sabai/openvpn/ovpn.filename', $file);
- $contents = ( array_key_exists('file',$_FILES) && array_key_exists('tmp_name',$_FILES['file']) ? file_get_contents($_FILES['file']['tmp_name']) : "" );
-    $filelocation='/etc/sabai/openvpn/ovpn.current';
-   $contents = preg_replace(array("/^script-security.*/m","/^route-up .*/m","/^up .*/m","/^down .*/m"),"",$contents);
+  $contents = ( array_key_exists('file',$_FILES) && array_key_exists('tmp_name',$_FILES['file']) ? file_get_contents($_FILES['file']['tmp_name']) : "" );
+  $filelocation='/etc/sabai/openvpn/ovpn.current';
+  $contents = preg_replace(array("/^script-security.*/m","/^route-up .*/m","/^up .*/m","/^down .*/m"),"",$contents);
   file_put_contents($filelocation, $contents);
   file_put_contents($filelocation, "script-security 2\ndown /www/bin/flush_dns_fix.sh", FILE_APPEND);
- $type = strrchr($file,".");
- file_put_contents('/etc/sabai/openvpn/auth-pass', '');
+  $type = strrchr($file,".");
+  file_put_contents('/etc/sabai/openvpn/auth-pass', '');
+  exec("uci set openvpn.sabai.filename=$file");
   exec("uci set openvpn.sabai.filetype=$type");
   exec("uci commit");
 
@@ -50,15 +50,18 @@ function newfile(){
    $contents = preg_replace(array("/^script-security.*/m","/^route-up .*/m","/^up .*/m","/^down .*/m"),"",$contents);
   case ".conf":
   case ".ovpn":
-   file_put_contents($filelocation,$contents);
-   file_put_contents("/etc/sabai/openvpn/ovpn", "{ file: '$file', res: { sabai: true, msg: 'OpenVPN $type file loaded.' } }");
+    file_put_contents($filelocation,$contents);
+    exec("uci set openvpn.sabai.filename=$file");
+    exec("uci set openvpn.sabai.filetype=$type");
+    exec("uci commit");
+    echo "res={ sabai: false, msg: 'OpenVPN $type file loaded.' };";
   break;
   default:{
-   file_put_contents("/etc/sabai/usr/ovpn","{ file: '', res: { sabai: false, msg: 'OpenVPN file failed.' } }");
+    echo "res={ sabai: false, msg: 'OpenVPN file failed.' };";
   }
  }
  
- header("Location: /?panel=vpn&section=openvpnclient");
+ //header("Location: /?panel=vpn&section=openvpnclient");
 }
 
 function savefile(){
