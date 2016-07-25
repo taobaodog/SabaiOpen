@@ -251,7 +251,7 @@ case $action in
 	stop)	_stop	;;
 	update) _start  ;;
 	save)	_save	;;
-	clear)  _clear  ;;
+	clear)  _clear_all  ;;
 	config) _config	;;
 	check)	_stat	;;
 	dns)	_dns_fix;;

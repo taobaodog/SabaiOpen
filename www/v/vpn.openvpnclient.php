@@ -170,13 +170,30 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 $(document).ready(function(){
 	$("#submit").on("click", function() {
 		hideUi("Uploading ...");
-		var ovpnFile=$("#file").val();
-		//E("act").value='newfile';
+		var ovpnFile=$("#browse").val();
+		E("act").value='newfile';
 		if ( ovpnFile != '') {
-			$.post('php/ovpn.php', $("#newfile").serialize(), function(res){
-				OVPNresp(res);
-				showUi();
-			});
+			$("#new_file").submit(function() { return false; });
+			var form = document.forms.new_file;
+			var formData = new FormData(form);
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "php/ovpn.php");
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4) {
+					if(xhr.status == 200) {
+						var res = eval(xhr.responseText);
+						hideUi(res.msg);
+						setTimeout(function(){showUi()},3000);
+						E('ovpn_file').innerHTML = "Current File: " + res.file;
+						setTimeout(function(){OVPNresp(res)},1000);
+					} else {
+						hideUi("Failed to upload the file.");
+						setTimeout(function(){showUi()},3000);
+					}
+				}
+			};
+			xhr.send(formData);
+			//setTimeout(function(){window.location.reload()},3000);
 		} else {
 			$('input[type="file"]').css("border","2px solid red");
 			$('input[type="file"]').css("box-shadow","0 0 3px red");
@@ -192,12 +209,12 @@ $(document).ready(function(){
 <div class='controlBox'><span class='controlBoxTitle'>OpenVPN Settings</span>
 	<div class='controlBoxContent'>
 <body onload='init();' id='topmost'>
-<form id='newfile'>
-	<input type='hidden' name='act' value='newfile'>
+<form id='new_file' method="post" enctype="multipart/form-data">
+	<input id='act' type='hidden' name='act' value='newfile'>
 		<span id='ovpn_file'></span>
 		<p>
 			<span id='upload'>
-				<input type='file' id='file' name='file'>
+				<input id='browse' type='file' name='browse'>
 				<input id='submit' type='button' value='Upload'>
 			</span>
 		</p>
@@ -231,7 +248,7 @@ $(document).ready(function(){
 						 
 						 <br>
 						 <textarea id='conf' class='tall' name='conf'>
-						 	<?php readfile('/etc/sabai/openvpn/ovpn.current'); ?>
+						 <?php readfile('/etc/sabai/openvpn/ovpn.current'); ?>
 						 </textarea> <br>
 						 <input type='button' value='Save' onclick='saveEdit();'>
 						 <input type='button' value='Cancel' onclick='window.location.reload();'>
