@@ -112,7 +112,7 @@ _config(){
 		uci set firewall.@redirect[-1].src='wan'
 		uci set firewall.@redirect[-1].src_dport='53'
 		uci set firewall.@redirect[-1].proto='tcpudp'
-		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
+		uci set firewall.@redirect[-1].dest_ip="$(uci get network.wan.ipaddr)"
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
 		uci set firewall.@redirect[-1].reflection='0'
@@ -150,7 +150,7 @@ _clear(){
 		uci delete firewall.@forwarding["$forward"]
 	fi
 	uci delete firewall.ovpn
-	for i in $(uci show firewall | grep -e "name='Allow OpenVPN via WAN'" | cut -d "[" -f2 | cut -d "]" -f1 | sort -r); do
+	for i in $(uci show firewall | grep -e "name='Allow OpenVPN via WAN" | cut -d "[" -f2 | cut -d "]" -f1 | sort -r); do
 		uci delete firewall.@rule[$i]
 	done
 	uci commit firewall
@@ -251,7 +251,7 @@ case $action in
 	stop)	_stop	;;
 	update) _start  ;;
 	save)	_save	;;
-	clear)  _clear_all  ;;
+	clear)  _clear  ;;
 	config) _config	;;
 	check)	_stat	;;
 	dns)	_dns_fix;;

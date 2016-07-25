@@ -57,7 +57,7 @@ _vpn_config(){
 		uci set firewall.@redirect[-1].src_mac=$mac
 		uci set firewall.@redirect[-1].src_dport='53'
 		uci set firewall.@redirect[-1].proto='tcpudp'
-		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
+		uci set firewall.@redirect[-1].dest_ip="$(uci get network.lan.ipaddr)"
 		# uci set firewall.@redirect[-1].dest_ip='98.158.112.14'
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'

@@ -147,7 +147,7 @@ _start(){
 		uci set firewall.@redirect[-1].src='wan'
 		uci set firewall.@redirect[-1].src_dport='53'
 		uci set firewall.@redirect[-1].proto='tcpudp'
-		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
+		uci set firewall.@redirect[-1].dest_ip="$(uci get network.wan.ipaddr)"
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
 		uci set firewall.@redirect[-1].reflection='0'
