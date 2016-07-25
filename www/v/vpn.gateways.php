@@ -76,7 +76,8 @@ var settings;
     	{ "sTitle": "Address", "mData":"ip", 'sClass':'plainText'  },
     	{ "sTitle": "MAC", "mData":"mac" },
     	{ "sTitle": "Name", "mData":"name", "sClass":"plainText"},
-    	{ "sTitle": "Lease Ends", "mData":"time" }
+    	{ "sTitle": "Lease Ends", "mData":"time" },
+      { "sTitle": "Status", "mData":"stat" }
     	],
 
     	'fnRowCallback': function(nRow, aData, iDisplayIndex, iDisplayIndexFull){
@@ -159,6 +160,7 @@ function DHCPcall(act){
         , "mac" : $(tr).find('td:eq(3)').text()
         , "name" : $(tr).find('td:eq(4)').text()
         , "time" : $(tr).find('td:eq(5)').text()
+        , "stat" : $(tr).find('td:eq(6)').text()
       };
     });
      //create json data from table on screen
