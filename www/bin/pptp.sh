@@ -29,6 +29,9 @@ _rm_nw_fw(){
 	if [ "$forward" != "" ]; then
 		uci delete firewall.@forwarding["$forward"]
 	fi
+	for i in $(uci show firewall | grep -e "name='Allow PPtP via WAN" | cut -d "[" -f2 | cut -d "]" -f1 | sort -r); do
+		uci delete firewall.@rule[$i]
+	done
 	uci commit firewall
 }
 
@@ -38,6 +41,7 @@ _stop(){
 		logger "No PPTP is running."
 		_return 0 "No PPTP is running."
 	else
+		_rm_nw_fw vpn
 		uci $UCI_PATH set sabai.vpn.status=none
 		uci $UCI_PATH commit sabai
 		cp -r /etc/config/sabai /configs/sabai
@@ -45,18 +49,16 @@ _stop(){
 		#unset dns for pptp
 		# uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.auto'
 		# uci commit dhcp
-		if [ $config_act = "update" ]; then
-			_rm_nw_fw vpn
+		if [ "$config_act" = "update" ]; then
 			echo "network" >> /tmp/.restart_services
 			echo "firewall" >> /tmp/.restart_services
 		else
-			env -i /sbin/ifdown vpn
-			# Update routing table
+			/etc/init.d/firewall restart 2>/dev/null > /dev/null
+			/etc/init.d/network reload
+      #update routing table
 			udhcpc
-			# rm pptp settings only after ifdown
-			_rm_nw_fw vpn
-			# /etc/init.d/dnsmasq restart
-			/etc/init.d/firewall restart > /dev/null
+      /www/bin/gw.sh depopulate_route
+      /www/bin/gw.sh populate_route
 		fi
 		uci $UCI_PATH set sabai.vpn.proto=none
 		uci $UCI_PATH set sabai.vpn.ip=none
@@ -117,18 +119,35 @@ _start(){
 	#set the firewall
 	uci set firewall.vpn=zone
 	uci set firewall.vpn.name=vpn
-	uci set firewall.vpn.input=ACCEPT
+	uci set firewall.vpn.input=REJECT
 	uci set firewall.vpn.output=ACCEPT
-	uci set firewall.vpn.forward=ACCEPT
+	uci set firewall.vpn.forward=REJECT
 	uci set firewall.vpn.network=vpn
 	uci set firewall.vpn.masq=1
+	uci add firewall rule
+	uci set firewall.@rule[-1].name='Allow PPtP via WAN (tunnel)'
+	uci set firewall.@rule[-1].src='wan'
+	uci set firewall.@rule[-1].proto='gre'
+	uci set firewall.@rule[-1].target='ACCEPT'
+	uci add firewall rule
+	uci set firewall.@rule[-1].name='Allow PPtP via WAN (Ping)'
+	uci set firewall.@rule[-1].src='vpn'
+	uci set firewall.@rule[-1].proto='icmp'
+	uci set firewall.@rule[-1].icmp_type='echo-request'
+	uci set firewall.@rule[-1].target='ACCEPT'
+	uci add firewall rule
+	uci set firewall.@rule[-1].name='Allow PPtP via WAN (maintenance)'
+	uci set firewall.@rule[-1].src='wan'
+	uci set firewall.@rule[-1].proto='tcp'
+	uci set firewall.@rule[-1].src_port="1723"
+	uci set firewall.@rule[-1].target="ACCEPT"
 	uci add firewall forwarding
 	if [ "$device" = "vpna" ]; then
 		uci add firewall redirect > /dev/null
 		uci set firewall.@redirect[-1].src='wan'
 		uci set firewall.@redirect[-1].src_dport='53'
 		uci set firewall.@redirect[-1].proto='tcpudp'
-		uci set firewall.@redirect[-1].dest_ip='127.0.0.1'
+		uci set firewall.@redirect[-1].dest_ip="$(uci get network.wan.ipaddr)"
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
 		uci set firewall.@redirect[-1].reflection='0'
@@ -150,15 +169,14 @@ _start(){
 	uci $UCI_PATH commit
 	cp -r /etc/config/sabai /configs/sabai
 	#restart services
-	if [ $config_act = "update" ]; then
+	if [ "$config_act" = "update" ]; then
 		echo "network" >> /tmp/.restart_services
 		echo "firewall" >> /tmp/.restart_services
 	else
-		/etc/init.d/firewall restart > /dev/null
 		sleep 2
 		# /etc/init.d/dnsmasq restart
-		# /etc/init.d/network restart
-		env -i /sbin/ifup vpn
+		/etc/init.d/network reload
+		/etc/init.d/firewall restart 2>/dev/null > /dev/null
 	fi
 
 	logger "PPTP starts..."
@@ -186,7 +204,7 @@ _clear(){
 			i=$(( $i + 1 ))
 		done
 	fi
-	/etc/init.d/firewall restart > /dev/null
+	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 	logger "pptp cleared and firewall restarted."
 }
 
@@ -231,7 +249,7 @@ _stat(){
 		uci $UCI_PATH commit sabai
 		cp -r /etc/config/sabai /configs/sabai
 
-		[ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
+		# [ "$device" = "SabaiOpen" ] && /www/bin/gw.sh vpn_gw
 
 		logger "pptp is connected."
 		_return 1 "PPTP is connected."

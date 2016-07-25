@@ -18,47 +18,42 @@ function fixFile(){
 	// Removing extra windows charachters
 	$ovpn_file=file_get_contents("/etc/sabai/openvpn/ovpn.current");
 	if( strpos($ovpn_file,';explicit-exit-notify') == false ) {
-	$ovpn_file_fixed=str_replace(
-			array("explicit-exit-notify", "receive-dns", "crl-verify crl.pem"),
-			array(";explicit-exit-notify", ";receive-dns", ";crl-verify crl.pem"),
-			$ovpn_file
-	);
-	file_put_contents("/etc/sabai/openvpn/ovpn.current",$ovpn_file_fixed);
+    	$ovpn_file_fixed=str_replace("explicit-exit-notify", ";explicit-exit-notify" ,$ovpn_file);
 	}
+  if( strpos($ovpn_file,';receive-dns') == false ) {
+    $ovpn_file_fixed=str_replace("receive-dns", ";receive-dns" ,$ovpn_file_fixed);
+  }
+  if( strpos($ovpn_file,';crl-verify crl.pem') == false ) {
+    $ovpn_file_fixed=str_replace("crl-verify crl.pem", ";crl-verify crl.pem" ,$ovpn_file_fixed);
+    file_put_contents("/etc/sabai/openvpn/ovpn.current",$ovpn_file_fixed);
+  }
 }
 
 function newfile(){
- $file = ( array_key_exists('file',$_FILES) && array_key_exists('name',$_FILES['file']) ? $_FILES['file']['name'] : "" );
-  $file=preg_replace("/[^a-zA-Z0-9.]/", "_", $file);
-  exec("uci set openvpn.sabai.filename=$file");
-  file_put_contents('/etc/sabai/openvpn/ovpn.filename', $file);
- $contents = ( array_key_exists('file',$_FILES) && array_key_exists('tmp_name',$_FILES['file']) ? file_get_contents($_FILES['file']['tmp_name']) : "" );
-    $filelocation='/etc/sabai/openvpn/ovpn.current';
-   $contents = preg_replace(array("/^script-security.*/m","/^route-up .*/m","/^up .*/m","/^down .*/m"),"",$contents);
-  file_put_contents($filelocation, $contents);
-  file_put_contents($filelocation, "script-security 2\ndown /www/bin/flush_dns_fix.sh", FILE_APPEND);
- $type = strrchr($file,".");
- file_put_contents('/etc/sabai/openvpn/auth-pass', '');
-  exec("uci set openvpn.sabai.filetype=$type");
-  exec("uci commit");
-
- switch($type){
-  case ".sh":
-   $contents = stristr(stristr($contents,"nvram set ovpn_cfg='"),"'");
-     file_put_contents("/tmp/contents1", $contents);
-   $contents = trim( substr( $contents, 0, stripos($contents,"nvram set ovpn") ), "\n'");
-   $contents = preg_replace(array("/^script-security.*/m","/^route-up .*/m","/^up .*/m","/^down .*/m"),"",$contents);
-  case ".conf":
-  case ".ovpn":
-   file_put_contents($filelocation,$contents);
-   file_put_contents("/etc/sabai/openvpn/ovpn", "{ file: '$file', res: { sabai: true, msg: 'OpenVPN $type file loaded.' } }");
-  break;
-  default:{
-   file_put_contents("/etc/sabai/usr/ovpn","{ file: '', res: { sabai: false, msg: 'OpenVPN file failed.' } }");
+  $file = ( array_key_exists('browse',$_FILES) && array_key_exists('name',$_FILES['browse']) ? $_FILES['browse']['name'] : "" );
+  $file=preg_replace("/[^a-zA-Z0-9.]/", "_", $_FILES['browse']['name']);
+  $type = strrchr($file,".");
+  $filelocation='/etc/sabai/openvpn/ovpn.current';
+  file_put_contents('/etc/sabai/openvpn/auth-pass', '');
+  $contents = ( array_key_exists('browse',$_FILES) && array_key_exists('tmp_name',$_FILES['browse']) ? file_get_contents($_FILES['browse']['tmp_name']) : "" );
+  $contents = preg_replace(array("/^script-security.*/m","/^route-up .*/m","/^up .*/m","/^down .*/m"),"",$contents);
+  
+  switch($type){
+    case ".conf":
+    case ".ovpn":
+      file_put_contents('/etc/sabai/openvpn/ovpn.filename', $file);
+      file_put_contents($filelocation,$contents);
+      file_put_contents($filelocation, "script-security 2\ndown /www/bin/flush_dns_fix.sh", FILE_APPEND);
+      exec("uci set openvpn.sabai.filename=$file");
+      exec("uci set openvpn.sabai.filetype=$type");
+      exec("uci commit");
+      fixFile();
+      echo "res={ sabai: false, msg: 'OpenVPN $type file loaded.', file: '$file', reload: 'true' };";
+    break;
+    default:{
+    echo "res={ sabai: false, msg: 'OpenVPN file failed. Incorrect format.' };";
   }
  }
- 
- header("Location: /?panel=vpn&section=openvpnclient");
 }
 
 function savefile(){
@@ -92,7 +87,7 @@ switch ($act){
     exec("sh /www/bin/ovpn.sh clear 2>&1");
     echo "res={ sabai: true, msg: 'OpenVPN file removed.', reload: true };";
   break;
-  case "newfile": newfile(); fixFile(); break;
+  case "newfile": newfile(); break;
   case "save": savefile(); break;
   case "log": exec("/www/bin/ovpn.sh log") ;
 		echo (file_exists("/var/log/ovpn_web.log") ?  str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/var/log/ovpn_web.log")) : "No log."); 

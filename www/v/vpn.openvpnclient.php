@@ -8,8 +8,9 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     Copyright 2016 Sabai Technology -->
 	<script type='text/javascript'>
 
-		var hidden,hide,f,oldip='',limit=10,logon=false,info=null;
+		var f,oldip='',limit=10,logon=false,info=null;
 		var ovpnTry = 0;
+		var hidden, hide, pForm = {};
 
 		function setLog(res){ 
 			E('response').value = res; 
@@ -55,7 +56,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 		var ovpnfile='<?php $filename=exec('uci get openvpn.sabai.filename'); echo $filename; ?>';
 		document.getElementById('ovpn_file').innerHTML = ovpnfile;
 		E('ovpn_file').innerHTML = 'Current File: ' + ovpnfile;
--		 msg('Please supply a .conf/.ovpn configuration file.');
+		 msg('Please supply a .conf/.ovpn configuration file.');
 		}
 
 		function setUpdate(res){ 
@@ -166,24 +167,68 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 			});
 		}
 
+$(document).ready(function(){
+	$("#submit").on("click", function() {
+		hideUi("Uploading ...");
+		var ovpnFile=$("#browse").val();
+		E("act").value='newfile';
+		if ( ovpnFile != '') {
+			$("#new_file").submit(function() { return false; });
+			var form = document.forms.new_file;
+			var formData = new FormData(form);
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "php/ovpn.php");
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4) {
+					if(xhr.status == 200) {
+						var res = eval(xhr.responseText);
+						hideUi(res.msg);
+						setTimeout(function(){showUi()},3000);
+						E('ovpn_file').innerHTML = "Current File: " + res.file;
+						setTimeout(function(){OVPNresp(res)},1000);
+					} else {
+						hideUi("Failed to upload the file.");
+						setTimeout(function(){showUi()},3000);
+					}
+				}
+			};
+			xhr.send(formData);
+			//setTimeout(function(){window.location.reload()},3000);
+		} else {
+			$('input[type="file"]').css("border","2px solid red");
+			$('input[type="file"]').css("box-shadow","0 0 3px red");
+			hideUi('Please, choose the file!');
+			setTimeout(function(){showUi()},2000);
+		}
+	});
+});
+
+
 	</script>
 <div class='pageTitle'>VPN: OpenVPN Client</div>
 <div class='controlBox'><span class='controlBoxTitle'>OpenVPN Settings</span>
 	<div class='controlBoxContent'>
 <body onload='init();' id='topmost'>
-<form id='newfile' method='post' action='php/ovpn.php' encType='multipart/form-data'>
-						<input type='hidden' name='act' value='newfile'>
-
-						<span id='ovpn_file'></span>
-						<p>
-						<span id='upload'>
-						<input type='file' id='file' name='file'>
-						<input type='button' value='Upload' onclick='submit()'></span>
-						</p>
-						<p>
-						<span id='messages'>&nbsp;</span>
-						</p>
-					</form>
+<form id='new_file' method="post" enctype="multipart/form-data">
+	<input id='act' type='hidden' name='act' value='newfile'>
+		<span id='ovpn_file'></span>
+		<p>
+			<span id='upload'>
+				<input id='browse' type='file' name='browse'>
+				<input id='submit' type='button' value='Upload'>
+			</span>
+		</p>
+		<p>
+			<span id='messages'>&nbsp;</span>
+		</p>
+		<div id='hideme'>
+			<div class='centercolumncontainer'>
+				<div class='middlecontainer'>
+					<div id='hiddentext'>Please wait...</div>
+				</div>
+			</div>
+		</div>
+</form>
 <form id='fe'>
 							<span id='ovpn_controls'>
 							<input type='hidden' id='_act' name='act' value=''>
@@ -203,7 +248,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 						 
 						 <br>
 						 <textarea id='conf' class='tall' name='conf'>
-						 	<?php readfile('/etc/sabai/openvpn/ovpn.current'); ?>
+						 <?php readfile('/etc/sabai/openvpn/ovpn.current'); ?>
 						 </textarea> <br>
 						 <input type='button' value='Save' onclick='saveEdit();'>
 						 <input type='button' value='Cancel' onclick='window.location.reload();'>

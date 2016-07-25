@@ -5,28 +5,32 @@
 
 val=$1
 state=$2
+if [ ! \( "$state" == "enabled" -o "$state" == "disabled" \) ]; then
+	logger -p user.err "Wrong state for firewall.sh!"
+	exit 1
+fi
 
 _ping(){
 	local state=$1
 
-	local field=$(uci show firewall | grep -e "name='Disable ping from WAN'" | cut -d "[" -f2 | cut -d "]" -f1)
+	local field=$(uci show firewall | grep -e "name='Enable ping from WAN'" | cut -d "[" -f2 | cut -d "]" -f1)
 
 	if [ -n "$field" ]; then
 		uci delete firewall.@rule[$field]
 	fi
 
-	if [ "$state" == "disabled" ]; then
+	if [ "$state" == "enabled" ]; then
 		uci add firewall rule > /dev/null
-		uci set firewall.@rule[-1].name='Disable ping from WAN'
+		uci set firewall.@rule[-1].name='Enable ping from WAN'
 		uci set firewall.@rule[-1].src='wan'
 		uci set firewall.@rule[-1].proto='icmp'
 		uci set firewall.@rule[-1].icmp_type='8'
-		uci set firewall.@rule[-1].target='DROP'
+		uci set firewall.@rule[-1].target='ACCEPT'
 	fi
 
 	uci commit firewall
 	logger "Ping from WAN is $state. Restarting firewall"
-	/etc/init.d/firewall restart 2>1 > /dev/null
+	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 }
 
 _multicast(){
@@ -64,8 +68,8 @@ _multicast(){
 	fi
 
 	logger "UDP multicast (IGMP) is $state. Reloading network and restarting firewall"
-	/etc/init.d/network reload 2>1 > /dev/null
-	/etc/init.d/firewall restart 2>1 > /dev/null
+	/etc/init.d/network reload
+	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 }
 
 _cookies(){
@@ -79,7 +83,7 @@ _cookies(){
 	uci commit firewall
 
 	logger "SYN cookies are $state. Restarting firewall"
-	/etc/init.d/firewall restart 2>1 > /dev/null
+	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 }
 
 _wan_access(){
