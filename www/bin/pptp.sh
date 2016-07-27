@@ -55,10 +55,10 @@ _stop(){
 		else
 			/etc/init.d/firewall restart 2>/dev/null > /dev/null
 			/etc/init.d/network reload
-      #update routing table
+			#update routing table
 			udhcpc
-      /www/bin/gw.sh depopulate_route
-      /www/bin/gw.sh populate_route
+			/www/bin/gw.sh depopulate_route
+			/www/bin/gw.sh populate_route
 		fi
 		uci $UCI_PATH set sabai.vpn.proto=none
 		uci $UCI_PATH set sabai.vpn.ip=none
@@ -124,25 +124,10 @@ _start(){
 	uci set firewall.vpn.forward=REJECT
 	uci set firewall.vpn.network=vpn
 	uci set firewall.vpn.masq=1
-	uci add firewall rule
-	uci set firewall.@rule[-1].name='Allow PPtP via WAN (tunnel)'
-	uci set firewall.@rule[-1].src='wan'
-	uci set firewall.@rule[-1].proto='gre'
-	uci set firewall.@rule[-1].target='ACCEPT'
-	uci add firewall rule
-	uci set firewall.@rule[-1].name='Allow PPtP via WAN (Ping)'
-	uci set firewall.@rule[-1].src='vpn'
-	uci set firewall.@rule[-1].proto='icmp'
-	uci set firewall.@rule[-1].icmp_type='echo-request'
-	uci set firewall.@rule[-1].target='ACCEPT'
-	uci add firewall rule
-	uci set firewall.@rule[-1].name='Allow PPtP via WAN (maintenance)'
-	uci set firewall.@rule[-1].src='wan'
-	uci set firewall.@rule[-1].proto='tcp'
-	uci set firewall.@rule[-1].src_port="1723"
-	uci set firewall.@rule[-1].target="ACCEPT"
 	uci add firewall forwarding
+	uci set firewall.@forwarding[-1].dest=vpn
 	if [ "$device" = "vpna" ]; then
+		uci set firewall.@forwarding[-1].src=wan
 		uci add firewall redirect > /dev/null
 		uci set firewall.@redirect[-1].src='wan'
 		uci set firewall.@redirect[-1].src_dport='53'
@@ -151,12 +136,21 @@ _start(){
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
 		uci set firewall.@redirect[-1].reflection='0'
-		uci set firewall.@forwarding[-1].src=wan
 	else
 		uci set firewall.@forwarding[-1].src=lan
+		uci add firewall rule
+		uci set firewall.@rule[-1].name='Allow PPtP via WAN (tunnel)'
+		uci set firewall.@rule[-1].src='wan'
+		uci set firewall.@rule[-1].proto='gre'
+		uci set firewall.@rule[-1].target='ACCEPT'
+		uci add firewall rule
+		uci set firewall.@rule[-1].name='Allow PPtP via WAN (maintenance)'
+		uci set firewall.@rule[-1].src='wan'
+		uci set firewall.@rule[-1].proto='tcp'
+		uci set firewall.@rule[-1].src_port="1723"
+		uci set firewall.@rule[-1].target="ACCEPT"
 	fi
 	# [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
-	uci set firewall.@forwarding[-1].dest=vpn
 	#commit all changed services
 	uci commit firewall
 	#set dns for pptp

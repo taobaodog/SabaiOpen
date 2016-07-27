@@ -10,6 +10,7 @@ mode=$1
 UCI_PATH=""
 config_file=sabai
 proto=$(uci get sabai.vpn.proto)
+device=$(uci get system.@system[0].hostname)
 mode_curr=$(uci get sabai.tor.mode)
 tor_stat="$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')"
 

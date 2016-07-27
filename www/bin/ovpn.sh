@@ -99,15 +99,10 @@ _config(){
 	uci set firewall.ovpn.forward=REJECT
 	uci set firewall.ovpn.network=sabai
 	uci set firewall.ovpn.masq=1
-	uci add firewall rule
-	uci set firewall.@rule[-1].name='Allow OpenVPN via WAN'
-	uci set firewall.@rule[-1].src='wan'
-	uci set firewall.@rule[-1].proto='udp'
-	uci set firewall.@rule[-1].dest_port="$port"
-	uci set firewall.@rule[-1].src_port="$port"
-	uci set firewall.@rule[-1].target="ACCEPT"
 	uci add firewall forwarding
+	uci set firewall.@forwarding[-1].dest=sabai
 	if [ "$device" = "vpna" ]; then
+		uci set firewall.@forwarding[-1].src=wan
 		uci add firewall redirect > /dev/null
 		uci set firewall.@redirect[-1].src='wan'
 		uci set firewall.@redirect[-1].src_dport='53'
@@ -116,12 +111,17 @@ _config(){
 		uci set firewall.@redirect[-1].dest_port='5353'
 		uci set firewall.@redirect[-1].target='DNAT'
 		uci set firewall.@redirect[-1].reflection='0'
-		uci set firewall.@forwarding[-1].src=wan
 	else
 		uci set firewall.@forwarding[-1].src=lan
+		uci add firewall rule
+		uci set firewall.@rule[-1].name='Allow OpenVPN via WAN'
+		uci set firewall.@rule[-1].src='wan'
+		uci set firewall.@rule[-1].proto='udp'
+		uci set firewall.@rule[-1].dest_port="$port"
+		uci set firewall.@rule[-1].src_port="$port"
+		uci set firewall.@rule[-1].target="ACCEPT"
 	fi
 	# [ "$device" = "SabaiOpen" ] && uci set firewall.@forwarding[-1].src=lan || uci set firewall.@forwarding[-1].src=wan
-	uci set firewall.@forwarding[-1].dest=sabai
 	uci commit firewall
 	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 
