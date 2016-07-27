@@ -51,19 +51,25 @@ _rewrite(){
 		dhcptime=$(date -d @"$epochtime")
 		mac=$(echo "$line" | awk '{print $2}')
 		name=$(echo "$line" | awk '{print $4}')
+		ip=$(echo "$line" | awk '{print $3}')
+
+		if ip neigh show | grep REACHABLE | grep -i $mac; then
+			stat="online"
+		else
+			stat="offline"
+		fi
+
 		i=1
 		while [ $i -le $num_items ]
 		do
 			json_select $i
 			json_get_var mac_curr mac
 			if [ "$mac_curr" = "$mac" ]; then
-				json_get_var ip ip
 				json_get_var route route
 				json_get_var static static
 				break
-			elif [ "$mac_curr" != "$mac" ] && [ $i -eq $num_items ]; then
+			elif [ $i -eq $num_items ]; then
 				ip=$(echo "$line" | awk '{print $3}')
-				name=$(echo "$line" | awk '{print $4}')
 				static="off"
 				route="default"
 				break
@@ -73,8 +79,8 @@ _rewrite(){
 			json_select ..
 			i=$(( $i + 1 ))
 		done
-		echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /tmp/dhcptable
-		echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /www/libs/data/dhcp.json
+		echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$stat'"},' >> /tmp/dhcptable
+		echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$stat'"},' >> /www/libs/data/dhcp.json
 		line_num=$(( $line_num + 1 ))
 	done
 }
@@ -102,7 +108,8 @@ _get(){
 	if [ -e "/tmp/dhcp.leases_backup"  ]; then
 		#compare old data
 		diff /tmp/dhcp.leases_backup /tmp/dhcp.leases > /dev/null
-		if [ "$?" -eq 1 ]; then
+		# if [ "$?" -eq 1 ]; then
+		if true; then
 			echo -n '{"aaData": ['> /www/libs/data/dhcp.json
 			echo -n '{' > /tmp/dhcptable
 			_rewrite
@@ -203,7 +210,6 @@ do
 
 	if [ "$static" = "on" ]; then
 		_static_on $ip $mac $name $route
-		 =1
 		logger "$ip set to Static IP."
 	else
 		logger "$ip is not Static."
