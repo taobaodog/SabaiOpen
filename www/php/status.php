@@ -53,8 +53,18 @@ $wl0 = " \"wl0\": {
   \"channel\": \"". exec("iw wlan0 info | grep channel | awk '{print $2}'") ."\",
   \"width\": \"". exec("iw wlan0 info | grep channel | awk '{print $6,$7}' | sed 's/,//g'") ."\"
 },\n";
-
 unset($out);
+
+
+$wl1 = " \"wl1\": {
+  \"mode\": \"". exec("iw wlan1 info | grep type | awk '{print $2}'") ."\",
+  \"ssid\": \"". exec("uci get sabai.wlradio1.ssid") ."\",
+  \"security\": \"". exec("uci get sabai.wlradio1.encryption") ."\",
+  \"channel\": \"". exec("iw wlan1 info | grep channel | awk '{print $2}'") ."\",
+  \"width\": \"". exec("iw wlan1 info | grep channel | awk '{print $6,$7}' | sed 's/,//g'") ."\"
+},\n";
+unset($out);
+
 } else {
 	$lan = " \"lan\": {
 		\"mac\": \"none\",
@@ -93,6 +103,7 @@ $fullinfo = "{\n"
 .$wan
 .$lan
 .$wl0
+.$wl1
 .$vpn
 .$proxy
 ."\n}";

@@ -19,16 +19,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   <div class='controlBoxContent' id='wan_build'>
 	</div>
 </div>
+<!--	Removed for Accelerator
 <div class='controlBox'><span class='controlBoxTitle'>LAN</span>
   <div class='controlBoxContent' id='lan_build'>
 	</div>
 </div>
 <div class='controlBox'><span class='controlBoxTitle'>Wireless</span>
-  <div class='controlBoxContent' id='wireless'>
-    <span id='wireless_build_0' style="display: inline-block; width: 300px" ></span>
-    <span id='wireless_build_1' style="display: inline-block"></span>
+  <div class='controlBoxContent' id='wireless_build'>
 	</div>
 </div>
+-->
 <div class='controlBox'><span class='controlBoxTitle'>VPN</span>
   <!-- this div gets populated by widget -->
   <div class='controlBoxContent' id='vpn_build'>
@@ -96,12 +96,6 @@ function getStats(){
                     $("#wl0_channel").text(fullinfo.wl0.channel);
                     $("#wl0_width").text(fullinfo.wl0.width);
                     $("#wl0_interference").text(fullinfo.wl0.interference);
-                    //set wireless 1 elements
-                    $("#wl1_mode").text(fullinfo.wl1.mode);
-                    $("#wl1_ssid").text(fullinfo.wl1.ssid);
-                    $("#wl1_security").text(fullinfo.wl1.security);
-                    $("#wl1_channel").text(fullinfo.wl1.channel);
-                    $("#wl1_width").text(fullinfo.wl1.width);
                     //set VPN elements
                     $("#vpn_type").text(fullinfo.vpn.proto);
                     $("#vpn_status").text(fullinfo.vpn.status);
@@ -273,7 +267,7 @@ $.widget("jai.lan_build", {
 })
 
 
-$.widget("jai.wireless_build_0", {
+$.widget("jai.wireless_build", {
     
   //Adding to the built-in widget constructor method - do this when widget is instantiated
   _create: function(){
@@ -283,16 +277,23 @@ $.widget("jai.wireless_build_0", {
     $(this.element)
     .append( $(document.createElement('table')).addClass("controlTable")
       .append( $(document.createElement('tbody')).addClass("smallText") 
-          .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('SSID') 
+        
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td')).html('MAC Address') 
           )
-          .append( $(document.createElement('td')).html('<div id=wl0_ssid></div>') 
+          .append( $(document.createElement('td')).html('<div id=wl0_mac></div>') 
           )
         )
         .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('Wireless Mode') 
           )
           .append( $(document.createElement('td')).html('<div id=wl0_mode></div>') 
+          )
+        )
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td')).html('SSID') 
+          )
+          .append( $(document.createElement('td')).html('<div id=wl0_ssid></div>') 
           )
         )
         .append( $(document.createElement('tr'))
@@ -313,67 +314,9 @@ $.widget("jai.wireless_build_0", {
           .append( $(document.createElement('td')).html('<div id=wl0_width></div>') 
           )
         )
-        .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('MAC Address') 
-          )
-          .append( $(document.createElement('td')).html('<div id=wl0_mac></div>') 
-          )
-        )
       ) //end tbody
 		) //end system table
 	}
-})
-
-
-$.widget("jai.wireless_build_1", {
-    
-  //Adding to the built-in widget constructor method - do this when widget is instantiated
-  _create: function(){
-    //TO DO: check to see if containing element has a unique id
-    
-    // BUILDING DOM ELEMENTS
-    $(this.element) 
-    .append( $(document.createElement('table')).addClass("controlTable")
-      .append( $(document.createElement('tbody')).addClass("smallText")
-        .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('SSID') 
-          )
-          .append( $(document.createElement('td')).html('<div id=wl1_ssid></div>') 
-          )
-        )
-          .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('Wireless Mode') 
-          )
-          .append( $(document.createElement('td')).html('<div id=wl1_mode></div>') 
-          )
-        )    
-        .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('Security') 
-          )
-          .append( $(document.createElement('td')).html('<div id=wl1_security></div>') 
-          )
-        )
-        .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('Channel') 
-          )
-          .append( $(document.createElement('td')).html('<div id=wl1_channel></div>') 
-          )
-        )
-        .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('Channel Width') 
-          )
-          .append( $(document.createElement('td')).html('<div id=wl1_width></div>') 
-          )
-        )
-        .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('MAC Address') 
-          )
-          .append( $(document.createElement('td')).html('<div id=wl0_mac>-</div>') 
-          )
-        )
-     ) //end tbody
-    ) //end system table
-  }
 })
 
 $.widget("jai.vpn_build", {
@@ -436,9 +379,8 @@ $(function(){
   //instatiate widgets on document ready
   $('#system_build').system_build();
   $('#wan_build').wan_build();
-  $('#lan_build').lan_build();
-  $('#wireless_build_0').wireless_build_0();
-  $('#wireless_build_1').wireless_build_1();
+ // $('#lan_build').lan_build();
+ // $('#wireless_build').wireless_build();
   $('#vpn_build').vpn_build();
   $('#proxy_build').proxy_build();
   
