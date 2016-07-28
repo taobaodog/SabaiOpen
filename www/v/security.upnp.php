@@ -100,8 +100,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             </div>
         </div>
     </div>
-    </td></tr></td></tr></tbody></table></div></div></form>
-    <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
+    </td></tr></td></tr></tbody></table></div>
+    	<div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
+	</div>
+</form>
 <script type='text/javascript'>
 
 var hidden, hide, pForm = {}; pForm2 = {}
