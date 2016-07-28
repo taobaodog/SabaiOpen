@@ -33,7 +33,7 @@ _off(){
 		/etc/init.d/odhcp restart
 		/etc/init.d/dnsmasq restart
 		wifi up
-	else
+	elif [ "$device" = "vpna" ]; then
 		iptables -t nat -F
 	fi
 
@@ -142,7 +142,7 @@ _tun() {
 	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)/10" >> /etc/tor/torrc
 	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
 	echo "TransPort $ipaddr:9040" >> /etc/tor/torrc
-	echo "DNSPort $ipaddr:53" >> /etc/tor/torrc
+	echo "DNSPort $ipaddr:9053" >> /etc/tor/torrc
 
 	# Tor's TransPort
 	_trans_port="9040"
@@ -156,19 +156,16 @@ _tun() {
 	# your internal interface
 	if [ "$device" = "vpna" ]; then
 		_int_if="eth0"
-	else
-		_int_if="br-lan"
+		iptables -t nat -A OUTPUT -d "$socks_network" -j RETURN
+		iptables -t nat -A OUTPUT -d 127.0.0.0/8 -j RETURN
+		iptables -t nat -I PREROUTING -i $_int_if -d "$socks_network" -j RETURN
+		iptables -A OUTPUT -d "$socks_network" -j ACCEPT
+		iptables -A OUTPUT -d 127.0.0.0/8 -j ACCEPT
+
+		iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 9053
+		iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
 	fi
-	#iptables -t nat -F
 
-	iptables -t nat -A OUTPUT -d "$ipaddr" -j RETURN
-	iptables -t nat -A OUTPUT -d 127.0.0.0/8 -j RETURN
-	iptables -t nat -A PREROUTING -i $_int_if -d "$ipaddr" -j RETURN
-	iptables -A OUTPUT -d "$ipaddr" -j ACCEPT
-	iptables -A OUTPUT -d 127.0.0.0/8 -j ACCEPT
-
-	iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 53
-	iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
 
 	_forward_socks="/	127.0.0.1:9050	."
 	uci set privoxy.privoxy.listen_address="$ipaddr:$_privox_port $(uci get network.loopback.ipaddr):$_privox_port"

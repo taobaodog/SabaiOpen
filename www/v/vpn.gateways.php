@@ -9,7 +9,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
  ARP List
  Static Addresses?
 -->
-
 <form id="fe">
 <input type='hidden' id='dhcptable' name='dhcptable'>
 <input type='hidden' id='act' name='act'>
@@ -47,10 +46,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	<div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
-
-<script type='text/ecmascript'>
+<script type='text/javascript'>
 var settings;
-
 
 	$.widget("jai.devicelist", {
   //Adding to the built-in widget constructor method - do this when widget is instantiated
@@ -104,7 +101,7 @@ var settings;
           $(nRow).find('.routeDrop').editable(
           function(value, settings){ return value; },
           {
-          'data': " {'default':'default','local':'local','vpn_fallback':'vpn_fallback','vpn_only':'vpn_only','accelerator':'accelerator'}",
+          'data': " {'default':'default','local':'local','vpn_fallback':'vpn_fallback','vpn_only':'vpn_only','accelerator':'accelerator','tor':'tor'}",
           'type':'select',
           'onblur':'submit',
           'placeholder':'default',
@@ -135,6 +132,7 @@ var settings;
 $(function(){
   //instatiate widgets on document ready
   $('#devicelist').devicelist();
+  REFcall('get');
 })
 
   var hidden, hide,res;

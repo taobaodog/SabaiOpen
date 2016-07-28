@@ -127,6 +127,23 @@ _start(){
 	_populate_route
 }
 
+_tor_route(){
+	local net=$(ip addr show | grep br-lan: -A 3 | grep inet | awk '{print $2}')
+	if [ "$1" = "setup" ]; then
+		iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053
+		iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053
+		iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040
+		echo "iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
+		echo "iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053" >> etc/firewall.user
+		echo "iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040" >> /etc/firewall.user
+	elif [ "$1" = "teardown" ]; then
+		iptables -t nat -D PREROUTING -s "$2" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053
+		iptables -t nat -D PREROUTING -s "$2" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053
+		iptables -t nat -D PREROUTING -s "$2" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040
+		sed -ni "/iptables -t nat -A PREROUTING -s $2 ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
+	fi
+}
+
 _ip_rules(){
 	#counter via tmp file so priorities are unique
 	if [ -f "/tmp/prioctr" -a -n "$(ip rule show | grep ^256:)" ]; then
@@ -171,4 +188,5 @@ case $1 in
 	iprules) _ip_rules $2 $3		;;
 	depopulate_route) _depopulate_route	;;
 	populate_route) _populate_route		;;
+	torroute) _tor_route $2 $3		;;
 esac
