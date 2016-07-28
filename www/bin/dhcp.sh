@@ -214,24 +214,31 @@ do
 	else
 		logger "$ip is not Static."
 	fi
+
 	#defining route
-	if [ "$route" = "vpn_fallback" ]; then
-		_vpn_on $ip
-	elif [ "$route" = "vpn_only" ]; then
-		_vpn_on $ip
-		uci add firewall rule
-		uci set firewall.@rule[-1].src=lan
-		uci set firewall.@rule[-1].dest=wan
-		uci set firewall.@rule[-1].src_ip=$ip
-		uci set firewall.@rule[-1].target=REJECT
-		uci commit firewall
-		logger "Only VPN traffic for $ip allowed."
-	elif ([ "$route" = "accelerator" ] || [ "$route" = "local" ]); then
-		/www/bin/gw.sh iprules $route $ip
-		logger "$ip has $route route."
+	if [ "$route" = "tor" ]; then
+		/www/bin/gw.sh torroute setup $ip
 	else
-		#default
-		logger "$ip has $route route."
+		/www/bin/gw.sh torroute teardown $ip
+
+		if [ "$route" = "vpn_fallback" ]; then
+		_vpn_on $ip
+		elif [ "$route" = "vpn_only" ]; then
+			_vpn_on $ip
+			uci add firewall rule
+			uci set firewall.@rule[-1].src=lan
+			uci set firewall.@rule[-1].dest=wan
+			uci set firewall.@rule[-1].src_ip=$ip
+			uci set firewall.@rule[-1].target=REJECT
+			uci commit firewall
+			logger "Only VPN traffic for $ip allowed."
+		elif ([ "$route" = "accelerator" ] || [ "$route" = "local" ] || [ "$route" = "tor" ]); then
+			/www/bin/gw.sh iprules $route $ip
+			logger "$ip has $route route."
+		else
+			#default
+			logger "$ip has $route route."
+		fi
 	fi
 	json_select ..
 	i=$(( $i + 1 ))
