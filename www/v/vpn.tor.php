@@ -16,8 +16,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	</div>
 	<div class='controlBoxContent' id='tor_wl_config'>
 	</div>
-</div>    
-<input type='button' value='Save' onclick='TORcall("#fe")'><span id='messages'>&nbsp;</span>     
+	<div class='controlBoxContent'><input type='button' value='Save' onclick='TORcall("#fe")'><span id='messages'>&nbsp;</span></div>
     <div id='hideme'>
         <div class='centercolumncontainer'>
             <div class='middlecontainer'>
@@ -26,6 +25,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             </div>
         </div>
     </div>
+<table>
+	<td><div id='torWarn'>Using Tor protects you against a common form of Internet surveillance known as "traffic analysis." Traffic analysis can be used to infer who is talking to whom over a public network. Knowing the source and destination of your Internet traffic allows others to track your behavior and interests.  This TOR client is provided to give network access to TOR for devices which may not have the ability to run TOR locally.  The TOR organization recommends that due to the various methods of tracking traffic, the best way to remain fully anonymous on a computer is through use of the TOR Browser.</div></br><br><br>
+	<div id='torUse'>Turn on TOR by choosing "Tunnel" and push "Save". It is possible to access TOR feature on proxy port 8080 or by setting accelerator as a gateway on the router.</div>
+	</td>
+</div>
+</table>
     <p>
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
  	</p>
@@ -50,23 +55,44 @@ var tor=$.parseJSON('{<?php
 
 
  function TORcall(torForm){ 
- 	hideUi("Adjusting Wireless settings..."); 
-    $(document).ready( function(){
-    	// Pass the form values to the php file 
-    	$.post('php/tor.php', $(torForm).serialize(), function(res){
-    	  // Detect if values have been passed back   
-    	    if(res!=""){
-    	      TORresp(res);
-    	    }
-    	      showUi();
-    	});
+ 	hideUi("Adjusting TOR settings...");
+ 	if (info.vpn.type == 'OpenVPN' && E("tor_mode").value != "off") {
+		hideUi("OpenVPN will be stopped.");
+		$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
+			if(res!=""){
+				eval(res);
+				hideUi(res.msg);
+				TORstart(torForm);
+			}
+		});
+ 	} else if (info.vpn.type == 'PPTP' && E("tor_mode").value != "off") {
+		hideUi("PPTP will be stopped.");
+		$.post('php/pptp.php', {'switch': 'stop'}, function(res){
+			if(res!=""){
+				eval(res);
+				hideUi(res.msg);
+				TORstart(torForm);
+			}
+		});
+	} else {
+		TORstart(torForm);
+	}
+
     	// Important stops the page refreshing
     	return false;
+ };
 
-    }); 
+function TORstart(torForm){
+	$.post('php/tor.php', $(torForm).serialize(), function(res){
+  	  // Detect if values have been passed back   
+  	    if(res!=""){
+  	      TORresp(res);
+  	    }
+  	      showUi();
+  	});
+}
 
- }
-
+ 
  function TORresp(res){ 
  	eval(res); 
     msg(res.msg); 
@@ -98,10 +124,6 @@ $.widget("jai.tor_setup_wl", {
 	              .append( $(document.createElement('option'))
 	                .prop("value", "off")
 	                .prop("text", 'Off')
-	              )
-	              .append( $(document.createElement('option'))
-	                .prop("value", "ap")
-	                .prop("text", 'Wireless Server')
 	              )
 	              .append( $(document.createElement('option'))
 	                .prop("value", "tun")
@@ -154,7 +176,7 @@ $.widget("jai.tor_wl_config", {
 	  	              ) // end ip tr
 
 	  	            .append( $(document.createElement('tr'))
-	  	  				.append( $(document.createElement('td')).html('TOR Network Mask') 
+	  	  				.append( $(document.createElement('td')).html('TOR Network Mask')
 	  	  	  	                )
 	  	  	  	                .append( $(document.createElement('td') ) 
 	  	  	  	                  .append(
@@ -176,7 +198,7 @@ $.widget("jai.tor_wl_config", {
 	  		  	  	  	                      .prop("id","tor_server")
 	  		  	  	  	                      .prop("name","tor_server")
 	  		  	  	  	                      .prop("type","text")
-	  		  	  	  	                    )
+	  		  	  	  	                      	  		  	  	  	                  )
 	  		  	  	  	                )
 	  		  	  	  	              ) // end ip tr
 	      ) // end WPA tbody
@@ -196,7 +218,8 @@ $(function(){
 	  //instatiate widgets on document ready
 	  $('#tor_setup_wl').tor_setup_wl({ conf: 'tor'});
 	  $('#tor_wl_config').tor_wl_config({ conf: 'tor'});
-})
+	  $('#tor_wl_config').hide();
+	})
 
 </script>
 
