@@ -46,8 +46,8 @@ _off(){
 	/etc/init.d/privoxy restart
 
 	uci $UCI_PATH set sabai.tor.mode="off"
-	uci $UCI_PATH set sabai.vpn.proto="none"
-	uci $UCI_PATH set sabai.vpn.status="none"
+	# uci $UCI_PATH set sabai.vpn.proto="none"
+	# uci $UCI_PATH set sabai.vpn.status="none"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
 	# must be after sabai changing
@@ -100,8 +100,8 @@ _tun() {
 	_check
 
 	uci $UCI_PATH set sabai.tor.mode=$mode
-	uci $UCI_PATH set sabai.vpn.proto="tor"
-	uci $UCI_PATH set sabai.vpn.status="Anonymity"
+	# uci $UCI_PATH set sabai.vpn.proto="tor"
+	# uci $UCI_PATH set sabai.vpn.status="Anonymity"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
 
@@ -191,16 +191,10 @@ _tun() {
 
 _check() {
 	ifconfig > /tmp/check
-	if [ "$(cat /tmp/check | grep pptp)" ]; then
-		/www/bin/pptp.sh stop
-	elif [ "$(cat /tmp/check | grep tun)" ]; then
-		/www/bin/ovpn.sh stop
-	elif [ "$tor_stat" ] && [ $mode = "ap" ]; then
-		_check_tor
-	elif [ "$tor_stat" ] && [ $mode = "tun" ]; then
-		_check_tor
+	if [ "$tor_stat" ]; then
+		_return 0 "TOR is running."
 	else
-		logger "No VPN is running."
+		logger "TOR is not running."
 	fi
 }
 

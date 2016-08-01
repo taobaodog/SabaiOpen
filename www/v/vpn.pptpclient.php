@@ -147,7 +147,7 @@ function PPTPcall(act){
 					PPTPstart();
 				}
 			});
-		} else if (info.vpn.type == 'TOR') {
+		/*  } else if (info.vpn.type == 'TOR') {
 			hideUi("TOR will be stopped.");
 			$.post('php/tor.php', {'switch': 'off'}, function(res){
 				if(res!=""){
@@ -155,7 +155,7 @@ function PPTPcall(act){
 					hideUi(res.msg);
 					PPTPstart();
 				}
-			});
+			}); */
 		} else {
 			PPTPstart();
 		}

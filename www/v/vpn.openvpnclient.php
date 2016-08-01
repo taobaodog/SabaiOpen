@@ -106,7 +106,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 							OVPNcall();
 						}
 					});
-				} else if (info.vpn.type == 'TOR') {
+				/* } else if (info.vpn.type == 'TOR') {
 					hideUi("TOR will be stopped.");
 					$.post('php/tor.php', {'switch': 'off'}, function(res){
 						if(res!=""){
@@ -114,7 +114,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 							hideUi(res.msg);
 							OVPNcall();
 						}
-					});
+					}); */
 				} else {
 					OVPNcall();
 				}

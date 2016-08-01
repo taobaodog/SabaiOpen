@@ -43,7 +43,7 @@ function newfile(){
     case ".ovpn":
       file_put_contents('/etc/sabai/openvpn/ovpn.filename', $file);
       file_put_contents($filelocation,$contents);
-      file_put_contents($filelocation, "script-security 2\ndown /www/bin/flush_dns_fix.sh", FILE_APPEND);
+      file_put_contents($filelocation, "\nscript-security 2\ndown /www/bin/flush_dns_fix.sh", FILE_APPEND);
       exec("uci set openvpn.sabai.filename=$file");
       exec("uci set openvpn.sabai.filetype=$type");
       exec("uci commit");

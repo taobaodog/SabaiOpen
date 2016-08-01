@@ -5,6 +5,32 @@
 
 val=$1
 state=$2
+
+if [ -z "$val" ]; then
+	if [ "$(uci get sabai.firewall.icmp)" == "on" ]; then
+		_ping enabled
+	else
+		_ping disabled
+	fi
+	if [ "$(uci get sabai.firewall.multicast)" == "on" ]; then
+		_multicast enabled
+	else
+		_multicast disabled
+	fi
+	if [ "$(uci get sabai.firewall.cookies)" == "on" ]; then
+		_cookies enabled
+	else
+		_cookies disabled
+	fi
+	if [ "$(uci get sabai.firewall.wanroute)" == "on" ]; then
+		_wanroute enabled
+	else
+		_wanroute disabled
+	fi
+
+	exit
+fi
+
 if [ ! \( "$state" == "enabled" -o "$state" == "disabled" \) ]; then
 	logger -p user.err "Wrong state for firewall.sh!"
 	exit 1
@@ -86,7 +112,7 @@ _cookies(){
 	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 }
 
-_wan_access(){
+_wanroute(){
 	local state=$1
 
 	if [ "$state" == "enabled" ]; then
@@ -104,5 +130,5 @@ case $val in
 	ping)		_ping $state	   ;;
 	multicast)   _multicast $state  ;;
 	syn_cookies) _cookies $state	;;
-	wan_access)  _wan_access $state ;;
+	wanroute)  _wanroute $state ;;
 esac

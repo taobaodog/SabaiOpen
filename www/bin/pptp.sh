@@ -82,8 +82,6 @@ _start(){
 		/etc/init.d/openvpn stop
 		/etc/init.d/openvpn disable
 		#ensure that openvpn settings removed
-	elif [ "$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')" ]; then
-		/www/bin/tor.sh off
 	elif [ "$(uci get sabai.vpn.proto)" = "pptp" ]; then
 		_rm_nw_fw vpn
 	else
