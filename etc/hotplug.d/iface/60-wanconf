@@ -22,4 +22,5 @@
 		uci set sabai.wan.netmask=$mask_wan
 		uci commit sabai
 	}
+	/etc/init.d/dropbear restart
 }
