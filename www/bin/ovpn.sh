@@ -69,8 +69,6 @@ _config(){
 		cp -r /etc/config/sabai /configs/sabai
 		logger "Vpn stopped and network restarted"
 		sleep 5
-	elif [ "$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')" ]; then
-		/www/bin/tor.sh off
 	elif [ "$(uci get sabai.vpn.proto)" = "ovpn" ]; then
 		#Removing old configuration.
 		_clear

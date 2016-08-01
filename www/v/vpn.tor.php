@@ -56,7 +56,7 @@ var tor=$.parseJSON('{<?php
 
  function TORcall(torForm){ 
  	hideUi("Adjusting TOR settings...");
- 	if (info.vpn.type == 'OpenVPN' && E("tor_mode").value != "off") {
+ 	/*if (info.vpn.type == 'OpenVPN' && E("tor_mode").value != "off") {
 		hideUi("OpenVPN will be stopped.");
 		$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
 			if(res!=""){
@@ -74,9 +74,9 @@ var tor=$.parseJSON('{<?php
 				TORstart(torForm);
 			}
 		});
-	} else {
+	} else { */
 		TORstart(torForm);
-	}
+	//}
 
     	// Important stops the page refreshing
     	return false;
