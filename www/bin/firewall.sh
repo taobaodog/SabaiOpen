@@ -88,22 +88,16 @@ _cookies(){
 
 _wan_access(){
 	local state=$1
-	local ip_lan="$(ifconfig -a br-lan | grep -F "inet addr" | awk '{print $2}' | tr -d 'addr:')"
 
 	if [ "$state" == "enabled" ]; then
-		uci set uhttpd.main.listen_http=80
-		uci set uhttpd.main.listen_https=443
-		uci delete dropbear.@dropbear[0].Interface
+		uci set firewall.wan.input="ACCEPT"
 	else
-		uci set uhttpd.main.listen_http=$ip_lan':80'
-		uci set uhttpd.main.listen_https=$ip_lan':443'
-		uci set dropbear.@dropbear[0].Interface='lan'
+		uci set firewall.wan.input="REJECT"
 	fi
-	uci commit
+	uci commit firewall
 
-	logger "WAN access is $state. Restarting uhttpd and dropbear"
-	/etc/init.d/uhttpd restart
-	/etc/init.d/dropbear restart
+	logger "WAN access is $state. Restarting firewall"
+	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 }
 
 case $val in
