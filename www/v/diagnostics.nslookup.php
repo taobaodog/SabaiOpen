@@ -6,10 +6,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 ?>
 <form id='fe'>
 <div class='pageTitle'>Diagnostics: NS Lookup</div>
-<!-- 
-TODO:
- -->
-
 <div class='controlBox'><span class='controlBoxTitle'>NS Lookup</span>
 	<div class='controlBoxContent'>
 		
@@ -17,31 +13,31 @@ TODO:
 			 <tr>
 			 	<td>Domain</td>
 			 	<td>
-			 		<input id='ns_domain' name='ns_domain' />
+			 		<input id='ns_domain' name='ns_domain' value='www.google.com'/>
 			 		<input type='button' value='Lookup' id='Lookup' onclick='lookup()'>
 			 	</td>
 			 </tr>
 		</tbody></table>
 		</form>
 		<br>
-		<textarea id='dnstxtarea' style="width: 90%; height: 30em" readonly
-></textarea>
+		<textarea id='dnstxtarea' style="width: 90%; height: 30em" readonly></textarea>
 	
 	</div> <!-- End Control box content -->
 </div> <!-- end control box -->
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
 
 
-<script type='text/ecmascript' src='php/etc.php?q=nslookup'></script>
-<script type='text/ecmascript'>
+<script type='text/javascript' url='php/etc.php?q=nslookup'>
 
-	$('#ns_domain').val(nslookup.domain);
+	
 
 	function lookup(){
+		var domain = $('#ns_domain').val();
+		
 		$.ajax("php/nslookup.php", {
-			success: function(o){
-				$('#dnstxtarea').html('');
-				$('#dnstxtarea').html(o);
+			success: function(data){
+				var msg = data.replace(domain, '');
+				$('#dnstxtarea').html(msg);
 			},
 			dataType: "text",
 			data: $("#fe").serialize()

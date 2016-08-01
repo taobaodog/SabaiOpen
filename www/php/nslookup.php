@@ -8,11 +8,9 @@
 	$ip = gethostbynamel($lookupAddress);
 
 	exec("nslookup $lookupAddress", $ip);
-
+	$ip=str_replace($lookupAddress, "", $ip);
 	$addrs = count($ip);
 
 	for ($i = 0 ; $i < $addrs ; $i++)
         echo($ip[$i] . "\n");
-//	echo "Bad guy go away.";
-
 ?>
