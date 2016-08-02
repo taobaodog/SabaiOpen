@@ -134,7 +134,7 @@ _tor_route(){
 		iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053
 		iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040
 		echo "iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
-		echo "iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053" >> etc/firewall.user
+		echo "iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
 		echo "iptables -t nat -A PREROUTING -s "$2" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040" >> /etc/firewall.user
 	elif [ "$1" = "teardown" ]; then
 		iptables -t nat -D PREROUTING -s "$2" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053
