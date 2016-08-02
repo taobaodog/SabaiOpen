@@ -59,11 +59,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
    hideUi("Tracing the route settings...");
    getResults();
    showUi();
-// Important stops the page refreshing
-return false;
+  // Important stops the page refreshing
+  return false;
   }
 
   function getResults(){ 
+    $.fn.dataTable.ext.errMode='none';
     $('#results').show();
     $('#resultTable').dataTable({
       "bDestroy":true,
@@ -73,8 +74,24 @@ return false;
       'bFilter': false,
       'bSort': false,
       "sAjaxDataProp": "traceResults",
-      "fnServerParams": function(aoData){ $.merge(aoData,$('#fe').serializeArray()); },
       "sAjaxSource": "php/trace.php",
+      "fnServerData": function ( sSource, aoData, fnCallback, oSettings ) {
+        $.merge(aoData,$('#fe').serializeArray());
+        oSettings.jqXHR = $.ajax( {
+          "dataType": 'json',
+          "type": "POST",
+          "url": sSource,
+          "data": aoData,
+          "timeout": 60000,
+          "success": fnCallback,
+          "error": function() {
+            hideUi("Tracing failed by selected host.");
+            setTimeout(function(){showUi()},4000);
+            window.location.reload();
+          }
+        });
+      },
+      
       'aoColumns': [
         { 'sTitle': 'Hop', "mData":"Hop" },
         { 'sTitle': 'Address',"mData":"Address" },

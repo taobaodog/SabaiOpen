@@ -10,7 +10,7 @@
   $maxWait=$_REQUEST['maxWait'];
 
   // //execute a quick traceroute - save result as output
-  exec("traceroute -n $traceAddress -m $maxWait", $output); 
+  exec("traceroute -n $traceAddress -m $maxHops -w $maxWait", $output); 
 
   //get length of output array
   $outputLength = count($output);
@@ -23,8 +23,7 @@
 
   //for each element in array
   for ($i = 1; $i < $outputLength; $i++){
-
-    
+   
     //store current element(row) as string (ignore space at beggining/end)
     $string = trim($output[$i]);
 
@@ -80,7 +79,6 @@
   );
   
 echo json_encode($out,JSON_PRETTY_PRINT);
-
 
 ?>
 
