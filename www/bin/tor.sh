@@ -27,16 +27,6 @@ _off(){
 
 	/etc/init.d/tor stop
 
-	if [ "$(uci get sabai.tor.mode)" = "ap" ]; then
-		wifi down
-		uci set wireless.@wifi-iface[0].network="mainAP"
-		/etc/init.d/odhcp restart
-		/etc/init.d/dnsmasq restart
-		wifi up
-	elif [ "$device" = "vpna" ]; then
-		iptables -t nat -F
-	fi
-
 	uci delete privoxy.privoxy.forward_socks5t
 	uci delete privoxy.privoxy.forward_socks5
 	uci delete privoxy.privoxy.forward_socks4
@@ -45,9 +35,13 @@ _off(){
 	uci commit privoxy
 	/etc/init.d/privoxy restart
 
+  if [ $(uci $UCI_PATH get sabai.tor.mode) = "tun" ]; then
+		uci $UCI_PATH set sabai.vpn.proto="none"
+		uci $UCI_PATH set sabai.vpn.status="none"
+    sed -ni "/iptables -t nat -A PREROUTING ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
+  fi
+
 	uci $UCI_PATH set sabai.tor.mode="off"
-	# uci $UCI_PATH set sabai.vpn.proto="none"
-	# uci $UCI_PATH set sabai.vpn.status="none"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
 	# must be after sabai changing
@@ -57,70 +51,25 @@ _off(){
 	_return 0 "TOR turned OFF."
 }
 
-_ap(){
-	_check
-
-	wifi down
-	uci $UCI_PATH set sabai.tor.mode=$mode
-	uci $UCI_PATH set sabai.vpn.proto="tor"
-	uci $UCI_PATH set sabai.vpn.status="Anonymity"
-	uci $UCI_PATH commit sabai
-	cp -r /etc/config/sabai /configs/
-	uci set wireless.@wifi-iface[0].disabled=0
-	uci set wireless.@wifi-iface[0].mode="$(uci get $config_file.tor.mode)"
-	uci set wireless.@wifi-iface[0].ssid="$(uci get $config_file.wlradio0.ssid)"
-	uci set wireless.@wifi-iface[0].network="tor"
-	uci commit wireless
-	uci set network.tor.ipaddr="$(uci get $config_file.tor.ipaddr)"
-	uci set network.tor.netmask="$(uci get $config_file.tor.netmask)"
-	uci commit network
-	redirect=$(uci show firewall | grep redirect | grep name=\'Redirect\ Tor\ Traffic\' | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
-	src_dip=$(uci get $config_file.tor.ipaddr | sed 's/.$//' )
-	uci set firewall.@redirect["$redirect"].src_dip='!'$src_dip'0/24'
-	uci commit firewall
-	# ajusting tor deamon
-	sed -i '/VirtualAddrNetwork/,$d' /etc/tor/torrc
-	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)" >> /etc/tor/torrc
-	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
-	echo "TransPort 9040" >> /etc/tor/torrc
-	echo "TransListenAddress $(uci get $config_file.tor.ipaddr)" >> /etc/tor/torrc
-	echo "DNSPort 9053" >> /etc/tor/torrc
-	echo "DNSListenAddress $(uci get $config_file.tor.ipaddr)" >> /etc/tor/torrc
-
-	/etc/init.d/firewall restart
-	/etc/init.d/odhcpd restart
-	/etc/init.d/dnsmasq restart
-	/etc/init.d/tor enable
-	wifi up
-	logger "TOR turned ON. WIFI AP SSID is $(uci get $config_file.wlradio0.ssid)"
-	_return 0 "TOR turned ON. WIFI AP SSID is $(uci get $config_file.wlradio0.ssid)"
-}
-
-_tun() {
-	_check
-
-	uci $UCI_PATH set sabai.tor.mode=$mode
-	# uci $UCI_PATH set sabai.vpn.proto="tor"
-	# uci $UCI_PATH set sabai.vpn.status="Anonymity"
-	uci $UCI_PATH commit sabai
-	cp -r /etc/config/sabai /configs/
-
-	/etc/init.d/tor stop
-
+_common_settings(){
 	if [ "$device" = "vpna" ]; then
 		ipaddr=$(uci get network.wan.ipaddr)
 	else
 		ipaddr=$(uci get network.lan.ipaddr)
 	fi
 
-	#cat /dev/null  > /etc/tor/torrc
+	# Tor's TransPort
+	_trans_port="9040"
+
+	# Privoxy port
+	_privox_port="8080"
+
+	# Tor's ProxyPort
+	_tor_proxy_port="9050"
+
 	echo "# SABAI TOR CONFIG" > /etc/tor/torrc
-	echo "SocksPort 9050" >> /etc/tor/torrc
-	echo "SocksPort $ipaddr:9050" >> /etc/tor/torrc
-	socks_network=$(echo $ipaddr | sed 's/.$//')"0/24"
-	echo "SocksPolicy accept $socks_network" >> /etc/tor/torrc
-	echo "SocksPolicy accept 127.0.0.1" >> /etc/tor/torrc
-	echo "SocksPolicy reject *" >> /etc/tor/torrc
+	echo "SocksPort $_tor_proxy_port" >> /etc/tor/torrc
+	echo "SocksPolicy accept *" >> /etc/tor/torrc
 
 	echo -e "\n" >> /etc/tor/torrc
 	echo "RunAsDaemon 1" >> /etc/tor/torrc
@@ -141,35 +90,11 @@ _tun() {
 	echo -e "\n" >> /etc/tor/torrc
 	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)/10" >> /etc/tor/torrc
 	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
-	echo "TransPort $ipaddr:9040" >> /etc/tor/torrc
-	echo "DNSPort $ipaddr:9053" >> /etc/tor/torrc
-
-	# Tor's TransPort
-	_trans_port="9040"
-
-	# Privoxy port
-	_privox_port="8080"
-
-	# Tor's ProxyPort
-	_tor_proxy_port="9050"
-
-	# your internal interface
-	if [ "$device" = "vpna" ]; then
-		_int_if="eth0"
-		iptables -t nat -A OUTPUT -d "$socks_network" -j RETURN
-		iptables -t nat -A OUTPUT -d 127.0.0.0/8 -j RETURN
-		iptables -t nat -I PREROUTING -i $_int_if -d "$socks_network" -j RETURN
-		iptables -A OUTPUT -d "$socks_network" -j ACCEPT
-		iptables -A OUTPUT -d 127.0.0.0/8 -j ACCEPT
-
-		iptables -t nat -A PREROUTING -i $_int_if -p udp --dport 53 -j REDIRECT --to-ports 9053
-		iptables -t nat -A PREROUTING -i $_int_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
-	fi
-
+	echo "TransPort $_trans_port" >> /etc/tor/torrc
+	echo "DNSPort 9053" >> /etc/tor/torrc
 
 	_forward_socks="/	127.0.0.1:9050	."
-	uci set privoxy.privoxy.listen_address="$ipaddr:$_privox_port $(uci get network.loopback.ipaddr):$_privox_port"
-	uci set privoxy.privoxy.permit_access="$socks_network"
+	uci set privoxy.privoxy.listen_address=":$_privox_port"
 	uci set privoxy.privoxy.forward_socks5t="$_forward_socks"
 	uci set privoxy.privoxy.forward_socks5="$_forward_socks"
 	uci set privoxy.privoxy.forward_socks4="$_forward_socks"
@@ -179,18 +104,71 @@ _tun() {
 	uci add_list privoxy.privoxy.forward="127.*.*.*/	."
 	uci add_list privoxy.privoxy.forward="localhost/     ."
 	uci commit privoxy
-
-	/etc/init.d/tor start
 	#	/etc/init.d/privoxy restart
 	/www/bin/proxy.sh proxystop
 	/www/bin/proxy.sh proxystart
+}
+
+_tun() {
+	_check_vpn
+
+	uci $UCI_PATH set sabai.tor.mode=$mode
+	uci $UCI_PATH set sabai.vpn.proto="tor"
+	uci $UCI_PATH set sabai.vpn.status="Anonymity"
+	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
+
+	/etc/init.d/tor stop
+
+  _common_settings
+
+	if [ "$device" = "vpna" ]; then
+		local net=$(ip addr show | grep eth0: -A 3 | grep inet | awk '{print $2}')
+	else
+		local net=$(ip addr show | grep br-lan: -A 3 | grep inet | awk '{print $2}')
+	fi
+
+  iptables -t nat -A PREROUTING ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053
+  iptables -t nat -A PREROUTING ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053
+  iptables -t nat -A PREROUTING ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040
+  echo "iptables -t nat -A PREROUTING ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
+	echo "iptables -t nat -A PREROUTING ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
+	echo "iptables -t nat -A PREROUTING ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040" >> /etc/firewall.user
+
+	/etc/init.d/tor start
+
 	logger "TOR tunnel started."
-	logger "ALL traffic will be anonymized."
+	logger "ALL traffic will be anonymized; HTTP proxy is also available on port 8080."
 	_return 0 "Tor tunnel started."
 }
 
+_proxy(){
+	uci $UCI_PATH set sabai.tor.mode=$mode
+	uci $UCI_PATH commit sabai
+	cp -r /etc/config/sabai /configs/
+
+	/etc/init.d/tor stop
+
+  _common_settings
+
+	/etc/init.d/tor start
+	logger "TOR proxy started."
+	logger "Anonymizing HTTP proxy is available on port 8080."
+	_return 0 "Tor proxy started."
+}
+
+_check_vpn() {
+    ifconfig > /tmp/check
+    if [ "$(cat /tmp/check | grep pptp)" ]; then
+        /www/bin/pptp.sh stop
+    elif [ "$(cat /tmp/check | grep tun)" ]; then
+        /www/bin/ovpn.sh stop
+    else
+        logger "No VPN is running."
+    fi
+}
+
 _check() {
-	ifconfig > /tmp/check
 	if [ "$tor_stat" ]; then
 		_return 0 "TOR is running."
 	else
@@ -198,17 +176,9 @@ _check() {
 	fi
 }
 
-_check_tor() {
-	if [ "$tor_stat" ]; then
-		_return 0 "TOR is running."
-	else
-		logger "TOR will be restarted in another mode."
-	fi
-}
-
 case $mode in
 	off)	_off	;;
-	ap)	_ap	;;
+	proxy)	_proxy	;;
 	tun)	_tun	;;
-	stat)	_check_tor ;;
+	stat)	_check ;;
 esac
