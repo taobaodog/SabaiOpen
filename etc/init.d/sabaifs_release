@@ -10,8 +10,8 @@ _copy_config() {
 	else
 		rm -r /etc/config
 		rm -r /etc/sabai/openvpn
-        cp -fR /configs/custom_$1/config /etc
-        cp -fR /configs/custom_$1/openvpn /etc/sabai
+		cp -fR /configs/custom_$1/config /etc
+		cp -fR /configs/custom_$1/openvpn /etc/sabai
 		cp /etc/config/sabai /configs
 	fi
 	[ -h /www/configs ] || ln -s /configs /www/configs
@@ -27,75 +27,73 @@ _reset() {
 	if [ $diff -lt 600 ]; then
 		# reset curr partition to factory
 		# set default pass
-		pass="sabaipass123"             
+		pass="sabaipass123"
 		logger "<<<-------- FACTORY RESET PROCEDURE -------->>>"
 		echo "<<<-------- FACTORY RESET PROCEDURE -------->>>" > /dev/kmsg
-		echo "root:$pass" | chpasswd -m 
-		echo "admin:$pass" | chpasswd -m
 		> /etc/sabai/sys_reset
-		/www/bin/reset.sh     
-	else                          
-		# clear chache        
+		/www/bin/reset.sh
+	else
+		# clear chache
 		> /etc/sabai/sys_reset
 	fi
 }
 
 create_partitions() {
 	CMD=$( ls /dev/sda5 )
-        if [ $? = 0 ]; then
-                echo "SABAI:> Found sabai partitions. Nothing to do"
-                return 0;
-        fi
+	if [ $? = 0 ]; then
+		echo "SABAI:> Found sabai partitions. Nothing to do"
+		return 0;
+	fi
 
-        echo "+++++++++++++++++++++++++++++++++++++++++++++"
-        echo "Sabai Networks 1st boot. Creating filesystems"
-        echo "+++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Sabai Networks 1st boot. Creating filesystems"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++"
 
-        /etc/init.d/fdisker
+	/etc/init.d/fdisker
 
 	echo "SABAI:> partitions created"
 
-        reboot
-        exit 0
+	reboot
+	exit 0
 
 }
 
 make_filesystems() {
 
-        logger "SABAI:> making filesystems"
+	logger "SABAI:> making filesystems"
 	mount -t ext2 /dev/sda1 /mnt
 	CMD_FILE=$(ls /mnt/boot/vmlinuz2)
 	umount /dev/sda1
-        if [ -z "$CMD_FILE" ]; then
-                echo "SABAI:> Found sabai partitions. Creating filesystems"
-                mkfs.ext4 -F /dev/sda5
-                mkfs.ext4 -F /dev/sda6
-                mkfs.ext4 -F /dev/sda7
-                echo "SABAI:> Copying kernel partition"
-                mount -t ext4 /dev/sda1 /mnt
-                cp -f /mnt/boot/vmlinuz /mnt/boot/vmlinuz2
+	if [ -z "$CMD_FILE" ]; then
+		echo "SABAI:> Found sabai partitions. Creating filesystems"
+		mkfs.ext4 -F /dev/sda5
+		mkfs.ext4 -F /dev/sda6
+		mkfs.ext4 -F /dev/sda7
+		echo "SABAI:> Copying kernel partition"
+		mount -t ext4 /dev/sda1 /mnt
+		cp -f /mnt/boot/vmlinuz /mnt/boot/vmlinuz2
 		mv /mnt/boot/vmlinuz /mnt/boot/vmlinuz1
 
-                cp -f /etc/sabai/grub.cfg.sabai /mnt/boot/grub/grub.cfg
-                umount /dev/sda1
+		cp -f /etc/sabai/grub.cfg.sabai /mnt/boot/grub/grub.cfg
+		umount /dev/sda1
 
-                mount -t ext4 /dev/sda5 /mnt
-                grub-editenv /mnt/grubenv create
-                grub-editenv /mnt/grubenv set boot_entry=0
+		mount -t ext4 /dev/sda5 /mnt
+		grub-editenv /mnt/grubenv create
+		grub-editenv /mnt/grubenv set boot_entry=0
 		grub-editenv /mnt/grubenv set is_upgrade=0
 		BOOT_ENTRY=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
-                umount /dev/sda5
+		umount /dev/sda5
 
 		echo "SABAI:> Creating directory configuration' storage."
 		uci set sabai.general.revert='0'
-	        uci commit sabai
+		uci commit sabai
 		mkdir /configs
 		mount -t ext4 /dev/sda6 /configs
 
 		# save factory settings
 		mkdir /configs/system_$BOOT_ENTRY
-                cp -r /etc/config /configs/system_$BOOT_ENTRY
-                cp -r /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
+		cp -r /etc/config /configs/system_$BOOT_ENTRY
+		cp -r /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
 
 		mv /etc/config/sabai /configs
 		ln -s /configs/sabai /etc/config/sabai
@@ -104,7 +102,7 @@ make_filesystems() {
 		echo $version > /etc/version
 		touch /etc/sabai/sys_reset
 		echo "SABAI:> Configuration Sabai is allocated."
-        else
+	else
 		logger "SABAI:> Filesystems already created"
 		mount -t ext4 /dev/sda5 /mnt
 		UPGRADE_IN_PROGRESS=$(grub-editenv /mnt/grubenv list | grep is_upgrade | awk -F "=" '{print $2}')
@@ -116,16 +114,16 @@ make_filesystems() {
 		if [ "$UPGRADE_IN_PROGRESS" = "1" ] || [ "$REVERT_IN_PROGRESS" = "1" ]; then
 			if [ "$SAVE_DEFAULT" = "1" ]; then
 				[ "$UPGRADE_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into after firmware upgrade" > /www/resUpgrade.txt
-				[ "$REVERT_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into previous firmware upgrade" > /www/resUpgrade.txt				
+				[ "$REVERT_IN_PROGRESS" = "1" ] && echo "SABAI:> Sucessfully booted into previous firmware upgrade" > /www/resUpgrade.txt
 				# Sucessfully booted, so, cleanup savedefault entry
-               			if [ "$BOOT_ENTRY" = "1" ]; then
-                        		grub-editenv /mnt/grubenv set boot_entry=0
-                		else
-                        		grub-editenv /mnt/grubenv set boot_entry=1
-                		fi
+				if [ "$BOOT_ENTRY" = "1" ]; then
+					grub-editenv /mnt/grubenv set boot_entry=0
+				else
+					grub-editenv /mnt/grubenv set boot_entry=1
+				fi
 				BOOT_ENTRY=$(grub-editenv /mnt/grubenv list | grep boot_entry | awk -F "=" '{print $2}')
 				grub-editenv /mnt/grubenv set save_default=0
-        		        grub-editenv /mnt/grubenv set is_upgrade=0
+				grub-editenv /mnt/grubenv set is_upgrade=0
 				grub-editenv /mnt/grubenv set is_revert=0
 				umount /dev/sda5
 
@@ -151,7 +149,7 @@ make_filesystems() {
 					cp -fR /etc/sabai/openvpn /configs/system_$BOOT_ENTRY
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 1 $version || _copy_config 0 $version
 				else
-					version="$(cat /etc/version)"			
+					version="$(cat /etc/version)"
 					[ "$BOOT_ENTRY" = "0" ] && _copy_config 0 $version || _copy_config 1 $version
 				fi
 				touch /etc/sabai/sys_reset
@@ -166,15 +164,15 @@ make_filesystems() {
 			umount /dev/sda5
 			mount -t ext4 /dev/sda6 /configs
 		fi
-        fi
+	fi
 }
 
 start_service() {
-        exec 1>/dev/console  ;
-        exec 2>/dev/console  ;
-        create_partitions
-        make_filesystems
-        mount -t ext4 /dev/sda5 /mnt
+	exec 1>/dev/console  ;
+	exec 2>/dev/console  ;
+	create_partitions
+	make_filesystems
+	mount -t ext4 /dev/sda5 /mnt
 	logger "BOOT FINISHED"
 	[ $(grep -c "." /etc/sabai/sys_reset) -eq 5 ] && _reset
 }
