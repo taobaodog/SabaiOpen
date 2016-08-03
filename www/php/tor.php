@@ -1,14 +1,10 @@
 <?php
 // Sabai Technology - Apache v2 licence
 // Copyright 2016 Sabai Technology
-$UCI_PATH="";
-$prefix="tor";
+	$UCI_PATH="";
+	$prefix="tor";
 
-if (isset($_POST['switch']))	{
-	$mode=$_POST['switch'];
-	$res=exec("sh /www/bin/tor.sh $mode");
-	echo $res;
-} else {
+	// must be removed if WL is not needed
 	$mode=trim($_POST[$prefix.'_mode']);
 	$ssid=trim($_POST[$prefix.'_ssid']);
 	$ip=trim($_POST[$prefix.'_nw_ip']);
@@ -24,5 +20,5 @@ if (isset($_POST['switch']))	{
 	exec("cp -r /etc/config/sabai /configs/");
 	$res=exec($command);
 	echo $res;
-}
+
 ?>

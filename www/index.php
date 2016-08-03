@@ -27,11 +27,15 @@ function setUpdate(res){
 			for(i in info.vpn){ 
 		 		E('vpn'+i).innerHTML = info.vpn[i]; 
 		 	}
+		 	for(i in info.tor_proxy){ 
+		 		E('tor_'+i).innerHTML = info.tor_proxy[i]; 
+		 	}
 		 	$('#proxy').text(info.proxy.status);
 
 		 	if (info.vpn.status == "Connected"){
 		 		$('#dns_stat').text("VPN is runnig. Check DNS servers on the status page. ");
 		 	}
+
 		 	
 }
 
@@ -96,23 +100,33 @@ $(function(){
 	<div id="panelContainer">
 
 		<div id="helpArea">
-					<div class='fright' id='vpnstats'>
-					<div id='vpntype'></div>
-					<div id='vpnstatus'></div>
-					<div id='vpnip'></div>
-				</div>
-
-				<div class='fright' id='locstats'>
-					<div id='locquery'></div>
-					<table>
-					<tr>
-					<div id='loccity'></div> 
-					</tr>
-					<tr>
-					<div id='loccountry'></div>
-					</tr>
-					</table>
-					<div class= 'noshow' id='locregion'></div>
+				<div class='fright' id='torstats'>
+		<div id='tor_proxy'>TOR proxy</div>
+			<div id='tor_status'>-</div> 
+			<div id='tor_port'>-</div> 
+		</div>
+			<div class='fright' id='vpnstats'>
+			<div id='vpntype'></div>
+			<table>
+			<tr>
+			<div id='vpnstatus'></div>
+			</tr>
+			<tr>
+			<div id='vpnip'></div>
+			</tr>
+			</table>
+		</div>
+		<div class='fright' id='locstats'>
+			<div id='locquery'></div>
+			<table>
+			<tr>
+			<div id='loccity'></div> 
+			</tr>
+			<tr>
+			<div id='loccountry'></div>
+			</tr>
+			</table>
+				<div class= 'noshow' id='locregion'></div>
 					<div class= 'noshow' id='loclat'></div>
 					<div class= 'noshow' id='loclon'></div>
 					<div class= 'noshow' id='locas'></div>
@@ -124,7 +138,8 @@ $(function(){
 					<div class= 'noshow' id='locstatus'></div>
 					<div class= 'noshow' id='loctimezone'></div>
 					<div class= 'noshow' id='loczip'></div>
-				</div>
+		</div>
+
 			<img id="helpButton" src="libs/img/help.png">
 			<div id="helpSection" class="ui-widget-content ui-corner-al">
 		<!-- 		<a href="#" id="closeHelp" class="xsmallText fright">Close</a> -->

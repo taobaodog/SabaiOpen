@@ -6,14 +6,14 @@ config defaults
 	option forward 'REJECT'
 	option tcp_syncookies '0'
 
-config zone
+config zone 'lan'
 	option name 'lan'
 	option network 'lan'
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'REJECT'
 
-config zone
+config zone 'wan'
 	option name 'wan'
 	option network 'wan'
 	option input 'REJECT'
@@ -29,7 +29,7 @@ config forwarding
 config include
 	option path '/etc/firewall.user'
 
-config zone
+config zone 'guest'
 	option name 'guest'
 	option network 'guest'
 	option input 'REJECT'

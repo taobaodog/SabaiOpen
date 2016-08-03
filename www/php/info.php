@@ -22,8 +22,8 @@ $proxy = " proxy: {
   \"status\": \"". exec("uci get sabai.proxy.status") ."\"
 }";
 
-$vo=exec("uci get sabai.vpn.proto");
-switch($vo){
+$vpn_switch=exec("uci get sabai.vpn.proto");
+switch($vpn_switch){
  case 'none': $vpn_type='-'; break;
  case 'pptp': 
  	$vpn_type='PPTP'; 
@@ -59,17 +59,21 @@ switch($vo){
  	case 'tor':
  		$tor_stat=exec("/www/bin/tor.sh stat");
  		if($tor_stat) {
- 			$vpn_type='TOR';
+ 			$tor_mode=exec("uci get sabai.tor.mode");
+ 			if($tor_mode=='tun') {
+ 				$vpn_type='TOR';
+ 			} else {
+ 				$vpn_type='-';
+ 			}
  		} else {
  			$vpn_type='-';
  		}  	
  		break;
 }
 $vpn_status=exec("uci get sabai.vpn.status");
-
-$vpn = ",\n vpn: {\n type: '". $vpn_type ."',
+$vpn = ",\n vpn: {\n type: '". (($vpn_type=='-')?'VPN': $vpn_type) ."',
   status: '". (($vpn_type=='-')?'-': $vpn_status) ."',
-  ip: '". $vpn_ip ."' \n },";
+  ip: '". (($vpn_ip=='')?'-': $vpn_ip) ."' \n }";
 
 if ($_SESSION['count_vpn'] == 10) {
 	if ($vpn_type == 'PPTP') {
@@ -84,10 +88,29 @@ if ($_SESSION['count_vpn'] == 10) {
 
 }
 
+$tor_pr_switch=exec("uci get sabai.tor.mode");
+switch($tor_pr_switch){
+	case 'off':
+		$tor_proxy = ",\n \"tor_proxy\": {
+				\"status\": \"-\",
+				\"port\": \"-\"
+				},\n";
+		break;
+	case 'proxy':
+		$tor_proxy = ",\n tor_proxy: {
+				\"status\": \"Enabled\",
+				\"port\": \"8080\"
+			},\n";
+	case 'tun':
+		break;
+}
+
+
 echo "info = {\n"
 .$wan
 .$proxy
 .$vpn
+.$tor_proxy
 ."\n}";
 
 ?>

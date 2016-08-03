@@ -613,6 +613,7 @@ color: blue;
 	z-index: 10;
 }
 
+
 #ipArea {
  	position: relative;
 	float:right;
@@ -707,9 +708,10 @@ color: blue;
 
 #vpnstats  {
 	font-size: .8em;
-	text-align: left;
-	padding-right: 40px;
+	text-align: center;
+	padding-right: 10px;
 	padding-left: 10px;
+	border-right: 1px solid #0B3155;
 }
 #locstats  {
 	font-size: .8em;
@@ -717,6 +719,13 @@ color: blue;
 	padding-left: 10px;
 	padding-right: 10px;
 	border-right: 1px solid #0B3155;
+}
+
+#torstats  {
+	font-size: .8em;
+	text-align: center;
+	padding-left: 10px;
+	padding-right: 45px;
 }
 
 .shownChildMenu { 

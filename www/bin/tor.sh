@@ -35,17 +35,17 @@ _off(){
 	uci commit privoxy
 	/etc/init.d/privoxy restart
 
-  if [ $(uci $UCI_PATH get sabai.tor.mode) = "tun" ]; then
+	if [ "$mode_curr" = "tun" ]; then
 		uci $UCI_PATH set sabai.vpn.proto="none"
 		uci $UCI_PATH set sabai.vpn.status="none"
-    sed -ni "/iptables -t nat -A PREROUTING ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
-  fi
+		sed -ni "/iptables -t nat -A PREROUTING ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
+	fi
 
 	uci $UCI_PATH set sabai.tor.mode="off"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
 	# must be after sabai changing
-	/etc/init.d/firewall restart
+	/etc/init.d/firewall restart > /dev/null 2> /dev/null
 
 	logger "TOR turned OFF."
 	_return 0 "TOR turned OFF."
@@ -68,7 +68,7 @@ _common_settings(){
 	_tor_proxy_port="9050"
 
 	echo "# SABAI TOR CONFIG" > /etc/tor/torrc
-	echo "SocksPort $_tor_proxy_port" >> /etc/tor/torrc
+	echo "SocksPort 0.0.0.0:$_tor_proxy_port" >> /etc/tor/torrc
 	echo "SocksPolicy accept *" >> /etc/tor/torrc
 
 	echo -e "\n" >> /etc/tor/torrc
@@ -90,8 +90,8 @@ _common_settings(){
 	echo -e "\n" >> /etc/tor/torrc
 	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)/10" >> /etc/tor/torrc
 	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
-	echo "TransPort $_trans_port" >> /etc/tor/torrc
-	echo "DNSPort 9053" >> /etc/tor/torrc
+	echo "TransPort 0.0.0.0:$_trans_port" >> /etc/tor/torrc
+	echo "DNSPort 0.0.0.0:9053" >> /etc/tor/torrc
 
 	_forward_socks="/	127.0.0.1:9050	."
 	uci set privoxy.privoxy.listen_address=":$_privox_port"
@@ -111,6 +111,10 @@ _common_settings(){
 
 _tun() {
 	_check_vpn
+	if [ "$tor_stat" ] && [ "$mode_curr" == "tun" ]; then
+		logger "TOR tunnel is already running."
+		_return 0 "TOR tunnel is already running."
+	fi
 
 	uci $UCI_PATH set sabai.tor.mode=$mode
 	uci $UCI_PATH set sabai.vpn.proto="tor"
@@ -118,9 +122,9 @@ _tun() {
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
 
-	/etc/init.d/tor stop
-
-  _common_settings
+	if [ "$mode_curr" == "off" ]; then
+		_common_settings
+	fi
 
 	if [ "$device" = "vpna" ]; then
 		local net=$(ip addr show | grep eth0: -A 3 | grep inet | awk '{print $2}')
@@ -128,10 +132,10 @@ _tun() {
 		local net=$(ip addr show | grep br-lan: -A 3 | grep inet | awk '{print $2}')
 	fi
 
-  iptables -t nat -A PREROUTING ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053
-  iptables -t nat -A PREROUTING ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053
-  iptables -t nat -A PREROUTING ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040
-  echo "iptables -t nat -A PREROUTING ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
+	iptables -t nat -A PREROUTING ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053
+	iptables -t nat -A PREROUTING ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053
+	iptables -t nat -A PREROUTING ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040
+	echo "iptables -t nat -A PREROUTING ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
 	echo "iptables -t nat -A PREROUTING ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
 	echo "iptables -t nat -A PREROUTING ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040" >> /etc/firewall.user
 
@@ -143,13 +147,23 @@ _tun() {
 }
 
 _proxy(){
+	if [ "$tor_stat" ] && [ "$mode_curr" == "proxy" ]; then
+		logger "TOR proxy is already running."
+		_return 0 "TOR proxy is already running."
+  fi
+
+	if [ "$mode_curr" == "off" ]; then
+		_common_settings
+	elif [ "$mode_curr" == "tun" ]; then
+		uci $UCI_PATH set sabai.vpn.proto="none"
+		uci $UCI_PATH set sabai.vpn.status="none"
+		sed -ni "/iptables -t nat -A PREROUTING ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
+	fi
+
 	uci $UCI_PATH set sabai.tor.mode=$mode
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
-
-	/etc/init.d/tor stop
-
-  _common_settings
+	/etc/init.d/firewall restart > /dev/null 2> /dev/null
 
 	/etc/init.d/tor start
 	logger "TOR proxy started."
@@ -158,14 +172,12 @@ _proxy(){
 }
 
 _check_vpn() {
-    ifconfig > /tmp/check
-    if [ "$(cat /tmp/check | grep pptp)" ]; then
-        /www/bin/pptp.sh stop
-    elif [ "$(cat /tmp/check | grep tun)" ]; then
-        /www/bin/ovpn.sh stop
-    else
-        logger "No VPN is running."
-    fi
+	ifconfig > /tmp/check
+	if [ "$(cat /tmp/check | grep pptp)" ]; then
+		/www/bin/pptp.sh stop
+	elif [ "$(cat /tmp/check | grep tun)" ]; then
+		/www/bin/ovpn.sh stop
+	fi
 }
 
 _check() {

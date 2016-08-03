@@ -18,12 +18,7 @@ exec("uci $UCI_PATH set sabai.firewall.wanroute=\"" . $wanroute . "\"");
 exec("uci $UCI_PATH commit sabai");
 exec("cp -r /etc/config/sabai /configs/");
 
-if ($icmp == '') $icmp="off" ;
-if ($multicast == '') $multicast="off" ;
-if ($cookies == '') $cookies="off" ;
-if ($wanroute == '') $wanroute="off" ;
-
-exec("sh /www/bin/firewall.sh $icmp $multicast $cookies $wanroute");
+exec("sh /www/bin/firewall.sh");
 echo "res={ sabai: true, msg: 'Firewall settings applied' }";
 
 ?>  
