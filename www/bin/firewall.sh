@@ -6,36 +6,6 @@
 val=$1
 state=$2
 
-if [ -z "$val" ]; then
-	if [ "$(uci get sabai.firewall.icmp)" == "on" ]; then
-		_ping enabled
-	else
-		_ping disabled
-	fi
-	if [ "$(uci get sabai.firewall.multicast)" == "on" ]; then
-		_multicast enabled
-	else
-		_multicast disabled
-	fi
-	if [ "$(uci get sabai.firewall.cookies)" == "on" ]; then
-		_cookies enabled
-	else
-		_cookies disabled
-	fi
-	if [ "$(uci get sabai.firewall.wanroute)" == "on" ]; then
-		_wanroute enabled
-	else
-		_wanroute disabled
-	fi
-
-	exit
-fi
-
-if [ ! \( "$state" == "enabled" -o "$state" == "disabled" \) ]; then
-	logger -p user.err "Wrong state for firewall.sh!"
-	exit 1
-fi
-
 _ping(){
 	local state=$1
 
@@ -55,8 +25,7 @@ _ping(){
 	fi
 
 	uci commit firewall
-	logger "Ping from WAN is $state. Restarting firewall"
-	/etc/init.d/firewall restart 2>/dev/null > /dev/null
+	logger "Ping from WAN is $state."
 }
 
 _multicast(){
@@ -93,9 +62,8 @@ _multicast(){
 		uci commit network
 	fi
 
-	logger "UDP multicast (IGMP) is $state. Reloading network and restarting firewall"
+	logger "UDP multicast (IGMP) is $state. Reloading network"
 	/etc/init.d/network reload
-	/etc/init.d/firewall restart 2>/dev/null > /dev/null
 }
 
 _cookies(){
@@ -108,8 +76,7 @@ _cookies(){
 	fi
 	uci commit firewall
 
-	logger "SYN cookies are $state. Restarting firewall"
-	/etc/init.d/firewall restart 2>/dev/null > /dev/null
+	logger "SYN cookies are $state."
 }
 
 _wanroute(){
@@ -122,9 +89,40 @@ _wanroute(){
 	fi
 	uci commit firewall
 
-	logger "WAN access is $state. Restarting firewall"
-	/etc/init.d/firewall restart 2>/dev/null > /dev/null
+	logger "WAN access is $state."
 }
+
+if [ -z "$val" ]; then
+	if [ "$(uci get sabai.firewall.icmp)" == "on" ]; then
+		_ping enabled
+	else
+		_ping disabled
+	fi
+	if [ "$(uci get sabai.firewall.multicast)" == "on" ]; then
+		_multicast enabled
+	else
+		_multicast disabled
+	fi
+	if [ "$(uci get sabai.firewall.cookies)" == "on" ]; then
+		_cookies enabled
+	else
+		_cookies disabled
+	fi
+	if [ "$(uci get sabai.firewall.wanroute)" == "on" ]; then
+		_wanroute enabled
+	else
+		_wanroute disabled
+	fi
+
+	logger "Restarting firewall"
+	/etc/init.d/firewall restart 2>/dev/null > /dev/null
+	exit
+fi
+
+if [ ! \( "$state" == "enabled" -o "$state" == "disabled" \) ]; then
+	logger -p user.err "Wrong state for firewall.sh!"
+	exit 1
+fi
 
 case $val in
 	ping)		_ping $state	   ;;
@@ -132,3 +130,6 @@ case $val in
 	syn_cookies) _cookies $state	;;
 	wanroute)  _wanroute $state ;;
 esac
+
+logger "Restarting firewall"
+/etc/init.d/firewall restart 2>/dev/null > /dev/null

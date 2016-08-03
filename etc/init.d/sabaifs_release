@@ -26,8 +26,6 @@ _reset() {
 
 	if [ $diff -lt 600 ]; then
 		# reset curr partition to factory
-		# set default pass
-		pass="sabaipass123"
 		logger "<<<-------- FACTORY RESET PROCEDURE -------->>>"
 		echo "<<<-------- FACTORY RESET PROCEDURE -------->>>" > /dev/kmsg
 		> /etc/sabai/sys_reset

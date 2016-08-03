@@ -56,30 +56,36 @@ var tor=$.parseJSON('{<?php
 
  function TORcall(torForm){ 
  	hideUi("Adjusting TOR settings...");
- 	if (info.vpn.type == 'OpenVPN' && E("tor_mode").value != "off") {
-		hideUi("OpenVPN will be stopped.");
-		$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
-			if(res!=""){
-				eval(res);
-				hideUi(res.msg);
-				TORstart(torForm);
-			}
-		});
- 	} else if (info.vpn.type == 'PPTP' && E("tor_mode").value != "off") {
-		hideUi("PPTP will be stopped.");
-		$.post('php/pptp.php', {'switch': 'stop'}, function(res){
-			if(res!=""){
-				eval(res);
-				hideUi(res.msg);
-				TORstart(torForm);
-			}
-		});
-	} else {
-		TORstart(torForm);
-	}
-
-    	// Important stops the page refreshing
-    	return false;
+ 	if (E("tor_mode").value == "tun") {
+ 		if (info.vpn.type == 'OpenVPN') {
+			hideUi("OpenVPN will be stopped.");
+			$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
+				if(res!=""){
+					eval(res);
+					hideUi(res.msg);
+					
+				}
+			});
+ 		} else if (info.vpn.type == 'PPTP') {
+			hideUi("PPTP will be stopped.");
+			$.post('php/pptp.php', {'switch': 'stop'}, function(res){
+				if(res!=""){
+					eval(res);
+					hideUi(res.msg);
+					TORstart(torForm);
+				}
+			});
+ 		} else {
+ 			hideUi("TOR tunnel will be started.");
+ 		}
+ 		TORstart(torForm);
+ 	} else if (E("tor_mode").value == "proxy") {
+ 		hideUi("TOR proxy will be started.");
+ 		TORstart(torForm);
+ 	} else {
+ 		TORstart(torForm);
+ 	}
+ 	return false;
  };
 
 function TORstart(torForm){
@@ -124,6 +130,10 @@ $.widget("jai.tor_setup_wl", {
 	              .append( $(document.createElement('option'))
 	                .prop("value", "off")
 	                .prop("text", 'Off')
+	              )
+	              .append( $(document.createElement('option'))
+	                .prop("value", "proxy")
+	                .prop("text", 'Proxy')
 	              )
 	              .append( $(document.createElement('option'))
 	                .prop("value", "tun")
