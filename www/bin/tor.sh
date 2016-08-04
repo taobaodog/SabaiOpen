@@ -12,7 +12,7 @@ config_file=sabai
 proto=$(uci get sabai.vpn.proto)
 device=$(uci get system.@system[0].hostname)
 mode_curr=$(uci get sabai.tor.mode)
-tor_stat="$(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".9040"')"
+tor_stat="$(netstat -lpn | grep '/tor$')"
 
 _return(){
 	echo "res={ sabai: $1, msg: '$2' };"
@@ -28,9 +28,6 @@ _off(){
 	/etc/init.d/tor stop
 
 	uci delete privoxy.privoxy.forward_socks5t
-	uci delete privoxy.privoxy.forward_socks5
-	uci delete privoxy.privoxy.forward_socks4
-	uci delete privoxy.privoxy.forward_socks4a
 	uci delete privoxy.privoxy.forward
 	uci commit privoxy
 	/etc/init.d/privoxy restart
@@ -58,51 +55,17 @@ _common_settings(){
 		ipaddr=$(uci get network.lan.ipaddr)
 	fi
 
-	# Tor's TransPort
-	_trans_port="9040"
-
 	# Privoxy port
 	_privox_port="8080"
 
 	# Tor's ProxyPort
 	_tor_proxy_port="9050"
 
-	echo "# SABAI TOR CONFIG" > /etc/tor/torrc
-	echo "SocksPort 0.0.0.0:$_tor_proxy_port" >> /etc/tor/torrc
-	echo "SocksPolicy accept *" >> /etc/tor/torrc
-
-	echo -e "\n" >> /etc/tor/torrc
-	echo "RunAsDaemon 1" >> /etc/tor/torrc
-	echo "DataDirectory /var/lib/tor" >> /etc/tor/torrc
-
-	echo -e "\n" >> /etc/tor/torrc
-	echo "CircuitBuildTimeout 30" >> /etc/tor/torrc
-	echo "KeepAlivePeriod 60" >> /etc/tor/torrc
-	echo "NewCircuitPeriod 15" >> /etc/tor/torrc
-	echo "NumEntryGuards 8" >> /etc/tor/torrc
-	echo "ConstrainedSockets 1" >> /etc/tor/torrc
-	echo "ConstrainedSockSize 8192" >> /etc/tor/torrc
-	echo "AvoidDiskWrites 1" >> /etc/tor/torrc
-
-	echo -e "\n" >> /etc/tor/torrc
-	echo "User tor" >> /etc/tor/torrc
-
-	echo -e "\n" >> /etc/tor/torrc
-	echo "VirtualAddrNetwork $(uci get $config_file.tor.network)/10" >> /etc/tor/torrc
-	echo "AutomapHostsOnResolve 1" >> /etc/tor/torrc
-	echo "TransPort 0.0.0.0:$_trans_port" >> /etc/tor/torrc
-	echo "DNSPort 0.0.0.0:9053" >> /etc/tor/torrc
-
-	_forward_socks="/	127.0.0.1:9050	."
 	uci set privoxy.privoxy.listen_address=":$_privox_port"
-	uci set privoxy.privoxy.forward_socks5t="$_forward_socks"
-	uci set privoxy.privoxy.forward_socks5="$_forward_socks"
-	uci set privoxy.privoxy.forward_socks4="$_forward_socks"
-	uci set privoxy.privoxy.forward_socks4a="$_forward_socks"
+	uci set privoxy.privoxy.forward_socks5t="/	127.0.0.1:$_tor_proxy_port	."
 	uci add_list privoxy.privoxy.forward="192.168.*.*/	."
 	uci add_list privoxy.privoxy.forward="10.*.*.*/	."
 	uci add_list privoxy.privoxy.forward="127.*.*.*/	."
-	uci add_list privoxy.privoxy.forward="localhost/     ."
 	uci commit privoxy
 	#	/etc/init.d/privoxy restart
 	/www/bin/proxy.sh proxystop

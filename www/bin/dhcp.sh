@@ -222,7 +222,7 @@ do
 		/www/bin/gw.sh torroute teardown $ip
 
 		if [ "$route" = "vpn_fallback" ]; then
-		_vpn_on $ip
+			_vpn_on $ip
 		elif [ "$route" = "vpn_only" ]; then
 			_vpn_on $ip
 			uci add firewall rule
