@@ -21,7 +21,7 @@ _check_static(){
 }
 
 #return macs of all clients whose route is not local (need special vpn dns)
-_get_mac(){
+_get_vpn_mac(){
 	data=$(uci get sabai.dhcp.tablejs)
 	json_load "$data"
 	json_get_keys keys
@@ -33,6 +33,22 @@ _get_mac(){
 		json_get_var mac mac
 		json_get_var route route
 		[ "$route" == "default" -o "$route" == "vpn_only" -o "$route" == "vpn_fallback" ] && echo $mac
+		json_select ..
+	done
+}
+
+_get_tor_ip(){
+	data=$(uci get sabai.dhcp.tablejs)
+	json_load "$data"
+	json_get_keys keys
+	num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
+	i=1
+	for i in $(seq 1 $num_items)
+	do
+		json_select $i
+		json_get_var ip ip
+		json_get_var route route
+		[ "$route" == "default" ] && echo $ip
 		json_select ..
 	done
 }
@@ -49,8 +65,7 @@ _vpn_config(){
 	done
 	uci commit firewall
 
-	for mac in $(_get_mac)
-	do
+	for mac in $(_get_vpn_mac);	do
 		uci add firewall redirect > /dev/null
 		uci set firewall.@redirect[-1].src='lan'
 		uci set firewall.@redirect[-1].dest='wan'
@@ -142,6 +157,22 @@ _tor_route(){
 		iptables -t nat -D PREROUTING -s "$2" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040
 		sed -ni "/iptables -t nat -A PREROUTING -s $2 ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
 	fi
+}
+
+_tor_tun_on(){
+	for ip in $(_get_tor_ip);	do
+    iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'
+		iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'
+		iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040 -m comment --comment 'Serve TOR to the default route'
+		echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+		echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+		echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+	done
+}
+
+_tor_tun_off(){
+	iptables-save | grep -v "-m comment --comment 'Serve TOR to the default route'" | iptables-restore
+	sed -ni "-m comment --comment 'Serve TOR to the default route'" /etc/firewall.user
 }
 
 _ip_rules(){

@@ -248,7 +248,12 @@ $(document).ready(function(){
 						 
 						 <br>
 						 <textarea id='conf' class='tall' name='conf'>
-						 <?php readfile('/etc/sabai/openvpn/ovpn.current'); ?>
+						 <?php 
+						 	$file = '/etc/sabai/openvpn/ovpn.current';
+						 	if (file_exists($file)) {
+						 		readfile($file);
+						 	} 
+						 ?>
 						 </textarea> <br>
 						 <input type='button' value='Save' onclick='saveEdit();'>
 						 <input type='button' value='Cancel' onclick='window.location.reload();'>

@@ -15,9 +15,3 @@ iptables -I FORWARD -s $route -o pptp-vpn -j ACCEPT
 iptables -t nat -I POSTROUTING -o pptp-vpn  -j MASQUERADE
 iptables -t nat -I POSTROUTING -o tun+  -j MASQUERADE
 
-# change DNS rules if VPN is running 
-if [ "$(uci get sabai.vpn.status)" = "Anonymity" ]; then
-	/www/bin/tor.sh tun
-else
-        logger "DNS rules are default."
-fi

@@ -92,6 +92,7 @@ $('#check_version').on("click", function () {
 		} else {
 			hideUi("New " + data + " version is available.");
 			ServerUpdateForm();
+			E('update_msg').innerHTML = 'New available version: '+ data;
 		}
 		setTimeout(function(){showUi()},4500);
 	})
@@ -107,7 +108,12 @@ $.widget("jai.update_form", {
 		.append( $(document.createElement('table')).addClass("controlTable smallwidth")
 			.append( $(document.createElement('tbody'))
 				.append( $(document.createElement('tr'))
-					.append( $(document.createElement('td')).html('New available version: '+ soft.new_sabai_version)
+					.append( $(document.createElement('td'))
+						.append(
+               				$(document.createElement('div')).html('New available version: '+ soft.new_sabai_version)
+               					.prop("id","update_msg")
+               					.prop("name","update_msg")
+               			)
 					)
                	)
                	
@@ -130,14 +136,18 @@ $.widget("jai.update_form", {
 
 		$('#update_download').on("click", function() {
 			hideUi("Please wait...");
-			$.post('php/update_download.php')
-			.done(function() {
-				hideUi("New firmware was downloaded!");
-				setTimeout(function(){Upgrade('upgrading')},2000);
-			})
-			.fail(function() {
-				hideUi("Failed");
-				setTimeout(function(){showUi()},4500);
+			$.ajax({
+				url: 'php/update_download.php',
+				type: "POST",
+				timeout: 120000,
+				success: function() {
+					hideUi("New firmware was downloaded!");
+					setTimeout(function(){Upgrade('upgrading')},2000);
+				},
+				error: function() {
+					hideUi("Failed");
+					setTimeout(function(){showUi()},4500);
+				}
 			})
 		});
 		

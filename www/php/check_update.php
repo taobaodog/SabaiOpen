@@ -10,7 +10,7 @@
 		"verify_peer"=>true,
 		"verify_peer_name"=>true,
 		),
-);
+	);
 	
 	# get the location update url
 	$URIfile=exec("uci get sabai.general.version_uri");
@@ -23,8 +23,8 @@
 	$version=$obj->version;
 	$link=$obj->link;
 
-	$curr_version=exec("uci get sabai.general.version");
-	if ($curr_version != $version) {
+	$version_list=file_get_contents("/etc/sabaiopen_version_old");
+	if( strpos($version_list, $version) == false ) {
 		exec("uci $UCI_PATH set sabai.general.new_version=\"" . $version . "\"");
 		exec("uci $UCI_PATH set sabai.general.download_uri=\"" . $link . "\"");
 		exec("uci $UCI_PATH commit sabai");
