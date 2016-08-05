@@ -74,6 +74,7 @@ $( "#fe" ).validate({
     rules: {
     pingAddress: {
       required: true,
+      addressCheck: true
     },
     pingCount: {
       required: true,
@@ -83,8 +84,9 @@ $( "#fe" ).validate({
       required: true,
       range: [4, 84]
     }
-  }
+  },
 });
+
 
 </script>
 

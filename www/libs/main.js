@@ -216,3 +216,8 @@ jQuery.validator.addMethod("netmask", function(value, element) {
 jQuery.validator.addMethod("macchecker", function(value, element) {                                                                  
     return this.optional(element) || (/[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}/i.test(value));
   },'Invalid mac address - please correct.....');
+
+// Diagnostics Ping address validator
+jQuery.validator.addMethod('addressCheck', function(value){
+  return /^[a-zA-Z0-9\.]+$/.test(value);
+}, "Invalid address - please correct.");
