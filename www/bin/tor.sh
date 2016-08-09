@@ -35,7 +35,7 @@ _off(){
 	if [ "$mode_curr" = "tun" ]; then
 		uci $UCI_PATH set sabai.vpn.proto="none"
 		uci $UCI_PATH set sabai.vpn.status="none"
-		sed -ni "/iptables -t nat -A PREROUTING ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
+		/www/bin/gw.sh tortun_off
 	fi
 
 	uci $UCI_PATH set sabai.tor.mode="off"
@@ -89,18 +89,7 @@ _tun() {
 		_common_settings
 	fi
 
-	if [ "$device" = "vpna" ]; then
-		local net=$(ip addr show | grep eth0: -A 3 | grep inet | awk '{print $2}')
-	else
-		local net=$(ip addr show | grep br-lan: -A 3 | grep inet | awk '{print $2}')
-	fi
-
-	iptables -t nat -A PREROUTING ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053
-	iptables -t nat -A PREROUTING ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053
-	iptables -t nat -A PREROUTING ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040
-	echo "iptables -t nat -A PREROUTING ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
-	echo "iptables -t nat -A PREROUTING ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053" >> /etc/firewall.user
-	echo "iptables -t nat -A PREROUTING ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040" >> /etc/firewall.user
+	/www/bin/gw.sh tortun_on
 
 	/etc/init.d/tor start
 
@@ -113,14 +102,16 @@ _proxy(){
 	if [ "$tor_stat" ] && [ "$mode_curr" == "proxy" ]; then
 		logger "TOR proxy is already running."
 		_return 0 "TOR proxy is already running."
-  fi
+	fi
 
 	if [ "$mode_curr" == "off" ]; then
 		_common_settings
 	elif [ "$mode_curr" == "tun" ]; then
 		uci $UCI_PATH set sabai.vpn.proto="none"
 		uci $UCI_PATH set sabai.vpn.status="none"
-		sed -ni "/iptables -t nat -A PREROUTING ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
+		# old implementation
+		# sed -ni "/iptables -t nat -A PREROUTING ! -d .*\/.* -p .* -j REDIRECT --to-ports/!p" /etc/firewall.user
+		/www/bin/gw.sh tortun_off
 	fi
 
 	uci $UCI_PATH set sabai.tor.mode=$mode

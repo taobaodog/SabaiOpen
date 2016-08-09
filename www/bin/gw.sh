@@ -11,6 +11,7 @@ UCI_PATH=""
 
 #find our local network, minus last octet.  For example 192.168.199.1 becomes 192.168.199
 lan_prefix="$(uci get network.lan.ipaddr | cut -d '.' -f1,2,3)";
+device=$(uci get system.@system[0].hostname)
 
 #TODO: Unused functionality for now.
 #get the current server address for sabaitechnology.biz for address services
@@ -160,19 +161,31 @@ _tor_route(){
 }
 
 _tor_tun_on(){
-	for ip in $(_get_tor_ip);	do
-    iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'
-		iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'
-		iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040 -m comment --comment 'Serve TOR to the default route'
-		echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
-		echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
-		echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
-	done
+	if [ "$device" = "vpna" ]; then
+		local net=$(ip addr show | grep eth0: -A 3 | grep inet | awk '{print $2}')
+
+		iptables -t nat -I PREROUTING -i "eth0" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'
+		iptables -t nat -I PREROUTING -i "eth0" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'
+		iptables -t nat -I PREROUTING -i "eth0" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040 -m comment --comment 'Serve TOR to the default route'
+		echo "iptables -t nat -I PREROUTING -i "eth0" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+		echo "iptables -t nat -I PREROUTING -i "eth0" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+		echo "iptables -t nat -I PREROUTING -i "eth0" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+	else
+		local net=$(ip addr show | grep br-lan: -A 3 | grep inet | awk '{print $2}')
+		for ip in $(_get_tor_ip);	do
+			iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'
+			iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'
+			iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040 -m comment --comment 'Serve TOR to the default route'
+			echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p udp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+			echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --dport 53 -j REDIRECT --to-ports 9053 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+			echo "iptables -t nat -A PREROUTING -s "$ip" ! -d "$net" -p tcp --syn -j REDIRECT --to-ports 9040 -m comment --comment 'Serve TOR to the default route'" >> /etc/firewall.user
+		done
+	fi
 }
 
 _tor_tun_off(){
-	iptables-save | grep -v "-m comment --comment 'Serve TOR to the default route'" | iptables-restore
-	sed -ni "-m comment --comment 'Serve TOR to the default route'" /etc/firewall.user
+	iptables-save | grep -v -- '-m comment --comment "Serve TOR to the default route"' | iptables-restore
+	sed -ni "/-m comment --comment 'Serve TOR to the default route'/!p" /etc/firewall.user
 }
 
 _ip_rules(){
@@ -220,4 +233,6 @@ case $1 in
 	depopulate_route) _depopulate_route	;;
 	populate_route) _populate_route		;;
 	torroute) _tor_route $2 $3		;;
+	tortun_on) _tor_tun_on ;;
+	tortun_off) _tor_tun_off ;;
 esac
