@@ -6,6 +6,11 @@
 val=$1
 state=$2
 
+_return(){
+	echo "res={ sabai: $1, msg: '$2' };"
+	exit 0;
+}
+
 _ping(){
 	local state=$1
 
@@ -133,3 +138,5 @@ esac
 
 logger "Restarting firewall"
 /etc/init.d/firewall restart 2>/dev/null > /dev/null
+
+_return 0 "Firewall settings was applied."

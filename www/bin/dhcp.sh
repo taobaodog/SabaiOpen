@@ -244,6 +244,12 @@ do
 	i=$(( $i + 1 ))
 done
 
+#set up tor redirects
+if [ "$(uci get sabai.tor.mode)" = "tun" ]; then
+	/www/bin/gw.sh tortun_off
+	/www/bin/gw.sh tortun_on
+fi
+
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
 	echo "dnsmasq" >> /tmp/.restart_services
