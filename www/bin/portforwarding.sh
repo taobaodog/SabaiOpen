@@ -60,7 +60,7 @@ while [ $i -le $num_items ]; do
 		VPN) logger "portforwarding.sh: BAD GATEWAY (VPN gateway should be refactored into separate OpenVPN and PPTP)"
 		     exit 1 ;;
 		PPTP) gateway="pptp" ;;
-		OpenVPN) gateway="ovpn" ;;
+		OVPN) gateway="ovpn" ;;
 
 		*) echo "INVALID GATEWAY: you're not supposed to get here." ;;
 	esac
