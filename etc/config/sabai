@@ -57,9 +57,9 @@ config settings 'time'
 	option servers '3.openwrt.pool.ntp.org 2.openwrt.pool.ntp.org 1.openwrt.pool.ntp.org'
 
 config settings 'firewall'
-	option icmp 'off'
-	option multicast 'off'
-	option cookies 'off'
+	option icmp 'on'
+	option multicast 'on'
+	option cookies 'on'
 	option wanroute 'off'
 
 config settings 'dmz'

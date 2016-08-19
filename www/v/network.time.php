@@ -6,17 +6,48 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 ?>
 <!--  TODO:
 Sync time and zone with computer time/zone
--->
+-->  
+  <link href="libs/css/bootstrap.min.css" rel="stylesheet">
+  <link href="libs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
   <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
   <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
   <script type='text/ecmascript' src='/libs/globalize.js'></script>
   <script type="text/javascript" src="libs/jstimezonedetect/jstz.main.js"></script>
+  <script src="libs/jquery.js"></script>
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
+
 <form id="fe">
 <div class='pageTitle'>Network: Time</div>
 <div class='controlBox'>
   <span class='controlBoxTitle'>NTP</span>
   <div class='controlBoxContent'>
-    <table class='controlTable'>
+   
+
+    <table class="dataTable table table-striped" id="NTPTable">
+         <thead>
+          <tr>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+          </tr>        
+        </tbody>
+      </table>
+
+
+<!--     <table class='controlTable'>
       <tbody>
       <tr>
         <td>NTP Servers</td>
@@ -27,7 +58,7 @@ Sync time and zone with computer time/zone
         </td>
       </tr>
       </tbody>
-    </table>
+    </table> -->
     </div>
 	</div>
 
@@ -179,10 +210,66 @@ function TIMEresp(res){
 //  showUi(); 
   } 
 
-  $('#ntp_servers').oldeditablelist({ list: ntp.servers, fixed: false })
+  /*$('#ntp_servers').oldeditablelist({ list: ntp.servers, fixed: false })*/
 
   function logEvent(event,ui){ 
     $('#demo').append( event.type +'\n' ); 
   }
+
+$(document).ready(function() {
+
+//////////////////////////////////////////
+/*
+IMPORTANT - COLUMNDEFS
+Always add the ID row.
+Visibility state doesnt matter but searchable
+state should be set to the same value.
+
+Always add a type.
+Current supported type parameters:
+text - for editable textfields (including numbers etc.)
+select - for select menues, if used then options should be specified aswell
+readonly - for fields with readonly attribute.
+
+*/
+//////////////////////////////////////////
+var columnDefs = [{
+    id: "DT_RowId",
+    data: "DT_RowId",
+    "visible": false,
+    "searchable": false
+  },{
+    title: "NTP Server",
+    id: "ntp_server",
+    data: "ntp_server",
+    type: "text",
+    pattern: "^[a-zA-Z0-9\.]+$",
+    errorMsg: "Invalid input"
+  }];
+
+//Table creation
+var myTable = $('#NTPTable').dataTable({
+  dom: 'Bfrltip', 
+  ajax: "libs/data/network.time.json",
+    columns: columnDefs,
+    select: 'single',
+    altEditor: true,    
+    responsive: true, 
+    buttons: [{
+            text: 'Create',
+            name: 'add'        
+          },
+          {
+            extend: 'selected', 
+            text: 'Edit',
+            name: 'edit'        
+          },
+          {
+            extend: 'selected', 
+            text: 'Delete',
+            name: 'delete'      
+          },]
+        });
+});  
 </script>
 

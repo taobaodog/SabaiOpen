@@ -57,7 +57,10 @@ while [ $i -le $num_items ]; do
 	case $gateway in
 		WAN) gateway="wan" ;;
 		LAN) gateway="lan"  ;;
-		VPN) gateway="vpn"  ;;
+		VPN) logger "portforwarding.sh: BAD GATEWAY (VPN gateway should be refactored into separate OpenVPN and PPTP)"
+		     exit 1 ;;
+		PPTP) gateway="pptp" ;;
+		OVPN) gateway="ovpn" ;;
 
 		*) echo "INVALID GATEWAY: you're not supposed to get here." ;;
 	esac
@@ -80,6 +83,8 @@ while [ $i -le $num_items ]; do
 			uci set firewall.@redirect[-1].dest='lan'
 			uci set firewall.@redirect[-1].target='DNAT'
 		elif [ $gateway == "lan" ]; then
+			# No idea how this should work, but this implementation is most likely WRONG
+			# As soon as it is worked out this code can be optimized for size and readability
 			uci set firewall.@redirect[-1].src='lan'
 			uci set firewall.@redirect[-1].src_ip=$address
 			uci set firewall.@redirect[-1].src_dip=$(uci get network.wan.ipaddr)
@@ -88,38 +93,22 @@ while [ $i -le $num_items ]; do
 			uci set firewall.@redirect[-1].dest_port=$ext
 			uci set firewall.@redirect[-1].dest='wan'
 			uci set firewall.@redirect[-1].target='SNAT'
-		elif [ $gateway == "vpn" ]; then
-			proto=$(uci get sabai.vpn.proto)
-			status=$(uci get sabai.vpn.status)
-			if [ "$proto" == "none" ]; then
-				msg="No VPN connection. Please turn on VPN and flash this table again."
-			elif [ "$proto" == "ovpn" ] && [ "$status" == "Connected" ]; then
- 				uci set firewall.@redirect[-1].src_ip=$src #Host from LAN accesses VPN
-				ifconfig tun0 | grep "inet addr" | cut -d: -f2 | cut -d " " -f1 > /tmp/tun_ip
-				uci set firewall.@redirect[-1].src_dip=$(cat /tmp/tun_ip)
-				uci set firewall.@redirect[-1].src_dport=$ext
-				uci set firewall.@redirect[-1].dest_ip=$address
-				uci set firewall.@redirect[-1].dest_port=$int
-				uci set firewall.@redirect[-1].src='lan'
-				uci set firewall.@redirect[-1].dest='sabai'
-				uci set firewall.@redirect[-1].target='SNAT'
-				msg=""
-			elif [ "$proto" == "pptp" ] && [ "$status" == "Connected" ]; then
-				uci set firewall.@redirect[-1].src_ip=$src #Host from LAN accesses VPN
-				ifconfig pptp-vpn | grep "inet addr" | cut -d: -f2 | cut -d " " -f1 > /tmp/tun_ip
-				uci set firewall.@redirect[-1].src_dip=$(cat /tmp/tun_ip)
-				uci set firewall.@redirect[-1].src_dport=$ext
-				uci set firewall.@redirect[-1].dest_ip=$address
-				uci set firewall.@redirect[-1].dest_port=$int
-				uci set firewall.@redirect[-1].src='lan'
-				uci set firewall.@redirect[-1].dest='sabai'
-				uci set firewall.@redirect[-1].target='SNAT'
-				msg=""
-			elif [ "$proto" == "pptp" -o "$proto" == "ovpn" ] && [ "$status" == "Disconnected" ]; then
-				msg="No VPN connection. Please restart PPTP or try OVPN connection and flash this table again."
-			else
-				echo -e "\n"
-			fi
+		elif [ $gateway == "ovpn" ]; then
+			uci set firewall.@redirect[-1].src='sabai'
+			uci set firewall.@redirect[-1].src_ip=$src
+			uci set firewall.@redirect[-1].src_dport=$ext
+			uci set firewall.@redirect[-1].dest_ip=$address
+			uci set firewall.@redirect[-1].dest_port=$int
+			uci set firewall.@redirect[-1].dest='lan'
+			uci set firewall.@redirect[-1].target='DNAT'
+		elif [ $gateway == "pptp" ]; then
+			uci set firewall.@redirect[-1].src='vpn'
+			uci set firewall.@redirect[-1].src_ip=$src
+			uci set firewall.@redirect[-1].src_dport=$ext
+			uci set firewall.@redirect[-1].dest_ip=$address
+			uci set firewall.@redirect[-1].dest_port=$int
+			uci set firewall.@redirect[-1].dest='lan'
+			uci set firewall.@redirect[-1].target='DNAT'
 		else
 			echo -e "\n"
 		fi
@@ -133,6 +122,8 @@ done
 
 #cleanup
 rm /tmp/tmppftable
+
+/www/bin/dmz.sh restart
 
 uci commit
 if [ $action = "update" ]; then

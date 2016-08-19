@@ -22,6 +22,25 @@ $proxy = " proxy: {
   \"status\": \"". exec("uci get sabai.proxy.status") ."\"
 }";
 
+unset($out);
+
+$tor_pr_switch=exec("uci get sabai.tor.mode");
+switch($tor_pr_switch){
+	case 'off':
+		$tor_proxy = ",\n \"tor_proxy\": {
+				\"status\": \"-\",
+				\"port\": \"-\"
+				},\n";
+		break;
+	case 'tun':
+	case 'proxy':
+		$tor_proxy = ",\n tor_proxy: {
+				\"status\": \"Enabled\",
+				\"port\": \"8080\"
+			},\n";
+		break;
+}
+
 $vpn_switch=exec("uci get sabai.vpn.proto");
 switch($vpn_switch){
  case 'none': $vpn_type='-'; break;
@@ -88,22 +107,7 @@ if ($_SESSION['count_vpn'] == 10) {
 
 }
 
-$tor_pr_switch=exec("uci get sabai.tor.mode");
-switch($tor_pr_switch){
-	case 'off':
-		$tor_proxy = ",\n \"tor_proxy\": {
-				\"status\": \"-\",
-				\"port\": \"-\"
-				},\n";
-		break;
-	case 'proxy':
-		$tor_proxy = ",\n tor_proxy: {
-				\"status\": \"Enabled\",
-				\"port\": \"8080\"
-			},\n";
-	case 'tun':
-		break;
-}
+
 
 
 echo "info = {\n"

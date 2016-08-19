@@ -138,6 +138,7 @@ for i in $CONFIG_SECTIONS; do
 			dmz)
 				logger "in dmz"
 				/www/bin/dmz.sh update
+				logger "dmz" >> /tmp/.etc_service
 			;;
 			upnp)
 				logger "in upnp"
@@ -160,9 +161,6 @@ for i in $CONFIG_SECTIONS; do
 			;;
 			general)
 				logger "general" >> /tmp/.etc_service
-			;;
-			dmz)
-				logger "dmz" >> /tmp/.etc_service
 			;;
 			proxy)
 				logger "proxy" >> /tmp/.etc_service

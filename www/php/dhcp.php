@@ -34,6 +34,6 @@ if ($act == "save") {
 
 } elseif ($act == "get") {
 	//sabai.dhcp.table is constructed and assigned
-	exec("sh /www/bin/dhcp.sh get");
+	exec("/www/bin/dhcp.sh get");
 }
 ?>

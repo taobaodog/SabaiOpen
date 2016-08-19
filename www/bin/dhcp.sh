@@ -52,11 +52,12 @@ _rewrite(){
 		mac=$(echo "$line" | awk '{print $2}')
 		name=$(echo "$line" | awk '{print $4}')
 		ip=$(echo "$line" | awk '{print $3}')
+		status="offline"
 
 		if ip neigh show | grep REACHABLE | grep -i $mac; then
-			stat="online"
+			status="online"
 		else
-			stat="offline"
+			status="offline"
 		fi
 
 		i=1
@@ -79,8 +80,8 @@ _rewrite(){
 			json_select ..
 			i=$(( $i + 1 ))
 		done
-		echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$stat'"},' >> /tmp/dhcptable
-		echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$stat'"},' >> /www/libs/data/dhcp.json
+		echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /tmp/dhcptable
+		echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /www/libs/data/dhcp.json
 		line_num=$(( $line_num + 1 ))
 	done
 }
@@ -132,6 +133,8 @@ _get(){
 			dhcptime=$(date -d @"$epochtime")
 			mac=$(echo "$line" | awk '{print $2}')
 			exists=$(uci show dhcp | grep "$mac" | cut -d "[" -f2 | cut -d "]" -f1)
+			status="offline"
+
 			#static attribute check
 			if [ "$exists" = "" ]; then
 				ip=$(echo "$line" | awk '{print $3}')
@@ -145,8 +148,14 @@ _get(){
 				static="on"
 			fi
 
-			echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /www/libs/data/dhcp.json
-			echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'"},' >> /tmp/dhcptable
+			if ip neigh show | grep REACHABLE | grep -i $mac; then
+				status="online"
+			else
+				status="offline"
+			fi
+
+			echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /www/libs/data/dhcp.json
+			echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /tmp/dhcptable
 			line_num=$(( $line_num + 1 ))
 		done
 		_close
@@ -243,6 +252,12 @@ do
 	json_select ..
 	i=$(( $i + 1 ))
 done
+
+#set up tor redirects
+if [ "$(uci get sabai.tor.mode)" = "tun" ]; then
+	/www/bin/gw.sh tortun_off
+	/www/bin/gw.sh tortun_on
+fi
 
 if [ $action = "update" ]; then
 	echo "firewall" >> /tmp/.restart_services
