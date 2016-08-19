@@ -15,7 +15,7 @@ exec("uci $UCI_PATH set sabai.dmz.destination=\"" . $destination . "\"");
 exec("uci $UCI_PATH commit sabai");
 exec("cp -r /etc/config/sabai /configs/");
 
-$toDo=exec("sh /www/bin/dmz.sh $status $destination",$out);
+$toDo=exec("/www/bin/dmz.sh set $status $destination",$out);
 echo $toDo;
 
 ?>  

@@ -158,7 +158,7 @@ var lt =  $('#list').dataTable({
     $(nRow).find('.vpnDrop').editable(
       function(value, settings){ return value; },
       {
-        'data': " {'LAN':'LAN', 'WAN':'WAN','VPN':'VPN'}",
+        'data': " {'LAN':'LAN', 'WAN':'WAN','OVPN':'OVPN', 'PPTP':'PPTP'}",
         'type':'select',
         'onblur':'submit',
         'event': 'click'
