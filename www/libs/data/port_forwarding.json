@@ -1,1 +1,55 @@
-{"aaData":[{"status":"on","protocol":"Both","gateway":"WAN","src":"","ext":"18000","int":"18000","address":"","description":"Test Data4"}]}
+{
+	"aaData": [{
+		"DT_RowId": "0",
+		"address": "192.168.99.220",
+		"description": "Test Data4",
+		"ext": "12345",
+		"gateway": "WAN",
+		"int": "22022",
+		"protocol": "Both",
+		"src": "",
+		"status": "off" 
+		},{
+		"DT_RowId": "1",
+		"address": "192.168.99.220",
+		"description": "Test Data2",
+		"ext": "27015",
+		"gateway": "WAN",
+		"int": "27016",
+		"protocol": "Both",
+		"src": "24.24.24.24",
+		"status": "off" 
+		},{
+		"DT_RowId": "2",
+		"address": "192.168.80.220",
+		"description": "Test Data3",
+		"ext": "6112",
+		"gateway": "LAN",
+		"int": "6113",
+		"protocol": "Both",
+		"src": "",
+		"status": "off" 
+		},{
+		"DT_RowId": "2",
+		"address": "192.168.80.220",
+		"description": "Test Data3",
+		"ext": "6112",
+		"gateway": "LAN",
+		"int": "6113",
+		"protocol": "Both",
+		"src": "",
+		"status": "off" 
+		},{
+		"DT_RowId": "2",
+		"address": "192.168.80.220",
+		"description": "Test Data3",
+		"ext": "6112",
+		"gateway": "LAN",
+		"int": "6113",
+		"protocol": "Both",
+		"src": "",
+		"status": "off" 
+		}
+
+]
+}
