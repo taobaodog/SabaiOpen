@@ -7,10 +7,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <!--  TODO:
 Sync time and zone with computer time/zone
 -->  
-  <link href="libs/css/bootstrap.min.css" rel="stylesheet">
-  <link href="libs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
   <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
   <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/main.css">
   <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
   <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
   <script type='text/ecmascript' src='/libs/globalize.js'></script>
@@ -244,7 +246,7 @@ var columnDefs = [{
     data: "ntp_server",
     type: "text",
     pattern: "^[a-zA-Z0-9\.]+$",
-    errorMsg: "Invalid input"
+    errorMsg: "*Invalid input - Allowed: A-z0-9 and ."
   }];
 
 //Table creation

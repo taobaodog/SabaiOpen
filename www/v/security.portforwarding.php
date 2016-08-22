@@ -4,6 +4,20 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
+  <script src="libs/jquery.js"></script>
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
+  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/main.css">
+
 <form id="fe">
   <input type='hidden' id='pftable' name='pftable'>
   
@@ -13,7 +27,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     <span class='controlBoxTitle'>Port Forwarding</span>
     <div class='controlBoxContent'> 
 
-     <table class="table table-striped" id="testTableData">
+     <table class="table table-striped" id="portTable">
       <thead>
         <tr>
           <th></th>
@@ -83,7 +97,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   echo "$pftable"; 
   ?>'; 
 
-  function PORTcall(){ 
+/*  function PORTcall(){ 
     $('input[type=search]').val("");
     $('#example').dataTable().api().search("").draw();
      hideUi("Adjusting Port Forwarding settings..."); 
@@ -100,7 +114,7 @@ $('#list tr').each(function(row, tr){
     , "address" : $(tr).find('td:eq(7)').text()
     , "description" : $(tr).find('td:eq(8)').text()
   }
-});
+});*/
 
 TableData = $.toJSON(TableData);
 //var json=JSON.parse(TableData);
@@ -210,32 +224,41 @@ var columnDefs = [{
       title: "Source Address",
       id: "src",
       data: "src",
-      type: "text"
+      type: "text",
+      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+      errorMsg: "*Invalid address - Enter valid ip"
     }, {
       title: "Source Port",
       id: "int",
       data: "int",
-      type: "text"
+      type: "text",
+      pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
+      errorMsg: "*Invalid port - Enter valid port (0-65535)"
     }, {
       title: "Destination Port",
       id: "ext",
       data: "ext",
-      type: "text"
+      type: "text",
+      pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
+      errorMsg: "*Invalid port - Enter valid port (0-65535)"
     }, {
       title: "Destination Address",
       id: "address",
       data: "address",
-      type: "text"
+      type: "text",
+      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+      errorMsg: "*Invalid address - Enter valid ip"
     },{
       title: "Description",
       id: "description",
       data: "description",
-      type: "text"
+      type: "text",
+      pattern: "^[a-zA-Z0-9_-]+$",
+      errorMsg: "*Invalid description - Allowed: A-z0-9_-"
     }]
 
-
 //Table creation
-var myTable = $('#testTableData').dataTable({
+var myTable = $('#portTable').dataTable({
   dom: 'Bfrltip', 
   ajax: "libs/data/port_forwarding.json",
     columns: columnDefs,
