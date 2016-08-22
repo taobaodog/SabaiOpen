@@ -4,6 +4,19 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
+  <script src="libs/jquery.js"></script>
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
+  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/main.css">
 <!--
  DHCP Leases
  ARP List
@@ -16,21 +29,36 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <div class='controlBox'>
 	<span class='controlBoxTitle'>Summary</span>
-	<div class='controlBoxContent' id='devicelist'></div>
-		<div class='controlBoxContent' id='other'>
-		<input type='button' id="savebutton" name="savebutton" value='Save' onclick='DHCPcall("save")'>
-		<input type='button' id="refreshbutton" name="refreshbutton" value='Refresh' onclick='REFcall("get")'>
-		<span id='messages'>&nbsp;</span>
+	<div class='controlBoxContent'>
+      <table class="table table-striped" id="testTableData">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>        
+        </tbody>
+      </table>
 
-
-		<div id='hideme'>
-			<div class='centercolumncontainer'>
-				<div class='middlecontainer'>
-					<div id='hiddentext' value-'Please wait...' ></div>
-					<br>
-				</div>
-			</div>
-		</div>
+  </div>
+		
 
 		<div class="smallText">
 			<br><b>Make Static</b>- Choose "on" to make lease permanent. </li>
@@ -47,8 +75,108 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </p>
 </form>
 <script type='text/javascript'>
-var settings;
 
+$(document).ready(function() {
+
+//////////////////////////////////////////
+/*
+IMPORTANT - COLUMNDEFS
+Always add the ID row.
+Visibility state doesnt matter but searchable
+state should be set to the same value.
+
+Always add a type.
+Current supported type parameters:
+text - for editable textfields (including numbers etc.)
+select - for select menues, if used then options should be specified aswell
+readonly - for fields with readonly attribute.
+
+*/
+//////////////////////////////////////////
+  var columnDefs = [{
+    id: "DT_RowId",
+    data: "DT_RowId",
+    type: "text",
+    "visible": false,
+    "searchable": false
+  },{
+    id: "static",
+    title: "Static",
+    data: "static",
+    type: "select",
+    "options": [
+    "on",
+    "off"
+    ]
+  }, {
+    id: "route",
+    title: "Route",
+    data: "route",
+    type: "select",
+    "options": [
+    "default",
+    " local",
+    " vpn_fallback",
+    " vpn_only",
+    " accellerator",
+    " tor"
+    ]
+  }, {
+    id: "ip",
+    title: "IP",
+    data: "ip",
+    type: "text",
+    pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+    errorMsg: "*Invalid address - Enter valid ip"
+  }, {
+    id: "mac",
+    title: "Mac",
+    data: "mac",
+    type: "readonly"
+  }, {
+    id: "name",
+    title: "Name",
+    data: "name",
+    type: "text",
+    pattern: "^[a-zA-Z0-9 ]+$",
+    errorMsg: "*Invalid name - Allowed: A-z0-9"
+  }, {
+    id: "time",
+    title: "Time",
+    data: "time",
+    type: "readonly"
+  }, {
+    id: "stat",
+    title: "Status",
+    data: "stat",
+    type: "readonly"
+  }];
+
+  var myTable = $('#testTableData').dataTable( {
+    dom: "Bfrltip",
+    ajax: "php/dhcp.php",        
+    columns: columnDefs,
+    select: "single",
+    altEditor: true,
+    responsive: true,
+    buttons: [{ 
+            extend: 'selected', 
+            text: 'Edit',
+            name: 'edit'        
+    },{ 
+            text: 'Refresh',
+            name: 'refresh'        
+    }]
+  });
+});
+
+
+
+
+
+
+/*
+var settings;
 	$.widget("jai.devicelist", {
   //Adding to the built-in widget constructor method - do this when widget is instantiated
   _create: function(){
@@ -109,8 +237,8 @@ var settings;
           }
           );
 
-    	} /* end fnRowCallback*/
-    })
+    	}*/ /* end fnRowCallback*/
+   /* })
 
     this._super();
     },
@@ -198,5 +326,5 @@ function REFcall(act){
 			$('#devicelist').devicelist("refresh");
 	})
 };
-
+*/
 </script>
