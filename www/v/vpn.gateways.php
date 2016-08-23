@@ -4,19 +4,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-  <script src="libs/jquery.js"></script>
-  <script src="libs/bootstrap.min.js"></script>
-  <script src="libs/jquery.dataTables.min.js"></script>
-  <script src="libs/dataTables.bootstrap.min.js"></script>
-  <script src="libs/dataTables.altEditor.free.js"></script>
-  <script src="libs/dataTables.buttons.min.js"></script>
-  <script src="libs/buttons.bootstrap.min.js"></script>
-  <script src="libs/dataTables.select.min.js"></script>
-  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/main.css">
+
 <!--
  DHCP Leases
  ARP List
@@ -30,7 +18,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <div class='controlBox'>
 	<span class='controlBoxTitle'>Summary</span>
 	<div class='controlBoxContent'>
-      <table class="table table-striped" id="testTableData">
+      <table class="table table-striped" id="gateTable">
         <thead>
           <tr>
             <th></th>
@@ -57,7 +45,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </tbody>
       </table>
 
-  </div>
+
 		
 
 		<div class="smallText">
@@ -152,7 +140,15 @@ readonly - for fields with readonly attribute.
     type: "readonly"
   }];
 
-  var myTable = $('#testTableData').dataTable( {
+//Making errors show in console rather than alerts
+$.fn.dataTable.ext.errMode = 'none';
+
+$('#gateTable').on( 'error.dt', function ( e, settings, techNote, message ) {
+console.log( 'An error has been reported by DataTables: ', message );
+} );
+
+//Creating table
+  $('#gateTable').dataTable( {
     dom: "Bfrltip",
     ajax: "php/dhcp.php",        
     columns: columnDefs,
@@ -175,8 +171,9 @@ readonly - for fields with readonly attribute.
 
 
 
-/*
-var settings;
+
+
+/*var settings;
 	$.widget("jai.devicelist", {
   //Adding to the built-in widget constructor method - do this when widget is instantiated
   _create: function(){
@@ -237,8 +234,8 @@ var settings;
           }
           );
 
-    	}*/ /* end fnRowCallback*/
-   /* })
+    	} /* end fnRowCallback*/
+/*    })
 
     this._super();
     },
@@ -256,8 +253,8 @@ var settings;
 
 
 });
-
-$(function(){
+*/
+/*$(function(){
   //instatiate widgets on document ready
   $('#devicelist').devicelist();
   REFcall('get');
@@ -303,9 +300,9 @@ $.post('php/dhcp.php', $("#fe").serialize(), function(res){
 // Important stops the page refreshing
 return false;
 }
-} 
+} */
 
-
+/*
 function PORTresp(){ 
   msg(res.rMessage); 
   showUi(); 
@@ -317,7 +314,7 @@ function STATICcall(){
     .rows(':has(:checkbox:checked)')
     .draw();
 //$('#rowclick2 tr').filter(':has(:checkbox:checked)').find('td');
-} 
+} */
 
 function REFcall(act){ 
 	E("act").value=act;	
@@ -326,5 +323,17 @@ function REFcall(act){
 			$('#devicelist').devicelist("refresh");
 	})
 };
-*/
+
 </script>
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
+  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/main.css">

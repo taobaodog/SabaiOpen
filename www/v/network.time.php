@@ -8,30 +8,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 Sync time and zone with computer time/zone
 -->  
 
-  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/main.css">
-  <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
-  <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
-  <script type='text/ecmascript' src='/libs/globalize.js'></script>
-  <script type="text/javascript" src="libs/jstimezonedetect/jstz.main.js"></script>
-  <script src="libs/jquery.js"></script>
-  <script src="libs/bootstrap.min.js"></script>
-  <script src="libs/jquery.dataTables.min.js"></script>
-  <script src="libs/dataTables.bootstrap.min.js"></script>
-  <script src="libs/dataTables.altEditor.free.js"></script>
-  <script src="libs/dataTables.buttons.min.js"></script>
-  <script src="libs/buttons.bootstrap.min.js"></script>
-  <script src="libs/dataTables.select.min.js"></script>
 
 <form id="fe">
 <div class='pageTitle'>Network: Time</div>
 <div class='controlBox'>
   <span class='controlBoxTitle'>NTP</span>
   <div class='controlBoxContent'>
-   
+   <table class='controlTable'>
 
     <table class="dataTable table table-striped" id="NTPTable">
          <thead>
@@ -47,20 +30,18 @@ Sync time and zone with computer time/zone
           </tr>        
         </tbody>
       </table>
+</table>
 
-
-<!--     <table class='controlTable'>
+     <table class='controlTable'>
       <tbody>
       <tr>
-        <td>NTP Servers</td>
-        <td><div><ul id='ntp_servers'></ul></div></td>
         <td class="description">
           <div id='editableListDescription'>
           </div>
         </td>
       </tr>
       </tbody>
-    </table> -->
+    </table> 
     </div>
 	</div>
 
@@ -249,6 +230,13 @@ var columnDefs = [{
     errorMsg: "*Invalid input - Allowed: A-z0-9 and ."
   }];
 
+//Making errors show in console rather than alerts
+$.fn.dataTable.ext.errMode = 'none';
+
+$('#NTPTable').on( 'error.dt', function ( e, settings, techNote, message ) {
+console.log( 'An error has been reported by DataTables: ', message );
+} );
+
 //Table creation
 var myTable = $('#NTPTable').dataTable({
   dom: 'Bfrltip', 
@@ -274,4 +262,21 @@ var myTable = $('#NTPTable').dataTable({
         });
 });  
 </script>
+
+  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/main.css">
+  <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
+  <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
+  <script type='text/ecmascript' src='/libs/globalize.js'></script>
+  <script type="text/javascript" src="libs/jstimezonedetect/jstz.main.js"></script>
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
 

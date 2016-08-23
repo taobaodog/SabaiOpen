@@ -4,29 +4,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-  <script src="libs/jquery.js"></script>
-  <script src="libs/bootstrap.min.js"></script>
-  <script src="libs/jquery.dataTables.min.js"></script>
-  <script src="libs/dataTables.bootstrap.min.js"></script>
-  <script src="libs/dataTables.altEditor.free.js"></script>
-  <script src="libs/dataTables.buttons.min.js"></script>
-  <script src="libs/buttons.bootstrap.min.js"></script>
-  <script src="libs/dataTables.select.min.js"></script>
-  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/main.css">
 
 <form id="fe">
   <input type='hidden' id='pftable' name='pftable'>
   
   <div class='pageTitle'>Security: Port Forwarding</div>
 
+
   <div class='controlBox'>
     <span class='controlBoxTitle'>Port Forwarding</span>
     <div class='controlBoxContent'> 
-
      <table class="table table-striped" id="portTable">
       <thead>
         <tr>
@@ -56,11 +43,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </tr>        
       </tbody>
     </table>
-
-
-    <input type='button' id="savebutton" name="savebutton" value='Save' onclick="PORTcall()">
-    <span id='messages'>&nbsp;</span>
-
+      <span id='messages'>&nbsp;</span>
 
       <div id='hideme'>
         <div class='centercolumncontainer'>
@@ -87,7 +70,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </form>
 
 <script type='text/ecmascript'>
-  var hidden, hide,res;
+/*  var hidden, hide,res;
   var f = E('fe'); 
   var hidden = E('hideme'); 
   var hide = E('hiddentext');
@@ -95,7 +78,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   $pftable=exec("uci get sabai.pf.table");
   exec("uci get sabai.pf.table > /www/libs/data/port_forwarding.json");
   echo "$pftable"; 
-  ?>'; 
+  ?>'; */
 
 /*  function PORTcall(){ 
     $('input[type=search]').val("");
@@ -114,7 +97,7 @@ $('#list tr').each(function(row, tr){
     , "address" : $(tr).find('td:eq(7)').text()
     , "description" : $(tr).find('td:eq(8)').text()
   }
-});*/
+});
 
 TableData = $.toJSON(TableData);
 //var json=JSON.parse(TableData);
@@ -148,11 +131,101 @@ function DELcall(){
     .remove()
     .draw();
 //$('#rowclick2 tr').filter(':has(:checkbox:checked)').find('td');
-} 
+} */
+
+/*var lt =  $('#list').dataTable({
+  'bPaginate': false,
+  'bInfo': false,
+  'bStateSave': false,
+  'bProcessing': true,
+  'sAjaxSource': 'libs/data/port_forwarding.json',
+  'aoColumns': [
+  { 'sTitle': 'Select',       'mData': null,      "sDefaultContent": '<input type="checkbox" />' },
+  { 'sTitle': 'On/Off',       'mData':'status',     'sClass':'statusDrop'},  
+  { 'sTitle': 'Proto',        'mData':'protocol',   'sClass':'protoDrop' },
+  { 'sTitle': 'Gateway',          'mData':'gateway',    'sClass':'vpnDrop' },
+  { 'sTitle': 'Source Address',  'mData':'src',        'sClass':'plainText'  },
+  { 'sTitle': 'Source Port',     'mData':'ext',        'sClass':'plainText'   }, 
+  { 'sTitle': 'Destination Port',     'mData':'int',        'sClass':'plainText' },
+  { 'sTitle': 'Destination Address',  'mData':'address',    'sClass':'plainText'  },
+  { 'sTitle': 'Description',  'mData':'description','sClass':'plainText'  }
+  ],
+
+  'fnRowCallback': function(nRow, aData, iDisplayIndex, iDisplayIndexFull){
+    $(nRow).find('.plainText').editable(
+      function(value, settings){ return value; },
+      {
+        'onblur':'submit',
+        'event': 'click',
+        'placeholder' : 'Click to edit'
+      }
+      );
+
+    $(nRow).find('.statusDrop').editable(
+      function(value, settings){ return value; },
+      {
+        'data': " {'on':'on','off':'off'}",
+        'type':'select',
+        'onblur':'submit',
+        'event': 'click'
+      }
+      );
+
+    $(nRow).find('.protoDrop').editable(
+      function(value, settings){ return value; },
+      {
+        'data': " {'UDP':'UDP','TCP':'TCP', 'Both':'Both'}",
+        'type':'select',
+        'onblur':'submit',
+        'event': 'click'
+      }
+      );
+
+    $(nRow).find('.vpnDrop').editable(
+      function(value, settings){ return value; },
+      {
+        'data': " {'LAN':'LAN', 'WAN':'WAN','OVPN':'OVPN', 'PPTP':'PPTP'}",
+        'type':'select',
+        'onblur':'submit',
+        'event': 'click'
+      }
+      );
+
+  } /* end fnRowCallback*/
+//}) /* end datatable*/
+
+
+/*$('#add').click( function (e) {
+  e.preventDefault();
+  lt.fnAddData(
+  { 
+    "status": 'on', 
+    "protocol": 'Both',
+    "gateway": 'WAN',
+    "src": "24.24.24.24",
+    "ext": "15",
+    "int": "56",
+    "address": "192.168.199.2",
+    "description": "Test Data" 
+  }
+  );
+
+});
+
+function ROWcall(){
+  var TableData=new Array();
+  $('#list tr').each(function(row, tr){
+    if ($(tr).find('td:eq(0)').text() == "checked") {
+      $(nRow).addClass('row_selected');
+      list.row('row_selected').remove().draw( false );
+    };
+  });
+};
+
 
 function saveGateway(){
   toServer('Save this.');
-};
+};*/
 
   // function toggleExplain(){
 
@@ -165,6 +238,7 @@ function saveGateway(){
   //     $("#toggleDesc").text("Show Description");
   //   }
   // }
+
 
 $(document).ready(function() {
 
@@ -224,47 +298,46 @@ var columnDefs = [{
       title: "Source Address",
       id: "src",
       data: "src",
-      type: "text",
-      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-      errorMsg: "*Invalid address - Enter valid ip"
+      type: "text"
     }, {
       title: "Source Port",
       id: "int",
       data: "int",
-      type: "text",
-      pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
-      errorMsg: "*Invalid port - Enter valid port (0-65535)"
+      type: "text"
     }, {
       title: "Destination Port",
       id: "ext",
       data: "ext",
-      type: "text",
-      pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
-      errorMsg: "*Invalid port - Enter valid port (0-65535)"
+      type: "text"
     }, {
       title: "Destination Address",
       id: "address",
       data: "address",
-      type: "text",
-      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-      errorMsg: "*Invalid address - Enter valid ip"
+      type: "text"
     },{
       title: "Description",
       id: "description",
       data: "description",
-      type: "text",
-      pattern: "^[a-zA-Z0-9_-]+$",
-      errorMsg: "*Invalid description - Allowed: A-z0-9_-"
+      type: "text"
     }]
 
+
+//Making errors show in console rather than alerts
+$.fn.dataTable.ext.errMode = 'none';
+
+$('#portTable').on( 'error.dt', function ( e, settings, techNote, message ) {
+console.log( 'An error has been reported by DataTables: ', message );
+} ); 
+
 //Table creation
-var myTable = $('#portTable').dataTable({
+$('#portTable').dataTable({
   dom: 'Bfrltip', 
   ajax: "libs/data/port_forwarding.json",
     columns: columnDefs,
     select: 'single',
     altEditor: true,    
     responsive: true, 
+    
     buttons: [{
             text: 'Create',
             name: 'add'        
@@ -285,3 +358,15 @@ var myTable = $('#portTable').dataTable({
 
 
 </script>
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
+  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/main.css">
