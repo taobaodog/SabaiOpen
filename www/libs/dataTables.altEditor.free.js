@@ -223,6 +223,7 @@
             e.preventDefault();
             e.stopPropagation();
             that._deleteRow();
+            $(this).prop('disabled', true);
           });
         }
 
@@ -400,7 +401,7 @@
 
 
 		//AJAX CALL NOT WORKING AS INTENDED.
-		updateJSON(comepleteJsonData, dt.ajax.url());		
+		updateJSON(comepleteJsonData, dt.context[0].sTableId, "editRowData");		
 
     dt.row({ selected:true }).data(jsonDataArray).draw();
   },
@@ -473,7 +474,7 @@
        	comepleteJsonData.data.push(jsonDataArray);
 
 		//AJAX CALL NOT WORKING AS INTENDED.
-		updateJSON(comepleteJsonData, dt.ajax.url());
+		updateJSON(comepleteJsonData, dt.context[0].sTableId, "deleteRow");
 
    $('#altEditor-modal .modal-body .alert').remove();
 
@@ -600,7 +601,7 @@ var message = '<div class="alert alert-success" role="alert">\
 $('#altEditor-modal .modal-body').append(message);
 
 //Calling AJAX on the url set in table declaration
-updateJSON(comepleteJsonData, dt.ajax.url());
+updateJSON(comepleteJsonData, dt.context[0].sTableId, "addRowData");
 
 dt.row.add(jsonDataArray).draw(false);
 
@@ -720,38 +721,26 @@ var initValidation = function(){
 }
 
 //Function might not work as intended.
-var updateJSON = function(data, ajaxURL){
-/*$.ajax({
-   url: 'test_data/dataTest.php',
-   type: 'POST',
-   data: JSON.stringify(data),
-   success: function(response) {
-     console.log(response);
-   },
-   error: function(response){
-   	console.log(response);
-   }
- });*/
+var updateJSON = function(data, table_id, act){
+
 var jqxhr =
 $.ajax({
-  url: ajaxURL,
+  url: "php/" + table_id + ".php",
   type : "POST",
   cache: false,
-  contentType: 'application/json; charset=utf-8',
-  data: data
+  data: {
+    raw: data,
+    action: act
+  }
 })
 .done (function(data) { 
+  $('#altEditor-modal .modal-body .alert').remove();
 
- console.log("Response: ");
- console.log(data);
+  var message = '<div class="alert alert-success" role="alert">\
+  <strong>Success!</strong> This record has been submitted.\
+  </div>';
+  $('#altEditor-modal .modal-body').append(message); })
 
- $('#altEditor-modal .modal-body .alert').remove();
-
- var message = '<div class="alert alert-success" role="alert">\
- <strong>Success!</strong> This record has been submitted.\
- </div>';
-
- $('#altEditor-modal .modal-body').append(message); })
 .fail (function()  { 
  $('#altEditor-modal .modal-body .alert').remove();
 
