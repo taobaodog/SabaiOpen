@@ -40,6 +40,7 @@ _vpn_on(){
 _rewrite(){
 	logger "REWRITING"
 	line_num=1
+	DT_RowId=0
 	data="$(uci get sabai.dhcp.tablejs)"
 	json_load "$data"
 	json_select 1
@@ -81,8 +82,9 @@ _rewrite(){
 			i=$(( $i + 1 ))
 		done
 		echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /tmp/dhcptable
-		echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /www/libs/data/dhcp.json
+		echo -n '{"DT_RowId": "'$DT_RowId'", "static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /www/libs/data/dhcp.json
 		line_num=$(( $line_num + 1 ))
+		DT_RowId=$(( $DT_RowId + 1 ))
 	done
 }
 
@@ -128,6 +130,7 @@ _get(){
 
 		#continue json table with /tmp/dhcp.leases file info
 		line_num=1
+		DT_RowId=0
 		cat /tmp/dhcp.leases | while read -r line ; do
 			epochtime=$(echo "$line" | awk '{print $1}')
 			dhcptime=$(date -d @"$epochtime")
@@ -154,9 +157,10 @@ _get(){
 				status="offline"
 			fi
 
-			echo -n '{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /www/libs/data/dhcp.json
+			echo -n '{"DT_RowId": "'$DT_RowId'", "static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /www/libs/data/dhcp.json
 			echo -n '"'$line_num'":{"static": "'$static'", "route": "'$route'", "ip": "'$ip'", "mac": "'$mac'", "name": "'$name'", "time": "'$dhcptime'", "stat": "'$status'"},' >> /tmp/dhcptable
 			line_num=$(( $line_num + 1 ))
+			DT_RowId=$(( $DT_RowId + 1 ))
 		done
 		_close
 	fi
