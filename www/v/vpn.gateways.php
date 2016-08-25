@@ -4,12 +4,25 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-
-<!--
- DHCP Leases
- ARP List
- Static Addresses?
--->
+<!DOCTYPE html>
+<!--Sabai Technology - Apache v2 licence
+    copyright 2016 Sabai Technology -->
+<meta charset="utf-8"><html>
+<head>
+  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/main.css">
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
+</head>
+<body>
 <form id="fe">
 <input type='hidden' id='dhcptable' name='dhcptable'>
 <input type='hidden' id='act' name='act'>
@@ -44,10 +57,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
           </tr>        
         </tbody>
       </table>
-
-
-		
-
+      <input type='button' id="savebutton" name="savebutton" value='Save' onclick='DHCPcall("save")'>
+      <span id='messages'>&nbsp;</span>
+      <div id='hideme'>
+      <div class='centercolumncontainer'>
+        <div class='middlecontainer'>
+          <div id='hiddentext' value-'Please wait...' ></div>
+          <br>
+        </div>
+      </div>
+    </div>
 		<div class="smallText">
 			<br><b>Make Static</b>- Choose "on" to make lease permanent. </li>
       <br><b>Route</b>- Choose the default route for this device.  "vpn_fallback" will continue access through internet if VPN is down. </li>
@@ -62,7 +81,14 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	<div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
+</body>
+</html>
 <script type='text/javascript'>
+
+  var hidden, hide,res;
+  var f = E('fe'); 
+  var hidden = E('hideme'); 
+  var hide = E('hiddentext');
 
 $(document).ready(function() {
 
@@ -146,11 +172,12 @@ $.fn.dataTable.ext.errMode = 'none';
 $('#gateTable').on( 'error.dt', function ( e, settings, techNote, message ) {
 console.log( 'An error has been reported by DataTables: ', message );
 } );
-
+$.post('php/dhcp.php', {'act': 'get'})
+   .done(function(res) {            
 //Creating table
   $('#gateTable').dataTable( {
     dom: "Bfrltip",
-    ajax: "php/dhcp.php",        
+    ajax: "libs/data/dhcp.json",        
     columns: columnDefs,
     select: "single",
     altEditor: true,
@@ -164,6 +191,8 @@ console.log( 'An error has been reported by DataTables: ', message );
             name: 'refresh'        
     }]
   });
+});
+
 });
 
 
@@ -260,47 +289,7 @@ console.log( 'An error has been reported by DataTables: ', message );
   REFcall('get');
 })
 
-  var hidden, hide,res;
-  var f = E('fe'); 
-  var hidden = E('hideme'); 
-  var hide = E('hiddentext');
-
-function DHCPcall(act){ 
-  $('#list').blur();
-    E("act").value=act;
-    if ( act = "save") {
-      //Save any Static DHCP
-      STATICcall();
-      //splash UI message
-      hideUi("Adjusting DHCP settings..."); 
-     //read the text values
-     var TableData=new Array();
-     $('#list tr').each(function(row, tr){
-      TableData[row] = {
-          "static" : $(tr).find('td:eq(0)').text()
-        , "route" : $(tr).find('td:eq(1)').text()
-        , "ip" : $(tr).find('td:eq(2)').text()
-        , "mac" : $(tr).find('td:eq(3)').text()
-        , "name" : $(tr).find('td:eq(4)').text()
-        , "time" : $(tr).find('td:eq(5)').text()
-        , "stat" : $(tr).find('td:eq(6)').text()
-      };
-    });
-     //create json data from table on screen
-     TableData = $.toJSON(TableData);
-      var json=$.parseJSON(TableData);
-      $("#dhcptable").val(TableData);
-
-// Pass the form values to the php file 
-$.post('php/dhcp.php', $("#fe").serialize(), function(res){
-	eval(res);                                                                                                                                   
-  	msg(res.msg);                                                                                
-	showUi();
-});
-// Important stops the page refreshing
-return false;
-}
-} */
+ */
 
 /*
 function PORTresp(){ 
@@ -316,24 +305,19 @@ function STATICcall(){
 //$('#rowclick2 tr').filter(':has(:checkbox:checked)').find('td');
 } */
 
-function REFcall(act){ 
-	E("act").value=act;	
-	$.post('php/dhcp.php', {'act': 'get'})
-		.done(function() {
-			$('#devicelist').devicelist("refresh");
-	})
-};
+function DHCPcall(act){ 
+    E("act").value=act;
+      hideUi("Adjusting DHCP settings..."); 
+      // Pass the form values to the php file 
+      $.post('php/dhcp.php', {'act': 'save'})
+      .done(function(res) {
+        eval(res);                                                                                                                                   
+        msg(res.msg);                                                                                
+        showUi();
+      });
+      // Important stops the page refreshing
+      return false;
+}
 
 </script>
-  <script src="libs/bootstrap.min.js"></script>
-  <script src="libs/jquery.dataTables.min.js"></script>
-  <script src="libs/dataTables.bootstrap.min.js"></script>
-  <script src="libs/dataTables.altEditor.free.js"></script>
-  <script src="libs/dataTables.buttons.min.js"></script>
-  <script src="libs/buttons.bootstrap.min.js"></script>
-  <script src="libs/dataTables.select.min.js"></script>
-  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/main.css">
+   
