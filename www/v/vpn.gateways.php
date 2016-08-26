@@ -312,7 +312,7 @@ function DHCPcall(act){
       $.post('php/dhcp.php', {'act': 'save'})
       .done(function(res) {
         eval(res);                                                                                                                                   
-        msg(res.msg);                                                                                
+        msg(res.msg);                                                                            
         showUi();
       });
       // Important stops the page refreshing

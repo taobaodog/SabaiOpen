@@ -249,7 +249,7 @@
                 console.log("Datatable reloaded.")
                });
           });
-}
+        }
       },
 
        /**

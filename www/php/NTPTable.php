@@ -29,20 +29,21 @@
 		global $data_val, $data_raw, $json_old, $json_new, $length;
 		$string_to_edit = $data_raw;
 		foreach ($json_old["aaData"] as $key => $value) {
-			if ($value["DT_RowId"] == $string_to_edit) {
-				foreach ($json_old["aaData"] as $key => $value) {
-					if ($value["ntp_server"] == $data_val) {
-						$res = "NTP server has been already added.";
-					} else {
-						if ($key == $length) {
-							$value["ntp_server"] = $data_val;
+			if ($value["ntp_server"] == $data_val) {
+				$res = "false";
+				$json_new = $json_old["aaData"];
+				break;
+			} else {
+				if ($key == $length) {
+					foreach ($json_old["aaData"] as $key => $value) {
+ 						if ($value["DT_RowId"] == $string_to_edit) {
+ 							$value["ntp_server"] = $data_val;
 							$res = "NTP server options has been changed.";
-						}
-					}
-					$json_new[] = $value;
+ 						}
+ 						$json_new[] = $value;
+ 					}
 				}
 			}
-						
 		}
 		$json_old["aaData"] = $json_new;
 		$data = json_encode($json_old, true);
@@ -56,28 +57,31 @@
 
 		foreach ($json_old["aaData"] as $key => $value) {
 			if ($value["ntp_server"] == $string_to_add) {
-				echo "NTP server has been already added.";
+				$json_new = $json_old["aaData"];
+				$res = "false";	
+				break;
 			} else {
 				$json_new[] = $value;
 				if ($key == $length) {
-					$json_new[] = $_POST["raw"]["data"][0];
-					$json_old["aaData"] = $json_new;
-					$data = json_encode($json_old, true);
-					file_put_contents("/www/libs/data/network.time.json", $data);
-					echo "New NTP server has been added.";
+					$json_new[] = $data_post;
+					$res = "New NTP server has been added.";
 				} 
 			}
 		}
+		$json_old["aaData"] = $json_new;
+		$data = json_encode($json_old, true);
+		file_put_contents("/www/libs/data/network.time.json", $data);
+		echo $res;
 	}
 
 	switch ($act) {
 		case 'deleteRow':
 			remove();
 			break;
-		case 'editRowData':
+		case 'editRow':
 			edit();
 			break;
-		case 'addRowData':
+		case 'addRow':
 			add();
 			break;
 		default:
