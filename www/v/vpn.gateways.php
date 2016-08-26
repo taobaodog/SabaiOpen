@@ -152,8 +152,8 @@ readonly - for fields with readonly attribute.
     title: "Name",
     data: "name",
     type: "text",
-    pattern: "^[a-zA-Z0-9 ]+$",
-    errorMsg: "*Invalid name - Allowed: A-z0-9"
+    pattern: "^[a-zA-Z0-9_-]+$",
+    errorMsg: "*Invalid name - Allowed: A-z0-9 _ -"
   }, {
     id: "time",
     title: "Time",

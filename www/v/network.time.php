@@ -193,6 +193,16 @@ function TIMEresp(res){
 //  showUi(); 
   } 
 
+//Preventing page-reload on "enter"-keypress
+  $(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+});  
+
   /*$('#ntp_servers').oldeditablelist({ list: ntp.servers, fixed: false })*/
 
   function logEvent(event,ui){ 
@@ -226,7 +236,7 @@ var columnDefs = [{
     id: "ntp_server",
     data: "ntp_server",
     type: "text",
-    pattern: "^[a-zA-Z0-9\.]+$",
+    pattern: "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$",
     errorMsg: "*Invalid input - Allowed: A-z0-9 and ."
   }];
 
@@ -238,7 +248,7 @@ console.log( 'An error has been reported by DataTables: ', message );
 } );
 
 //Table creation
-var myTable = $('#NTPTable').dataTable({
+$('#NTPTable').dataTable({
   dom: 'Bfrltip', 
   ajax: "libs/data/network.time.json",
     columns: columnDefs,
