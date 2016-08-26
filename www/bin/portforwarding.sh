@@ -25,9 +25,10 @@ json_load "$data"
 json_select 1
 json_select ..
 json_get_keys keys
-num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
+num_items_raw=$(echo $keys | sed 's/.*\(.\)/\1/')
+num_items=$(( $num_items_raw + 1 ))
 uci show firewall >> /tmp/test_fw3
-i=1
+i=0
 j=0
 while [ $i -le $num_items ]; do
 	echo "processing rule  #$i:"
@@ -77,36 +78,36 @@ while [ $i -le $num_items ]; do
 		if [ $gateway == "wan" ]; then
 			uci set firewall.@redirect[-1].src='wan'
 			uci set firewall.@redirect[-1].src_ip=$src
-			uci set firewall.@redirect[-1].src_dport=$ext
+			uci set firewall.@redirect[-1].src_dport=$int
 			uci set firewall.@redirect[-1].dest_ip=$address
-			uci set firewall.@redirect[-1].dest_port=$int
+			uci set firewall.@redirect[-1].dest_port=$ext
 			uci set firewall.@redirect[-1].dest='lan'
 			uci set firewall.@redirect[-1].target='DNAT'
 		elif [ $gateway == "lan" ]; then
 			# No idea how this should work, but this implementation is most likely WRONG
 			# As soon as it is worked out this code can be optimized for size and readability
 			uci set firewall.@redirect[-1].src='lan'
-			uci set firewall.@redirect[-1].src_ip=$address
+			uci set firewall.@redirect[-1].src_ip=$src
 			uci set firewall.@redirect[-1].src_dip=$(uci get network.wan.ipaddr)
 			uci set firewall.@redirect[-1].src_dport=$int
-			uci set firewall.@redirect[-1].dest_ip=$src
+			uci set firewall.@redirect[-1].dest_ip=$address
 			uci set firewall.@redirect[-1].dest_port=$ext
 			uci set firewall.@redirect[-1].dest='wan'
 			uci set firewall.@redirect[-1].target='SNAT'
 		elif [ $gateway == "ovpn" ]; then
 			uci set firewall.@redirect[-1].src='sabai'
 			uci set firewall.@redirect[-1].src_ip=$src
-			uci set firewall.@redirect[-1].src_dport=$ext
+			uci set firewall.@redirect[-1].src_dport=$int
 			uci set firewall.@redirect[-1].dest_ip=$address
-			uci set firewall.@redirect[-1].dest_port=$int
+			uci set firewall.@redirect[-1].dest_port=$ext
 			uci set firewall.@redirect[-1].dest='lan'
 			uci set firewall.@redirect[-1].target='DNAT'
 		elif [ $gateway == "pptp" ]; then
 			uci set firewall.@redirect[-1].src='vpn'
 			uci set firewall.@redirect[-1].src_ip=$src
-			uci set firewall.@redirect[-1].src_dport=$ext
+			uci set firewall.@redirect[-1].src_dport=$int
 			uci set firewall.@redirect[-1].dest_ip=$address
-			uci set firewall.@redirect[-1].dest_port=$int
+			uci set firewall.@redirect[-1].dest_port=$ext
 			uci set firewall.@redirect[-1].dest='lan'
 			uci set firewall.@redirect[-1].target='DNAT'
 		else

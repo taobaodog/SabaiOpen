@@ -39,14 +39,15 @@ _vpn_on(){
 
 _rewrite(){
 	logger "REWRITING"
-	line_num=1
+	line_num=0
 	DT_RowId=0
 	data="$(uci get sabai.dhcp.tablejs)"
 	json_load "$data"
 	json_select 1
 	json_select ..
 	json_get_keys keys
-	num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
+	num_items_raw=$(echo $keys | sed 's/.*\(.\)/\1/')
+	num_items=$(( $num_items_raw + 1 ))
 	cat /tmp/dhcp.leases | while read -r line ; do
 		epochtime=$(echo "$line" | awk '{print $1}')
 		dhcptime=$(date -d @"$epochtime")
@@ -61,7 +62,7 @@ _rewrite(){
 			status="offline"
 		fi
 
-		i=1
+		i=0
 		while [ $i -le $num_items ]
 		do
 			json_select $i
@@ -129,7 +130,7 @@ _get(){
 		cp /tmp/dhcp.leases /tmp/dhcp.leases_backup
 
 		#continue json table with /tmp/dhcp.leases file info
-		line_num=1
+		line_num=0
 		DT_RowId=0
 		cat /tmp/dhcp.leases | while read -r line ; do
 			epochtime=$(echo "$line" | awk '{print $1}')
@@ -204,8 +205,9 @@ json_load "$data"
 json_select 1
 json_select ..
 json_get_keys keys
-num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
-i=1
+num_items_raw=$(echo $keys | sed 's/.*\(.\)/\1/')
+num_items=$(( $num_items_raw + 1 ))
+i=0
 while [ $i -le $num_items ]
 do
 	echo "processing rule  #$i:"

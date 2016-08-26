@@ -75,43 +75,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   var hidden = E('hideme'); 
   var hide = E('hiddentext');
 
-/*  function PORTcall(){ 
-    $('input[type=search]').val("");
-    $('#example').dataTable().api().search("").draw();
-     hideUi("Adjusting Port Forwarding settings..."); 
-//read the text values
-var TableData=new Array();
-$('#list tr').each(function(row, tr){
-  TableData[row] = {
-    "status" : $(tr).find('td:eq(1)').text()
-    , "protocol" : $(tr).find('td:eq(2)').text()
-    , "gateway" : $(tr).find('td:eq(3)').text()
-    , "src" : $(tr).find('td:eq(4)').text()
-    , "ext" : $(tr).find('td:eq(5)').text()
-    , "int" : $(tr).find('td:eq(6)').text()
-    , "address" : $(tr).find('td:eq(7)').text()
-    , "description" : $(tr).find('td:eq(8)').text()
-  }
-});
-
-TableData = $.toJSON(TableData);
-//var json=JSON.parse(TableData);
-//alert(TableData);
-//$("#pftable").val(TableData);
-var json=$.parseJSON(TableData);
-$("#pftable").val(TableData);
-// Pass the form values to the php file 
-$.post('php/portforwarding.php', $("#fe").serialize(), function(res){
- // res=$.parseJSON(pass);
-// Detect if values have been passed back   
-if( res != "" ){
-  eval(res);                                                                                                                                   
-  msg(res.msg);                                                                                
-};
-showUi();
-});
-// Important stops the page refreshing
-return false;
+function PORTcall(){ 
+   $.post('php/portforwarding.php', function(res){
+    if( res != "" ){
+      eval(res);                                                                                                                                   
+      msg(res.msg);                                                                                
+    };
+    showUi();
+   });
+   // Important stops the page refreshing
+   return false;
 } 
 
 function PORTresp(){ 
@@ -119,7 +92,7 @@ function PORTresp(){
   showUi(); 
 } 
 
-function DELcall(){ 
+/* function DELcall(){ 
   var datatable = $('#list').DataTable();
   datatable
     .rows(':has(:checkbox:checked)')

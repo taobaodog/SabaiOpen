@@ -17,7 +17,7 @@ function edit() {
  				$value["route"] = $data_post["route"];
  				$value["ip"] = $data_val;
  				$value["name"] = $data_post["name"]; 
-				$res = "NTP server options has been changed.";
+				$res = "Gateway has been changed.";
  			}
  			$json_new[] = $value;
 		}
