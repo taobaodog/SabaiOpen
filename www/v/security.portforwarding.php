@@ -43,9 +43,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </tr>        
       </tbody>
     </table>
+    <input type='button' id="savebutton" name="savebutton" value='Save' onclick="PORTcall()">
       <span id='messages'>&nbsp;</span>
-      <input type='button' id="savebutton" name="savebutton" value='Save' onclick="PORTcall()">
-
       <div id='hideme'>
         <div class='centercolumncontainer'>
           <div class='middlecontainer'>
@@ -75,11 +74,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   var f = E('fe'); 
   var hidden = E('hideme'); 
   var hide = E('hiddentext');
-  var portforwarding='<?php
-  $pftable=exec("uci get sabai.pf.table");
-  exec("uci get sabai.pf.table > /www/libs/data/port_forwarding.json");
-  echo "$pftable"; 
-  ?>'; 
 
 /*  function PORTcall(){ 
     $('input[type=search]').val("");

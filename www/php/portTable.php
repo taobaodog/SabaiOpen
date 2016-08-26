@@ -25,23 +25,21 @@
 	}
 
 	function edit() {
-		global $data_val, $data_row, $json_old, $json_new, $length;
+		global $data_post, $data_row, $json_old, $json_new, $length;
 		$string_to_edit = $data_row;
 		foreach ($json_old["aaData"] as $key => $value) {
 			if ($value["DT_RowId"] == $string_to_edit) {
-				if ($value["DT_RowId"] == $string_to_edit) {
- 					$value["status"] = $data_row["status"];
- 					$value["protocol"] = $data_row["protocol"];
- 					$value["gateway"] = $data_row["gateway"];
- 					$value["src"] = $data_row["src"];
- 					$value["int"] = $data_row["int"];
- 					$value["ext"] = $data_row["ext"];
- 					$value["address"] = $data_row["address"];
- 					$value["description"] = $data_row["description"];
-					$res = "Portforwarding rule has been changed.";
- 				}
- 				$json_new[] = $value;
+				$value["status"] = $data_post["status"];
+				$value["protocol"] = $data_post["protocol"];
+				$value["gateway"] = $data_post["gateway"];
+				$value["src"] = $data_post["src"];
+				$value["int"] = $data_post["int"];
+				$value["ext"] = $data_post["ext"];
+				$value["address"] = $data_post["address"];
+				$value["description"] = $data_post["description"];
+				$res = "Portforwarding rule has been changed.";
 			}
+ 				$json_new[] = $value;
 		}
 		$json_old["aaData"] = $json_new;
 		$data = json_encode($json_old, true);
@@ -52,13 +50,17 @@
 	function add() {
 		global $data_val, $data_post, $json_old, $json_new, $length;
 		$string_to_add = $data_row;
-
-		foreach ($json_old["aaData"] as $key => $value) {
-			$json_new[] = $value;
-			if ($key == $length) {
-				$json_new[] = $data_post;
-				$res = "New portforwarding rule has been added.";
-			} 
+		$check = array_filter($json_old["aaData"]);
+		if (!empty($check)) {
+			foreach ($json_old["aaData"] as $key => $value) {
+				$json_new[] = $value;
+				if ($key == $length) {
+					$json_new[] = $data_post;
+					$res = "New portforwarding rule has been added.";
+				} 
+			}
+		} else {
+			$json_new[] = $data_post;
 		}
 		$json_old["aaData"] = $json_new;
 		$data = json_encode($json_old, true);
