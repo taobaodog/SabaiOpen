@@ -20,26 +20,18 @@
  * For details please refer to: http://www.kingkode.com
  */
 
-//THIS FUNCTION DOESNT WORK... yet.
-//Adding PUT and DELETE ajax functions
-/*jQuery.each( [ "put", "delete" ], function( i, method ) {
-  jQuery[ method ] = function( url, data, callback, type ) {
-    if ( jQuery.isFunction( data ) ) {
-      type = type || callback;
-      callback = data;
-      data = undefined;
-    }
- 
-    return jQuery.ajax({
-      url: url,
-      type: method,
-      dataType: type,
-      data: data,
-      success: callback
-    });
-  };
-});*/
+ /* Reworked edition
+ This is a modified version of the altEditor 1.0
 
+ New functionality:
+  - Input validation.
+  - Server communication with AJAX calls.
+
+ Reworked:
+  - Modal windows.
+  - table rendering.
+  - Add/Edit/Delete functions.
+*/
 
 (function( factory ){
   if ( typeof define === 'function' && define.amd ) {
@@ -200,8 +192,7 @@
             if(initValidation()){
               e.preventDefault();
               e.stopPropagation();
-              that._editRowData();
-              $(this).prop('disabled', true);
+              that._editRowData();            
             }
           });
 
@@ -243,8 +234,7 @@
             if(initValidation()){
               e.preventDefault();
               e.stopPropagation();
-              that._addRowData();
-              $(this).prop('disabled', true);
+              that._addRowData();               
             }
           });
         }
@@ -288,8 +278,8 @@
          var columnDefs = [];
 
     //Adding column attributes to object.
-		//Assuming that the first defined column is ID - Therefore skipping that
-		//and starting at index 1, because we dont wanna be able to change the ID.
+    //Assuming that the first defined column is ID - Therefore skipping that
+    //and starting at index 1, because we dont wanna be able to change the ID.
    for( var i = 1; i < dt.context[0].aoColumns.length; i++ )
    {
     columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
@@ -297,12 +287,9 @@
       type: dt.context[0].aoColumns[i].type,
       options: dt.context[0].aoColumns[i].options,
       msg: dt.context[0].aoColumns[i].errorMsg,
-      pattern: dt.context[0].aoColumns[i].pattern
+      pattern: dt.context[0].aoColumns[i].pattern,
+      special: dt.context[0].aoColumns[i].special
     });
-
-
-
-
   }
   var adata = dt.rows({
     selected: true
@@ -314,11 +301,11 @@
           data += "<form name='altEditor-form' role='form'>";
 
           for(var j = 0; j < columnDefs.length; j++){
-          	data += "<div class='form-group'><div class='col-sm-3 col-md-3 col-lg-3 text-right' style='padding-top:7px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-9 col-md-9 col-lg-9'>";
+            data += "<div class='form-group'><div class='col-sm-3 col-md-3 col-lg-3 text-right' style='padding-top:7px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-9 col-md-9 col-lg-9'>";
 
             //Adding text-inputs and errorlabels
             if(columnDefs[j].type.includes("text")){
-              data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].msg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' style='overflow:hidden'  class='form-control  form-control-sm' value='" + adata.data()[0][columnDefs[j].name] + "'>";
+              data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].msg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' style='overflow:hidden'  class='form-control  form-control-sm' value='" + adata.data()[0][columnDefs[j].name] + "'>";
               data += "<label id='" + columnDefs[j].name + "label" + "' class='errorLabel'></label>";
             }
 
@@ -331,16 +318,16 @@
             if(columnDefs[j].type.includes("select")){
               var options = "";
               for (var i = 0; i < columnDefs[j].options.length; i++) {
-          			//Assigning the selected value of the <selected> option
-          			if(adata.data()[0][columnDefs[j].name].includes(columnDefs[j].options[i])){
-          				options += "<option value='" + columnDefs[j].options[i] + "'selected>" + columnDefs[j].options[i] + "</option>";
-          			}else{
-          				options += "<option value='" + columnDefs[j].options[i] + "'>" + columnDefs[j].options[i] + "</option>";
-          			}
-          		}
-          		data += "<select>" + options + "</select>";
-          	}	
-          	data +="</div><div style='clear:both;'></div></div>";
+                //Assigning the selected value of the <selected> option
+                if(adata.data()[0][columnDefs[j].name].includes(columnDefs[j].options[i])){
+                  options += "<option value='" + columnDefs[j].options[i] + "'selected>" + columnDefs[j].options[i] + "</option>";
+                }else{
+                  options += "<option value='" + columnDefs[j].options[i] + "'>" + columnDefs[j].options[i] + "</option>";
+                }
+              }
+              data += "<select>" + options + "</select>";
+            } 
+            data +="</div><div style='clear:both;'></div></div>";
           }
 
           data += "</form>";
@@ -364,48 +351,48 @@
           var that = this;
           var dt = this.s.dt;
 
-       	//Data from table columns
-       	var columnIds = [];
-       	//Data from input-fields
-       	var dataSet = [];
-       	//For JSON
-       	var aaData = [];
-       	var jsonDataArray = {};
-       	//complete JSONString for ajax call
-       	var comepleteJsonData = {};
+        //Data from table columns
+        var columnIds = [];
+        //Data from input-fields
+        var dataSet = [];
+        //For JSON
+        var aaData = [];
+        var jsonDataArray = {};
+        //complete JSONString for ajax call
+        var comepleteJsonData = {};
 
-       	comepleteJsonData.data = aaData;
+        comepleteJsonData.data = aaData;
 
-       	var adata = dt.rows({
-       		selected: true
-       	});
+        var adata = dt.rows({
+          selected: true
+        });
 
-       	//Getting the IDs and Values of the tablerow
-       	for( var i = 0; i < dt.context[0].aoColumns.length; i++ )
-       	{
-       		columnIds.push({ id: dt.context[0].aoColumns[i].id,
+        //Getting the IDs and Values of the tablerow
+        for( var i = 0; i < dt.context[0].aoColumns.length; i++ )
+        {
+          columnIds.push({ id: dt.context[0].aoColumns[i].id,
             dataSet: adata.data()[0][dt.context[0].aoColumns[i].data]
           }); 
-       	}
+        }
 
-       	//Adding the ID & value of DT_RowId to the JsonArray
-       	jsonDataArray[columnIds[0].id] = columnIds[0].dataSet;
-       	//Getting the inputs from the edit-modal
-       	$('form[name="altEditor-form"] *').filter(':input').each(function( i )
-       	{
-       		dataSet.push( $(this).val() );
-       	});    
-       	//Adding the inputs from the edit-modal to JsonArray
-       	for(var i = 0; i < dataSet.length; i++){
-       		jsonDataArray[columnIds[i+1].id] = dataSet[i];
-       	}
+        //Adding the ID & value of DT_RowId to the JsonArray
+        jsonDataArray[columnIds[0].id] = columnIds[0].dataSet;
+
+        //Getting the inputs from the edit-modal
+        $('form[name="altEditor-form"] *').filter(':input').each(function( i )
+        {
+          dataSet.push( $(this).val() );
+        });    
+
+        //Adding the inputs from the edit-modal to JsonArray
+        for(var i = 0; i < dataSet.length; i++){
+          jsonDataArray[columnIds[i+1].id] = dataSet[i];
+        }
         comepleteJsonData.data.push(jsonDataArray);
 
 
-		//AJAX CALL NOT WORKING AS INTENDED.
-		updateJSON(comepleteJsonData, dt.context[0].sTableId, "editRowData");		
-
-    dt.row({ selected:true }).data(jsonDataArray).draw();
+        //Calling AJAX with data, tableObject, command.
+        updateJSON(comepleteJsonData, that, "editRow");   
   },
 
 
@@ -420,6 +407,7 @@
          var dt = this.s.dt;
          var columnDefs = [];
 
+         //Adding attribute IDs and values to object
          for( var i = 1; i < dt.context[0].aoColumns.length; i++ )
          {
           columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
@@ -430,6 +418,7 @@
           selected: true
         });
 
+        //Building delete-modal
         var data = "";
 
         data += "<form name='altEditor-form' role='form'>";
@@ -455,39 +444,28 @@
        var that = this;
        var dt = this.s.dt;
 
-       	//For JSON
-       	var aaData = [];
-       	var jsonDataArray = {};
-       	//complete JSONString for ajax call
-       	var comepleteJsonData = {};
+        //For JSON
+        var aaData = [];
+        var jsonDataArray = {};
+        //complete JSONString for ajax call
+        var comepleteJsonData = {};
 
-       	comepleteJsonData.data = aaData;
+        comepleteJsonData.data = aaData;
 
         var adata = dt.rows({
           selected: true
         });
 
-       	//Getting the IDs and Values of the tablerow
-       	for( var i = 0; i < dt.context[0].aoColumns.length; i++ )
-       	{
-       		jsonDataArray[dt.context[0].aoColumns[i].id] = adata.data()[0][dt.context[0].aoColumns[i].data];
-       	}
+        //Getting the IDs and Values of the tablerow
+        for( var i = 0; i < dt.context[0].aoColumns.length; i++ )
+        {
+          jsonDataArray[dt.context[0].aoColumns[i].id] = adata.data()[0][dt.context[0].aoColumns[i].data];
+        }
 
-       	comepleteJsonData.data.push(jsonDataArray);
+        comepleteJsonData.data.push(jsonDataArray);
 
-		//AJAX CALL NOT WORKING AS INTENDED.
-		updateJSON(comepleteJsonData, dt.context[0].sTableId, "deleteRow");
-
-   $('#altEditor-modal .modal-body .alert').remove();
-
-   var message = '<div class="alert alert-success" role="alert">\
-   <strong>Success!</strong> This record has been deleted.\
-   </div>';
-
-   $('#altEditor-modal .modal-body').append(message);
-
-   dt.row({ selected:true }).remove();	
-   dt.draw();
+        //Calling AJAX with data, tableObject, command.
+        updateJSON(comepleteJsonData, that, "deleteRow");
 
  },
 
@@ -511,8 +489,9 @@
             type: dt.context[0].aoColumns[i].type,
             options: dt.context[0].aoColumns[i].options,
             msg: dt.context[0].aoColumns[i].errorMsg,
-            pattern: dt.context[0].aoColumns[i].pattern
-          });	
+            pattern: dt.context[0].aoColumns[i].pattern,
+            special: dt.context[0].aoColumns[i].special
+          }); 
         }
 
         //Building add-form
@@ -523,7 +502,7 @@
 
          //Adding text-inputs and errorlabels
          if(columnDefs[j].type.includes("text")){
-          data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].msg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+          data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].msg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
           data += "<label id='" + columnDefs[j].name + "label" + "' class='errorLabel'></label>";
         }
 
@@ -539,7 +518,7 @@
             options += "<option value='" + columnDefs[j].options[i] + "'>" + columnDefs[j].options[i] + "</option>";
           }
           data += "<select>" + options + "</select>";
-        }	
+        } 
         data +="</div><div style='clear:both;'></div></div>";
       } 
       data += "</form>";
@@ -562,50 +541,41 @@
         var rowID = dt.rows().data().length;
         //Containers with data from table columns
         var columnIds = [];
-       	//Data from input-fields.
-       	var inputDataSet = [];
-       	//For JSON
-       	var aaData = [];
-       	var jsonDataArray = {};
-       	//complete JSONString for ajax call
-       	var comepleteJsonData = {};
+        //Data from input-fields.
+        var inputDataSet = [];
+        //For JSON
+        var aaData = [];
+        var jsonDataArray = {};
+        //complete JSONString for ajax call
+        var comepleteJsonData = {};
 
-       	comepleteJsonData.data = aaData;
+        comepleteJsonData.data = aaData;
 
-       	//Getting the IDs and Values of the tablerow
-       	for( var i = 0; i < dt.context[0].aoColumns.length; i++ ){
-       		columnIds.push({ id: dt.context[0].aoColumns[i].id });    
-       	}
+        //Getting the IDs and Values of the tablerow
+        for( var i = 0; i < dt.context[0].aoColumns.length; i++ ){
+          columnIds.push({ id: dt.context[0].aoColumns[i].id });    
+        }
 
-       	//Adding the ID & value(metadata) of the row to the JsonArray
-       	jsonDataArray[columnIds[0].id] = rowID;
+        //Adding the ID & value(metadata) of the row to the JsonArray
+        jsonDataArray[columnIds[0].id] = rowID;
 
-       	//Getting the inputs from the modal
-       	$('form[name="altEditor-form"] *').filter(':input').each(function( i ){
+        //Getting the inputs from the modal
+        $('form[name="altEditor-form"] *').filter(':input').each(function( i ){
 
           inputDataSet.push( $(this).val() );
         });    
 
-       	//Adding the inputs from the modal to JsonArray
-       	for(var i = 0; i < inputDataSet.length; i++){
-       		jsonDataArray[columnIds[i+1].id] = inputDataSet[i];
-       	}
+        //Adding the inputs from the modal to JsonArray
+        for(var i = 0; i < inputDataSet.length; i++){
+          jsonDataArray[columnIds[i+1].id] = inputDataSet[i];
+        }
         comepleteJsonData.data.push(jsonDataArray);
 
 
+        //Calling AJAX with data, tableObject, command.
+        updateJSON(comepleteJsonData, that, "addRow");
 
-$('#altEditor-modal .modal-body .alert').remove();
-
-var message = '<div class="alert alert-success" role="alert">\
-<strong>Success!</strong> This record has been added.\
-</div>';
-
-$('#altEditor-modal .modal-body').append(message);
-
-//Calling AJAX on the url set in table declaration
-updateJSON(comepleteJsonData, dt.context[0].sTableId, "addRowData");
-
-dt.row.add(jsonDataArray).draw(false);
+        
 
 },
 
@@ -692,7 +662,6 @@ _getExecutionLocationFolder: function() {
 
    // Alias for access
    DataTable.altEditor = altEditor;
-
    return altEditor;
  }));
 
@@ -700,65 +669,118 @@ _getExecutionLocationFolder: function() {
 var initValidation = function(){
   var isValid = false;
   var errorcount = 0;
+
+  //Looping through all text fields
   $('form[name="altEditor-form"] *').filter(':text').each(function( i ){
     var errorLabel = "#"+ $(this).attr("id") + "label";
-    if(!$(this).context.checkValidity() || !$(this).val()){
-      $(errorLabel).html($(this).attr("title"));
-      $(errorLabel).show();
 
-      errorcount++;
+    //Inputvalidation for port range
+    if($(this).attr("data-special") === "portRange"){
+      var ports;
+      if($(this).val().includes(":")){
+        ports = $(this).val().split(":")
 
-    }else{
-      $(errorLabel).hide();
-      $(errorLabel).empty();
+        var num1 = parseInt(ports[0])
+        var num2 = parseInt(ports[1])
 
+        if(num1 < num2){
+          if(ports[0].match($(this).attr("pattern")) && ports[1].match($(this).attr("pattern"))){
+            $(errorLabel).hide();
+            $(errorLabel).empty();
+          }else{
+            $(errorLabel).html($(this).attr("title"));
+            $(errorLabel).show();
+            errorcount++
+          }
+        }else{
+          $(errorLabel).html($(this).attr("title"));
+          $(errorLabel).show();
+          errorcount++
+        }
+
+    //If the port isnt a range
+    }else if (!$(this).val().match($(this).attr("pattern"))){
+           $(errorLabel).html($(this).attr("title"));
+           $(errorLabel).show();
+           errorcount++
+         }else{
+
+          //If no error
+          $(errorLabel).hide();
+          $(errorLabel).empty();
+        }
+
+    //All other text-inputs    
+    }else if($(this).attr("data-special") != "portRange" && !$(this).context.checkValidity() || !$(this).val()){
+        $(errorLabel).html($(this).attr("title"));
+        $(errorLabel).show();
+        errorcount++;
+
+      //If no error
+      }else{
+        $(errorLabel).hide();
+        $(errorLabel).empty();
+
+      }
+    });
+
+if(errorcount == 0){
+  isValid = true;
+}
+
+return isValid;
+}
+
+//AJAX function - will reload table if succesfull
+var updateJSON = function(data, tableObj, act){
+  
+  var dt = tableObj.s.dt;
+
+  var jqxhr =
+  $.ajax({
+    url: "php/" + dt.context[0].sTableId + ".php",
+    type : "POST",
+    cache: false,
+    data: {
+      raw: data,
+      action: act
     }
-  });
+  })
+  .done (function(data) { 
 
-  if(errorcount == 0){
-    isValid = true;
-  }
+    //If data = false, then data is already present
+    //Server doesn't allow duplicate data.
+    if(data === "false"){
+      $('#altEditor-modal .modal-body .alert').remove();
 
-  return isValid;
+      var message = '<div class="alert alert-danger" role="alert">\
+      <strong>Fail!</strong> Data already exists.\
+      </div>';
+      $('#altEditor-modal .modal-body').append(message); 
+    }else{
+      $('#altEditor-modal .modal-body .alert').remove();
+
+      var message = '<div class="alert alert-success" role="alert">\
+      <strong>Success!</strong>\
+      </div>';
+      $('#altEditor-modal .modal-body').append(message); 
+      
+      //Reload data from server to table
+      dt.ajax.reload();
+
+      //Disabling submit button
+       $("#"+act+"Btn").prop('disabled', true);
+  
+    }
+  })
+  .fail (function(error)  { 
+
+   $('#altEditor-modal .modal-body .alert').remove();
+
+   var message = '<div class="alert alert-danger" role="alert">\
+   <strong>Error!</strong> Reponse code: ' + error.status + '\
+   </div>';
+
+   $('#altEditor-modal .modal-body').append(message); });
+
 }
-
-//Function might not work as intended.
-var updateJSON = function(data, table_id, act){
-
-var jqxhr =
-$.ajax({
-  url: "php/" + table_id + ".php",
-  type : "POST",
-  cache: false,
-  data: {
-    raw: data,
-    action: act
-  }
-})
-.done (function(data) { 
-  $('#altEditor-modal .modal-body .alert').remove();
-
-  var message = '<div class="alert alert-success" role="alert">\
-  <strong>Success!</strong> This record has been submitted.\
-  </div>';
-  $('#altEditor-modal .modal-body').append(message); })
-
-.fail (function()  { 
- $('#altEditor-modal .modal-body .alert').remove();
-
- var message = '<div class="alert alert-danger" role="alert">\
- <strong>Error!</strong> Something went wrong when updating the table.\
- </div>';
-
- $('#altEditor-modal .modal-body').append(message); });
-
-/*	var jqxhr = $.post('test_data/dataTest.php', (JSON.stringify(data)), function(data, status){
-})		
-	.done(function(){
-	})
-	.fail(function(){
-	});*/
-}
-
-
-

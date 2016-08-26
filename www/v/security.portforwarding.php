@@ -298,27 +298,38 @@ var columnDefs = [{
       title: "Source Address",
       id: "src",
       data: "src",
-      type: "text"
+      type: "text",
+      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+      errorMsg: "*Invalid address - Enter valid ip."
     }, {
       title: "Source Port",
       id: "int",
       data: "int",
-      type: "text"
+      type: "text",
+      pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
+      errorMsg: "*Invalid port - Enter valid port."
     }, {
       title: "Destination Port",
       id: "ext",
       data: "ext",
-      type: "text"
+      type: "text",
+      special: "portRange",
+      pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
+      errorMsg: "*Invalid port - Enter valid port or port range."
     }, {
       title: "Destination Address",
       id: "address",
       data: "address",
-      type: "text"
+      type: "text",
+      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+      errorMsg: "*Invalid address - Enter valid ip."
     },{
       title: "Description",
       id: "description",
       data: "description",
-      type: "text"
+      type: "text",
+      pattern: "^[a-zA-Z0-9_-]+$",
+      errorMsg: "*Invalid description - Allowed: A-z0-9_-"
     }]
 
 
