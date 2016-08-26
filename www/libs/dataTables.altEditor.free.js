@@ -192,9 +192,7 @@
             if(initValidation()){
               e.preventDefault();
               e.stopPropagation();
-              if(that._editRowData()){
-                $(this).prop('disabled', true);
-              }
+              that._editRowData();            
             }
           });
 
@@ -236,9 +234,7 @@
             if(initValidation()){
               e.preventDefault();
               e.stopPropagation();
-               if(that._addRowData()){
-                $(this).prop('disabled', true);
-               }
+              that._addRowData();               
             }
           });
         }
@@ -396,8 +392,7 @@
 
 
         //Calling AJAX with data, tableObject, command.
-        //Returns false if AJAX call fails
-        return (updateJSON(comepleteJsonData, that, "editRowData"));   
+        updateJSON(comepleteJsonData, that, "editRow");   
   },
 
 
@@ -578,8 +573,7 @@
 
 
         //Calling AJAX with data, tableObject, command.
-        //Returns false if AJAX call fails
-        return (updateJSON(comepleteJsonData, that, "addRowData"));
+        updateJSON(comepleteJsonData, that, "addRow");
 
         
 
@@ -739,8 +733,7 @@ return isValid;
 
 //AJAX function - will reload table if succesfull
 var updateJSON = function(data, tableObj, act){
-
-  var state = false;
+  
   var dt = tableObj.s.dt;
 
   var jqxhr =
@@ -771,8 +764,12 @@ var updateJSON = function(data, tableObj, act){
       <strong>Success!</strong>\
       </div>';
       $('#altEditor-modal .modal-body').append(message); 
-      state = true;
+      
+      //Reload data from server to table
       dt.ajax.reload();
+
+      //Disabling submit button
+       $("#"+act+"Btn").prop('disabled', true);
   
     }
   })
@@ -786,9 +783,4 @@ var updateJSON = function(data, tableObj, act){
 
    $('#altEditor-modal .modal-body').append(message); });
 
-  return state;
-
 }
-
-
-
