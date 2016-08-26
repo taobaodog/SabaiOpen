@@ -9,13 +9,13 @@
 	$length	 = count($json_old["aaData"]) - 1;
 
 function edit() {
-		global $data_val, $data_row, $data_post, $json_old, $json_new, $length;
+		global $data_row, $data_post, $json_old, $json_new, $length;
 		$string_to_edit = $data_row;
 		foreach ($json_old["aaData"] as $key => $value) {
 			if ($value["DT_RowId"] == $string_to_edit) {
  				$value["static"] = $data_post["static"];
  				$value["route"] = $data_post["route"];
- 				$value["ip"] = $data_val;
+ 				$value["ip"] = $data_post["ip"];
  				$value["name"] = $data_post["name"]; 
 				$res = "Gateway has been changed.";
  			}

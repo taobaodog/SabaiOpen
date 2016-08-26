@@ -260,7 +260,8 @@ var columnDefs = [{
       "options": [
       "LAN",
       "WAN",
-      "VPN"
+      "PPTP",
+      "OVPN",
       ]
     }, {
       title: "Source Address",
