@@ -284,20 +284,11 @@ rm /tmp/tmpdhcptable
 
 # Creates a json object creating dhcp table data
 _json() {
-	sed 's/\"1\"\:/\"aaData\"\:\[/g' /tmp/table1 > /tmp/table2
-	sed -E 's/\"([0-9])\"\://g' /tmp/table2 > /tmp/table3
-	sed 's/\}\}/\}\]\}/g' /tmp/table3 > /tmp/table4
-	aaData=$(cat /tmp/table4)
-	jsData=$(cat /tmp/table1)
-
+	jsData=$(cat /tmp/tablejs)
 	#save table as single line json
 	uci $UCI_PATH set sabai.dhcp.tablejs="$jsData"
-	uci $UCI_PATH set sabai.dhcp.table="$aaData"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
-
-	#save for web
-	uci $UCI_PATH get sabai.dhcp.table > /www/libs/data/dhcp.json
 }
 
 
