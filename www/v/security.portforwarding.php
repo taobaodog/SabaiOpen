@@ -44,6 +44,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       </tbody>
     </table>
       <span id='messages'>&nbsp;</span>
+      <input type='button' id="savebutton" name="savebutton" value='Save' onclick="PORTcall()">
 
       <div id='hideme'>
         <div class='centercolumncontainer'>
@@ -69,8 +70,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   </p>
 </form>
 
-<script type='text/ecmascript'>
-/*  var hidden, hide,res;
+<script>
+  var hidden, hide,res;
   var f = E('fe'); 
   var hidden = E('hideme'); 
   var hide = E('hiddentext');
@@ -78,7 +79,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   $pftable=exec("uci get sabai.pf.table");
   exec("uci get sabai.pf.table > /www/libs/data/port_forwarding.json");
   echo "$pftable"; 
-  ?>'; */
+  ?>'; 
 
 /*  function PORTcall(){ 
     $('input[type=search]').val("");
@@ -329,7 +330,7 @@ var columnDefs = [{
       data: "description",
       type: "text",
       pattern: "^[a-zA-Z0-9_-]+$",
-      errorMsg: "*Invalid description - Allowed: A-z0-9_-"
+      errorMsg: "*Invalid description - Allowed: A-z0-9 _ -"
     }]
 
 
