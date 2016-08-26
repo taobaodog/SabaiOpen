@@ -2,8 +2,7 @@
 	$act = $_POST['action'];
 	$data_post = $_POST["raw"]["data"][0];
 	$data_row = $_POST["raw"]["data"][0]["DT_RowId"];
-	$data_val = $_POST["raw"]["data"][0]["ip"];
-
+	
 	$json_old_raw = file_get_contents("/www/libs/data/dhcp.json");
 	$json_old = json_decode($json_old_raw, true);
 	$json_new = array();
