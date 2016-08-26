@@ -78,10 +78,10 @@
 		case 'deleteRow':
 			remove();
 			break;
-		case 'editRowData':
+		case 'editRow':
 			edit();
 			break;
-		case 'addRowData':
+		case 'addRow':
 			add();
 			break;
 		default:
