@@ -25,8 +25,7 @@ json_load "$data"
 json_select 1
 json_select ..
 json_get_keys keys
-num_items_raw=$(echo $keys | sed 's/.*\(.\)/\1/')
-num_items=$(( $num_items_raw + 1 ))
+num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
 uci show firewall >> /tmp/test_fw3
 i=0
 j=0
@@ -42,10 +41,10 @@ while [ $i -le $num_items ]; do
 	json_get_var address address
 	json_get_var description description
 
-	if ! (echo $ext | grep -xqE '[0-9]{1,5}(:[0-9]{1,5})?') ||
-		 ! (echo $int | grep -xqE '[0-9]{1,5}(:[0-9]{1,5})?'); then
-			logger "INVALID PORT RANGE FORMAT: you're not supposed to get here"
-	fi
+	#if ! (echo $ext | grep -xqE '[0-9]{1,5}(:[0-9]{1,5})?') ||
+	#	 ! (echo $int | grep -xqE '[0-9]{1,5}(:[0-9]{1,5})?'); then
+	#		logger "INVALID PORT RANGE FORMAT: you're not supposed to get here"
+	#fi
 
 	case $protocol in
 		Both) protocol="tcpudp" ;;

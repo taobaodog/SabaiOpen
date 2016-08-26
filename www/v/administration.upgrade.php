@@ -400,7 +400,7 @@ $("#reset").on("click", function () {
 				eval(res); 
 				if (res.msg.indexOf("NOT") < 0)	{
 					setTimeout(function(){hideUi(res.msg)},2000);
-					setTimeout(function(){checkUpdate()},38000);
+					setTimeout(function(){checkUpdate()},50000);
 				} else {
 					setTimeout(function(){hideUi(res.msg)},2000);
 					setTimeout(function(){showUi()},5000);

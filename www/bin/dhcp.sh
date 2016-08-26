@@ -46,8 +46,7 @@ _rewrite(){
 	json_select 1
 	json_select ..
 	json_get_keys keys
-	num_items_raw=$(echo $keys | sed 's/.*\(.\)/\1/')
-	num_items=$(( $num_items_raw + 1 ))
+	num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
 	cat /tmp/dhcp.leases | while read -r line ; do
 		epochtime=$(echo "$line" | awk '{print $1}')
 		dhcptime=$(date -d @"$epochtime")
@@ -205,8 +204,7 @@ json_load "$data"
 json_select 1
 json_select ..
 json_get_keys keys
-num_items_raw=$(echo $keys | sed 's/.*\(.\)/\1/')
-num_items=$(( $num_items_raw + 1 ))
+num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
 i=0
 while [ $i -le $num_items ]
 do

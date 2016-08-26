@@ -129,11 +129,11 @@ readonly - for fields with readonly attribute.
     type: "select",
     "options": [
     "default",
-    " local",
-    " vpn_fallback",
-    " vpn_only",
-    " accellerator",
-    " tor"
+    "local",
+    "vpn_fallback",
+    "vpn_only",
+    "accellerator",
+    "tor"
     ]
   }, {
     id: "ip",
