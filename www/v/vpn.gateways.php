@@ -137,11 +137,12 @@ readonly - for fields with readonly attribute.
     ]
   }, {
     id: "ip",
-    title: "IP",
+    title: "IP address",
     data: "ip",
     type: "text",
     pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-    errorMsg: "*Invalid address - Enter valid ip"
+    errorMsg: "*Invalid address - Enter valid ip",
+    hoverMsg: "Ex: 82.84.86.88"
   }, {
     id: "mac",
     title: "Mac",
@@ -153,7 +154,8 @@ readonly - for fields with readonly attribute.
     data: "name",
     type: "text",
     pattern: "^[a-zA-Z0-9_-]+$",
-    errorMsg: "*Invalid name - Allowed: A-z0-9 _ -"
+    errorMsg: "*Invalid name - Allowed: A-z0-9 _ -",
+    hoverMsg: "Ex: UserPhone-22_Android"
   }, {
     id: "time",
     title: "Time",
