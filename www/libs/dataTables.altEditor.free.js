@@ -711,7 +711,7 @@ var initValidation = function(){
         }
 
     //All other text-inputs    
-    }else if($(this).attr("data-special") != "portRange" && !$(this).context.checkValidity() || !$(this).val()){
+    }else if($(this).attr("data-special") != "portRange" && !$(this).context.checkValidity()){
         $(errorLabel).html($(this).attr("title"));
         $(errorLabel).show();
         errorcount++;

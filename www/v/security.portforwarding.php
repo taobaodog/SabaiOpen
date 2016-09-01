@@ -55,12 +55,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       </div>
 
       <div class="smallText">
-        <br><b>Proto</b>- Which protocol (tcp or udp) to forward. </li>
+        <br><b>Protocol</b> - Which protocol (tcp or udp) to forward. </li>
         <br><b>VPN</b> - Forward ports through the normal internet connection (WAN) or through the tunnel (VPN), or both. Note that the Gateways feature may result in may result in undefined behavior when devices routed through an interface have ports forwarded through a different interface. Additionally, ports will only be forwarded through the VPN when the VPN service is active. </li>
-        <br><b>Src Address</b>(optional) - Forward only if from this address. Ex: "1.2.3.4", "1.2.3.4 - 2.3.4.5", "1.2.3.0/24", "me.example.com". </li>
-        <br><b>Ext Ports</b> - The port(s) to be forwarded, as seen from the WAN. Ex: "2345", "200,300", "200-300,400". </li>
-        <br><b>Int Port</b>- The destination port inside the LAN. Only one port per entry is supported. </li>
-        <br><b>Int Address</b>- The destination address inside the LAN. </li>
+        <br><b>Src. Address</b> - (optional) - Forward only if from this address. Ex: "25.25.25.25". </li>
+        <br><b>Src. Ports</b> - The port(s) to be forwarded, as seen from the WAN. Ex: "2345", "6112:6120". </li>
+        <br><b>Dest. Port</b> - The destination port(s) inside the LAN. Ex: "80", "27015:27060". </li>
+        <br><b>Dest. Address</b> - (optional) - The destination address inside the LAN. </li>
+        <br><b>Description</b> - (optional) - Characters allowed: A-z, 0-9, underscore(_) and dash(-) </li>
       </div>
     </div>
   </div>
@@ -268,15 +269,16 @@ var columnDefs = [{
       id: "src",
       data: "src",
       type: "text",
-      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+      pattern: "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$",
       errorMsg: "*Invalid address - Enter valid ip."
     }, {
       title: "Source Port",
       id: "int",
       data: "int",
       type: "text",
+      special: "portRange",
       pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
-      errorMsg: "*Invalid port - Enter valid port."
+      errorMsg: "*Invalid port - Enter valid port or range."
     }, {
       title: "Destination Port",
       id: "ext",
@@ -284,20 +286,20 @@ var columnDefs = [{
       type: "text",
       special: "portRange",
       pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
-      errorMsg: "*Invalid port - Enter valid port or port range."
+      errorMsg: "*Invalid port - Enter valid port or range."
     }, {
       title: "Destination Address",
       id: "address",
       data: "address",
       type: "text",
-      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+      pattern: "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$",
       errorMsg: "*Invalid address - Enter valid ip."
     },{
       title: "Description",
       id: "description",
       data: "description",
       type: "text",
-      pattern: "^[a-zA-Z0-9_-]+$",
+      pattern: "^[a-zA-Z0-9_-]*$",
       errorMsg: "*Invalid description - Allowed: A-z0-9 _ -"
     }]
 
