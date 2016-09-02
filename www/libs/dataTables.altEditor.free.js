@@ -326,7 +326,7 @@
                   options += "<option value='" + columnDefs[j].options[i] + "'>" + columnDefs[j].options[i] + "</option>";
                 }
               }
-              data += "<select>" + options + "</select>";
+              data += "<select class='form-control'>" + options + "</select>";
             } 
             data +="</div><div style='clear:both;'></div></div>";
           }
@@ -519,7 +519,7 @@
           for (var i = 0; i < columnDefs[j].options.length; i++) {
             options += "<option value='" + columnDefs[j].options[i] + "'>" + columnDefs[j].options[i] + "</option>";
           }
-          data += "<select>" + options + "</select>";
+          data += "<select class='form-control'>" + options + "</select>";
         } 
         data +="</div><div style='clear:both;'></div></div>";
       } 
