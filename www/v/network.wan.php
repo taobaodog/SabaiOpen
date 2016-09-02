@@ -49,7 +49,12 @@ DDNS: { ip, interval, services }
     </table>
   </div>
 </div>
-<input type='button' value='Save' onclick='WANcall("save")'><span id='messages'>&nbsp;</span>
+
+  <div class='controlBoxFooter'>
+    <input type='button' value='Save' onclick='WANcall("save")'>
+    <input type='Button' value='Cancel' onClick="window.location.reload()">
+    <span id='messages'>&nbsp;</span>
+  </div>
     <div id='hideme'>
         <div class='centercolumncontainer'>
             <div class='middlecontainer'>

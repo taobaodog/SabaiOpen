@@ -24,7 +24,11 @@ Don't allow multiple lan widgets on same page if htey are all operating on the s
   </div>
 </div>
 
-<input type='button' value='Save' onclick='LANcall("save")'><span id='messages'>&nbsp;</span>
+  <div class='controlBoxFooter'>
+    <input type='button' value='Save' onclick='LANcall("save")'>
+    <input type='button' value='Cancel' onClick="window.location.reload()">
+    <span id='messages'>&nbsp;</span>
+  </div>
     <div id='hideme'>
         <div class='centercolumncontainer'>
             <div class='middlecontainer'>

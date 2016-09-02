@@ -12,8 +12,11 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   <div class='controlBoxContent' id='wl_wl0'>
   </div>
 </div>
-
-<input type='button' value='Save' onclick='WLcall("#fe")'><span id='messages'>&nbsp;</span>
+  <div class='controlBoxFooter'>
+    <input type='button' value='Save' onclick='WLcall("#fe")'>
+    <input type='Button' value='Cancel' onClick="window.location.reload()">
+    <span id='messages'>&nbsp;</span>
+  </div>
     <div id='hideme'>
         <div class='centercolumncontainer'>
             <div class='middlecontainer'>
@@ -30,8 +33,11 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	<div class='controlBoxContent' id='wl_wl1'>
 	</div>
 </div>
-
-<input type='button' value='Save' onclick='WLcall("#fe1")'><span id='messages1'>&nbsp;</span>                                                         
+  <div class='controlBoxFooter'>
+    <input type='button' value='Save' onclick='WLcall("#fe1")'>
+    <input type='Button' value='Cancel' onClick="window.location.reload()">
+    <span id='messages1'>&nbsp;</span>
+  </div>                                                       
     <div id='hideme'>                                                                                                                          
         <div class='centercolumncontainer'>                                                                                                    
             <div class='middlecontainer'>                                                                                                      
