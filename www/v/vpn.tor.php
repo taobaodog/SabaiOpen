@@ -57,25 +57,7 @@ var tor=$.parseJSON('{<?php
  function TORcall(torForm){ 
  	hideUi("Adjusting TOR settings...");
  	if (E("tor_mode").value == "tun") {
- 		if (info.vpn.type == 'OpenVPN') {
-			hideUi("OpenVPN will be stopped.");
-			$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
-				if(res!=""){
-					eval(res);
-					hideUi(res.msg);	
-				}
-			});
- 		} else if (info.vpn.type == 'PPTP') {
-			hideUi("PPTP will be stopped.");
-			$.post('php/pptp.php', {'switch': 'stop'}, function(res){
-				if(res!=""){
-					eval(res);
-					hideUi(res.msg);
-				}
-			});
- 		} else {
- 			hideUi("TOR tunnel will be started.");
- 		}
+ 		hideUi("TOR tunnel will be started.");
  		TORstart(torForm);
  	} else if (E("tor_mode").value == "proxy") {
  		hideUi("TOR proxy will be started.");
