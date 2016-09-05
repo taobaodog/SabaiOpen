@@ -287,6 +287,7 @@
       type: dt.context[0].aoColumns[i].type,
       options: dt.context[0].aoColumns[i].options,
       msg: dt.context[0].aoColumns[i].errorMsg,
+      hoverMsg: dt.context[0].aoColumns[i].hoverMsg,
       pattern: dt.context[0].aoColumns[i].pattern,
       special: dt.context[0].aoColumns[i].special
     });
@@ -301,11 +302,11 @@
           data += "<form name='altEditor-form' role='form'>";
 
           for(var j = 0; j < columnDefs.length; j++){
-            data += "<div class='form-group'><div class='col-sm-3 col-md-3 col-lg-3 text-right' style='padding-top:7px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-9 col-md-9 col-lg-9'>";
+            data += "<div class='form-group'><div class='col-sm-5 col-md-5 col-lg-5 text-right' style='padding-top:4px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-6 col-md-6 col-lg-6'>";
 
             //Adding text-inputs and errorlabels
             if(columnDefs[j].type.includes("text")){
-              data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].msg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' style='overflow:hidden'  class='form-control  form-control-sm' value='" + adata.data()[0][columnDefs[j].name] + "'>";
+              data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].hoverMsg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' data-errorMsg='" + columnDefs[j].msg + "' style='overflow:hidden'  class='form-control  form-control-sm' value='" + adata.data()[0][columnDefs[j].name] + "'>";
               data += "<label id='" + columnDefs[j].name + "label" + "' class='errorLabel'></label>";
             }
 
@@ -325,7 +326,7 @@
                   options += "<option value='" + columnDefs[j].options[i] + "'>" + columnDefs[j].options[i] + "</option>";
                 }
               }
-              data += "<select>" + options + "</select>";
+              data += "<select class='form-control'>" + options + "</select>";
             } 
             data +="</div><div style='clear:both;'></div></div>";
           }
@@ -489,6 +490,7 @@
             type: dt.context[0].aoColumns[i].type,
             options: dt.context[0].aoColumns[i].options,
             msg: dt.context[0].aoColumns[i].errorMsg,
+            hoverMsg: dt.context[0].aoColumns[i].hoverMsg,
             pattern: dt.context[0].aoColumns[i].pattern,
             special: dt.context[0].aoColumns[i].special
           }); 
@@ -498,11 +500,11 @@
         var data = "";
         data += "<form name='altEditor-form' role='form'>";
         for(var j = 0; j < columnDefs.length; j++){
-         data += "<div class='form-group'><div class='col-sm-3 col-md-3 col-lg-3 text-right' style='padding-top:7px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-9 col-md-9 col-lg-9'>";
+         data += "<div class='form-group'><div class='col-sm-5 col-md-5 col-lg-5 text-right' style='padding-top:4px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-6 col-md-6 col-lg-6'>";
 
          //Adding text-inputs and errorlabels
          if(columnDefs[j].type.includes("text")){
-          data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].msg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+          data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].hoverMsg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' data-errorMsg='" + columnDefs[j].msg + "' style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
           data += "<label id='" + columnDefs[j].name + "label" + "' class='errorLabel'></label>";
         }
 
@@ -517,7 +519,7 @@
           for (var i = 0; i < columnDefs[j].options.length; i++) {
             options += "<option value='" + columnDefs[j].options[i] + "'>" + columnDefs[j].options[i] + "</option>";
           }
-          data += "<select>" + options + "</select>";
+          data += "<select class='form-control'>" + options + "</select>";
         } 
         data +="</div><div style='clear:both;'></div></div>";
       } 
@@ -688,19 +690,19 @@ var initValidation = function(){
             $(errorLabel).hide();
             $(errorLabel).empty();
           }else{
-            $(errorLabel).html($(this).attr("title"));
+            $(errorLabel).html($(this).attr("data-errorMsg"));
             $(errorLabel).show();
             errorcount++
           }
         }else{
-          $(errorLabel).html($(this).attr("title"));
+          $(errorLabel).html($(this).attr("data-errorMsg"));
           $(errorLabel).show();
           errorcount++
         }
 
-    //If the port isnt a range
-    }else if (!$(this).val().match($(this).attr("pattern"))){
-           $(errorLabel).html($(this).attr("title"));
+      //If the port isnt a range
+      }else if (!$(this).val().match($(this).attr("pattern"))){
+           $(errorLabel).html($(this).attr("data-errorMsg"));
            $(errorLabel).show();
            errorcount++
          }else{
@@ -712,7 +714,7 @@ var initValidation = function(){
 
     //All other text-inputs    
     }else if($(this).attr("data-special") != "portRange" && !$(this).context.checkValidity()){
-        $(errorLabel).html($(this).attr("title"));
+        $(errorLabel).html($(this).attr("data-errorMsg"));
         $(errorLabel).show();
         errorcount++;
 

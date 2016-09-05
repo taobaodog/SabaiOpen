@@ -270,15 +270,16 @@ var columnDefs = [{
       data: "src",
       type: "text",
       pattern: "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$",
-      errorMsg: "*Invalid address - Enter valid ip."
+      errorMsg: "*Invalid address - Enter valid ip.",
+      hoverMsg: "(Optional) - Ex: 82.84.86.88"
     }, {
       title: "Source Port",
       id: "int",
       data: "int",
       type: "text",
-      special: "portRange",
       pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
-      errorMsg: "*Invalid port - Enter valid port or range."
+      errorMsg: "*Invalid port - Enter valid port.",
+      hoverMsg: "Ex: 6112 (single)   or   6111:6333 (range)"
     }, {
       title: "Destination Port",
       id: "ext",
@@ -286,21 +287,24 @@ var columnDefs = [{
       type: "text",
       special: "portRange",
       pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
-      errorMsg: "*Invalid port - Enter valid port or range."
+      errorMsg: "*Invalid port - Enter valid port or port range.",
+      hoverMsg: "Ex: 6221 (single)   or   7222:7333 (range)"
     }, {
       title: "Destination Address",
       id: "address",
       data: "address",
       type: "text",
       pattern: "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$",
-      errorMsg: "*Invalid address - Enter valid ip."
+      errorMsg: "*Invalid address - Enter valid ip.",
+      hoverMsg: "(Optional) - Ex: 81.83.85.87"
     },{
       title: "Description",
       id: "description",
       data: "description",
       type: "text",
       pattern: "^[a-zA-Z0-9_-]*$",
-      errorMsg: "*Invalid description - Allowed: A-z0-9 _ -"
+      errorMsg: "*Invalid description - Allowed: A-z0-9_-",
+      hoverMsg: "(Optional) - Ex: 1_Description-Text"
     }]
 
 

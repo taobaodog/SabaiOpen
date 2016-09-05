@@ -237,7 +237,8 @@ var columnDefs = [{
     data: "ntp_server",
     type: "text",
     pattern: "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$",
-    errorMsg: "*Invalid input - Allowed: A-z0-9 and ."
+    errorMsg: "*Invalid input - Allowed: A-z0-9 and .",
+    hoverMsg: "Ex: 1.YourServerName.org"
   }];
 
 //Making errors show in console rather than alerts
