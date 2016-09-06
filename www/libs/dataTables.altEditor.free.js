@@ -175,6 +175,12 @@
           </div>'
           );
 
+         $(document).on('click', '#saveButton', function(e){
+            sendJsonData(that);
+          });
+         $(document).on('click', '#cancelButton', function(e){
+            undoChanges(that);
+          });
 
          // add Edit Button
          if( this.s.dt.button('edit:name') )
@@ -189,10 +195,11 @@
 
           $(document).on('click', '#editRowBtn', function(e)
           {
-            if(initValidation()){
+            if(initValidation(that)){
               e.preventDefault();
               e.stopPropagation();
-              that._editRowData();            
+              that._editRowData();
+              $("#cancelButton").prop('disabled', false);            
             }
           });
 
@@ -215,6 +222,7 @@
             e.stopPropagation();
             that._deleteRow();
             $(this).prop('disabled', true);
+            $("#cancelButton").prop('disabled', false);
           });
         }
 
@@ -231,10 +239,11 @@
 
           $(document).on('click', '#addRowBtn', function(e)
           {
-            if(initValidation()){
+            if(initValidation(that)){
               e.preventDefault();
               e.stopPropagation();
-              that._addRowData();               
+              that._addRowData();
+              $("#cancelButton").prop('disabled', false);               
             }
           });
         }
@@ -250,6 +259,7 @@
                });
           });
         }
+
       },
 
        /**
@@ -289,7 +299,8 @@
       msg: dt.context[0].aoColumns[i].errorMsg,
       hoverMsg: dt.context[0].aoColumns[i].hoverMsg,
       pattern: dt.context[0].aoColumns[i].pattern,
-      special: dt.context[0].aoColumns[i].special
+      special: dt.context[0].aoColumns[i].special,
+      unique: dt.context[0].aoColumns[i].unique
     });
   }
   var adata = dt.rows({
@@ -302,11 +313,14 @@
           data += "<form name='altEditor-form' role='form'>";
 
           for(var j = 0; j < columnDefs.length; j++){
-            data += "<div class='form-group'><div class='col-sm-5 col-md-5 col-lg-5 text-right' style='padding-top:4px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-6 col-md-6 col-lg-6'>";
+            data += "<div class='form-group'>"
+            data += "<div class='col-sm-5 col-md-5 col-lg-5 text-right' style='padding-top:4px;'>"
+            data += "<label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div>"
+            data += "<div class='col-sm-6 col-md-6 col-lg-6'>";
 
             //Adding text-inputs and errorlabels
             if(columnDefs[j].type.includes("text")){
-              data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].hoverMsg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' data-errorMsg='" + columnDefs[j].msg + "' style='overflow:hidden'  class='form-control  form-control-sm' value='" + adata.data()[0][columnDefs[j].name] + "'>";
+              data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].hoverMsg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' data-errorMsg='" + columnDefs[j].msg + "' data-unique='" + columnDefs[j].unique + "' style='overflow:hidden'  class='form-control  form-control-sm' value='" + adata.data()[0][columnDefs[j].name] + "'>";
               data += "<label id='" + columnDefs[j].name + "label" + "' class='errorLabel'></label>";
             }
 
@@ -336,7 +350,7 @@
 
           $('#altEditor-modal').on('show.bs.modal', function() {
             $('#altEditor-modal').find('.modal-title').html('Edit Record');
-            $('#altEditor-modal').find('.modal-body').html(data);
+            $('#altEditor-modal').find('.modal-body').html('<pre>' +data+ '</pre>');
             $('#altEditor-modal').find('.modal-footer').html("<button type='button' data-content='remove' class='btn btn-default' data-dismiss='modal'>Close</button>\
              <button type='button' data-content='remove' class='btn btn-primary' id='editRowBtn'>Submit</button>");
 
@@ -385,15 +399,25 @@
           dataSet.push( $(this).val() );
         });    
 
+
+
+
         //Adding the inputs from the edit-modal to JsonArray
         for(var i = 0; i < dataSet.length; i++){
           jsonDataArray[columnIds[i+1].id] = dataSet[i];
         }
-        comepleteJsonData.data.push(jsonDataArray);
 
+        dt.row({ selected:true }).data(jsonDataArray);
+        $("#editRowBtn").prop('disabled', true); 
 
-        //Calling AJAX with data, tableObject, command.
-        updateJSON(comepleteJsonData, that, "editRow");   
+        $('#altEditor-modal .modal-body .alert').remove();
+
+        var message = '<div class="alert alert-success" role="alert">\
+        <strong>Success!</strong> This record has been updated.\
+        </div>';
+
+        $('#altEditor-modal .modal-body').append(message);
+
   },
 
 
@@ -424,13 +448,13 @@
 
         data += "<form name='altEditor-form' role='form'>";
         for(var j = 0; j < columnDefs.length; j++){
-          data += "<div class='form-group'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + " : </label><input  type='hidden'  id='" + columnDefs[j].title + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' style='overflow:hidden'  class='form-control' value='" + adata.data()[0][columnDefs[j].name] + "' >" + adata.data()[0][columnDefs[j].name] + "</input></div>";
+          data += "<div class='form-group'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + " :  </label><input  type='hidden'  id='" + columnDefs[j].title + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' style='overflow:hidden'  class='form-control' value='" + adata.data()[0][columnDefs[j].name] + "' >" + adata.data()[0][columnDefs[j].name] + "</input></div>";
         }
         data += "</form>";
 
         $('#altEditor-modal').on('show.bs.modal', function() {
           $('#altEditor-modal').find('.modal-title').html('Delete Record');
-          $('#altEditor-modal').find('.modal-body').html(data);
+          $('#altEditor-modal').find('.modal-body').html('<pre>' +data+ '</pre>');
           $('#altEditor-modal').find('.modal-footer').html("<button type='button' data-content='remove' class='btn btn-default' data-dismiss='modal'>Close</button>\
            <button type='button'  data-content='remove' class='btn btn-danger' id='deleteRowBtn'>Delete</button>");
         });
@@ -445,7 +469,19 @@
        var that = this;
        var dt = this.s.dt;
 
-        //For JSON
+
+       $('#altEditor-modal .modal-body .alert').remove();
+
+       var message = '<div class="alert alert-success" role="alert">\
+       <strong>Success!</strong> This record has been deleted.\
+       </div>';
+
+       $('#altEditor-modal .modal-body').append(message);
+
+       dt.row({ selected:true }).remove();
+       dt.draw();
+
+/*        //For JSON
         var aaData = [];
         var jsonDataArray = {};
         //complete JSONString for ajax call
@@ -466,7 +502,7 @@
         comepleteJsonData.data.push(jsonDataArray);
 
         //Calling AJAX with data, tableObject, command.
-        updateJSON(comepleteJsonData, that, "deleteRow");
+       // updateJSON(comepleteJsonData, that, "deleteRow");*/
 
  },
 
@@ -492,7 +528,8 @@
             msg: dt.context[0].aoColumns[i].errorMsg,
             hoverMsg: dt.context[0].aoColumns[i].hoverMsg,
             pattern: dt.context[0].aoColumns[i].pattern,
-            special: dt.context[0].aoColumns[i].special
+            special: dt.context[0].aoColumns[i].special,
+            unique: dt.context[0].aoColumns[i].unique
           }); 
         }
 
@@ -504,7 +541,7 @@
 
          //Adding text-inputs and errorlabels
          if(columnDefs[j].type.includes("text")){
-          data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].hoverMsg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' data-errorMsg='" + columnDefs[j].msg + "' style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+          data += "<input type='" + columnDefs[j].type + "' id='" + columnDefs[j].name + "'  pattern='" + columnDefs[j].pattern + "'  title='" + columnDefs[j].hoverMsg + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' data-special='" + columnDefs[j].special + "' data-errorMsg='" + columnDefs[j].msg + "' data-unique='" + columnDefs[j].unique + "' style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
           data += "<label id='" + columnDefs[j].name + "label" + "' class='errorLabel'></label>";
         }
 
@@ -527,7 +564,7 @@
 
         $('#altEditor-modal').on('show.bs.modal', function() {
           $('#altEditor-modal').find('.modal-title').html('Add Record');
-          $('#altEditor-modal').find('.modal-body').html(data);
+          $('#altEditor-modal').find('.modal-body').html('<pre>' +data+ '</pre>');
           $('#altEditor-modal').find('.modal-footer').html("<button type='button' data-content='remove' class='btn btn-default' data-dismiss='modal'>Close</button>\
            <input type='submit'  data-content='remove' class='btn btn-primary' id='addRowBtn'></input>");
         });
@@ -540,7 +577,10 @@
       {
         var that = this;
         var dt = this.s.dt;
-        var rowID = dt.rows().data().length;
+
+        //Finding the biggest numerical ID, incrementing it and assigning the new ID to the new row.
+        var highestID = Math.max.apply(Math, dt.column(0).data())
+        var rowID = highestID + 1;
         //Containers with data from table columns
         var columnIds = [];
         //Data from input-fields.
@@ -571,15 +611,27 @@
         for(var i = 0; i < inputDataSet.length; i++){
           jsonDataArray[columnIds[i+1].id] = inputDataSet[i];
         }
-        comepleteJsonData.data.push(jsonDataArray);
+
+         dt.row.add(jsonDataArray).draw(false);
+
+
+         $('#altEditor-modal .modal-body .alert').remove();
+
+         var message = '<div class="alert alert-success" role="alert">\
+           <strong>Success!</strong> This record has been added.\
+         </div>';
+
+         $('#altEditor-modal .modal-body').append(message);
+
+       // comepleteJsonData.data.push(jsonDataArray);
 
 
         //Calling AJAX with data, tableObject, command.
-        updateJSON(comepleteJsonData, that, "addRow");
+       // updateJSON(comepleteJsonData, that, "addRow");
 
         
 
-},
+      },
 
 _getExecutionLocationFolder: function() {
  var fileName = "dataTables.altEditor.js";
@@ -668,13 +720,19 @@ _getExecutionLocationFolder: function() {
  }));
 
 //Input validation for text-fields
-var initValidation = function(){
+var initValidation = function(tableObj){
+  var dt = tableObj.s.dt;
   var isValid = false;
   var errorcount = 0;
+  var matchcount = 0;
 
-  //Looping through all text fields
-  $('form[name="altEditor-form"] *').filter(':text').each(function( i ){
-    var errorLabel = "#"+ $(this).attr("id") + "label";
+  //Looping through all inputs
+  $('form[name="altEditor-form"] *').filter(':input').each(function( i ){
+    
+    //We only want the check text inputs.
+    if($(this).attr("type") === "text"){
+      var errorLabel = "#"+ $(this).attr("id") + "label";
+      var unique = $(this).attr("data-unique");
 
     //Inputvalidation for port range
     if($(this).attr("data-special") === "portRange"){
@@ -682,6 +740,7 @@ var initValidation = function(){
       if($(this).val().includes(":")){
         ports = $(this).val().split(":")
 
+        //If port numbers aren't integers, then the "<" doesnt work properly
         var num1 = parseInt(ports[0])
         var num2 = parseInt(ports[1])
 
@@ -702,36 +761,102 @@ var initValidation = function(){
 
       //If the port isnt a range
       }else if (!$(this).val().match($(this).attr("pattern"))){
-           $(errorLabel).html($(this).attr("data-errorMsg"));
-           $(errorLabel).show();
-           errorcount++
-         }else{
+        $(errorLabel).html($(this).attr("data-errorMsg"));
+        $(errorLabel).show();
+        errorcount++
+      }else{
 
-          //If no error
-          $(errorLabel).hide();
-          $(errorLabel).empty();
-        }
+        //If no error
+        $(errorLabel).hide();
+        $(errorLabel).empty();
+      }
 
     //All other text-inputs    
     }else if($(this).attr("data-special") != "portRange" && !$(this).context.checkValidity()){
-        $(errorLabel).html($(this).attr("data-errorMsg"));
-        $(errorLabel).show();
-        errorcount++;
-
-      //If no error
+      $(errorLabel).html($(this).attr("data-errorMsg"));
+      $(errorLabel).show();
+      errorcount++;
       }else{
         $(errorLabel).hide();
         $(errorLabel).empty();
-
       }
-    });
 
-if(errorcount == 0){
+    //Checking for dublicate data in columns with unique attribute     
+    if($(this).attr("data-unique") === "true"){
+      var input = $(this).val();
+
+      //Looping through an array with all data from the column
+      $.each(dt.column(i+1).data(), function(index, value) { 
+        //Skipping data from the selected row
+        if(index != dt.cell('.selected', 0).data()){  
+          //If value of input is found in column
+          if (input != "" && input.toLowerCase() === value.toLowerCase()) {
+            $(errorLabel).html("Error: Duplicate data is not allowed.");
+            $(errorLabel).show();
+            matchcount++
+            return false; 
+          }
+        } 
+      });
+    }
+  }
+});  
+
+//When no errors in input and no matches are found
+if(errorcount == 0 && matchcount == 0){
   isValid = true;
 }
 
 return isValid;
 }
+
+var undoChanges = function(tableObj){
+  var dt = tableObj.s.dt;
+
+  //Modal creation
+  $('#altEditor-modal').on('show.bs.modal', function() {
+    $('#altEditor-modal').find('.modal-title').html('Cancel changes');
+    $('#altEditor-modal').find('.modal-body').html('Are you sure you want to undo unsaved changes?');
+    $('#altEditor-modal').find('.modal-footer').html("<button type='button' class='btn btn-danger' data-dismiss='modal'>No</button>\
+     <button class='btn btn-success' data-dismiss='modal' id='cancelConfirm'>Yes</button>");
+  });
+
+  $('#altEditor-modal').modal('show');
+
+  //Reload table from AJAX URL on cancel
+  $(document).on('click', '#cancelConfirm', function(e)
+  {
+    dt.ajax.reload();
+    $('#cancelButton').attr('disabled', 'disabled')
+  });
+
+}
+
+var sendJsonData = function(tableObj){
+        var dt = tableObj.s.dt;
+
+        var aaData = [];
+        var jsonDataArray = {};
+        //complete JSONString for ajax call
+        var comepleteJsonData = {};
+
+        comepleteJsonData.data = aaData;
+
+        //Getting the IDs and Values of the tablerow
+        for( var i = 0; i < dt.context[0].aoData.length; i++ )
+        {
+         jsonDataArray[i] = dt.row(i).data();
+        }
+
+        comepleteJsonData.data.push(jsonDataArray);
+console.log(comepleteJsonData);
+
+//INSERT AJAX CALL HERE
+//SHOW RESPONSE IN messages
+//DISABLE CANCEL BUTTON IF EVERYTHING IS OK
+        
+      }
+
 
 //AJAX function - will reload table if succesfull
 var updateJSON = function(data, tableObj, act){

@@ -43,8 +43,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </tr>        
       </tbody>
     </table>
-    <input type='button' id="savebutton" name="savebutton" value='Save' onclick="PORTcall()">
-      <span id='messages'>&nbsp;</span>
+  <div class='controlBoxFooter'>
+    <button type='button' class='btn btn-default' id='saveButton' onclick="PORTcall()" value='Save'>Save</button>
+    <button type='button' class='btn btn-default' id='cancelButton' value='Cancel' disabled='true'>Cancel</button>
+    <span id='messages'>&nbsp;</span>
+  </div>
+
       <div id='hideme'>
         <div class='centercolumncontainer'>
           <div class='middlecontainer'>
@@ -92,6 +96,14 @@ function PORTresp(){
   msg(res.rMessage); 
   showUi(); 
 } 
+
+//Confirm reload/leaving page with unsaved changes.
+$(window).bind('beforeunload',function(){
+
+   if(!$('#cancelButton').is(':disabled')){
+   return "";
+    }
+});
 
 /* function DELcall(){ 
   var datatable = $('#list').DataTable();
@@ -271,15 +283,18 @@ var columnDefs = [{
       type: "text",
       pattern: "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$",
       errorMsg: "*Invalid address - Enter valid ip.",
-      hoverMsg: "(Optional) - Ex: 82.84.86.88"
+      hoverMsg: "(Optional) - Ex: 82.84.86.88",
+      unique: true
     }, {
       title: "Source Port",
       id: "int",
       data: "int",
       type: "text",
+      special: "portRange",
       pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
-      errorMsg: "*Invalid port - Enter valid port.",
-      hoverMsg: "Ex: 6112 (single)   or   6111:6333 (range)"
+      errorMsg: "*Invalid port - Enter valid port or range.",
+      hoverMsg: "Ex: 6112 (single)   or   6111:6333 (range)",
+      unique: true
     }, {
       title: "Destination Port",
       id: "ext",
@@ -287,8 +302,9 @@ var columnDefs = [{
       type: "text",
       special: "portRange",
       pattern: "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
-      errorMsg: "*Invalid port - Enter valid port or port range.",
-      hoverMsg: "Ex: 6221 (single)   or   7222:7333 (range)"
+      errorMsg: "*Invalid port - Enter valid port or range.",
+      hoverMsg: "Ex: 6221 (single)   or   7222:7333 (range)",
+      unique: true
     }, {
       title: "Destination Address",
       id: "address",
@@ -296,7 +312,8 @@ var columnDefs = [{
       type: "text",
       pattern: "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$",
       errorMsg: "*Invalid address - Enter valid ip.",
-      hoverMsg: "(Optional) - Ex: 81.83.85.87"
+      hoverMsg: "(Optional) - Ex: 81.83.85.87",
+      unique: true
     },{
       title: "Description",
       id: "description",
