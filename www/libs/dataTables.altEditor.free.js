@@ -234,6 +234,10 @@
               selected: true
             }).count();
 
+            //Deselect any selected row
+            //Important for match-check
+            dt.row({selected: true}).deselect();
+
             that._openAddModal();
           });
 
