@@ -25,7 +25,9 @@
 
  New functionality:
   - Input validation.
+  - Dublicate data check. 
   - Server communication with AJAX calls.
+  - Cancel button for undoing unsaved changes.
 
  Reworked:
   - Modal windows.
@@ -174,10 +176,8 @@
           </div>\
           </div>'
           );
-
          $(document).on('click', '#saveButton', function(e){
             sendJsonData(that);
-            $("#cancelButton").prop('disabled', 'disabled');  
           });
          $(document).on('click', '#cancelButton', function(e){
             undoChanges(that);
@@ -375,13 +375,8 @@
         var columnIds = [];
         //Data from input-fields
         var dataSet = [];
-        //For JSON
-        var aaData = [];
-        var jsonDataArray = {};
-        //complete JSONString for ajax call
-        var comepleteJsonData = {};
-
-        comepleteJsonData.data = aaData;
+        //Complete new row data 
+        var rowDataArray = {};
 
         var adata = dt.rows({
           selected: true
@@ -391,12 +386,12 @@
         for( var i = 0; i < dt.context[0].aoColumns.length; i++ )
         {
           columnIds.push({ id: dt.context[0].aoColumns[i].id,
-            dataSet: adata.data()[0][dt.context[0].aoColumns[i].data]
+                           dataSet: adata.data()[0][dt.context[0].aoColumns[i].data]
           }); 
         }
 
-        //Adding the ID & value of DT_RowId to the JsonArray
-        jsonDataArray[columnIds[0].id] = columnIds[0].dataSet;
+        //Adding the ID & value of DT_RowId
+        rowDataArray[columnIds[0].id] = columnIds[0].dataSet;
 
         //Getting the inputs from the edit-modal
         $('form[name="altEditor-form"] *').filter(':input').each(function( i )
@@ -404,17 +399,18 @@
           dataSet.push( $(this).val() );
         });    
 
-
-
-
-        //Adding the inputs from the edit-modal to JsonArray
+        //Adding the inputs from the edit-modal
         for(var i = 0; i < dataSet.length; i++){
-          jsonDataArray[columnIds[i+1].id] = dataSet[i];
+          rowDataArray[columnIds[i+1].id] = dataSet[i];
         }
 
-        dt.row({ selected:true }).data(jsonDataArray);
+        //Displaying the updated row data in the datatable
+        dt.row({ selected:true }).data(rowDataArray);
+
+        //Disabling the modal-edit-confirm button
         $("#editRowBtn").prop('disabled', true); 
 
+        //Success message for modal
         $('#altEditor-modal .modal-body .alert').remove();
 
         var message = '<div class="alert alert-success" role="alert">\
@@ -485,30 +481,6 @@
 
        dt.row({ selected:true }).remove();
        dt.draw();
-
-/*        //For JSON
-        var aaData = [];
-        var jsonDataArray = {};
-        //complete JSONString for ajax call
-        var comepleteJsonData = {};
-
-        comepleteJsonData.data = aaData;
-
-        var adata = dt.rows({
-          selected: true
-        });
-
-        //Getting the IDs and Values of the tablerow
-        for( var i = 0; i < dt.context[0].aoColumns.length; i++ )
-        {
-          jsonDataArray[dt.context[0].aoColumns[i].id] = adata.data()[0][dt.context[0].aoColumns[i].data];
-        }
-
-        comepleteJsonData.data.push(jsonDataArray);
-
-        //Calling AJAX with data, tableObject, command.
-       // updateJSON(comepleteJsonData, that, "deleteRow");*/
-
  },
 
 
@@ -584,42 +556,38 @@
         var dt = this.s.dt;
 
         //Finding the biggest numerical ID, incrementing it and assigning the new ID to the new row.
-        var highestID = Math.max.apply(Math, dt.column(0).data())
-        var rowID = highestID + 1;
+        var highestID = Math.max.apply(Math, dt.column(0).data()) + 1;
+        var rowID = "" + highestID;
         //Containers with data from table columns
         var columnIds = [];
         //Data from input-fields.
         var inputDataSet = [];
-        //For JSON
-        var aaData = [];
-        var jsonDataArray = {};
-        //complete JSONString for ajax call
-        var comepleteJsonData = {};
+        //Complete new row data
+        var rowDataArray = {};
 
-        comepleteJsonData.data = aaData;
 
-        //Getting the IDs and Values of the tablerow
+        //Getting the IDs of the tablerow
         for( var i = 0; i < dt.context[0].aoColumns.length; i++ ){
           columnIds.push({ id: dt.context[0].aoColumns[i].id });    
         }
 
-        //Adding the ID & value(metadata) of the row to the JsonArray
-        jsonDataArray[columnIds[0].id] = rowID;
+        //Adding the ID & value of DT_RowId
+        rowDataArray[columnIds[0].id] = rowID;
 
         //Getting the inputs from the modal
         $('form[name="altEditor-form"] *').filter(':input').each(function( i ){
-
           inputDataSet.push( $(this).val() );
         });    
 
         //Adding the inputs from the modal to JsonArray
         for(var i = 0; i < inputDataSet.length; i++){
-          jsonDataArray[columnIds[i+1].id] = inputDataSet[i];
+          rowDataArray[columnIds[i+1].id] = inputDataSet[i];
         }
 
-         dt.row.add(jsonDataArray).draw(false);
+        //Adding the new row to the datatable
+        dt.row.add(rowDataArray).draw(false);
 
-
+        //Success message for modal
          $('#altEditor-modal .modal-body .alert').remove();
 
          var message = '<div class="alert alert-success" role="alert">\
@@ -627,14 +595,6 @@
          </div>';
 
          $('#altEditor-modal .modal-body').append(message);
-
-       // comepleteJsonData.data.push(jsonDataArray);
-
-
-        //Calling AJAX with data, tableObject, command.
-       // updateJSON(comepleteJsonData, that, "addRow");
-
-        
 
       },
 
@@ -789,12 +749,11 @@ var initValidation = function(tableObj){
     //Checking for dublicate data in columns with unique attribute     
     if($(this).attr("data-unique") === "true"){
       var input = $(this).val();
-
       //Looping through an array with all data from the column
       $.each(dt.column(i+1).data(), function(index, value) { 
         //Skipping data from the selected row
         if(index != dt.cell('.selected', 0).data()){  
-          //If value of input is found in column
+          //If value is not empty and found in column 
           if (input != "" && input.toLowerCase() === value.toLowerCase()) {
             $(errorLabel).html("Error: Duplicate data is not allowed.");
             $(errorLabel).show();
@@ -834,85 +793,45 @@ var undoChanges = function(tableObj){
     dt.ajax.reload();
     $('#cancelButton').attr('disabled', 'disabled')
   });
-
 }
 
 var sendJsonData = function(tableObj){
-        var dt = tableObj.s.dt;
-
-        var aaData = [];
-        var jsonDataArray = {};
-        //complete JSONString for ajax call
-        var comepleteJsonData = {};
-
-        comepleteJsonData.data = aaData;
-
-        //Getting the IDs and Values of the tablerow
-        for( var i = 0; i < dt.context[0].aoData.length; i++ )
-        {
-         jsonDataArray[i] = dt.row(i).data();
-        }
-
-        comepleteJsonData.data.push(jsonDataArray);
-console.log(comepleteJsonData);
-
-//INSERT AJAX CALL HERE
-//SHOW RESPONSE IN messages
-//DISABLE CANCEL BUTTON IF EVERYTHING IS OK
-        
-      }
-
-
-//AJAX function - will reload table if succesfull
-var updateJSON = function(data, tableObj, act){
-  
   var dt = tableObj.s.dt;
 
-  var jqxhr =
-  $.ajax({
-    url: "php/" + dt.context[0].sTableId + ".php",
-    type : "POST",
-    cache: false,
-    data: {
-      raw: data,
-      action: act
-    }
-  })
-  .done (function(data) { 
+       //Building JSON template
+       var jsonDataArray = {};
+       var comepleteJsonData = {};
+       comepleteJsonData.aaData = [];
 
-    //If data = false, then data is already present
-    //Server doesn't allow duplicate data.
-    if(data === "false"){
-      $('#altEditor-modal .modal-body .alert').remove();
+       //Container for response from server
+       var response = document.getElementById("messages");
 
-      var message = '<div class="alert alert-danger" role="alert">\
-      <strong>Fail!</strong> Data already exists.\
-      </div>';
-      $('#altEditor-modal .modal-body').append(message); 
-    }else{
-      $('#altEditor-modal .modal-body .alert').remove();
+        //Adding data from each row to JSON array
+        for( var i = 0; i < dt.context[0].aoData.length; i++ ){
+         jsonDataArray[i] = dt.row(i).data();
+        }
+        //Adding the JSON array to the comlete JSON template
+        comepleteJsonData.aaData.push(jsonDataArray);
 
-      var message = '<div class="alert alert-success" role="alert">\
-      <strong>Success!</strong>\
-      </div>';
-      $('#altEditor-modal .modal-body').append(message); 
-      
-      //Reload data from server to table
-      dt.ajax.reload();
+        //JSON call to server
+        var jqxhr =
+        $.ajax({
+          url: "php/" + dt.context[0].sTableId + ".php",
+          type : "POST",
+          cache: false,
+          data: {
+            raw: comepleteJsonData
+          }
+        })
+        .done (function(data) { 
+         response.innerHTML = data; 
+         $("#cancelButton").prop('disabled', 'disabled');  
 
-      //Disabling submit button
-       $("#"+act+"Btn").prop('disabled', true);
-  
-    }
-  })
-  .fail (function(error)  { 
+        })
+        .fail (function(error)  {
+         response.style.color = "red"; 
+         response.innerHTML = "*Errorcode from server: " +error.status;
 
-   $('#altEditor-modal .modal-body .alert').remove();
-
-   var message = '<div class="alert alert-danger" role="alert">\
-   <strong>Error!</strong> Reponse code: ' + error.status + '\
-   </div>';
-
-   $('#altEditor-modal .modal-body').append(message); });
-
+        });
 }
+
