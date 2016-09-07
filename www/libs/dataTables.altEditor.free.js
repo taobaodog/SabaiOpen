@@ -177,6 +177,7 @@
 
          $(document).on('click', '#saveButton', function(e){
             sendJsonData(that);
+            $("#cancelButton").prop('disabled', 'disabled');  
           });
          $(document).on('click', '#cancelButton', function(e){
             undoChanges(that);
