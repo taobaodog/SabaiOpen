@@ -1,7 +1,0 @@
-config /etc/sabai/openvpn/ovpn.current
-script-security 2 system
-daemon
-writepid "/etc/sabai/stat/ovpn.pid"
-log "/etc/sabai/stat/ovpn.log"
-up "/etc/sabai/vpn/ovpn.up"
-down "/etc/sabai/vpn/ovpn.dn"
