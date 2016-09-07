@@ -91,11 +91,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 	</div>
 </div>
-  <div class='controlBoxFooter'>
-    <input type='button' value='Save' onclick='UPNPcall()'>
-    <input type='Button' value='Cancel' onClick="window.location.reload()">
-    <span id='messages1'>&nbsp;</span>
-  </div>   
+<input type='button' value='Save' onclick='UPNPcall()'><span id='messages'>&nbsp;</span>
     <div id='hideme'>
         <div class='centercolumncontainer'>
             <div class='middlecontainer'>
