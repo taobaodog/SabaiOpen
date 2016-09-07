@@ -57,8 +57,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
           </tr>        
         </tbody>
       </table>
-      <input type='button' id="savebutton" name="savebutton" value='Save' onclick='DHCPcall("save")'>
-      <span id='messages'>&nbsp;</span>
+
+  <div class='controlBoxFooter'>
+    <button type='button' class='btn btn-default' id='saveButton' onclick='DHCPcall("save")' value='Save'>Save</button>
+    <button type='button' class='btn btn-default' id='cancelButton' value='Cancel' disabled='true'>Cancel</button>
+    <span id='messages'>&nbsp;</span>
+  </div>
+
       <div id='hideme'>
       <div class='centercolumncontainer'>
         <div class='middlecontainer'>
@@ -89,6 +94,14 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   var f = E('fe'); 
   var hidden = E('hideme'); 
   var hide = E('hiddentext');
+
+//Confirm reload/leaving page with unsaved changes.
+$(window).bind('beforeunload',function(){
+
+   if(!$('#cancelButton').is(':disabled')){
+   return "";
+    }
+});
 
 $(document).ready(function() {
 
@@ -142,7 +155,9 @@ readonly - for fields with readonly attribute.
     type: "text",
     pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
     errorMsg: "*Invalid address - Enter valid ip",
-    hoverMsg: "Ex: 82.84.86.88"
+    hoverMsg: "Ex: 82.84.86.88",
+    unique: true
+
   }, {
     id: "mac",
     title: "Mac",
@@ -155,7 +170,8 @@ readonly - for fields with readonly attribute.
     type: "text",
     pattern: "^[a-zA-Z0-9_-]+$",
     errorMsg: "*Invalid name - Allowed: A-z0-9 _ -",
-    hoverMsg: "Ex: UserPhone-22_Android"
+    hoverMsg: "Ex: Android_UserPhone-22",
+    unique: true
   }, {
     id: "time",
     title: "Time",
