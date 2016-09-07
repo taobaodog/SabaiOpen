@@ -128,14 +128,6 @@ ul#superMenu, ul.subMenu {
  margin: .4em 0 .4em .25em;
 }
 
-.controlBoxFooter {
- display: inline-block;
- font-size: 1em;
- text-indent: .3em;
- padding: .3em;
- padding-top: 0;
-}
-
 .controlBoxContent {
  overflow-x: auto;
  padding: 1em;
@@ -674,7 +666,7 @@ color: blue;
 
 #timezone-picker {
   text-align: center;
-  margin: 10px;
+  margin: 10px -240px;
 }
 
 #timezone-picker div,
