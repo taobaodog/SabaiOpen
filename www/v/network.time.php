@@ -98,11 +98,7 @@ Sync time and zone with computer time/zone
     </table>
     </div>
     </div>
-    <div class='controlBoxFooter'>
-    <button type='button' class='btn btn-default' id='saveButton' onclick='TIMEcall()' value='Save'>Save</button>
-    <button type='button' class='btn btn-default' id='cancelButton' value='Cancel' disabled='true'>Cancel</button>
-    <span id='messages'>&nbsp;</span>
-
+<input type='button' value='Save' onclick='TIMEcall()'><span id='messages'>&nbsp;</span>
 <p>
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
@@ -213,14 +209,6 @@ function TIMEresp(res){
     $('#demo').append( event.type +'\n' ); 
   }
 
-  //Confirm reload/leaving page with unsaved changes.
-  $(window).bind('beforeunload',function(){
-
-   if(!$('#cancelButton').is(':disabled')){
-   return "";
-    }
-});
-
 $(document).ready(function() {
 
 //////////////////////////////////////////
@@ -250,8 +238,7 @@ var columnDefs = [{
     type: "text",
     pattern: "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$",
     errorMsg: "*Invalid input - Allowed: A-z0-9 and .",
-    hoverMsg: "Ex: 1.YourServerName.org",
-    unique: true
+    hoverMsg: "Ex: 1.YourServerName.org"
   }];
 
 //Making errors show in console rather than alerts
