@@ -67,13 +67,48 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     </div>
     </div>
 </div>
-<input type='button' value='Save' onclick='FIREcall()'><span id='messages'>&nbsp;</span>
+  <div class='controlBoxFooter'>
+    <input type='button' class='btn btn-default' id='saveButton' value='Save' onclick='FIREcall()'>
+    <input type='button' class='btn btn-default' id='cancelButton' value='Cancel' onClick="window.location.reload()" disabled>
+    <span id='messages'>&nbsp;</span>
+  </div>
 <p>
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
 
 <script>
+
+//Detecting different changes on page
+//and displaying an alert if leaving/reloading 
+//the page or pressing 'Cancel'.
+var somethingChanged = false;
+
+//Click on slide button
+$(document).on('click', '.slideToggleButton', function (e) {
+    somethingChanged = true; 
+    $("#cancelButton").removeAttr('disabled');
+});
+
+//Click on slide background
+$(document).on('click', '.slideToggleContent', function (e) {
+    somethingChanged = true; 
+    $("#cancelButton").removeAttr('disabled');
+});
+
+//Resetting cancelButton to disabled-state when saving changes
+$(document).on('click', '#saveButton', function (e) {
+    $("#cancelButton").prop('disabled', 'disabled');  
+    somethingChanged = false; 
+});
+
+//If any changes is detected then display alert
+$(window).bind('beforeunload',function(){
+   if(somethingChanged){
+   return "";
+    }
+});
+
 var hidden, hide;
 var f = E('fe'); 
 var hidden = E('hideme'); 

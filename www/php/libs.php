@@ -36,7 +36,8 @@ foreach(array(
 	"current/jquery.validate.js",
 	"main.js",
 	"jai-widgets.js",
-	"migrate.js"
+	"migrate.js",
+	"bootstrap.min.js"
 ) as $libFile){
 	// dumpJavaScript("/libs/". $libFile,file_exists("libs/".$libFile));
 	insertJavascriptTag("/libs/". $libFile,file_exists($_SERVER['DOCUMENT_ROOT'] ."/libs/". $libFile));
