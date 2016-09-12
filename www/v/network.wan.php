@@ -51,8 +51,8 @@ DDNS: { ip, interval, services }
 </div>
 
   <div class='controlBoxFooter'>
-    <input type='button' value='Save' onclick='WANcall("save")'>
-    <input type='Button' value='Cancel' onClick="window.location.reload()">
+    <input type='button' class='btn btn-default' id='saveButton' value='Save' onclick='WANcall("save")'>
+    <input type='button' class='btn btn-default' id='cancelButton' value='Cancel' onClick="window.location.reload()" disabled>
     <span id='messages'>&nbsp;</span>
   </div>
     <div id='hideme'>
@@ -71,6 +71,49 @@ DDNS: { ip, interval, services }
 <script>
 
 
+//Detecting different changes on page
+//and displaying an alert if leaving/reloading 
+//the page or pressing 'Cancel'.
+var somethingChanged = false;
+
+//Any manual change to inputs
+$(document).on('change', 'input', function (e) {
+    somethingChanged = true; 
+    $("#cancelButton").removeAttr('disabled');
+});
+
+//Using keyboard up- or downarrow
+$(document).on('keyup', 'input', function (e) {
+  if(e.keyCode == 38 || e.keyCode == 40){
+    somethingChanged = true; 
+    $("#cancelButton").removeAttr('disabled');
+    }
+});
+
+//Click on spinner arrows
+$(document).on('click', '.ui-spinner-button', function (e) {
+    somethingChanged = true; 
+    $("#cancelButton").removeAttr('disabled');
+});
+
+//Click on delete 'x' button
+$(document).on('click', '.dns-delete', function (e) {
+    somethingChanged = true; 
+    $("#cancelButton").removeAttr('disabled');
+});
+
+//Resetting cancelButton to disabled-state when saving changes
+$(document).on('click', '#saveButton', function (e) {
+    $("#cancelButton").prop('disabled', 'disabled');  
+    somethingChanged = false; 
+});
+
+//If any changes is detected then display alert
+$(window).bind('beforeunload',function(){
+   if(somethingChanged){
+   return "";
+    }
+});
 
 var validator;
 $(function() {
