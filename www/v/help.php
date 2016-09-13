@@ -184,7 +184,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
 
 
-<script type='text/ecmascript' src='/libs/jeditable.js'></script>
+<!-- <script type='text/ecmascript' src='/libs/jeditable.js'></script>
 <script type='text/ecmascript'>
 
 // $(function() {
@@ -197,4 +197,4 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 //   $('#accordion').show();
 //  })
 
-</script>
+</script> -->

@@ -1,1 +1,0 @@
-current/jquery.dataTables.1.10.2.js
