@@ -8,7 +8,27 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 Sync time and zone with computer time/zone
 -->  
 
-
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/css/main.css">
+  <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
+  <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
+  <script type='text/ecmascript' src='/libs/globalize.js'></script>
+  <script type="text/javascript" src="libs/jstimezonedetect/jstz.main.js"></script>
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
+</head>
+<body>
 <form id="fe">
 <div class='pageTitle'>Network: Time</div>
 <div class='controlBox'>
@@ -99,7 +119,7 @@ Sync time and zone with computer time/zone
     </div>
     </div>
     <div class='controlBoxFooter'>
-    <button type='button' class='btn btn-default btn-sm' id='saveButton' onclick='TIMEcall()' value='Save'>Save</button>
+    <button type='button' class='btn btn-default btn-sm' id='saveButton' value='Save'>Save</button>
     <button type='button' class='btn btn-default btn-sm' id='cancelButton' value='Cancel' disabled='true'>Cancel</button>
     <span id='messages'>&nbsp;</span>
 
@@ -107,7 +127,8 @@ Sync time and zone with computer time/zone
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
-
+</body>
+</html>
 <script>
 var hidden, hide, pForm = {};
 var hidden = E('hideme');
@@ -178,18 +199,16 @@ function geoLocationSuccess(position){
     alert('lat: ' + position.coords.latitude + ', lon: ' + position.coords.longitude);
 }
 
-function TIMEcall(){ 
-//  hideUi("Adjusting Time settings...");
-// Pass the form values to the php file 
-  $.post('php/time.php', $("#fe").serialize(), function(res){
-// Detect if values have been passed back   
-    if(res!=""){
-      TIMEresp(res);
-    };
-//      showUi();
-});
-} 
 
+$("#saveButton").on("click", function() {
+  setTimeout(function(){
+    $.post('php/time.php', $("#fe").serialize(), function(res){
+      if(res!=""){
+        TIMEresp(res);
+      };
+    });
+  },7000);
+})
 
 function TIMEresp(res){ 
   eval(res); 
@@ -286,17 +305,4 @@ $('#NTPTable').dataTable({
         });
 });  
 </script>
-
-
-  <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
-  <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
-  <script type='text/ecmascript' src='/libs/globalize.js'></script>
-  <script type="text/javascript" src="libs/jstimezonedetect/jstz.main.js"></script>
-  <script src="libs/bootstrap.min.js"></script>
-  <script src="libs/jquery.dataTables.min.js"></script>
-  <script src="libs/dataTables.bootstrap.min.js"></script>
-  <script src="libs/dataTables.altEditor.free.js"></script>
-  <script src="libs/dataTables.buttons.min.js"></script>
-  <script src="libs/buttons.bootstrap.min.js"></script>
-  <script src="libs/dataTables.select.min.js"></script>
 

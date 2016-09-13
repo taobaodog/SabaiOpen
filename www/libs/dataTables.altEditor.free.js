@@ -808,19 +808,20 @@ var sendJsonData = function(tableObj){
 
         //Adding data from each row to JSON array
         for( var i = 0; i < dt.context[0].aoData.length; i++ ){
-         jsonDataArray[i] = dt.row(i).data();
+         comepleteJsonData.aaData.push(dt.row(i).data());
         }
         //Adding the JSON array to the comlete JSON template
-        comepleteJsonData.aaData.push(jsonDataArray);
+        
 
         //JSON call to server
         var jqxhr =
         $.ajax({
-          url: "php/" + dt.context[0].sTableId + ".php",
+          url: "php/saveTable.php",
           type : "POST",
           cache: false,
           data: {
-            raw: comepleteJsonData
+            table: dt.context[0].sTableId,
+            row: comepleteJsonData
           }
         })
         .done (function(data) { 
