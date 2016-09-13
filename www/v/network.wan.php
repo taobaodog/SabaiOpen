@@ -51,8 +51,8 @@ DDNS: { ip, interval, services }
 </div>
 
   <div class='controlBoxFooter'>
-    <input type='button' class='btn btn-default' id='saveButton' value='Save' onclick='WANcall("save")'>
-    <input type='button' class='btn btn-default' id='cancelButton' value='Cancel' onClick="window.location.reload()" disabled>
+    <button type='button' class='btn btn-default btn-sm' id='saveButton' value='Save' onclick='WANcall("save")'>Save</button>
+    <button type='button' class='btn btn-default btn-sm' id='cancelButton' value='Cancel' onClick="window.location.reload()" disabled>Cancel</button>
     <span id='messages'>&nbsp;</span>
   </div>
     <div id='hideme'>

@@ -92,8 +92,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	</div>
 </div>
   <div class='controlBoxFooter'>
-    <input type='button' class='btn btn-default' id='saveButton' value='Save' onclick='UPNPcall()'>
-    <input type='button' class='btn btn-default' id='cancelButton' value='Cancel' onClick="window.location.reload()" disabled>
+    <button type='button' class='btn btn-default btn-sm' id='saveButton' value='Save' onclick='UPNPcall()'>Save</button>
+    <button type='button' class='btn btn-default btn-sm' id='cancelButton' value='Cancel' onClick="window.location.reload()" disabled>Cancel</button>
     <span id='messages'>&nbsp;</span>
   </div>
     <div id='hideme'>

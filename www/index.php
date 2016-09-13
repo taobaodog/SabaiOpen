@@ -14,6 +14,11 @@ if (!isset($_SESSION['login'])){
 <link rel="stylesheet" type="text/css" href="libs/jqueryui.css">
 <link rel="stylesheet" type="text/css" href="libs/jai-widgets.css">
 <link rel="stylesheet" type="text/css" href="libs/css/main.css">
+<link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="libs/css/select.dataTables.min.css">
+<link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="libs/css/bootstrap.min.css">
+<link rel="stylesheet" href="libs/css/main.css">
 
 <?php include("php/libs.php"); ?>
 <script>

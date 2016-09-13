@@ -9,11 +9,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     copyright 2016 Sabai Technology -->
 <meta charset="utf-8"><html>
 <head>
-  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/main.css">
   <script src="libs/bootstrap.min.js"></script>
   <script src="libs/jquery.dataTables.min.js"></script>
   <script src="libs/dataTables.bootstrap.min.js"></script>
@@ -59,8 +54,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       </table>
 
   <div class='controlBoxFooter'>
-    <button type='button' class='btn btn-default' id='saveButton' onclick='DHCPcall("save")' value='Save'>Save</button>
-    <button type='button' class='btn btn-default' id='cancelButton' value='Cancel' disabled='true'>Cancel</button>
+    <button type='button' class='btn btn-default btn-sm' id='saveButton' onclick='DHCPcall("save")' value='Save'>Save</button>
+    <button type='button' class='btn btn-default btn-sm' id='cancelButton' value='Cancel' disabled='true'>Cancel</button>
     <span id='messages'>&nbsp;</span>
   </div>
 
