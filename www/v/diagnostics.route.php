@@ -20,7 +20,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <!-- COPIED FROM NETWORK: STATIC IP's, partially modified
 NEEDS LOTS OF WORK -->
-
+<script src="libs/jquery.dataTables.min.js"></script>
 <script type='text/ecmascript'>
 
 function route(){
