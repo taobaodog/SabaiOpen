@@ -368,8 +368,3 @@ $('#portTable').dataTable({
   <script src="libs/dataTables.buttons.min.js"></script>
   <script src="libs/buttons.bootstrap.min.js"></script>
   <script src="libs/dataTables.select.min.js"></script>
-  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/main.css">
