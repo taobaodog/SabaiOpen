@@ -317,7 +317,7 @@
 
           data += "<form name='altEditor-form' role='form'>";
 
-          for(var j = 0; j < columnDefs.length; j++){
+          for(var j = 0, columns = columnDefs.length; j < columns; j++){
             data += "<div class='form-group'>"
             data += "<div class='col-sm-5 col-md-5 col-lg-5 text-right' style='padding-top:4px;'>"
             data += "<label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div>"
@@ -383,7 +383,7 @@
         });
 
         //Getting the IDs and Values of the tablerow
-        for( var i = 0; i < dt.context[0].aoColumns.length; i++ )
+        for( var i = 0, allIDs = dt.context[0].aoColumns.length; i < allIDs; i++ )
         {
           columnIds.push({ id: dt.context[0].aoColumns[i].id,
                            dataSet: adata.data()[0][dt.context[0].aoColumns[i].data]
@@ -400,7 +400,7 @@
         });    
 
         //Adding the inputs from the edit-modal
-        for(var i = 0; i < dataSet.length; i++){
+        for(var i = 0, allInputs = dataSet.length; i < allInputs; i++){
           rowDataArray[columnIds[i+1].id] = dataSet[i];
         }
 
@@ -434,7 +434,7 @@
          var columnDefs = [];
 
          //Adding attribute IDs and values to object
-         for( var i = 1; i < dt.context[0].aoColumns.length; i++ )
+         for( var i = 1, columns = dt.context[0].aoColumns.length; i < columns; i++ )
          {
           columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
             name: dt.context[0].aoColumns[i].data
@@ -448,7 +448,7 @@
         var data = "";
 
         data += "<form name='altEditor-form' role='form'>";
-        for(var j = 0; j < columnDefs.length; j++){
+        for(var j = 0, columns = columnDefs.length; j < columns; j++){
           data += "<div class='form-group'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + " :  </label><input  type='hidden'  id='" + columnDefs[j].title + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' style='overflow:hidden'  class='form-control' value='" + adata.data()[0][columnDefs[j].name] + "' >" + adata.data()[0][columnDefs[j].name] + "</input></div>";
         }
         data += "</form>";
@@ -496,7 +496,7 @@
          var columnDefs = [];
 
          //Adding column attributes to object.
-         for( var i = 1; i < dt.context[0].aoColumns.length; i++ )
+         for( var i = 1, tableLength = dt.context[0].aoColumns.length; i < tableLength; i++ )
          {
           columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
             name: dt.context[0].aoColumns[i].data,
@@ -513,7 +513,7 @@
         //Building add-form
         var data = "";
         data += "<form name='altEditor-form' role='form'>";
-        for(var j = 0; j < columnDefs.length; j++){
+        for(var j = 0, columns = columnDefs.length; j < columns; j++){
          data += "<div class='form-group'><div class='col-sm-5 col-md-5 col-lg-5 text-right' style='padding-top:4px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-6 col-md-6 col-lg-6'>";
 
          //Adding text-inputs and errorlabels
@@ -567,7 +567,7 @@
 
 
         //Getting the IDs of the tablerow
-        for( var i = 0; i < dt.context[0].aoColumns.length; i++ ){
+        for( var i = 0, allIDs = dt.context[0].aoColumns.length; i < allIDs; i++ ){
           columnIds.push({ id: dt.context[0].aoColumns[i].id });    
         }
 
@@ -580,12 +580,15 @@
         });    
 
         //Adding the inputs from the modal to JsonArray
-        for(var i = 0; i < inputDataSet.length; i++){
+        for(var i = 0, allInputs = inputDataSet.length; i < allInputs; i++){
           rowDataArray[columnIds[i+1].id] = inputDataSet[i];
         }
 
         //Adding the new row to the datatable
         dt.row.add(rowDataArray).draw(false);
+
+        //Disabling the modal-add-confirm button
+        $("#addRowBtn").prop('disabled', true); 
 
         //Success message for modal
          $('#altEditor-modal .modal-body .alert').remove();
@@ -799,7 +802,6 @@ var sendJsonData = function(tableObj){
   var dt = tableObj.s.dt;
 
        //Building JSON template
-       var jsonDataArray = {};
        var comepleteJsonData = {};
        comepleteJsonData.aaData = [];
 
@@ -807,10 +809,10 @@ var sendJsonData = function(tableObj){
        var response = document.getElementById("messages");
 
         //Adding data from each row to JSON array
-        for( var i = 0; i < dt.context[0].aoData.length; i++ ){
+        for( var i = 0, all = dt.context[0].aoData.length; i < all; i++ ){
          comepleteJsonData.aaData.push(dt.row(i).data());
         }
-        //Adding the JSON array to the comlete JSON template
+
         
 
         //JSON call to server

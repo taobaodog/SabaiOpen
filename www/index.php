@@ -17,8 +17,8 @@ if (!isset($_SESSION['login'])){
 <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
 <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
 <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
-<link rel="stylesheet" href="libs/css/bootstrap.min.css">
 <link rel="stylesheet" href="libs/css/main.css">
+<link rel="stylesheet" href="libs/css/bootstrap.min.css">
 
 <?php include("php/libs.php"); ?>
 <script>
