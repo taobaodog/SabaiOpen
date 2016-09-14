@@ -479,8 +479,8 @@
 
        $('#altEditor-modal .modal-body').append(message);
 
-       dt.row({ selected:true }).remove();
-       dt.draw();
+       dt.row({ selected:true }).remove().draw(false);
+    
  },
 
 
