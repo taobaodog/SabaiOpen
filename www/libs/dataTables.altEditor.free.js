@@ -295,7 +295,7 @@
     //Adding column attributes to object.
     //Assuming that the first defined column is ID - Therefore skipping that
     //and starting at index 1, because we dont wanna be able to change the ID.
-   for( var i = 1, columns = dt.context[0].aoColumns.length; i < columns; i++ )
+   for( var i = 1, tableLength = dt.context[0].aoColumns.length; i < tableLength; i++ )
    {
     columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
       name: dt.context[0].aoColumns[i].data,
@@ -434,7 +434,7 @@
          var columnDefs = [];
 
          //Adding attribute IDs and values to object
-         for( var i = 1, columns = dt.context[0].aoColumns.length; i < columns; i++ )
+         for( var i = 1, tableLength = dt.context[0].aoColumns.length; i < tableLength; i++ )
          {
           columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
             name: dt.context[0].aoColumns[i].data
