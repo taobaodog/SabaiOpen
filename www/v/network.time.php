@@ -11,11 +11,6 @@ Sync time and zone with computer time/zone
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="libs/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/select.dataTables.min.css">
-  <link rel="stylesheet" href="libs/css/dataTables.bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/css/main.css">
   <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
   <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
   <script type='text/ecmascript' src='/libs/globalize.js'></script>
