@@ -6,7 +6,7 @@
  * @description Lightweight editor for DataTables
  * @version     1.0
  * @file        dataTables.editor.lite.js
- * @author      kingkode (www.kingkode.com)
+ * @authors      kingkode (www.kingkode.com) & KasperOlesen
  * @contact     www.kingkode.com/contact
  * @copyright   Copyright 2016 Kingkode
  *
@@ -295,7 +295,7 @@
     //Adding column attributes to object.
     //Assuming that the first defined column is ID - Therefore skipping that
     //and starting at index 1, because we dont wanna be able to change the ID.
-   for( var i = 1; i < dt.context[0].aoColumns.length; i++ )
+   for( var i = 1, columns = dt.context[0].aoColumns.length; i < columns; i++ )
    {
     columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
       name: dt.context[0].aoColumns[i].data,
