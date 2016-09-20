@@ -16,7 +16,9 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	</div>
 	<div class='controlBoxContent' id='tor_wl_config'>
 	</div>
-	<div class='controlBoxContent'><input type='button' value='Save' onclick='TORcall("#fe")'><span id='messages'>&nbsp;</span></div>
+	<div class='controlBoxContent'>
+		<button class='btn btn-default btn-sm' type='button' value='Save' onclick='TORcall("#fe")'>Save</button><span id='messages'>&nbsp;</span>
+	</div>
     <div id='hideme'>
         <div class='centercolumncontainer'>
             <div class='middlecontainer'>
@@ -25,17 +27,17 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             </div>
         </div>
     </div>
-<table>
-	<td><div id='torWarn'>Using Tor protects you against a common form of Internet surveillance known as "traffic analysis." Traffic analysis can be used to infer who is talking to whom over a public network. Knowing the source and destination of your Internet traffic allows others to track your behavior and interests.  This TOR client is provided to give network access to TOR for devices which may not have the ability to run TOR locally.  The TOR organization recommends that due to the various methods of tracking traffic, the best way to remain fully anonymous on a computer is through use of the TOR Browser.</div></br><br><br>
+    <div class='controlBoxContent'>
+
+
 	<div id='torUse'>Turn on TOR by choosing "Tunnel" and push "Save". It is possible to access TOR feature on proxy port 8080 or by setting accelerator as a gateway on the router.</div>
-	</td>
+
+ 	</div>
+</form>
 </div>
-</table>
     <p>
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
  	</p>
-</form>
-
 
 <script type='text/javascript'>
 var hidden, hide, pForm = {};

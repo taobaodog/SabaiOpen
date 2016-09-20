@@ -215,12 +215,16 @@ $(document).ready(function(){
 <form id='new_file' method="post" enctype="multipart/form-data">
 	<input id='act' type='hidden' name='act' value='newfile'>
 		<span id='ovpn_file'></span>
-		<p>
+		<br>
 			<span id='upload'>
-				<input id='browse' type='file' name='browse'>
-				<input id='submit' type='button' value='Upload'>
+				<p>
+				<ul class="list-inline">
+				<li><input id='browse' type='file' name='browse'></li>
+				<li><button id='submit' class='btn btn-default btn-sm' type='button' value='Upload'>Upload</button></li>
+				</ul>
+				</p>
 			</span>
-		</p>
+		
 		<p>
 			<span id='messages'>&nbsp;</span>
 		</p>
@@ -235,11 +239,11 @@ $(document).ready(function(){
 <form id='fe'>
 							<span id='ovpn_controls'>
 							<input type='hidden' id='_act' name='act' value=''>
-							<input type='button' value='Start' onclick='OVPNsave("start");'>
-							<input type='button' value='Stop' onclick='OVPNsave("stop");'>
-							<input id='clear' type='button' value='Clear' onclick='OVPNsave("clear");'></span>
-							<input type='button' value='Show Log' id='logButton' onclick='toggleLog();'>
-							<input type='button' value='Edit Config' id='editButton' onclick='toggleEdit();'>
+							<button class='btn btn-default btn-sm' type='button' value='Start' onclick='OVPNsave("start");'>Start</button>
+							<button class='btn btn-default btn-sm' type='button' value='Stop' onclick='OVPNsave("stop");'>Stop</button>
+							<button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='OVPNsave("clear");'>Clear</button></span>
+							<button class='btn btn-default btn-sm' type='button' value='Show Log' id='logButton' onclick='toggleLog();'>Show Log</button>
+							<button class='btn btn-default btn-sm' type='button' value='Edit Config' id='editButton' onclick='toggleEdit();'>Edit Config</button>
 						</div>
 							
 						<textarea id='response' class='hiddenChildMenu'></textarea>

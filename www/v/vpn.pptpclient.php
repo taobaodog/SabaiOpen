@@ -42,13 +42,18 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                             <div class='radioSwitchElement' id='mppe_conf'></div>   
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                        <button class='btn btn-default btn-sm' id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>Start</button>
+                        <button class='btn btn-default btn-sm' id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>Stop</button>
+                        <button class='btn btn-default btn-sm' id='save' type='button' value='Save' onclick='PPTPcall("save")'>Save</button>
+                        <button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>Clear</button>
+                         <span id='messages'>&nbsp;</span>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-            <input id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>
-            <input id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>
-            <input id='save' type='button' value='Save' onclick='PPTPcall("save")'>
-            <input id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>
-            <span id='messages'>&nbsp;</span>
+
     </div>
 </div>
 </form>
