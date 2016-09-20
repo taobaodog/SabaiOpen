@@ -87,13 +87,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   </div>
 </div>
 <div class='controlBox'>
-  <span class='controlBoxTitle'><a href='#' name='portforwarding'></a>Port Forwarding</span>
-  <div class='controlBoxContent'>
-    Proto, Ports
-    <span class='smallText'><br><br><b>Port Forwarding</b> is a feature for network administration.</span>
-  </div>
-</div>
-<div class='controlBox'>
   <span class='controlBoxTitle'><a href='#' name='settings'></a>Settings</span>
   <div class='controlBoxContent'>
     Router Name, Proxy, Power, Password
