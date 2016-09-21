@@ -134,11 +134,12 @@ function PPTPresp(res){
 }
 
 function PPTPcall(act){ 
-	hideUi("Adjusting PPTP settings..."); 
-	E("act").value=act;
-	// Pass the form values to the php file
-	if (act=='start') {
-		if (info.vpn.type == 'OpenVPN') {
+ if($("#mppe_stateless").hasClass("buttonSelected") || $("#mppe_nomppe").hasClass("buttonSelected")){
+	   hideUi("Adjusting PPTP settings..."); 
+	   E("act").value=act;
+	   // Pass the form values to the php file
+	   if (act=='start') {
+		  if (info.vpn.type == 'OpenVPN') {
 			hideUi("OpenVPN will be stopped.");
 			$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
 				if(res!=""){
@@ -156,21 +157,20 @@ function PPTPcall(act){
 					PPTPstart();
 				}
 			}); */
-		} else {
+		  } else {
 			PPTPstart();
-		}
-	} else {
-		$.post('php/pptp.php', $("#fe").serialize(), function(res){
+		  }
+	   } else {
+		  $.post('php/pptp.php', $("#fe").serialize(), function(res){
 			if(res!=""){
 				PPTPresp(res);
 			}
 			showUi();
-		});
-		if(act =='clear'){
-			setTimeout("window.location.reload()",5000);
-		}
-	}
- 
+		  });
+    	}
+ }else{
+        alert('Please choose a MPPE-128 setting before starting')
+ }
 // Important stops the page refreshing
 return false;
 
