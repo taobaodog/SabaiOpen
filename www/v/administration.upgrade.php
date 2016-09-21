@@ -11,7 +11,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Server Update</span>
  	<div class='controlBoxContent'>
     	<div>Current Version: <span id='cversion'></span></div><br>
-    	<input id='check_version' type='button' name='check_version' value='Check Update'/>
+    	<button class='btn btn-default btn-sm' id='check_version' type='button' name='check_version'>Check Update</button>
     	<div id='hideme'>
             	<div class='centercolumncontainer'>
                 	<div class='middlecontainer'>
@@ -24,13 +24,17 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </div>
 <div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Manual Update</span>
 	<div class='controlBoxContent'>
-    	<span class='uploadButton'><font style="font-size:14px"> Browse for Update</font></span>
+
+
+    	<span class='uploadButton btn btn-default btn-sm'> Browse for Update</font></span>
+
     	<input id='browse' name='_browse' type='file' hidden='true' onchange="fileInput(this, 'tar');"/><t>
     	<input id='fileName' name='_fileName' type='text'>
-    	<input id='download' type='button' name='submit' value='Download'/><br><br>
-    	<input type='button' id='upgrade' value='Run Update' onclick="Upgrade('upgrading');"/>
-    	<input type='button' id='revert' name='Revert' value='Revert Update'/>
-    	<input type='button' id='reset' name='Reset' value='Factory Reset'/><br>
+
+    	<button class='btn btn-default btn-sm' id='download' name='submit'>Download</button><br><br>
+    	<button class='btn btn-default btn-sm' id='upgrade' onclick="Upgrade('upgrading');">Run Update</button>
+    	<button class='btn btn-default btn-sm' id='revert' name='Revert'>Revert Update</button>
+    	<button class='btn btn-default btn-sm' id='reset' name='Reset'>Factory Reset</button><br>
         	<div id='hideme'>
             	<div class='centercolumncontainer'>
                 	<div class='middlecontainer'>
@@ -45,12 +49,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   <div class='controlBoxContent'>
     <div>Available user configurations: <span id='config'></span></div><br>
     <div class='radioSwitchElement' id='configList'></div><br>
-    <input id='restore' name='Restore' type='button' hidden='true' value='Restore'/>
-    <input id='backUp' name='backUp_config' type='button' value='Backup'/>
-    <span id='aMsg' style="color:blue" ></span><br>
-    <input id='saveConf' name='SaveConf' type='button' value='Download config'/>
-    <input id='loadConf' name='LoadConf' type='button' value='Upload config'/>
-    <input id='remove' name='Remove' type='button' value='Remove config' hidden='true'/>
+    <button class='btn btn-default btn-sm' id='restore' name='Restore' type='button' value='Restore'>Restore</button>
+    <button class='btn btn-default btn-sm' id='backUp' name='backUp_config' type='button' value='Backup'>Backup</button>
+    <span id='aMsg' style="color:blue" ></span><br><br>
+    <button class='btn btn-default btn-sm' id='saveConf' name='SaveConf'>Download config</button>
+    <button class='btn btn-default btn-sm' id='loadConf' name='LoadConf'>Upload config</button>
+    <button class='btn btn-default btn-sm' id='remove' name='Remove'>Remove config</button>
     <input id='browse1' name='_browse1' type='file' hidden='true' onchange="fileInput(this, 'conf')"/><br>
     <input id='fileName1' name='_fileName1' type='text' hidden='true'/>
   </div>
@@ -62,6 +66,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </form>
 
 <script type='text/javascript'>
+
+$('#browse').hide();
+$('#browse1').hide();	
+$('#restore').hide();
+$('#remove').hide();
+
 
 var hidden, hide, pForm = {};
 var hidden = E('hideme');
@@ -171,9 +181,10 @@ $('.uploadButton').bind("click" , function () {
 });
 // View the file`s name
 function fileInput(obj, type) {
+		var path = obj.value;
         var browseName = obj.value.split('.').pop().toLowerCase();           
         if ($.inArray(browseName, [type]) != -1) {
-                E('fileName').value = obj.value;               
+                E('fileName').value = path.replace(/^.*\\/, "");              
         } else {                                                                                    
                 E('fileName').value = 'Please select an image file.';                       
         }
@@ -442,14 +453,14 @@ var selectOption = $("#configs").find(":selected").text();
 $('#configs').change(function() {
 	selectOption = $(this).find(":selected").text();
 	if (selectOption.trim() == 'sabai') {
-		E('backUp').hidden = false;
-		E('restore').hidden = true;
-		E('remove').hidden = true;
+		$('#backUp').show();
+		$('#restore').hide();
+		$('#remove').hide();
 		E('aMsg').innerHTML = ' * Sabai - is the currently running configuration.';
 	} else {
-		E('restore').hidden = false;
-		E('backUp').hidden = true;
-		E('remove').hidden = false;
+		$('#restore').show();
+		$('#backUp').hide();
+		$('#remove').show();
 		E('aMsg').innerHTML = ' * This is a previous user backup of Sabai configuration.';
 	}
 });
