@@ -6,14 +6,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 ?>
 <style type='text/css'>
 
-.shortInput { width: 2.5em; }
-.longInput { width: 50%; }
-#act { margin-top: 5px; }
+/*.shortInput { width: 2.5em; }
+.longInput { width: 50%; }*/
 
-#logContents { width: 99%; height: 40em; }
+#logContents { width: 100%; height: 40em; }
 
 
-#listContainer {
+/*#listContainer {
  position: relative;
  display: inline-block;
  border: 1px solid transparent;
@@ -24,31 +23,31 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 #currentLog {
  display: inline-block;
  padding: .1em .5em;
-/* cursor: pointer;*/
+/* cursor: pointer;
 }
+*/
+/*#currentLog, .dirlist > li, .dir { cursor: pointer; }*/
 
-#currentLog, .dirlist > li, .dir { cursor: pointer; }
-
-#listRoot {
+/*#listRoot {
  width: 100%;
  display: none;
  background: white;
  border: 1px solid black;
  float: left;
-/* margin: 0 0 0 -1px;*/
+ margin: 0 0 0 -1px;
  margin: 0;
-/* cursor: pointer;*/
+ cursor: pointer;
  text-indent: 0;
  padding: .1em 0;
  list-style-type: none;
  z-index: 2;
  position: absolute;
-}
-.dirlist > li { padding: 0 .5em; }
+}*/
+/*.dirlist > li { padding: 0 .5em; }
 .dirlist > li:hover { background-color: yellow; }
 .dirlist > li.sublist:hover { background-color: silver; }
-
-.dir {
+*/
+/*.dir {
 	display: inline-block;
 	width: 100%;
 }
@@ -67,20 +66,20 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 .closed:before { content: "+ "; }
 .open:before { content: "- "; }
 
-#goButton { float: right; }
+#goButton { float: right; }*/
 
 </style>
-<form id='fe'>
+
 <div class='pageTitle'>Diagnostics: Logs</div>
 
 <div class='controlBox'>
 	<span class='controlBoxTitle'>Logs</span>
 	<div class='controlBoxContent'>
-		<input id="log" name="log" type="hidden">
+		<!-- <input id="log" name="log" type="hidden"> -->
 
-<?php include("php/logs.php"); ?>
+<?php// include("php/logs.php"); ?>
 
-<div id="listContainer">
+<!-- <div id="listContainer">
 
 <span id="currentLog" onclick='showLogSelect();'></span>
 
@@ -88,17 +87,39 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 </ul>
 
+</div> -->
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <form id='fe' class="form-inline" role="form">
+            <div class="form-group">
+              	<select id='log' class="form-control" name='log'>
+	 				<option value='messages' selected>System log</option>
+	 				<option value='privoxy'>Privoxy log</option>
+	 				<option value='kernel'>Kernel log</option>
+	 			</select>
+            </div>
+            <div class="form-group">
+              	<select id='act' name='act' class="form-control" onchange="toggleDetail();">
+	 				<option value='all'>View all</option>
+	 				<option value='head'>View first</option>
+	 				<option value='tail' selected>View last</option>
+	 				<option value='grep'>Search for</option>
+	 				<option value='download'>Download file</option>
+	 			</select>
+            </div>
+            <div class="form-group">
+              <input type="text" name='detail' id='detail' class='form-control'><span id='detailSuffix'></span>
+            </div>
+        </form>
+    </div>
 </div>
-	 	<select id='act' name='act' onchange="toggleDetail();">
-	 		<option value='all'>View all</option>
-	 		<option value='head'>View first</option>
-	 		<option value='tail' selected>View last</option>
-			<option value='dmesg'>View kernel log</option>
-	 		<option value='grep'>Search for</option>
-	 		<option value='download'>Download file</option>
-	 	</select>
-		<input type="text" name='detail' id='detail'><span id='detailSuffix'></span>
-		<input id='goButton' type="button" value="Go" onclick="goLog();">
+<br>
+	<div class='col-md-2 col-sm-2 col-lg-2 '>	
+		<button class='btn btn-default btn-sm pull-left' id='goButton' type="button" value="Go" onclick="goLog();">Show</button>
+	</div>
+<br>	
+
+
 		<div id='hideme'>
             		<div class='centercolumncontainer'>
                 		<div class='middlecontainer'>
@@ -107,7 +128,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                 		</div>
             		</div>
         	</div><br>
-</form>
+
 		<textarea id='logContents' readonly></textarea>
 	</div>
 </div>
@@ -121,8 +142,10 @@ var hidden, hide, pForm = {};
 var hidden = E('hideme');
 var hide = E('hiddentext');
 
-
 function goLog(n){
+
+console.log($("#fe").serialize());
+
 	if($("#act").val() == "download"){
 		hideUi("Downloading ...");
 		$.ajax("php/logs.php", {
@@ -149,27 +172,38 @@ function goLog(n){
 	}
 }
 
-function catchEnter(event){ if(event.keyCode==13) goLog(); }
+/*function catchEnter(event){ if(event.keyCode==13) goLog(); }*/
+
+
 function toggleDetail(){
 	$('#detailSuffix').html('');
 	switch($('#act').val()){
 		case 'all':
-		case 'dmesg':
 		case 'download':
 			$('#detail').hide();
 		break;
 		case 'head':
 		case 'tail':
-			$('#detail').show().removeClass('longInput').addClass('shortInput').val('25');
+			$('#detail').show().val('25');
 			$('#detailSuffix').html(' lines');
 		break;
 		case 'grep':
-			$('#detail').show().removeClass('shortInput').addClass('longInput').val('');
+			$('#detail').show().val('');
 			break;
 	}
 }
 
-function toggleContentList(event){
+//Preventing page-reload on "enter"-keypress
+  $(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+}); 
+
+/*function toggleContentList(event){
 	$(this).toggleClass("closed open")
 	$('#'+ $(this).attr('rel') ).slideToggle();
 }
@@ -179,22 +213,16 @@ function setLogValue(logName){
 	$('#currentLog').html(logName);
 }
 
-function getLogSelected(e){ var ep = $(e).parent(); var epi = $(ep).attr('id');
-	return ( ( $(ep).attr('id') == 'listRoot' ) ? '' : ( getLogSelected( $(ep).parent() ) + $( '#title-' + $(ep).attr('id') ).html() ) ) + ($(e).hasClass('sublist') ? '' : $(e).html());
-}
-
-function showLogSelect(){ $('#listRoot').slideDown('fast'); }
-
 function hideLogSelect(){
 	setLogValue( getLogSelected( this ) );
 	$('#listRoot').slideUp('fast');
-}
+}*/
 
 $(function(){
- $('#detail').on("keydown", catchEnter);
+/* $('#detail').on("keydown", catchEnter);
  $('.dir').on("click", toggleContentList);
  $('#listRoot li').not('.sublist').on("click", hideLogSelect);
- setLogValue('messages');
+ setLogValue('messages');*/
  toggleDetail();
 });
 
@@ -222,10 +250,9 @@ function ignoreError(){
 		$('#error').html('');
 		$('#linesDiv').removeClass('errorInput')
 }
-*/
-
 
 
 //Uncomment for spinner - functional but does not match drop down
 // $('#lines').spinner({ min: 0, max: 1000 }).spinner('value',25);
+*/
 </script>
