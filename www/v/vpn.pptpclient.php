@@ -42,18 +42,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                             <div class='radioSwitchElement' id='mppe_conf'></div>   
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                        <button class='btn btn-default btn-sm' id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>Start</button>
-                        <button class='btn btn-default btn-sm' id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>Stop</button>
-                        <button class='btn btn-default btn-sm' id='save' type='button' value='Save' onclick='PPTPcall("save")'>Save</button>
-                        <button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>Clear</button>
-                         <span id='messages'>&nbsp;</span>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
-
+    <button class='btn btn-default btn-sm' id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>Start</button>
+    <button class='btn btn-default btn-sm' id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>Stop</button>
+    <button class='btn btn-default btn-sm' id='save' type='button' value='Save' onclick='PPTPcall("save")'>Save</button>
+    <button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>Clear</button>
+    <span id='messages'>&nbsp;</span>
     </div>
 </div>
 </form>
@@ -139,11 +134,12 @@ function PPTPresp(res){
 }
 
 function PPTPcall(act){ 
-	hideUi("Adjusting PPTP settings..."); 
-	E("act").value=act;
-	// Pass the form values to the php file
-	if (act=='start') {
-		if (info.vpn.type == 'OpenVPN') {
+ if($("#mppe_stateless").hasClass("buttonSelected") || $("#mppe_nomppe").hasClass("buttonSelected")){
+	   hideUi("Adjusting PPTP settings..."); 
+	   E("act").value=act;
+	   // Pass the form values to the php file
+	   if (act=='start') {
+		  if (info.vpn.type == 'OpenVPN') {
 			hideUi("OpenVPN will be stopped.");
 			$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
 				if(res!=""){
@@ -161,21 +157,20 @@ function PPTPcall(act){
 					PPTPstart();
 				}
 			}); */
-		} else {
+		  } else {
 			PPTPstart();
-		}
-	} else {
-		$.post('php/pptp.php', $("#fe").serialize(), function(res){
+		  }
+	   } else {
+		  $.post('php/pptp.php', $("#fe").serialize(), function(res){
 			if(res!=""){
 				PPTPresp(res);
 			}
 			showUi();
-		});
-		if(act =='clear'){
-			setTimeout("window.location.reload()",5000);
-		}
-	}
- 
+		  });
+    	}
+ }else{
+        alert('Please choose a MPPE-128 setting before starting')
+ }
 // Important stops the page refreshing
 return false;
 
