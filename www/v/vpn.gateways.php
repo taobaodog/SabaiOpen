@@ -121,28 +121,6 @@ readonly - for fields with readonly attribute.
     type: "text",
     "visible": false,
     "searchable": false
-  },{
-    id: "static",
-    title: "Static",
-    data: "static",
-    type: "select",
-    "options": [
-    "on",
-    "off"
-    ]
-  }, {
-    id: "route",
-    title: "Route",
-    data: "route",
-    type: "select",
-    "options": [
-    "default",
-    "local",
-    "vpn_fallback",
-    "vpn_only",
-    "accellerator",
-    "tor"
-    ]
   }, {
     id: "ip",
     title: "IP address",
@@ -152,7 +130,6 @@ readonly - for fields with readonly attribute.
     errorMsg: "*Invalid address - Enter valid ip",
     hoverMsg: "Ex: 82.84.86.88",
     unique: true
-
   }, {
     id: "mac",
     title: "Mac",
@@ -165,11 +142,20 @@ readonly - for fields with readonly attribute.
     type: "text",
     pattern: "^[a-zA-Z0-9_-]+$",
     errorMsg: "*Invalid name - Allowed: A-z0-9 _ -",
-    hoverMsg: "Ex: Android_UserPhone-22",
+    hoverMsg: "Ex: UserPhone-22_Android",
     unique: true
   }, {
+    id: "static",
+    title: "Static",
+    data: "static",
+    type: "select",
+    "options": [
+    "on",
+    "off"
+    ]
+  }, {
     id: "time",
-    title: "Time",
+    title: "Expiration time",
     data: "time",
     type: "readonly"
   }, {
@@ -177,6 +163,19 @@ readonly - for fields with readonly attribute.
     title: "Status",
     data: "stat",
     type: "readonly"
+  }, {
+    id: "route",
+    title: "Routing option",
+    data: "route",
+    type: "select",
+    "options": [
+    "default",
+    "local",
+    "vpn_fallback",
+    "vpn_only",
+    "accellerator",
+    "tor"
+    ]
   }];
 
 //Making errors show in console rather than alerts
@@ -188,8 +187,8 @@ console.log( 'An error has been reported by DataTables: ', message );
 $.post('php/dhcp.php', {'act': 'get'})
    .done(function(res) {            
 //Creating table
-  $('#gateTable').dataTable( {
-    dom: "Bfrltip",
+ var table = $('#gateTable').DataTable( {
+    dom: "Bfrl<'#routeGlobal'>tip",
     ajax: "libs/data/dhcp.json",        
     columns: columnDefs,
     select: "single",
@@ -204,8 +203,69 @@ $.post('php/dhcp.php', {'act': 'get'})
             name: 'refresh'        
     }]
   });
-});
 
+
+   //Auto-refresh of the table
+  setInterval( function () {
+    if($('#cancelButton').is(':disabled')){
+    table.ajax.reload();
+    console.log("Datatable auto-reloaded")
+    }
+  }, 5000 );
+
+
+  (function createGlobalSettings(){
+    var divContainer = "";
+    var options = "";
+    var defaultSetting;
+
+    for (var i = 0; i < columnDefs[7].options.length; i++) {
+      options += "<option value='" + columnDefs[7].options[i] + "'>" + columnDefs[7].options[i] + "</option>";
+    }
+
+    divContainer += "<div class='row' style='border-top: 1px;border-top-style: dashed;padding-top: 5px'>"
+    divContainer += "<div class='col-sm-5 col-md-5 col-lg-5'>Default setting: "
+    divContainer += "<div id='defaultButtons' class='btn-group' data-toggle='buttons'>"
+    divContainer +=  "<label class='btn btn-default'><input type='radio' name='none' id='none' autocomplete='off'> None</label>"
+    divContainer +=  "<label class='btn btn-default'><input type='radio' name='local' id='local' autocomplete='off'>Local</label>"
+    divContainer +=  "<label class='btn btn-default'><input type='radio' name='vpn' id='vpn' autocomplete='off'>VPN</label>"
+
+    divContainer +=  "<label class='btn btn-default'><input type='radio' name='accell' id='acc' autocomplete='off'>Accellerator</label></div></div>"
+    divContainer += "<div class= 'col-sm-offset-4 col-sm-3 col-md-offset-4 col-md-3 col-lg-offset-4 col-lg-3'>Assign all to: "
+    divContainer += "<select id='changeSelect' class='form-control'>" + options + "</select></div>"
+    divContainer += "</div>"
+
+    $("#routeGlobal").append(divContainer);
+
+
+    table.on( 'xhr', function () {  
+      if(typeof defaultSetting === 'undefined'){
+        defaultSetting = table.ajax.json().defaultSetting;
+      }else if(defaultSetting != table.ajax.json().defaultSetting){
+        $("#"+defaultSetting).parent().removeClass('active');  
+        defaultSetting = table.ajax.json().defaultSetting;
+      }
+      $("#"+defaultSetting).parent().addClass('active');
+    });
+
+    
+  })();
+
+    //Dropdown for changing 'Routing option' in all rows         
+    $(document).on('change', '#changeSelect', function(e){
+    var val = $(this).find("option:selected").attr('value');
+      for(var i = 0, columnLength = table.columns(7).data()[0].length; i < columnLength; i++){
+        table.row(i).data().route = val;
+        table.row(i).invalidate(); 
+      }
+       $("#cancelButton").prop('disabled', false);          
+    });   
+
+    $(document).on('change', '#defaultButtons', function(e){
+      $("#cancelButton").prop('disabled', false);          
+    });
+
+  });
 });
 
 
