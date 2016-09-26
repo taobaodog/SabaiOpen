@@ -261,8 +261,12 @@ $.post('php/dhcp.php', {'act': 'get'})
        $("#cancelButton").prop('disabled', false);          
     });   
 
-    $(document).on('change', '#defaultButtons', function(e){
+    $(document).on('click', '#defaultButtons', function(e){
       $("#cancelButton").prop('disabled', false);          
+    });
+
+    $(document).on('click', '#cancelConfirm', function(e){
+      $("#defaultButtons").children().removeClass('active');   
     });
 
   });
