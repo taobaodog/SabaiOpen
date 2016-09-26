@@ -39,16 +39,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                     <tr>
                         <td class="title indent1 shortWidth"> MPPE-128 </td>
                         <td class="content">
-                            <div class='radioSwitchElement' id='mppe_conf'></div>   
+                            <div id='mppe_conf'></div>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <input id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>
-            <input id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>
-            <input id='save' type='button' value='Save' onclick='PPTPcall("save")'>
-            <input id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>
-            <span id='messages'>&nbsp;</span>
+    <button class='btn btn-default btn-sm' id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>Start</button>
+    <button class='btn btn-default btn-sm' id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>Stop</button>
+    <button class='btn btn-default btn-sm' id='save' type='button' value='Save' onclick='PPTPcall("save")'>Save</button>
+    <button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>Clear</button>
+    <span id='messages'>&nbsp;</span>
     </div>
 </div>
 </form>
@@ -84,7 +84,7 @@ $.widget("jai.mppe", {
                 $(document.createElement('select'))
                     .prop("id","mppe")
                     .prop("name","mppe")
-                    .prop("class", "radioSwitchElement")
+                    .prop("class", "radioSwitch")
                 .append( $(document.createElement('option'))
                     .prop("value", "stateless")
                     .prop("text", 'Stateless')
@@ -134,11 +134,12 @@ function PPTPresp(res){
 }
 
 function PPTPcall(act){ 
-	hideUi("Adjusting PPTP settings..."); 
-	E("act").value=act;
-	// Pass the form values to the php file
-	if (act=='start') {
-		if (info.vpn.type == 'OpenVPN') {
+ if($("#mppe_stateless").hasClass("buttonSelected") || $("#mppe_nomppe").hasClass("buttonSelected")){
+	   hideUi("Adjusting PPTP settings..."); 
+	   E("act").value=act;
+	   // Pass the form values to the php file
+	   if (act=='start') {
+		  if (info.vpn.type == 'OpenVPN') {
 			hideUi("OpenVPN will be stopped.");
 			$.post("php/ovpn.php", {'switch': 'stop'}, function(res){
 				if(res!=""){
@@ -166,11 +167,19 @@ function PPTPcall(act){
 			}
 			showUi();
 		});
-		if(act =='clear'){
-			setTimeout("window.location.reload()",5000);
-		}
+		if(act =='clear') {
+			E('server').value = "";
+            E('user').value = "";
+            E('pass').value = "";
+            // Refactor it with CSS
+            $('#mppe').val("");
+            $('#mppe option:selected').attr('selected', false);
+            $('#mpperadioSwitch').children().removeClass("buttonSelected");
+        }
 	}
- 
+}else{
+        alert('Please choose a MPPE-128 setting before starting')
+ } 
 // Important stops the page refreshing
 return false;
 
@@ -205,7 +214,7 @@ function check(){
 	});
 }
 $(function(){
-    $('#mppe_conf').mppe({ conf: pptp });
+    $('#mppe_conf').mppe();
 })
 
 function init(){ 

@@ -39,7 +39,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                     <tr>
                         <td class="title indent1 shortWidth"> MPPE-128 </td>
                         <td class="content">
-                            <div class='radioSwitchElement' id='mppe_conf'></div>   
+                            <div id='mppe_conf'></div>
                         </td>
                     </tr>
                 </tbody>
@@ -84,7 +84,7 @@ $.widget("jai.mppe", {
                 $(document.createElement('select'))
                     .prop("id","mppe")
                     .prop("name","mppe")
-                    .prop("class", "radioSwitchElement")
+                    .prop("class", "radioSwitch")
                 .append( $(document.createElement('option'))
                     .prop("value", "stateless")
                     .prop("text", 'Stateless')
@@ -167,6 +167,15 @@ function PPTPcall(act){
 			}
 			showUi();
 		  });
+		if(act =='clear') {
+			E('server').value = "";
+            E('user').value = "";
+            E('pass').value = "";
+            // Refactor it with CSS
+            $('#mppe').val("");
+            $('#mppe option:selected').attr('selected', false);
+            $('#mpperadioSwitch').children().removeClass("buttonSelected");
+        }
     	}
  }else{
         alert('Please choose a MPPE-128 setting before starting')
@@ -205,7 +214,7 @@ function check(){
 	});
 }
 $(function(){
-    $('#mppe_conf').mppe({ conf: pptp });
+    $('#mppe_conf').mppe();
 })
 
 function init(){ 
