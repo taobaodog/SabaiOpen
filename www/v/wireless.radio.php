@@ -410,6 +410,8 @@ $.widget("jai.wl_wl0", {
                 .prop("id","wl_wpa_psk")
                 .prop("name","wl_wpa_psk")
                 .prop("type", "password")
+                .attr("onfocus", "peekaboo('wl_wpa_psk')")
+                .attr("onblur", "peekaboo('wl_wpa_psk')")
             )
           )
         ) // end PSK tr
@@ -630,6 +632,8 @@ $.widget("jai.wl_wl1", {
 														.prop("id","wl1_wpa_psk")
 														.prop("name","wl1_wpa_psk")
                             .prop("type", "password")
+                            .attr("onfocus", "peekaboo('wl1_wpa_psk')")
+                            .attr("onblur", "peekaboo('wl1_wpa_psk')")
 												)
 											)
 									) // end PSK tr

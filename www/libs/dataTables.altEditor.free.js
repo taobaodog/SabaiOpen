@@ -813,7 +813,12 @@ var sendJsonData = function(tableObj){
          comepleteJsonData.aaData.push(dt.row(i).data());
         }
 
-        
+        //Adding default route setting
+        $('input', $('#defaultButtons')).each(function () {
+          if($(this).parent().hasClass('active')) {
+          comepleteJsonData.defSetting = $(this).attr('name');
+          }
+        });
 
         //JSON call to server
         var jqxhr =
