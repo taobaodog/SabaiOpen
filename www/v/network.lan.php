@@ -1,7 +1,7 @@
 <?php
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
-	$url = "/index.php?panel=network&section=lan";
-	header( "Location: $url" );     
+  $url = "/index.php?panel=network&section=lan";
+  header( "Location: $url" );     
 }
 ?>
 <!-- TODO:
@@ -179,7 +179,12 @@ $.widget("jai.lanaddress", {
                 .prop("name","lan_ip")
                 .prop("type","text")
             )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "lan_ipLabel")
+            )
           )
+        )
         )
         
         .append( $(document.createElement('tr') )
@@ -191,6 +196,9 @@ $.widget("jai.lanaddress", {
                 .prop("name","lan_mask")
                 .prop("type","text")
             )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "lan_maskLabel")
           )
         )
       )
@@ -262,7 +270,16 @@ $.widget("jai.dhcpserver", {
             )
           )
         )
-        
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td'))
+          )
+          .append( $(document.createElement('td') ) 
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "dhcp_leaseLabel")
+            )
+          )
+        )
         .append( $(document.createElement('tr') )
           .append( $(document.createElement('td')).html('DHCP Range') )
           .append( $(document.createElement('td') )
@@ -278,7 +295,23 @@ $.widget("jai.dhcpserver", {
                 .prop("id","dhcp_limit")
                 .prop("name","dhcp_limit")
                 .prop("type","text")
+          )
+        )
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td'))
+          )
+          .append( $(document.createElement('td') ) 
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "dhcp_startLabel")
             )
+          )
+          .append( $(document.createElement('td') ) 
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "dhcp_limitLabel")
+            )
+          )
         )    
       )
     )
@@ -358,6 +391,9 @@ $('#save').click( function() {
 });  
 
 //validate the fields
+$(function() {
+  var errorLabel = "";
+  var errorRow = "";
 $( "#fe" ).validate({
   rules: {
     lan_ip: {
@@ -380,7 +416,22 @@ $( "#fe" ).validate({
       required: true,
       range: [2, 254]
     }
-  }
+  },
+  messages: {
+    dhcp_start:"*Must be a numeric value bigger than 2",
+    dhcp_limit:"*Must be a numeric value less than 254"
+  },
+    //Changing error position to custom label
+    errorPlacement: function(error, element) {
+      errorLabel = "#" + element[0].name + "Label"
+        $(errorLabel).text(error[0].innerHTML);
+        $(errorLabel).show();
+    },
+    success: function(error) {
+        $(errorLabel).hide();
+    }
+  });
+
 });
 
 </script>

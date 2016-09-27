@@ -114,28 +114,28 @@ function hideUi_timer(hide_msg, time) {
   var counter = setInterval(timer, 1000);
 
   function timer() {
-	minutes = count/60 >> 0;
-	seconds = count - minutes*60;
-	zero_up = minutes*60 + 10;
-	zero_low = minutes*60;
-	
-	if ((count > zero_low) && (count < zero_up)) {
+  minutes = count/60 >> 0;
+  seconds = count - minutes*60;
+  zero_up = minutes*60 + 10;
+  zero_low = minutes*60;
+  
+  if ((count > zero_low) && (count < zero_up)) {
                 hide.innerHTML= hide_msg + " " + minutes + ":" + "0" + seconds;
         } else {
                 hide.innerHTML= hide_msg + " " + minutes + ":" + seconds;
         }
-  	
-	if ((count%60 == 1) && (count != 1)) {
-		count = count - 2;
-	} else {
-		count = count - 1;
-	}
+    
+  if ((count%60 == 1) && (count != 1)) {
+    count = count - 2;
+  } else {
+    count = count - 1;
+  }
 
-  	if (count < 0)
-  	{
-     		clearInterval(counter);
-     		return;
-  	}
+    if (count < 0)
+    {
+        clearInterval(counter);
+        return;
+    }
 
 }
   hidden.style.display = 'block';
@@ -147,10 +147,10 @@ function showUi(text){
 }
 
 function msg(msg,wl){
-	if(wl)
-		E('messages1').innerHTML=msg;
-	else
-		E('messages').innerHTML=msg; 
+  if(wl)
+    E('messages1').innerHTML=msg;
+  else
+    E('messages').innerHTML=msg; 
 }
 
 function setVPNStats(){
@@ -162,26 +162,26 @@ function setVPNStats(){
 // begin main - prior old sabaivpn
 
 $.peekaboo = $.fn.peekaboo = function(test){
-	if(test){
-		$("#testing").append("Is ("+ this.attr("type") +"/"+ (this.attr("type") == "password") +") a password: ");
+  if(test){
+    $("#testing").append("Is ("+ this.attr("type") +"/"+ (this.attr("type") == "password") +") a password: ");
 
-		if((this.attr("type") == "password"))
-			$("#testing").append("Yes.\n")
-		else
-			$("#testing").append("No.\n")
-	}
-	$( this.selector || "input[type=password]" )
-		.prop("type", "password")
-		.focus(function(){ $(this).prop("type", "text"); })
-		.blur(function(){ $(this).prop("type", "password"); })
-		.keydown(function(event){ if(event.keyCode == 13){ $(this).prop("type", "password"); } });
+    if((this.attr("type") == "password"))
+      $("#testing").append("Yes.\n")
+    else
+      $("#testing").append("No.\n")
+  }
+  $( this.selector || "input[type=password]" )
+    .prop("type", "password")
+    .focus(function(){ $(this).prop("type", "text"); })
+    .blur(function(){ $(this).prop("type", "password"); })
+    .keydown(function(event){ if(event.keyCode == 13){ $(this).prop("type", "password"); } });
 }
 
 function showSubMenu(){ $( "#sub"+ $(this).attr("id") ).slideToggle(500); }
 
 $(function(){
  if(E('panel').value =='auth') {
-	 panel=E('panel').value;
+   panel=E('panel').value;
  } else {
  if(panel==""){ panel = "network"; section = "wan"; };
  $("#mainTitle").append(" - "+$(".pageTitle").html());
@@ -193,31 +193,22 @@ $(function(){
  }
 });
 
-//ipv4 address validation from https://gist.github.com/bcoughlan/2649187
+//ipv4 address validation
 jQuery.validator.addMethod('validip', function(value) {
-    var split = value.split('.');
-    if (split.length != 4) 
-        return false;
-            
-    for (var i=0; i<split.length; i++) {
-        var s = split[i];
-        if (s.length==0 || isNaN(s) || s<0 || s>255)
-            return false;
-    }
-    return true;
-}, ' Invalid IP Address - please correct.....');
+    return /^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$/.test(value);
+}, ' *Invalid IP Address.');
 
-// 'netmask': IPv4 Netmask Validator from code.google.com/p/browanxnms/source/browse/trunk/assets/js/validation/jquery.validate-ext.js
+// 'netmask': IPv4 Netmask Validator 
 jQuery.validator.addMethod("netmask", function(value, element) {
-    return this.optional(element) || /^(255\.)((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){2}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(value);
-}, 'Invalid IPv4 netmask - please correct.....');
+    return /^((128|192|224|240|248|252|254)\.0\.0\.0)|(255\.(((0|128|192|224|240|248|252|254)\.0\.0)|(255\.(((0|128|192|224|240|248|252|254)\.0)|255\.(0|128|192|224|240|248|252|254)))))$/.test(value);
+}, ' *Invalid IPv4 netmask.');
 
-// mac address checker from code.google.com/p/browanxnms/source/browse/trunk/assets/js/validation/jquery.validate-ext.js
+// mac address checker 
 jQuery.validator.addMethod("macchecker", function(value, element) {                                                                  
-    return this.optional(element) || (/[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}/i.test(value));
-  },'Invalid mac address - please correct.....');
+    return /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(value);
+  },' *Invalid mac address.');
 
 // Diagnostics Ping address validator
 jQuery.validator.addMethod('addressCheck', function(value){
-  return /^[a-zA-Z0-9\.]+$/.test(value);
-}, "Invalid address - please correct.");
+  return /^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$/.test(value);
+}, " *Invalid address.");
