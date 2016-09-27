@@ -35,6 +35,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </div> <!--end control box  -->
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
 
+<script src="libs/jquery.dataTables.min.js"></script>
 <script type='text/ecmascript'>
 
 function getResults(){

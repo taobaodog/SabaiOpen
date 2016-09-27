@@ -1,11 +1,11 @@
 <?php
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
-	$url = "/index.php?panel=wireless&section=radio";
-	header( "Location: $url" );     
+  $url = "/index.php?panel=wireless&section=radio";
+  header( "Location: $url" );     
 }
 ?>
 <div class='pageTitle'>Wireless: Radio</div>
-<!--	TODO: align td widths-->
+<!--  TODO: align td widths-->
 <form id="fe">
 <input type='hidden' id='form_wl0' name='form_wl0' value='wl0'>
 <div class='controlBox'><span class='controlBoxTitle'>WL0</span>
@@ -30,8 +30,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <form id="fe1">
 <input type='hidden' id='form_wl1' name='form_wl1' value='wl1'>
 <div class='controlBox'><span class='controlBoxTitle'>WL1 Guest access point</span>     
-	<div class='controlBoxContent' id='wl_wl1'>
-	</div>
+  <div class='controlBoxContent' id='wl_wl1'>
+  </div>
 </div>
  <div class='controlBoxFooter'>
     <button type='button' class='btn btn-default btn-sm' id='saveButton1' value='Save' onclick='WLcall("#fe1")'>Save</button>
@@ -47,7 +47,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </div>                                                                                                                                 
     </div>
 <p>
-	<div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>                                                                         
+  <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>                                                                         
 </p>
 </form>
 
@@ -135,23 +135,23 @@ var wl0=$.parseJSON('{<?php
       ?>}');
 
 var wl0_wepkeyraw='<?php
-					$servers=exec("uci get sabai.wlradio0.wepkeys");
-					echo "$servers"; 
-					?>';         
+          $servers=exec("uci get sabai.wlradio0.wepkeys");
+          echo "$servers"; 
+          ?>';         
 var wl0_array = JSON.stringify(wl0_wepkeyraw.split(" "));
 var wl0_wepkeyfin= "{\"keys\"" + ":" + wl0_array + "}";
 var wl0_wepkey = $.parseJSON(wl0_wepkeyfin);
 
 var wl1=$.parseJSON('{<?php
-	$mode=exec("uci get sabai.wlradio1.mode");
-	$ssid=trim(exec("uci get sabai.wlradio1.ssid"));
-	$encryption=trim(exec("uci get sabai.wlradio1.encryption"));
-	$wpa_encryption=trim(exec("uci get sabai.wlradio1.wpa_encryption"));
-	$wpa_psk=trim(exec("uci get sabai.wlradio1.wpa_psk"));
-	$channel=trim(exec("uci get sabai.wlradio1.channel_freq"));
-	$auto=trim(exec("uci get sabai.wlradio1.auto"));
+  $mode=exec("uci get sabai.wlradio1.mode");
+  $ssid=trim(exec("uci get sabai.wlradio1.ssid"));
+  $encryption=trim(exec("uci get sabai.wlradio1.encryption"));
+  $wpa_encryption=trim(exec("uci get sabai.wlradio1.wpa_encryption"));
+  $wpa_psk=trim(exec("uci get sabai.wlradio1.wpa_psk"));
+  $channel=trim(exec("uci get sabai.wlradio1.channel_freq"));
+  $auto=trim(exec("uci get sabai.wlradio1.auto"));
   
-	echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"channel\": \"$channel\", \"auto\": \"$auto\"";?>}');
+  echo "\"mode\": \"$mode\",\"ssid\": \"$ssid\",\"encryption\": \"$encryption\",\"wpa_encryption\": \"$wpa_encryption\",\"wpa_psk\": \"$wpa_psk\",\"channel\": \"$channel\", \"auto\": \"$auto\"";?>}');
 
 //TODO: remove everything from here. Dublicated.
 $('#wl_mode').val(wl0.mode);   
@@ -182,7 +182,7 @@ $.post('php/wl.php', $(wlForm).serialize(), function(res){
       WLresp(res);
     }
     else {
-    	WLresp(res,wlForm);
+      WLresp(res,wlForm);
     }
       showUi();
 });
@@ -236,7 +236,7 @@ $.widget("jai.wl_wl0", {
           )
         ) // end mode tr
 
-	.append( $(document.createElement('tr'))
+  .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('SSID') 
           )
           .append( $(document.createElement('td') ) 
@@ -245,13 +245,17 @@ $.widget("jai.wl_wl0", {
                 .prop("id","wl_ssid")
                 .prop("name","wl_ssid")
             )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wl_ssidLabel")
+            )
           )
         ) // end SSID tr
 
-	.append( $(document.createElement('tr'))
-	  .append( $(document.createElement('td')).html('Channel mode')                                                          
+  .append( $(document.createElement('tr'))
+    .append( $(document.createElement('td')).html('Channel mode')                                                          
          )
-	    .append( $(document.createElement('td') )                                                                                                              
+      .append( $(document.createElement('td') )                                                                                                              
             .append(                                                                                                     
               $(document.createElement('select'))                                                                        
                 .prop("id", "channel_mode")                                                                                                     
@@ -265,27 +269,31 @@ $.widget("jai.wl_wl0", {
                 .prop("value", "auto")                                                                            
                 .prop("text", "Auto")                                                                                     
               )                                                                                                                                 
-	    )
-	  )
+      )
+    )
         ) // End tr
 
-	.append( $(document.createElement('tr')).addClass("channel control")
-	  .append( $(document.createElement('td')).html('Channel')                                       
+  .append( $(document.createElement('tr')).addClass("channel control")
+    .append( $(document.createElement('td')).html('Channel')                                       
           ) 
           .append( $(document.createElement('td')).addClass("channel_mode auto_on")
             .append(                                                                                                                            
               $(document.createElement('input'))                                                                         
                 .prop("id","wl_channel_msg")                                                                                 
                 .prop("name","wl_channel_msg")                                                                               
-				.prop("disabled", "true")
+                .prop("disabled", "true")
             )                                                                                                            
-	  )
+    )
 
-	  .append( $(document.createElement('td')).addClass("channel_mode auto_off")
+    .append( $(document.createElement('td')).addClass("channel_mode auto_off")
             .append(                                                                                             
               $(document.createElement('input'))                                                                    
                 .prop("id","wl_channel")                                                                 
                 .prop("name","wl_channel")                                                                       
+            )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wl_channelLabel")
             )                                                                                                    
           )
 
@@ -310,8 +318,8 @@ $.widget("jai.wl_wl0", {
             )
             )
         )
-      )	
-	
+      ) 
+  
         .append( $(document.createElement('tr'))
           .append( $(document.createElement('td')).html('Encryption') 
           )
@@ -425,74 +433,78 @@ $.widget("jai.wl_wl0", {
                 .prop("id","wl_wpa_rekey")
                 .prop("name","wl_wpa_rekey")
             )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wl_wpa_rekeyLabel")
+            ) 
           )
         ) // end PSK tr
       ) // end WPA tbody
     ) // end lower table
 
 
-	$('#wl_encryption').change(function(){
-		$('.wl_encryption').hide(); 
-		$('.wl_encryption-'+ $('#wl_encryption').val() ).show(); 
-	})
+  $('#wl_encryption').change(function(){
+    $('.wl_encryption').hide(); 
+    $('.wl_encryption-'+ $('#wl_encryption').val() ).show(); 
+  })
 
-	$('#wl_mode').radioswitch({
-		value: wl0.mode,
-		change: function(event,ui){ 
-			$('.wl_mode').hide(); 
-			$('.wl_mode-'+ wl0.encryption ).show(); 
-		}
-	});
+  $('#wl_mode').radioswitch({
+    value: wl0.mode,
+    change: function(event,ui){ 
+      $('.wl_mode').hide(); 
+      $('.wl_mode-'+ wl0.encryption ).show(); 
+    }
+  });
 
-	$('#wl_ssid').val(wl0.ssid);
+  $('#wl_ssid').val(wl0.ssid);
 
-	$('#channel_mode').radioswitch({ 
-		value: wl0.auto
-	});
+  $('#channel_mode').radioswitch({ 
+    value: wl0.auto
+  });
 
-	$('#channel_mode').change(function(){
-		var selectOption = $(this).find(":selected").val();
-		if (selectOption.trim() == "off") {
-			$('.auto_on').hide();
-			$('.auto_off').show();
-		} else {
-			$('.auto_off').hide();
-			$('.auto_on').show();
-		}
-	})
+  $('#channel_mode').change(function(){
+    var selectOption = $(this).find(":selected").val();
+    if (selectOption.trim() == "off") {
+      $('.auto_on').hide();
+      $('.auto_off').show();
+    } else {
+      $('.auto_off').hide();
+      $('.auto_on').show();
+    }
+  })
 
-	if (wl0.auto == "off") {
-		$('.auto_on').hide();
-		$('.auto_off').show();
-	} else {
-		$('.auto_off').hide();
-		$('.auto_on').show();
-	}
+  if (wl0.auto == "off") {
+    $('.auto_on').hide();
+    $('.auto_off').show();
+  } else {
+    $('.auto_off').hide();
+    $('.auto_on').show();
+  }
 
-	$('#wl_channel').spinner({ min: 1, max: wl0.channels_qty }).spinner('value',wl0.channel);
-	$('#wl_channel_msg').val(wl0.channel);
+  $('#wl_channel').spinner({ min: 1, max: wl0.channels_qty }).spinner('value',wl0.channel);
+  $('#wl_channel_msg').val(wl0.channel);
 
   $('#channel_width').radioswitch({ 
     value: wl0.width
   });
 
-	$('#wl_encryption').radioswitch({
-		value: wl0.encryption
-	});
+  $('#wl_encryption').radioswitch({
+    value: wl0.encryption
+  });
 
-	$('#wl_wpa_type').radioswitch({
-	 value: wl0.wpa_type
-	});
+  $('#wl_wpa_type').radioswitch({
+   value: wl0.wpa_type
+  });
 
-	$('#wl_wpa_encryption').radioswitch({
-	 value: wl0.wpa_encryption
-	});
+  $('#wl_wpa_encryption').radioswitch({
+   value: wl0.wpa_encryption
+  });
 
-	$('#wl_wpa_psk').val(wl0.wpa_psk);
+  $('#wl_wpa_psk').val(wl0.wpa_psk);
 
-	$('#wl_wpa_rekey').spinner({ min: 0, max: 525600 }).spinner('value',wl0.wpa_rekey);
+  $('#wl_wpa_rekey').spinner({ min: 600, max: 7200 }).spinner('value',wl0.wpa_rekey);
 
-	$('#wl_wep_keys').oldeditablelist({ list: wl0_wepkey.keys, fixed: false });
+  $('#wl_wep_keys').oldeditablelist({ list: wl0_wepkey.keys, fixed: false });
 
     
     this._super();
@@ -524,144 +536,148 @@ $.widget("jai.wl_wl0", {
 });
 
 $.widget("jai.wl_wl1", {
-	//Adding to the built-in widget constructor method - do this when widget is instantiated
-	_create: function(){
-		// BUILDING DOM ELEMENTS
-		$(this.element)
-		.append( $(document.createElement('table')).addClass("controlTable smallwidth")
-			.append( $(document.createElement('tbody'))
-				.append( $(document.createElement('tr'))
-					.append( $(document.createElement('td')).html('Mode')
-					)
-						.append( $(document.createElement('td') )
-							.append(
-								$(document.createElement('select'))
-									.prop("id","wl1_mode")
-									.prop("name","wl1_mode")
-									.prop("class", "radioSwitchElement")
-								.append( $(document.createElement('option'))
-									.prop("value", "off")
-									.prop("text", "Off")
-								)
-								.append( $(document.createElement('option'))
-									.prop("value", "ap")
-									.prop("text", "On")
-								)
-							)
-						)
-				) // end mode tr
-				
-				.append( $(document.createElement('tr'))
-			  		.append( $(document.createElement('td')).html('SSID')
-			   		)
-			   		.append( $(document.createElement('td') )
-			     		.append(
-			       			$(document.createElement('input'))
-			       				.prop("id","wl1_ssid")
-				 				.prop("name","wl1_ssid")
-			     		)
-			   		)
-				) // End SSID
-
-				.append( $(document.createElement('tr'))
-					.append( $(document.createElement('td')).html('Encryption')
-					)
-						.append( $(document.createElement('td') )
-							.append(
-								$(document.createElement('select'))
-									.prop("id","wl1_encryption")
-									.prop("name","wl1_encryption")
-									.prop("class", "radioSwitchElement")
-								.append( $(document.createElement('option'))
-									.prop("value", "none")
-									.prop("text", 'None')
-								)
+  //Adding to the built-in widget constructor method - do this when widget is instantiated
+  _create: function(){
+    // BUILDING DOM ELEMENTS
+    $(this.element)
+    .append( $(document.createElement('table')).addClass("controlTable smallwidth")
+      .append( $(document.createElement('tbody'))
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td')).html('Mode')
+          )
+            .append( $(document.createElement('td') )
+              .append(
+                $(document.createElement('select'))
+                  .prop("id","wl1_mode")
+                  .prop("name","wl1_mode")
+                  .prop("class", "radioSwitchElement")
                 .append( $(document.createElement('option'))
-									.prop("value", "psk2")
-				                	.prop("text", 'WPA2')
-				              	)
-				            )
-				          ) // end td
-				        ) // end tr
-			 ) // End tbody
-		) // End table
+                  .prop("value", "off")
+                  .prop("text", "Off")
+                )
+                .append( $(document.createElement('option'))
+                  .prop("value", "ap")
+                  .prop("text", "On")
+                )
+              )
+            )
+        ) // end mode tr
+        
+        .append( $(document.createElement('tr'))
+            .append( $(document.createElement('td')).html('SSID')
+            )
+            .append( $(document.createElement('td') )
+              .append(
+                  $(document.createElement('input'))
+                    .prop("id","wl1_ssid")
+                .prop("name","wl1_ssid")
+              )
+              .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wl1_ssidLabel")
+            )
+            )
+        ) // End SSID
 
-				     // LOWER TABLE, DEPENDS ON SECURITY SELECTION
-				        //wep table body
-				        .append( $(document.createElement('table')).addClass("controlTable indented wl1")
-							.append( $(document.createElement('tbody'))
-								.addClass("wl1_encryption wl1_encryption-psk wl1_encryption-psk2 wl1_encryption-mixed-psk")
-									.append( $(document.createElement('tr'))
-										.append( $(document.createElement('td')).html('&nbsp')
-										)
-										.append( $(document.createElement('td')).html('&nbsp')
-										)
-				            		) // end empty tr
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td')).html('Encryption')
+          )
+            .append( $(document.createElement('td') )
+              .append(
+                $(document.createElement('select'))
+                  .prop("id","wl1_encryption")
+                  .prop("name","wl1_encryption")
+                  .prop("class", "radioSwitchElement")
+                .append( $(document.createElement('option'))
+                  .prop("value", "none")
+                  .prop("text", 'None')
+                )
+                .append( $(document.createElement('option'))
+                  .prop("value", "psk2")
+                          .prop("text", 'WPA2')
+                        )
+                    )
+                  ) // end td
+                ) // end tr
+       ) // End tbody
+    ) // End table
 
-				            		.append( $(document.createElement('tr'))
-						            	.append( $(document.createElement('td')).html('WPA Encryption')
-										)
-											.append( $(document.createElement('td') )
-												.append(
-													$(document.createElement('select'))
-														.prop("id","wl1_wpa_encryption")
-														.prop("name","wl1_wpa_encryption")
-														.prop("class", "radioSwitchElement")
-													.append( $(document.createElement('option'))
-														.prop("value", "aes")
-														.prop("text", 'AES')
-													)
-													.append( $(document.createElement('option'))
-														.prop("value", "tkip")
-														.prop("text", 'TKIP')
-													)
-													.append( $(document.createElement('option'))
-														.prop("value", "tkip+aes")
-														.prop("text", 'AES/TKIP')
-													)
-												)
-											)
-									) // end WPA Encryption tr
+             // LOWER TABLE, DEPENDS ON SECURITY SELECTION
+                //wep table body
+                .append( $(document.createElement('table')).addClass("controlTable indented wl1")
+              .append( $(document.createElement('tbody'))
+                .addClass("wl1_encryption wl1_encryption-psk wl1_encryption-psk2 wl1_encryption-mixed-psk")
+                  .append( $(document.createElement('tr'))
+                    .append( $(document.createElement('td')).html('&nbsp')
+                    )
+                    .append( $(document.createElement('td')).html('&nbsp')
+                    )
+                        ) // end empty tr
 
-									.append( $(document.createElement('tr'))
-										.append( $(document.createElement('td')).html('Key')
-										)
-											.append( $(document.createElement('td') )
-												.append(
-													$(document.createElement('input'))
-														.prop("id","wl1_wpa_psk")
-														.prop("name","wl1_wpa_psk")
+                        .append( $(document.createElement('tr'))
+                          .append( $(document.createElement('td')).html('WPA Encryption')
+                    )
+                      .append( $(document.createElement('td') )
+                        .append(
+                          $(document.createElement('select'))
+                            .prop("id","wl1_wpa_encryption")
+                            .prop("name","wl1_wpa_encryption")
+                            .prop("class", "radioSwitchElement")
+                          .append( $(document.createElement('option'))
+                            .prop("value", "aes")
+                            .prop("text", 'AES')
+                          )
+                          .append( $(document.createElement('option'))
+                            .prop("value", "tkip")
+                            .prop("text", 'TKIP')
+                          )
+                          .append( $(document.createElement('option'))
+                            .prop("value", "tkip+aes")
+                            .prop("text", 'AES/TKIP')
+                          )
+                        )
+                      )
+                  ) // end WPA Encryption tr
+
+                  .append( $(document.createElement('tr'))
+                    .append( $(document.createElement('td')).html('Key')
+                    )
+                      .append( $(document.createElement('td') )
+                        .append(
+                          $(document.createElement('input'))
+                            .prop("id","wl1_wpa_psk")
+                            .prop("name","wl1_wpa_psk")
                             .prop("type", "password")
                             .attr("onfocus", "peekaboo('wl1_wpa_psk')")
                             .attr("onblur", "peekaboo('wl1_wpa_psk')")
-												)
-											)
-									) // end PSK tr
-								) // end tbody
-							) // end class
-				
-		 
-	$('#wl1_mode').radioswitch({ value: wl1.mode });
-	$('#wl1_ssid').val(wl1.ssid);
+                        )
+                      )
+                  ) // end PSK tr
+                ) // end tbody
+              ) // end class
+        
+     
+  $('#wl1_mode').radioswitch({ value: wl1.mode });
+  $('#wl1_ssid').val(wl1.ssid);
 
-	$('#wl1_encryption').radioswitch({
-		value: wl1.encryption
-	});
-		
-	$('#wl1_encryption').change(function(){
-		$('.wl1_encryption').hide();
-		$('.wl1_encryption-'+ $('#wl1_encryption').val() ).show(); 
-	})
+  $('#wl1_encryption').radioswitch({
+    value: wl1.encryption
+  });
+    
+  $('#wl1_encryption').change(function(){
+    $('.wl1_encryption').hide();
+    $('.wl1_encryption-'+ $('#wl1_encryption').val() ).show(); 
+  })
 
-	$('#wl1_wpa_encryption').radioswitch({
-		value: wl1.wpa_encryption
-	});
+  $('#wl1_wpa_encryption').radioswitch({
+    value: wl1.wpa_encryption
+  });
 
-	$('#wl1_wpa_psk').val(wl1.wpa_psk);
+  $('#wl1_wpa_psk').val(wl1.wpa_psk);
 
-	this._super();
-	
-	}, // ENd create
+  this._super();
+  
+  }, // ENd create
 
 });
 
@@ -685,13 +701,20 @@ $('#save').click( function() {
 });  
 
 //validate the fields
+$(function() {
+  var errorLabel = "";
 $( "#fe" ).validate({
   rules: {
     wl_ssid: {
       required: true,
+      nameCheck: true
+    },
+    wl_channel:{
+      required: true,
+      range: [1, 14]
     },
     wl_encryption: {
-      required: true,
+      required: true
     },
     wl_wpa_psk : {
       required: true,
@@ -702,14 +725,27 @@ $( "#fe" ).validate({
       required: true,
       range: [600, 7200]
     }
-  }
+  },
+    //Changing error position to custom label
+    errorPlacement: function(error, element) {
+      errorLabel = "#" + element[0].name + "Label"
+        $(errorLabel).text(error[0].innerHTML);
+        $(errorLabel).show();
+    },
+    success: function(error) {
+        $(errorLabel).hide();
+    }
+  });
 });
 
 //validate the fields
+$(function() {
+  var errorLabel = "";
 $( "#fe1" ).validate({
   rules: {
     wl1_ssid: {
       required: true,
+      nameCheck: true
     },
     wl1_encryption: {
       required: true,
@@ -718,8 +754,18 @@ $( "#fe1" ).validate({
       required: true,
       minlength: 8,
       maxlength: 63
+    }
+  },
+      //Changing error position to custom label
+    errorPlacement: function(error, element) {
+      errorLabel = "#" + element[0].name + "Label"
+        $(errorLabel).text(error[0].innerHTML);
+        $(errorLabel).show();
     },
-  }
+    success: function(error) {
+        $(errorLabel).hide();
+    }
+  });
 });
 
 </script>

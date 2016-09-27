@@ -1,7 +1,7 @@
 <?php
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
-	$url = "/index.php?panel=network&section=wan";
-	header( "Location: $url" );     
+  $url = "/index.php?panel=network&section=wan";
+  header( "Location: $url" );     
 }
 ?>
 <!--  TODO:
@@ -25,21 +25,21 @@ DDNS: { ip, interval, services }
       <tr>
         <td>DNS Servers</td>
         <td>
-        	<div>
-        		<ul id='dns_servers'>
-        			<li><input type='text' placeholder='DNS 1' name='dns_server1'><a class='dns-delete deleteDNS'>✖</a></li>
-        			<li><input type='text' placeholder='DNS 2' name='dns_server2'><a class='dns-delete deleteDNS'>✖</a></li>
-        			<li><input type='text' placeholder='DNS 3' name='dns_server3'><a class='dns-delete deleteDNS'>✖</a></li>
-        			<li><input type='text' placeholder='DNS 4' name='dns_server4'><a class='dns-delete deleteDNS'>✖</a></li>
-        		</ul>
-        		<input type='hidden' name='dns_servers[]'>
-        		<input type='hidden' name='dns_servers[]'>
-        		<input type='hidden' name='dns_servers[]'>
-        		<input type='hidden' name='dns_servers[]'>
-        	</div>
+          <div>
+            <ul id='dns_servers'>
+              <li><input type='text' placeholder='DNS 1' name='dns_server1'><a class='dns-delete deleteDNS'>✖</a><label id='dns_server1Label' class='errorLabel'></label></li>
+              <li><input type='text' placeholder='DNS 2' name='dns_server2'><a class='dns-delete deleteDNS'>✖</a><label id='dns_server2Label' class='errorLabel'></label></li>
+              <li><input type='text' placeholder='DNS 3' name='dns_server3'><a class='dns-delete deleteDNS'>✖</a><label id='dns_server3Label' class='errorLabel'></label></li>
+              <li><input type='text' placeholder='DNS 4' name='dns_server4'><a class='dns-delete deleteDNS'>✖</a><label id='dns_server4Label' class='errorLabel'></label></li>
+            </ul>
+            <input type='hidden' name='dns_servers[]'>
+            <input type='hidden' name='dns_servers[]'>
+            <input type='hidden' name='dns_servers[]'>
+            <input type='hidden' name='dns_servers[]'>
+          </div>
         </td>
           <div id="editableListDescription">
-          	<span id='dns_stat' color="red"></span><br><br>
+            <span id='dns_stat' color="red"></span><br><br>
             <span class ='xsmallText'>(These are the DNS servers the DHCP server will provide for devices also on the LAN)
             </span><br><br>
           </div>
@@ -117,40 +117,63 @@ $(window).bind('beforeunload',function(){
 
 var validator;
 $(function() {
+  var errorLabel = "";
     validator = $( "#fe" ).validate({
-    	ignore: [],
-		rules: {
-			wan_mtu: {
-				required: true,
-				min: 576,
-				max:1500
-			},
-			wan_mac: {
-				required: true,
-				macchecker: true 
-			},
-			dns_server1: {
-				required: true,
-				validip: true
-			},
-			dns_server2: {
-				required: false,
-				validip: true
-			},
-			dns_server3: {
-				required: false,
-				validip: true
-			},
-			dns_server4: {
-				required: false,
-				validip: true
-			}
-		},
-		messages: {
-			wan_mtu: "Please enter number between 576 and 1500"
-		}
-	});
-	//validator.form();
+      ignore: [],
+    rules: {
+      wan_ip: {
+        required: true,
+        validip: true 
+      },
+      wan_gateway: {
+        required: true,
+        validip: true 
+      },      
+      wan_mask: {
+        required: true,
+        netmask: true 
+      },
+      wan_mtu: {
+        required: true,
+        min: 576,
+        max:1500
+      },
+      wan_mac: {
+        required: true,
+        macchecker: true 
+      },
+      dns_server1: {
+        required: true,
+        validip: true
+      },
+      dns_server2: {
+        required: false,
+        validip: true
+      },
+      dns_server3: {
+        required: false,
+        validip: true
+      },
+      dns_server4: {
+        required: false,
+        validip: true
+      }
+    },
+    messages: {
+      wan_mtu: "*Please enter number between 576 and 1500"
+    },
+
+    //Changing error position to custom label
+    errorPlacement: function(error, element) {
+      errorLabel = "#" + element[0].name + "Label"
+        $(errorLabel).text(error[0].innerHTML);
+        $(errorLabel).show();
+    },
+    success: function(error) {
+        $(errorLabel).hide();
+    }
+  });
+  //validator.form();
 });
 
 var hidden, hide, pForm = {};
@@ -181,42 +204,42 @@ var dnsfin= "{\"servers\"" + ":" + array + "}";
 var dns = $.parseJSON(dnsfin);
  
 function WANcall(act){ 
-	if( validator.numberOfInvalids() > 0){
-		alert("Please fill the fields correctly.");
-		return;
-	}
-	hideUi("Adjusting WAN settings..."); 
-	E("act").value=act;
-	$(document).ready( function(){
-		// Pass the form values to the php file 
+  if( validator.numberOfInvalids() > 0){
+    alert("Please fill the fields correctly.");
+    return;
+  }
+  hideUi("Adjusting WAN settings..."); 
+  E("act").value=act;
+  $(document).ready( function(){
+    // Pass the form values to the php file 
 
-		var dns1 = $('#dns_servers').find('li').eq(0).find('input').val();
-		var dns2 = $('#dns_servers').find('li').eq(1).find('input').val();
-		var dns3 = $('#dns_servers').find('li').eq(2).find('input').val();
-		var dns4 = $('#dns_servers').find('li').eq(3).find('input').val();
-
-
-		$('#dns_servers').parent().find('input').eq(4).val(dns1);
-		$('#dns_servers').parent().find('input').eq(5).val(dns2);
-		$('#dns_servers').parent().find('input').eq(6).val(dns3);
-		$('#dns_servers').parent().find('input').eq(7).val(dns4);
+    var dns1 = $('#dns_servers').find('li').eq(0).find('input').val();
+    var dns2 = $('#dns_servers').find('li').eq(1).find('input').val();
+    var dns3 = $('#dns_servers').find('li').eq(2).find('input').val();
+    var dns4 = $('#dns_servers').find('li').eq(3).find('input').val();
 
 
-		$.post('php/wan.php', $("#fe").serialize())
-			.done(function(res){
-				// Detect if values have been passed back   
-				if(res!=""){
-					WANresp(res);
-    			}
-				showUi();
-			})
-			.fail(function() {
-				setTimeout(function(){hideUi("WAN settings was applied. Your device might have new IP address. Refresh the page.")}, 7000);
-				setTimeout(function(){showUi()}, 12000);
-			})
+    $('#dns_servers').parent().find('input').eq(4).val(dns1);
+    $('#dns_servers').parent().find('input').eq(5).val(dns2);
+    $('#dns_servers').parent().find('input').eq(6).val(dns3);
+    $('#dns_servers').parent().find('input').eq(7).val(dns4);
+
+
+    $.post('php/wan.php', $("#fe").serialize())
+      .done(function(res){
+        // Detect if values have been passed back   
+        if(res!=""){
+          WANresp(res);
+          }
+        showUi();
+      })
+      .fail(function() {
+        setTimeout(function(){hideUi("WAN settings was applied. Your device might have new IP address. Refresh the page.")}, 7000);
+        setTimeout(function(){showUi()}, 12000);
+      })
  
-	// Important stops the page refreshing
-	return false;
+  // Important stops the page refreshing
+  return false;
 
 }); 
 
@@ -292,6 +315,10 @@ $.widget("jai.wansetup", {
                 .prop("name","wan_ip")
                 .prop("type","text")
             )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wan_ipLabel")
+            )
           )
         ) // end ip row
         .append( $(document.createElement('tr') )
@@ -303,6 +330,10 @@ $.widget("jai.wansetup", {
                 .prop("name","wan_mask")
                 .prop("type","text")
             )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wan_maskLabel")
+            )
           )
         ) // end nmask row
         .append( $(document.createElement('tr') )
@@ -313,6 +344,10 @@ $.widget("jai.wansetup", {
                 .prop("id","wan_gateway")
                 .prop("name","wan_gateway")
                 .prop("type","text")
+            )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wan_gatewayLabel")
             )
           )
         ) // end gateway row
@@ -327,6 +362,10 @@ $.widget("jai.wansetup", {
                 .prop("name","wan_mtu")
                 .prop("type","text")
             )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wan_mtuLabel")
+            )
           )
         ) //end MTU row
         .append( $(document.createElement('tr') )
@@ -337,6 +376,10 @@ $.widget("jai.wansetup", {
                 .prop("id","wan_mac")
                 .prop("name","wan_mac")
                 .prop("type","text")
+            )
+            .append(
+              $(document.createElement('label')).addClass('errorLabel')
+              .prop("id", "wan_macLabel")
             )
           )
         ) //end Mac row
@@ -363,27 +406,27 @@ $.widget("jai.wansetup", {
 });
 
 $(function(){
-	//instatiate widgets on document ready
-	$('#wansetup').wansetup({ conf: wan });
-	
-	//alert(('input[name=dns_server1]').val());
-	//alert();
-	for (i=0; i<4; i++){
-		//$('#dns_servers').find('li').eq(i).find('input').val(dns.servers[i]);
-		$('input[name=dns_server'+ (i+1) +']').ipspinner({
-		min: '0.0.0.1',
-		max: '255.255.255.254',
-		change: function(event,ui){ 
-			spinnerConstraint(this);
-		}
-	}).ipspinner('value',dns.servers[i]);
-	
-	
-		
-		$('#dns_servers').find('li').eq(i).find('a').click(function(el){
-			$(el.target).parent().find('input').val('');
-		});
-	}
+  //instatiate widgets on document ready
+  $('#wansetup').wansetup({ conf: wan });
+  
+  //alert(('input[name=dns_server1]').val());
+  //alert();
+  for (i=0; i<4; i++){
+    //$('#dns_servers').find('li').eq(i).find('input').val(dns.servers[i]);
+    $('input[name=dns_server'+ (i+1) +']').ipspinner({
+    min: '0.0.0.1',
+    max: '255.255.255.254',
+    change: function(event,ui){ 
+      spinnerConstraint(this);
+    }
+  }).ipspinner('value',dns.servers[i]);
+  
+  
+    
+    $('#dns_servers').find('li').eq(i).find('a').click(function(el){
+      $(el.target).parent().find('input').val('');
+    });
+  }
 })
 
 
