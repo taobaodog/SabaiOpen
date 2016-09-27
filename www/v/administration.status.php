@@ -45,13 +45,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 var data, fullinfo;
 var dnsraw='<?php
 	$vpn_stat=exec("uci get sabai.vpn.status");
-	$servers=exec("uci get dhcp.@dnsmasq[0].server");
-	if ( ($vpn_stat == 'Connected') &&  ($servers != '') ) {
-		echo "$servers";
+	if ( ($vpn_stat == 'Connected') && (filesize('/tmp/resolv.conf.vpn') != 0) ) {
+		$servers=exec("cat /tmp/resolv.conf.vpn | grep nameserver | awk '{print $2}' | tr '\n' ' ' ");
 	} else {
 		$servers=exec("cat /tmp/resolv.conf.auto | grep nameserver | awk '{print $2}' | tr '\n' ' ' ");
-    	echo "$servers";
 	}
+  echo "$servers";
     ?>';
 var array = JSON.stringify(dnsraw.split(" "));
 var dnsfin= "{\"servers\"" + ":" + array + "}";
