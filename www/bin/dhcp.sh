@@ -11,9 +11,12 @@ action=$1
 
 #path to config files
 UCI_PATH=""
+# default route
+def_setting="$(uci $UCI_PATH get sabai.dhcp.default)"
 
 _no_data(){
-	echo '{"aaData": []}' > /www/libs/data/dhcp.json
+	
+	echo '{"aaData": [], "defSetting": "'$def_setting'"}' > /www/libs/data/dhcp.json
 	exit 0;
 }
 
@@ -47,9 +50,8 @@ _rewrite(){
 	line_num=0
 	DT_RowId=0
 	data="$(uci get sabai.dhcp.tablejs)"
+	logger $data
 	json_load "$data"
-	json_select 1
-	json_select ..
 	json_get_keys keys
 	num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
 	cat /tmp/dhcp.leases | while read -r line ; do
@@ -67,7 +69,7 @@ _rewrite(){
 		fi
 
 		i=0
-		while [ $i -le $num_items ]
+		while [ "$i" -le "$num_items" ]
 		do
 			json_select $i
 			json_get_var mac_curr mac
@@ -97,7 +99,7 @@ _close() {
 	#close up the json format
 	sed -i '$ s/.$//' /www/libs/data/dhcp.json
 	sed -i '$ s/.$//' /tmp/dhcptable
-	echo -n ']}' >> /www/libs/data/dhcp.json
+	echo -n '], "defSetting": "'$def_setting'" }' >> /www/libs/data/dhcp.json
 	echo -n '}' >> /tmp/dhcptable
 	#save table as single line json
 	uci $UCI_PATH set sabai.dhcp.table="$(cat /www/libs/data/dhcp.json)"
@@ -112,7 +114,7 @@ _close() {
 
 #get dhcp information and build the dhcp table
 _get(){
-	[ -s "/tmp.dhcp.leases" ] || _no_data
+	[ -s "/tmp/dhcp.leases" ] || _no_data
 	if [ -e "/tmp/dhcp.leases_backup"  ]; then
 		#compare old data
 		diff /tmp/dhcp.leases_backup /tmp/dhcp.leases > /dev/null
@@ -205,8 +207,6 @@ done
 #parsing data from WEB UI
 data="$(cat /tmp/tmpdhcptable)"
 json_load "$data"
-json_select 1
-json_select ..
 json_get_keys keys
 num_items=$(echo $keys | sed 's/.*\(.\)/\1/')
 i=0

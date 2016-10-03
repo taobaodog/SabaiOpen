@@ -272,126 +272,18 @@ $.post('php/dhcp.php', {'act': 'get'})
   });
 });
 
-
-
-
-
-
-
-
-/*var settings;
-	$.widget("jai.devicelist", {
-  //Adding to the built-in widget constructor method - do this when widget is instantiated
-  _create: function(){
-    //TO DO: check to see if containing element has a unique id
-    
-    // BUILDING DOM ELEMENTS
-    $(this.element)
-    .prepend( $(document.createElement('table'))
-    	.addClass("listTable")
-    	.prop("id","list") 
-    	.width("100%")
-    	)
-
-    $('#list').dataTable({
-    	'bPaginate': false,
-    	'bInfo': false,
-    	'bFilter': false,
-    	"sAjaxSource": 'libs/data/dhcp.json',
-    	"aoColumns": [
-    	{ "sTitle": "Make Static", "mData":"static", 'sClass':'staticDrop' },
-      { "sTitle": "Route", "mData":"route", 'sClass':'routeDrop' },
-    	{ "sTitle": "Address", "mData":"ip", 'sClass':'plainText'  },
-    	{ "sTitle": "MAC", "mData":"mac" },
-    	{ "sTitle": "Name", "mData":"name", "sClass":"plainText"},
-    	{ "sTitle": "Lease Ends", "mData":"time" },
-      { "sTitle": "Status", "mData":"stat" }
-    	],
-
-    	'fnRowCallback': function(nRow, aData, iDisplayIndex, iDisplayIndexFull){
-    		$(nRow).find('.plainText').editable(
-    			function(value, settings){ return value; },
-    			{
-    				'onblur':'submit',
-    				'event': 'click',
-    				'placeholder' : 'Click to edit'
-    			}
-    			);
-
-        $(nRow).find('.staticDrop').editable(
-          function(value, settings){ return value; },
-          {
-          'data': " {'on':'on','off':'off'}",
-          'type':'select',
-          'onblur':'submit',
-          'placeholder':'off',
-          'event': 'click'
-          }
-          );
-
-          $(nRow).find('.routeDrop').editable(
-          function(value, settings){ return value; },
-          {
-          'data': " {'default':'default','local':'local','vpn_fallback':'vpn_fallback','vpn_only':'vpn_only','accelerator':'accelerator','tor':'tor'}",
-          'type':'select',
-          'onblur':'submit',
-          'placeholder':'default',
-          'event': 'click'
-          }
-          );
-
-    	} /* end fnRowCallback*/
-/*    })
-
-    this._super();
-    },
-
-   _destroy: function() {
-   this.element
-	.removeClass( "listTable" )
-	.text( "" );
-   },
-
-    refresh: function() {
-	this._destroy();
-	this._create();
-    }
-
-
-});
-*/
-/*$(function(){
-  //instatiate widgets on document ready
-  $('#devicelist').devicelist();
-  REFcall('get');
-})
-
- */
-
-/*
-function PORTresp(){ 
-  msg(res.rMessage); 
-  showUi(); 
-} 
-
-function STATICcall(){ 
-  var datatable = $('#list').DataTable();
-  datatable
-    .rows(':has(:checkbox:checked)')
-    .draw();
-//$('#rowclick2 tr').filter(':has(:checkbox:checked)').find('td');
-} */
-
 function DHCPcall(act){ 
     E("act").value=act;
       hideUi("Adjusting DHCP settings..."); 
       // Pass the form values to the php file 
-      $.post('php/dhcp.php', {'act': 'save'})
-      .done(function(res) {
-        eval(res);                                                                                                                                   
-        msg(res.msg);                                                                            
-        showUi();
-      });
+      setTimeout(function(){
+        $.post('php/dhcp.php', {'act': act })
+          .done(function(res) {
+            eval(res);
+            msg(res.msg);                                                                            
+            showUi();
+          });
+      }, 7000);
       // Important stops the page refreshing
       return false;
 }
