@@ -228,9 +228,9 @@ $.post('php/dhcp.php', {'act': 'get'})
     divContainer += "<div id='defaultButtons' class='btn-group' data-toggle='buttons'>"
     divContainer +=  "<label class='btn btn-default'><input type='radio' name='none' id='none' autocomplete='off'> None</label>"
     divContainer +=  "<label class='btn btn-default'><input type='radio' name='local' id='local' autocomplete='off'>Local</label>"
-    divContainer +=  "<label class='btn btn-default'><input type='radio' name='vpn' id='vpn' autocomplete='off'>VPN</label>"
+    divContainer +=  "<label class='btn btn-default'><input type='radio' name='vpn_only' id='vpn' autocomplete='off'>VPN</label>"
 
-    divContainer +=  "<label class='btn btn-default'><input type='radio' name='accell' id='acc' autocomplete='off'>Accellerator</label></div></div>"
+    divContainer +=  "<label class='btn btn-default'><input type='radio' name='accellerator' id='acc' autocomplete='off'>Accellerator</label></div></div>"
     divContainer += "<div class= 'col-sm-offset-4 col-sm-3 col-md-offset-4 col-md-3 col-lg-offset-4 col-lg-3'>Assign all to: "
     divContainer += "<select id='changeSelect' class='form-control'>" + options + "</select></div>"
     divContainer += "</div>"
@@ -239,14 +239,14 @@ $.post('php/dhcp.php', {'act': 'get'})
 
 
     table.on( 'xhr', function () {  
-      if(typeof defaultSetting === 'undefined'){
-        defaultSetting = table.ajax.json().defaultSetting;
-      }else if(defaultSetting != table.ajax.json().defaultSetting){
-        $("#"+defaultSetting).parent().removeClass('active');  
-        defaultSetting = table.ajax.json().defaultSetting;
-      }
-      $("#"+defaultSetting).parent().addClass('active');
-    });
+     if(typeof defaultSetting === 'undefined'){
+       defaultSetting = table.ajax.json().defSetting;
+     }else if(defaultSetting != table.ajax.json().defSetting){
+       $("#"+defaultSetting).parent().removeClass('active');  
+       defaultSetting = table.ajax.json().defSetting;
+     }
+     $("#"+defaultSetting).parent().addClass('active');
+   });
 
     
   })();

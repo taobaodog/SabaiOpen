@@ -221,6 +221,10 @@ do
 	json_get_var name name
 	json_get_var leasetime leasetime
 
+	if [ "$route" = "default" ] && [ "$def_setting" != "none" ]; then
+		route="$def_setting"
+	fi
+
 	#clear firewall rules
 	rule_name=$(uci show firewall | grep "$ip" | cut -d "[" -f2 | cut -d "]" -f1 | tail -n 1)
 	[ -n "$rule_name" ] && uci delete firewall.@rule[$rule_name] && uci commit firewall
@@ -288,9 +292,11 @@ rm /tmp/tmpdhcptable
 
 # Creates a json object creating dhcp table data
 _json() {
+	local def_setting=`cat /tmp/defSetting | tr -d '"'`
 	jsData=$(cat /tmp/tablejs)
 	#save table as single line json
 	uci $UCI_PATH set sabai.dhcp.tablejs="$jsData"
+	uci $UCI_PATH set sabai.dhcp.default="$def_setting"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
 }
