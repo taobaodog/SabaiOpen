@@ -12,6 +12,11 @@ action=$1
 #path to config files
 UCI_PATH=""
 
+_no_data(){
+	echo '{"aaData": []}' > /www/libs/data/dhcp.json
+	exit 0;
+}
+
 #Set config for static attribute
 _static_on(){
 	uci add dhcp host
@@ -107,11 +112,10 @@ _close() {
 
 #get dhcp information and build the dhcp table
 _get(){
-
+	[ -s "/tmp.dhcp.leases" ] || _no_data
 	if [ -e "/tmp/dhcp.leases_backup"  ]; then
 		#compare old data
 		diff /tmp/dhcp.leases_backup /tmp/dhcp.leases > /dev/null
-		# if [ "$?" -eq 1 ]; then
 		if true; then
 			echo -n '{"aaData": ['> /www/libs/data/dhcp.json
 			echo -n '{' > /tmp/dhcptable
