@@ -92,9 +92,9 @@ switch ($act){
 		echo (file_exists("/var/log/ovpn_web.log") ?  str_replace(array("\"","\r"),array("'","\n"),file_get_contents("/var/log/ovpn_web.log")) : "No log."); 
   		break;  
   case "check": 
-  	$line=exec("sh /www/bin/ovpn.sh $act");
+  	$line=exec("/www/bin/ovpn.sh $act");
   	if( strpos($line,'started.') == true ) {
-  		exec("sh /www/bin/ovpn.sh dns");
+  		exec("/www/bin/ovpn.sh dns");
   	}
   	echo $line; break;
 }

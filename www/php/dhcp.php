@@ -14,15 +14,10 @@ if ($act == "save") {
 	file_put_contents("/tmp/tablejs", $json_jshn);
 	exec("/www/bin/dhcp.sh json");
 	$res=exec("sh /www/bin/dhcp.sh save 2>&1", $out);
-
-	//cleanup workspace
-	exec("rm /tmp/table*");
-
-	// Send completion message back to UI
-	echo "$res";
-
 } elseif ($act == "get") {
 	//sabai.dhcp.table is constructed and assigned
-	exec("/www/bin/dhcp.sh get");
+	$res = exec("/www/bin/dhcp.sh get");
 }
+	// Send completion message back to UI
+	echo "$res";
 ?>
