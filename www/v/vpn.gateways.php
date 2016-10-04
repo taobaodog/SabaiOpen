@@ -173,7 +173,7 @@ readonly - for fields with readonly attribute.
     "local",
     "vpn_fallback",
     "vpn_only",
-    "accellerator",
+    "accelerator",
     "tor"
     ]
   }];
@@ -228,9 +228,9 @@ $.post('php/dhcp.php', {'act': 'get'})
     divContainer += "<div id='defaultButtons' class='btn-group' data-toggle='buttons'>"
     divContainer +=  "<label class='btn btn-default'><input type='radio' name='none' id='none' autocomplete='off'> None</label>"
     divContainer +=  "<label class='btn btn-default'><input type='radio' name='local' id='local' autocomplete='off'>Local</label>"
-    divContainer +=  "<label class='btn btn-default'><input type='radio' name='vpn_only' id='vpn' autocomplete='off'>VPN</label>"
+    divContainer +=  "<label class='btn btn-default'><input type='radio' name='vpn_only' id='vpn_only' autocomplete='off'>VPN</label>"
 
-    divContainer +=  "<label class='btn btn-default'><input type='radio' name='accellerator' id='acc' autocomplete='off'>Accellerator</label></div></div>"
+    divContainer +=  "<label class='btn btn-default'><input type='radio' name='accelerator' id='accelerator' autocomplete='off'>Accelerator</label></div></div>"
     divContainer += "<div class= 'col-sm-offset-4 col-sm-3 col-md-offset-4 col-md-3 col-lg-offset-4 col-lg-3'>Assign all to: "
     divContainer += "<select id='changeSelect' class='form-control'>" + options + "</select></div>"
     divContainer += "</div>"

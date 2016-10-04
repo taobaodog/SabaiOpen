@@ -299,6 +299,7 @@ _json() {
 	uci $UCI_PATH set sabai.dhcp.default="$def_setting"
 	uci $UCI_PATH commit sabai
 	cp -r /etc/config/sabai /configs/
+	rm -r /tmp/defSetting > /dev/null
 }
 
 
