@@ -80,7 +80,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   var hidden = E('hideme'); 
   var hide = E('hiddentext');
 
-function PORTcall(){ 
+function PORTcall(){
+  setTimeout(function(){ 
    $.post('php/portforwarding.php', function(res){
     if( res != "" ){
       eval(res);                                                                                                                                   
@@ -88,6 +89,7 @@ function PORTcall(){
     };
     showUi();
    });
+  }, 7000);
    // Important stops the page refreshing
    return false;
 } 
@@ -104,121 +106,6 @@ $(window).bind('beforeunload',function(){
    return "";
     }
 });
-
-/* function DELcall(){ 
-  var datatable = $('#list').DataTable();
-  datatable
-    .rows(':has(:checkbox:checked)')
-    .remove()
-    .draw();
-//$('#rowclick2 tr').filter(':has(:checkbox:checked)').find('td');
-} */
-
-/*var lt =  $('#list').dataTable({
-  'bPaginate': false,
-  'bInfo': false,
-  'bStateSave': false,
-  'bProcessing': true,
-  'sAjaxSource': 'libs/data/port_forwarding.json',
-  'aoColumns': [
-  { 'sTitle': 'Select',       'mData': null,      "sDefaultContent": '<input type="checkbox" />' },
-  { 'sTitle': 'On/Off',       'mData':'status',     'sClass':'statusDrop'},  
-  { 'sTitle': 'Proto',        'mData':'protocol',   'sClass':'protoDrop' },
-  { 'sTitle': 'Gateway',          'mData':'gateway',    'sClass':'vpnDrop' },
-  { 'sTitle': 'Source Address',  'mData':'src',        'sClass':'plainText'  },
-  { 'sTitle': 'Source Port',     'mData':'ext',        'sClass':'plainText'   }, 
-  { 'sTitle': 'Destination Port',     'mData':'int',        'sClass':'plainText' },
-  { 'sTitle': 'Destination Address',  'mData':'address',    'sClass':'plainText'  },
-  { 'sTitle': 'Description',  'mData':'description','sClass':'plainText'  }
-  ],
-
-  'fnRowCallback': function(nRow, aData, iDisplayIndex, iDisplayIndexFull){
-    $(nRow).find('.plainText').editable(
-      function(value, settings){ return value; },
-      {
-        'onblur':'submit',
-        'event': 'click',
-        'placeholder' : 'Click to edit'
-      }
-      );
-
-    $(nRow).find('.statusDrop').editable(
-      function(value, settings){ return value; },
-      {
-        'data': " {'on':'on','off':'off'}",
-        'type':'select',
-        'onblur':'submit',
-        'event': 'click'
-      }
-      );
-
-    $(nRow).find('.protoDrop').editable(
-      function(value, settings){ return value; },
-      {
-        'data': " {'UDP':'UDP','TCP':'TCP', 'Both':'Both'}",
-        'type':'select',
-        'onblur':'submit',
-        'event': 'click'
-      }
-      );
-
-    $(nRow).find('.vpnDrop').editable(
-      function(value, settings){ return value; },
-      {
-        'data': " {'LAN':'LAN', 'WAN':'WAN','OVPN':'OVPN', 'PPTP':'PPTP'}",
-        'type':'select',
-        'onblur':'submit',
-        'event': 'click'
-      }
-      );
-
-  } /* end fnRowCallback*/
-//}) /* end datatable*/
-
-
-/*$('#add').click( function (e) {
-  e.preventDefault();
-  lt.fnAddData(
-  { 
-    "status": 'on', 
-    "protocol": 'Both',
-    "gateway": 'WAN',
-    "src": "24.24.24.24",
-    "ext": "15",
-    "int": "56",
-    "address": "192.168.199.2",
-    "description": "Test Data" 
-  }
-  );
-
-});
-
-function ROWcall(){
-  var TableData=new Array();
-  $('#list tr').each(function(row, tr){
-    if ($(tr).find('td:eq(0)').text() == "checked") {
-      $(nRow).addClass('row_selected');
-      list.row('row_selected').remove().draw( false );
-    };
-  });
-};
-
-
-function saveGateway(){
-  toServer('Save this.');
-};*/
-
-  // function toggleExplain(){
-
-  //   $("#description").toggle();
-  //   if( $("#toggleDesc").text()=="Show Description") {
-  //     $("#description").show();
-  //     $("#toggleDesc").text("Hide Description");
-  //   } else {
-  //     $("#description").hide();
-  //     $("#toggleDesc").text("Show Description");
-  //   }
-  // }
 
 
 $(document).ready(function() {
