@@ -2,7 +2,7 @@
 # Sabai Technology - Apache v2 licence
 # Copyright 2016 Sabai Technology
 UCI_PATH=""
-
+device="uci get sabai.general.hostname"
 echo "SABAI:> Simulate OS upgrade"
 TMP_FILE='/tmp/upgrade/tmp.txt'
 
@@ -17,8 +17,12 @@ else
 	echo ERROR 01 - Directory was not allocated.
 	exit 1
 fi
+if [ "$device" = "SabaiOpen" ]; then
+	tar -C /tmp/upgrade -xf /tmp/upgrade/sabai-bundle-secured.tar
+else
+	tar -C /tmp/upgrade -xf /tmp/upgrade/sabai-acc-bundle-secured.tar
+fi
 
-tar -C /tmp/upgrade -xf /tmp/upgrade/sabai-bundle-secured.tar
 if [ -s "$CHECK_DIR/sabai-bundle.tar" ] && [ -e "$CHECK_DIR/signature" ]; then
 	echo Firmware is ready for verification.
 else
