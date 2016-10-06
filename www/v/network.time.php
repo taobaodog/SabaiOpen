@@ -210,13 +210,16 @@ function geoLocationSuccess(position){
 
 
 $("#saveButton").on("click", function() {
-  console.log($("#fe").serialize())
+  hideUi("Applying settings..."); 
   setTimeout(function(){
     $.post('php/time.php', $("#fe").serialize(), function(res){
       if(res!=""){
         TIMEresp(res);
       };
-    });
+    })
+    .done(function(res) {                                                                            
+        showUi();
+      })
   },7000);
 })
 
