@@ -1,26 +1,24 @@
-From 45f18e448b26e279a724f4ca2df059c42b451e0f Mon Sep 17 00:00:00 2001
+From 51fc668f20dc71aeffd642bcc8994273243ff153 Mon Sep 17 00:00:00 2001
 From: Kateryna Pietukhova <kateryna.pietukhova@sirinsoftware.com>
-Date: Wed, 5 Oct 2016 09:08:41 -0400
-Subject: [PATCH] New file name for ACC
+Date: Thu, 6 Oct 2016 09:12:27 -0400
+Subject: [PATCH] New filename for ACC
 
+Signed-off-by: Kateryna Pietukhova <kateryna.pietukhova@sirinsoftware.com>
 ---
- target/linux/x86/image/Makefile | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ target/linux/x86/image/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/target/linux/x86/image/Makefile b/target/linux/x86/image/Makefile
-index 4a13dba..ff7cbe8 100644
+index 4a13dba..f07a9e2 100644
 --- a/target/linux/x86/image/Makefile
 +++ b/target/linux/x86/image/Makefile
-@@ -211,7 +211,11 @@ define Image/Build/UpgradeImg
+@@ -211,7 +211,8 @@ define Image/Build/UpgradeImg
  	tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle.tar rootfs-sabai-img.gz $(IMG_PREFIX)-vmlinuz
  	openssl dgst -sha256 <  $(BIN_DIR)/sabai-bundle.tar > $(BIN_DIR)/hash
  	openssl rsautl -sign -inkey $(SABAI_KEYS)/private.pem -keyform PEM -in $(BIN_DIR)/hash  > $(BIN_DIR)/signature
 -	tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle-secured.tar sabai-bundle.tar signature
-+	ifeq ($(DEVICE_TYPE),ACC)
-+		tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-acc-bundle-secured.tar sabai-bundle.tar signature
-+	else
-+		tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle-secured.tar sabai-bundle.tar signature
-+	ifneq
++	[ "$(DEVICE_TYPE)" = "ACC" ] && tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-acc-bundle-secured.tar sabai-bundle.tar signature \
++				     || tar -C $(BIN_DIR) -cf $(BIN_DIR)/sabai-bundle-secured.tar sabai-bundle.tar signature
  	rm $(BIN_DIR)/hash
  endef
  
