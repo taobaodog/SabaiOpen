@@ -15,7 +15,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       <tr>
         <td>Address</td>
         <td><input id='traceAddress' name='traceAddress' value='google.com'></td>           
-        <td><input type='button' id='trace' value='Trace' onClick='TRACEcall()'></td>
+        <td><button class='btn btn-default btn-sm' type='button' id='trace' value='Trace' onClick='TRACEcall()'>Trace</button></td>
       </tr>
       <tr>
         <td>Max Hops</td>

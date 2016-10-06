@@ -14,7 +14,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       <tr>
         <td>Address</td>
         <td><input id='pingAddress' name='pingAddress' value='google.com'></td>           
-        <td><input type='button' id='ping' value='Ping' onClick='getResults()'></td>
+        <td><button class='btn btn-default btn-sm' type='button' id='ping' value='Ping' onClick='getResults()'>Ping</button></td>
       </tr>
       <tr>
         <td>Ping Count</td>

@@ -227,7 +227,9 @@ $('#portTable').dataTable({
     select: 'single',
     altEditor: true,    
     responsive: true, 
-    
+    language: {
+      "emptyTable": "No ports have been forwarded."
+    }, 
     buttons: [{
             text: 'Create',
             name: 'add'        

@@ -194,6 +194,9 @@ $.post('php/dhcp.php', {'act': 'get'})
     select: "single",
     altEditor: true,
     responsive: true,
+    language: {
+      "emptyTable": "No connected hosts."
+    },
     buttons: [{ 
             extend: 'selected', 
             text: 'Edit',
@@ -208,7 +211,10 @@ $.post('php/dhcp.php', {'act': 'get'})
    //Auto-refresh of the table
   setInterval( function () {
     if($('#cancelButton').is(':disabled')){
-    table.ajax.reload();
+      $.post('php/dhcp.php', {'act': 'get'})
+      .done(function(res){
+      table.ajax.reload();
+      }
     console.log("Datatable auto-reloaded")
     }
   }, 5000 );

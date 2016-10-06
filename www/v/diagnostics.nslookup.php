@@ -14,7 +14,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 			 	<td>Domain</td>
 			 	<td>
 			 		<input id='ns_domain' name='ns_domain' value='www.google.com'/>
-			 		<input type='button' value='Lookup' id='Lookup' onclick='lookup()'>
+			 		<button class='btn btn-default btn-sm' type='button' value='Lookup' id='Lookup' onclick='lookup()'>Lookup</button>
 			 	</td>
 			 </tr>
 		</tbody></table>

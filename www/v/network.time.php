@@ -300,7 +300,10 @@ $('#NTPTable').dataTable({
     columns: columnDefs,
     select: 'single',
     altEditor: true,    
-    responsive: true, 
+    responsive: true,
+    language: {
+      "emptyTable": "No data available"
+    }, 
     buttons: [{
             text: 'Create',
             name: 'add'        

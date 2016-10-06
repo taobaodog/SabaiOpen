@@ -18,7 +18,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 							</tr>
 			</tbody>
 		</table>
-            <input type='button' class='button' value='Execute' onclick='CONSOLEcall()'> <br>
+            <button class='btn btn-default btn-sm' type='button' class='button' value='Execute' onclick='CONSOLEcall()'>Execute</button>
+             <br>
             <span id='messages' class='response'></span>
         </div>
     <div id='hideme'>

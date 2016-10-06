@@ -12,7 +12,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     <span class='controlBoxTitle'>Current Routing Table</span>
     <div class='controlBoxContent'>
         <table id='resultTable' class='listTable'></table>
-        <input type='button' id='reload' value='Reload' onclick='route();'>
+        <button class='btn btn-default btn-sm' type='button' id='reload' value='Reload' onclick='route();'>Reload</button>
       
     </div> <!--end control box content -->
 </div> <!--end control box  -->

@@ -554,9 +554,15 @@
       {
         var that = this;
         var dt = this.s.dt;
-
+        var highestID;
+        
         //Finding the biggest numerical ID, incrementing it and assigning the new ID to the new row.
-        var highestID = Math.max.apply(Math, dt.column(0).data()) + 1;
+        if(typeof dt.column(0).data() === 'undefined'){
+          highestID = 0;
+        }else{
+          highestID = Math.max.apply(Math, dt.column(0).data()) + 1;
+        }
+
         var rowID = "" + highestID;
         //Containers with data from table columns
         var columnIds = [];
