@@ -41,7 +41,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </table>
         </div>
         </div>
-<input type='button' value='Save' onclick='DMZcall()'><span id='messages'>&nbsp;</span>
+<button class='btn btn-default btn-sm' type='button' value='Save' onclick='DMZcall()'>Save</button><span id='messages'>&nbsp;</span>
 <p>
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>

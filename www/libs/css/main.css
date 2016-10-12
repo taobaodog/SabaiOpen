@@ -356,7 +356,7 @@ tr .slideToggleViewport {
 	height: 1.75em;
 	overflow: hidden;
 	position: relative;
-	width:3.8em;
+	width:4.2em;
 }
 
 .slideToggleButton {
@@ -1069,4 +1069,8 @@ textarea {
 .ui-dialog-titlebar-close {                                         
   visibility: hidden;                                                                                        
 }  
+
+.adminTextBox{
+	margin-left: 5px;
+}
 
