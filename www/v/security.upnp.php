@@ -64,28 +64,28 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <div class='controlBox'><span class='controlBoxTitle'>Allowed UPnP Ports*</span>
 	<div class='controlBoxContent'>
-		<table><tbody>
-			<tr><td>Internal Ports</td><td><input id='intmin' name='intmin' class='shortinput'/> - <input id='intmax' name='intmax' class='shortinput'/>
-			</tr>
+	<table>
+		<tbody>
 			<tr>
-				<td> </td>
-				<td>
-				<span class='xsmallText'>Valid port ranges are from 2 to 65535</span></td>
-				</td>
+				<td>Internal Ports</td>
+				<td><input id='intmin' name='intmin' class='shortinput'/> - <input id='intmax' name='intmax' class='shortinput'/>
 			</tr>
-			<tr><td><br> </td><td><br> </td></tr>
-			<tr><td>External Ports</td><td><input id='extmin' name='extmin' class='shortinput'/> - <input id='extmax' name='extmax' class='shortinput'/>
-			</tr>
+
+			<tr><td></td><td><label id='intminLabel' name='intLabel' class='errorLabel'/></td></tr>
+			<tr><td></td><td><label id='intmaxLabel' name='intLabel' class='errorLabel'/></td></tr>
+			<tr><td><br></td><td></td></tr>
 			<tr>
-				<td> </td>
-				<td>
-					<span class='xsmallText'>Setting lower bound to less than 1024 may interfere with network services</span>
-				</td>
+				<td>External Ports</td>
+				<td><input id='extmin' name='extmin' class='shortinput'/> - <input id='extmax' name='extmax' class='shortinput'/>
 			</tr>
-			<tr>
-				<td> </td>
-			</tr>
-		</tbody></table>
+			<tr><td><br></td><td><label id='extminLabel' name='extminLabel' class='errorLabel'/></td></tr>
+			<tr><td></td><td><label id='extmaxLabel' name='extmaxLabel' class='errorLabel'/></td></tr>
+		</tbody>
+	</table>
+		<br>
+		<span class='xsmallText'> *Values must be between 1024-65535 and startport must be less than endport</span>
+		<br>
+		<span class='xsmallText'> *Setting lower bound to less than 1024 may interfere with network services</span>
 		<br>
 		<span class='xsmallText'> *UPnP clients will only be allowed to map ports in the external range to ports in the internal range</span>
 
@@ -216,23 +216,84 @@ function UPNPresp(res){
 //end of wm add
 
 	$('#intmin').spinner({ min: 1024, max: 65534 }).spinner('value',upnp.intmin);
-		$('#intmax').spinner({ min: 1025, max: 65535}).spinner('value',upnp.intmax);
+		$('#intmax').spinner({ min: 1025, max: 65535 }).spinner('value',upnp.intmax);
 		$('#extmin').spinner({ min: 1024, max: 65534 }).spinner('value',upnp.extmin);
 		$('#extmax').spinner({ min: 1025, max: 65535 }).spinner('value',upnp.extmax);
 
 	function changeRange(){
 		if($('#advanced').is(':checked')){
 			$('#intmin').spinner({ min: 2, max: 65534 });
-			$('#intmax').spinner({ min: 3, max: 65535});
+			$('#intmax').spinner({ min: 3, max: 65535 });
 			$('#extmin').spinner({ min: 2, max: 65534 });
 			$('#extmax').spinner({ min: 3, max: 65535 });
 		} else {
 			$('#intmin').spinner({ min: 1024, max: 65534 });
-			$('#intmax').spinner({ min: 1025, max: 65535});
+			$('#intmax').spinner({ min: 1025, max: 65535 });
 			$('#extmin').spinner({ min: 1024, max: 65534 });
 			$('#extmax').spinner({ min: 1025, max: 65535 });
 		}
 
 	};
+
+//validate the fields
+$(function() {
+  var errorLabel = "";
+$( "#fe" ).validate({
+  rules: {
+    intmin: {
+      number: true,
+      required: true,
+      range: [1024, 65534]
+    },
+    intmax: {
+      number: true,
+      required: true,
+      range: [1025, 65535]
+    },
+    extmin: {
+      number: true,
+      required: true,
+      range: [1024, 65534]
+    },
+    extmax: {
+      number: true,
+      required: true,
+      range: [1025, 65535]
+    }
+  },
+  messages: {
+    intmin:{
+    	required: "*Startport is required.",
+    	range: "*Startport must be higher than 1024 and less than endport.",
+    	number: "*Startport must be a valid number."
+    },
+    intmax:{
+    	required: "*Endport is required.",
+    	range: "*Endport must be less than 65535 and higher than startport.",
+    	number: "*Endport must be a valid number."
+    },
+    extmin:{
+    	required: "*Startport is required.",
+    	range: "*Startport must be higher than 1024 and less than endport.",
+    	number: "*Startport must be a valid number."
+    },
+    extmax:{
+    	required: "*Endport is required.",
+    	range: "*Endport must be less than 65535 and higher than startport.",
+    	number: "*Endport must be a valid number."
+    }
+	},
+    //Changing error position to custom label
+    errorPlacement: function(error, element) {
+		errorLabel = "#" + element[0].name + "Label"
+        $(errorLabel).text(error[0].innerHTML);
+        $(errorLabel).show();
+    },
+    success: function(error) {
+        $(errorLabel).hide();
+    }
+  });
+
+});
 
 </script>
