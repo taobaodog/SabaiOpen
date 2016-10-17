@@ -4,7 +4,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   header( "Location: $url" );     
 }
 ?>
-<div class='pageTitle'>Wireless: Radio</div>
+<div class='pageTitle'>
+<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  Wireless: Radio
+</div>
 <!--  TODO: align td widths-->
 <form id="fe">
 <input type='hidden' id='form_wl0' name='form_wl0' value='wl0'>
@@ -52,6 +55,27 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </form>
 
 <script type='text/ecmascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p>This page provides Wi-Fi related settings that can be customized. There are to Wi-Fi spots that can be managed by user. Guest Wi-Fi WL1 spot is isolated from main one WL0. It is supposed to protect LAN from untrusted hosts.</p>"
+    help += "<br>"    
+    help += "<p><b>Mode -</b> user can turn on or turn off access point(AP). By default both acess point are available.</p>"
+    help += "<br>"    
+    help += "<p><b>SSID -</b> name of access point. </p>"
+    help += "<br>"    
+    help += "<p><b>Channel mode -</b> Wi-Fi starts automatically with 1st channel. User can chose manual mode and take another one from the list.Channel width can be set manual as well. These parameters will be aplied for guest AP too.</p>"
+    help += "<br>"    
+    help += "<p><b>Encryption -</b> can be set in defferent ways or turned off at all. None turns off encryption and routers becomes very vulnarable. It is NOT recommended to turn off encryption. Chose security protocol and set the password.</p>"
+    help += "<br>"    
+    help += "<p><b>Key -</b> password for AP to secure network.</p>"
+    help += "<br>"
+   
+
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
 
 //Detecting different changes on page
 //and displaying an alert if leaving/reloading 

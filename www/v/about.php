@@ -1,6 +1,12 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {  
+	$url = "/index.php?panel=administration&section=about";
+	header( "Location: $url" );     
+}
+?>
 <div class='pageTitle'>About</div>
 
-<div class='controlBox'><span class='controlBoxTitle'>About JaiRo</span>
+<div class='controlBox'><span class='controlBoxTitle'>About SabaiOpen</span>
 	<div class='controlBoxContent'>
 	
 		<p class='smallText'> SabaiOpen is an open source project created with the goal of being a easy to use but highly powerful interface to OpenWRT. The software is created to run on mips through 64-bit x86 hardware and driven by you, the end user.</p>

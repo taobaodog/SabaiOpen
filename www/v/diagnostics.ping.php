@@ -4,7 +4,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-<form id='fe'><div class='pageTitle'>Diagnostics: Ping</div>
+<form id='fe'><div class='pageTitle'>
+  <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  Diagnostics: Ping
+</div>
 
 <!-- TODO: -->
 
@@ -38,6 +41,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <script src="libs/jquery.dataTables.min.js"></script>
 <script type='text/ecmascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Ping</b> is a diagnostics tool of network connection. User can test connection adjusting adsress, count and packet size parameters.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
 
 function getResults(){
   $('#results').show();

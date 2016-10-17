@@ -10,7 +10,10 @@ DDNS: { ip, interval, services }
 -->
 <form id="fe">
 <input type='hidden' id='act' name='act'>
-<div class='pageTitle'>Network: WAN</div>
+<div class='pageTitle'>
+  <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  Network: WAN
+</div>
 <div class='controlBox'><span class='controlBoxTitle'>WAN</span>
   <!-- this div gets populated by widget -->
   <div class='controlBoxContent' id='wansetup'>
@@ -68,7 +71,24 @@ DDNS: { ip, interval, services }
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
+
 <script>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>WAN -</b> Wide Area Network. This network has to provide Internet access and route devices from LAN.</p>"
+    help += "<br>"
+    help += "<p><b>MTU -</b> Maximum Transmission Unit. This is the maximum size (in bytes) a single packet could have. Ethernet default is 1500. Maximum possible path MTU for IPv4 is 65536 (64 KiB) and minimum is 68. Changing MTU a bit may increase your connection speed, but it is recommended to keep the default one or consult your ISP.</p>"
+    help += "<br>"
+    help += "<p><b>MAC Address -</b> MAC Address Media Access Control Address, MAC addresses are distinct addresses on the device level and is comprised of a manufacturer number and serial number.</p>"
+    help += "<br>"
+    help += "<p><b>DNS -</b> DNS Domain Name System, translates people-friendly domain names (www.google.com) into computer-friendly IP addresses (1.1.1.1). A DNS is especially important for VPNs as some countries return improper results for domains intentionally as a way of blocking that web site.</p>"
+ 
+
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
 
 
 //Detecting different changes on page

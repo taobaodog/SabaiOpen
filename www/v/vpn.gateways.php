@@ -21,7 +21,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <form id="fe">
 <input type='hidden' id='dhcptable' name='dhcptable'>
 <input type='hidden' id='act' name='act'>
-	<div class='pageTitle'>Network: DHCP/Gateways</div>
+	<div class='pageTitle'>
+    <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+ Network: DHCP/Gateways
+</div>
 
 <div class='controlBox'>
 	<span class='controlBoxTitle'>Summary</span>
@@ -84,6 +87,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </body>
 </html>
 <script type='text/javascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Gateway - </b>A machine that serves internet; on most LANs this is the device the router's WAN connects to (like your modem). Sabai routers have the special gateway feature which gives the user simple access to both their local ISP's gateway and their remote VPN's gateway. SabaiOpen affords to set Accelerator as gateway to enhance facilities of network. New feature is anonymizing agateway TOR.</p>"
+   
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
 
   var hidden, hide,res;
   var f = E('fe'); 

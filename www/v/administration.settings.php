@@ -7,7 +7,10 @@ $proxystatus = exec("uci get sabai.proxy.status");
 ?>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
-<div class='pageTitle'>Settings</div>
+<div class='pageTitle'>
+	 <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Settings
+</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Router Name</span>
 	<div class='controlBoxContent'>
@@ -81,6 +84,20 @@ $proxystatus = exec("uci get sabai.proxy.status");
         </div>
     </div>
 <script type="text/javascript">
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Router Name</b> and <b>Password</b> can be updated by user. <b>Password MUST be updated immediately after installation.</b></p>"
+    help += "<br>"
+    help += "<p><b>Power off</b> or <b>restart</b> your device direct from WEB UI.</p>"
+    help += "<br>"
+    help += "<p><b>Proxy</b> listening to port 8080. Turned off by default.</p>"
+    help += "<br>"
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 var f = E('fe'); 
 var hidden = E('hideme'); 
 var hide = E('hiddentext');

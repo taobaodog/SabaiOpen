@@ -1070,7 +1070,23 @@ textarea {
   visibility: hidden;                                                                                        
 }  
 
-.adminTextBox{
-	margin-left: 5px;
+.helpBtn {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    border: 0;
+    background: transparent;
+    width: 32px;
+    height: 32px;
+    background-size: 100%;
+    cursor:pointer;
+}
+
+.helpModal {
+	background-color: #ededed;
+	border: 2px solid #bdbdbd;
+	border-radius: 5px;
+	padding: 10px;
 }
 

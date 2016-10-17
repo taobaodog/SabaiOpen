@@ -13,7 +13,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 </style>
 
-<div class='pageTitle'>Diagnostics: Logs</div>
+<div class='pageTitle'>
+	  <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Diagnostics: Logs
+</div>
 
 <div class='controlBox'>
 	<span class='controlBoxTitle'>Logs</span>
@@ -66,6 +69,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
 
 <script type='text/javascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Logging</b> is open for user. User can scroll log on page or download as a file to PC.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 var hidden, hide, pForm = {};
 var hidden = E('hideme');
 var hide = E('hiddentext');

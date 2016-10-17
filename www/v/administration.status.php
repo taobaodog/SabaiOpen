@@ -4,7 +4,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-<div class='pageTitle'>Network: Status</div>
+<div class='pageTitle'>
+  <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Network: Status
+</div>
 <!--	TODO:
 
 -->
@@ -42,6 +45,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
 
 <script>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p>The Status page contains a complete system overview.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 var data, fullinfo;
 var dnsraw='<?php
 	$vpn_stat=exec("uci get sabai.vpn.status");

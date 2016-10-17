@@ -13,7 +13,10 @@ Don't allow multiple lan widgets on same page if htey are all operating on the s
 -->
 <form id="fe">
 <input type='hidden' id='act' name='act'>
-<div class='pageTitle'>Network: LAN</div>
+<div class='pageTitle'>
+  <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  Network: LAN
+</div>
 <div class='controlBox'><span class='controlBoxTitle'>Address</span>
   <div class='controlBoxContent' id='lanaddress'>
   </div>
@@ -52,6 +55,24 @@ Don't allow multiple lan widgets on same page if htey are all operating on the s
 -->
 
 <script>
+
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>LAN -</b> Local Area Network.The network that connects hosts at your area in one network including hosts connected by WI-FI. It is not accessible from WAN.</p>"
+    help += "<br>"
+    help += "<p><b>LAN IP -</b> IP address of the router, that is used for LAN communication.</p>"
+    help += "<br>"
+    help += "<p><b>LAN Mask -</b> mask, that denotes network's size. It is advised that you keep the default 255.255.255.0 or research network masking in more details. </p>"
+    help += "<br>"
+    help += "<p><b>DHCP -</b> Dynamic Host Configuration Protocol, the method by which routers assign IP addresses automatically. This allows you to connect to the coffee shop wireless even after more than 254 people have already; IP addresses are recycled as wireless clients come and go.</p>"
+    help += "<br>"
+    help += "<p><b>Lease time -</b> determines how long the IP address can be used by host. Host should ask for a new lease when half of this time has passed since it got the old one.</p>"
+    help += "<br>"
+    help += "<p><b>DHCP range -</b> determines which IP addresses will be provided to LAN hosts. You should exclude router's own address, all statically assigned addresses, network address (0) and broadcast address (255) from the range. With default settings and no static assignments, 2-254 would be a fine range.</p>"
+
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
 
 //Detecting different changes on page
 //and displaying an alert if leaving/reloading 

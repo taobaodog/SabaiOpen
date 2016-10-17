@@ -5,7 +5,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 }
 ?>
 <form id="fe">
-<div class='pageTitle'>Security: UPnP</div>
+<div class='pageTitle'>
+	<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+ Security: UPnP
+</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Settings</span>
 	<div class='controlBoxContent'><table><tbody>
@@ -109,6 +112,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	</div>
 </form>
 <script type='text/javascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>UPnP</b> stands for “Universal Plug and Play.” Using UPnP an application can automatically forward a port on your router. This is a security risk, so you're advised to keep UPnP off and forward ports manually. It is disabled by default because of security risks.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
 
 //Detecting different changes on page
 //and displaying an alert if leaving/reloading 

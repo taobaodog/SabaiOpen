@@ -5,7 +5,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 }
 ?>
 <form id='fe'>
-<div class='pageTitle'>Diagnostics: NS Lookup</div>
+<div class='pageTitle'>
+	 <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Diagnostics: NS Lookup
+</div>
 <div class='controlBox'><span class='controlBoxTitle'>NS Lookup</span>
 	<div class='controlBoxContent'>
 		
@@ -29,7 +32,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <script type='text/javascript' url='php/etc.php?q=nslookup'>
 
-	
+	//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>NS Lookup</b> is a network administration tool for querying the Domain Name System (DNS) to obtain domain name or IP address mapping or for any other specific DNS record.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 
 	function lookup(){
 		var domain = $('#ns_domain').val();

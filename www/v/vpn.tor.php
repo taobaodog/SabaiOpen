@@ -8,7 +8,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <html>
 <!--Sabai Technology - Apache v2 licence
     Copyright 2016 Sabai Technology -->
-<div class='pageTitle'>VPN: Tor - Anonymity Online</div>
+<div class='pageTitle'>
+	 <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  VPN: Tor - Anonymity Online
+</div>
 <form id="fe">
 <input type='hidden' id='form_tor' name='form_tor' value='tor'>
 <div class='controlBox'><span class='controlBoxTitle'>Tor Settings</span>
@@ -40,6 +43,18 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
  	</p>
 
 <script type='text/javascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Tor </b>is new anonymizing feature in SabaiOpen. Turning on tunnel and forwarding any host to ACC will allow to anonymize traffic for the host. User can also set ACC IP and its port 8080 in browser for anonymous browsing. More information about Tor you can find on www.torproject.org</p>"
+    help += "<br>"
+    help += "<p>Using Tor protects you against a common form of Internet surveillance known as \"traffic analysis.\" Traffic analysis can be used to infer who is talking to whom over a public network. Knowing the source and destination of your Internet traffic allows others to track your behavior and interests. This TOR client is provided to give network access to TOR for devices which may not have the ability to run TOR locally. The TOR organization recommends that due to the various methods of tracking traffic, the best way to remain fully anonymous on a computer is through use of the TOR Browser.</p>"
+
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 var hidden, hide, pForm = {};
 
 var f = E('fe'); 

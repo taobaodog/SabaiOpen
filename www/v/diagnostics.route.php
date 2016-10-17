@@ -4,7 +4,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-<div class='pageTitle'>Diagnostics: Route</div>
+<div class='pageTitle'>
+     <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Diagnostics: Route
+</div>
 <!-- TODO: 
 -->
 <div class='controlBox'>
@@ -22,6 +25,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 NEEDS LOTS OF WORK -->
 <script src="libs/jquery.dataTables.min.js"></script>
 <script type='text/ecmascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Routing table</b> is a data table, that lists the routes to particular network destinations. The routing table contains information about the topology of the network.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
 
 function route(){
   $('#resultTable').dataTable({

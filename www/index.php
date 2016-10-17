@@ -145,21 +145,28 @@ $(function(){
 					<div class= 'noshow' id='loczip'></div>
 		</div>
 
-			<img id="helpButton" src="libs/img/help.png">
-			<div id="helpSection" class="ui-widget-content ui-corner-al">
-		<!-- 		<a href="#" id="closeHelp" class="xsmallText fright">Close</a> -->
-				Display Inline Help
-				<a id="helpClose" class="noshow xsmallText" href="#">Close</a>
-				<input name="inlineHelp" id="inlineHelp" type="checkbox" checked="checked"><br><br>
-				<span style="text-decoration: underline">Links:</span><br>
-				<a id="goToHelp" href="#">Help Page</a><br>
-				<a id="goToWiki" href="#">Wiki Page</a>
-			</div>
 		</div>
 		<div id="panel">
 			<?php include($page); ?>
 		</div>
 	</div>
+</div>
+
+<!-- Help modal -->
+<div class="modal fade" id="help-modal" tabindex="-1" role="dialog">\
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Help</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 </body></html>
