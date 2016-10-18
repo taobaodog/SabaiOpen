@@ -100,7 +100,7 @@ ul#superMenu, ul.subMenu {
 }
 
 .controlTable tr td:first-child {
- min-width: 7em;
+ min-width: 7.5em;
 }
 
 .controlTable tr td {
@@ -1088,5 +1088,12 @@ textarea {
 	border: 2px solid #bdbdbd;
 	border-radius: 5px;
 	padding: 10px;
+}
+
+.statusCellName {
+	border-right: solid 2px #bdbdbd;
+}
+.statusCellContent {
+	margin-left: 3px;
 }
 
