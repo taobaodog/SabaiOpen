@@ -5,7 +5,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 }
 ?>
 <form id="fe">
-<div class='pageTitle'>Diagnostics: Console</div>
+<div class='pageTitle'>
+   <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  Diagnostics: Console
+</div>
 <div class='controlBox'><span class='controlBoxTitle'>Execute System Commands</span>
   <div class='controlBoxContent' id='console'>
   		<table class='tablemenu'>
@@ -18,7 +21,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 							</tr>
 			</tbody>
 		</table>
-            <input type='button' class='button' value='Execute' onclick='CONSOLEcall()'> <br>
+            <button class='btn btn-default btn-sm' type='button' class='button' value='Execute' onclick='CONSOLEcall()'>Execute</button>
+             <br>
             <span id='messages' class='response'></span>
         </div>
     <div id='hideme'>
@@ -36,6 +40,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </form>
 
 <script type='text/javascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Console</b> is accessible for user for advanced diagnostic and management.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 	var logWindow, logForm, logSelect, hidden, hide;
 	var hidden = E('hideme'); 
 	var hide = E('hiddentext');

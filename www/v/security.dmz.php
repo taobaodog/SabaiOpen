@@ -6,7 +6,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 ?>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
-<div class='pageTitle'>Security: DMZ</div>
+<div class='pageTitle'>
+	<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Security: DMZ
+</div>
 <!-- TODO: -->
 
 <div class='controlBox'><span class='controlBoxTitle'>DMZ</span>
@@ -41,13 +44,23 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </table>
         </div>
         </div>
-<input type='button' value='Save' onclick='DMZcall()'><span id='messages'>&nbsp;</span>
+<button class='btn btn-default btn-sm' type='button' value='Save' onclick='DMZcall()'>Save</button><span id='messages'>&nbsp;</span>
 <p>
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
 
 <script type='text/ecmascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>DMZ -</b> DeMilitarized Zone. A network security concept of a LAN machine opened to WAN but doesn't allow to initiate LAN connections. Use this is you have a firewall set up on said machine and would like to have a 'transparent' router.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 var hidden, hide;
 var f = E('fe'); 
 var hidden = E('hideme'); 

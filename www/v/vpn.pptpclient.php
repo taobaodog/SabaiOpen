@@ -10,7 +10,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     Copyright 2016 Sabai Technology -->
 
 <form id="fe">
-<div class='pageTitle'>VPN: PPTP Client</div>
+<div class='pageTitle'>
+ <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+   VPN: PPTP Client
+</div>
 <div class='controlBox'><span class='controlBoxTitle'>PPTP Settings</span>
     <div class='controlBoxContent'>
         <body onload='init();' id='topmost'>
@@ -66,6 +69,18 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </body>
 
 <script type='text/javascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>PPTP Client </b>can be configured by setting user server, username and password data. Use Save/Clear buttons to hold setting or to remove it. Start/Stop will set up VPN tunnel using user profile.</p>"
+    help += "<br>"
+    help += "<p><b>MPPE-128 </b> is encryption security protocol, that used by each VPN provider. Ask for this configuration your provider.</p>"
+
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
     var hidden, hide, f,oldip='',limit=10,info=null,ini=false;
     var pptpTry = 0;
     pptp = {<?php

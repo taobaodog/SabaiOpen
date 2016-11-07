@@ -7,7 +7,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <!--  TODO:
 -->
 <form id="fe">
-<div class='pageTitle'>Security: Firewall</div>
+<div class='pageTitle'>
+	 <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Security: Firewall
+</div>
 <input type='hidden' id='act' name='act'>
 <div class='controlBox'><span class='controlBoxTitle'>Firewall</span>
 	<div class='controlBoxContent'>
@@ -78,6 +81,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </form>
 
 <script>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Firewall -</b> is a program, that checks traffic coming in and out and sorts through it accordingly. It's usually used for blocking unauthorized or suspicious connections. A common setup in routers is to allow all outgoing traffic (assuming devices on the network are not malicious) and any incoming traffic that is part of an established connection.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
 
 //Detecting different changes on page
 //and displaying an alert if leaving/reloading 

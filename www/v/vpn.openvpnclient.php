@@ -8,6 +8,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     Copyright 2016 Sabai Technology -->
 	<script type='text/javascript'>
 
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>OVPN client </b>uses configuration file *.ovpn. Upload your configuration file from your PC direct to device and get VPN working. Start/Stop buttons are for VPN process managemet. Edit Config button will help in case if any changes to file are needed to be done. In case of any problem can be usefull to see log by pushing Show Log.</p>"
+  
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
+
 		var f,oldip='',limit=10,logon=false,info=null;
 		var ovpnTry = 0;
 		var hidden, hide, pForm = {};
@@ -208,7 +218,10 @@ $(document).ready(function(){
 
 
 	</script>
-<div class='pageTitle'>VPN: OpenVPN Client</div>
+<div class='pageTitle'>
+ <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+	VPN: OpenVPN Client
+</div>
 <div class='controlBox'><span class='controlBoxTitle'>OpenVPN Settings</span>
 	<div class='controlBoxContent'>
 <body onload='init();' id='topmost'>

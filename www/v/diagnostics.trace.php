@@ -5,7 +5,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 }
 ?>
 <form id='fe'>
-<div class='pageTitle'>Diagnostics: Trace</div>
+<div class='pageTitle'>
+    <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Diagnostics: Trace
+</div>
 
 <!-- TODO: Have aaData created at trace.php so that hideui gives message during trace time.-->
 
@@ -15,7 +18,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       <tr>
         <td>Address</td>
         <td><input id='traceAddress' name='traceAddress' value='google.com'></td>           
-        <td><input type='button' id='trace' value='Trace' onClick='TRACEcall()'></td>
       </tr>
       <tr>
         <td>Max Hops</td>
@@ -28,7 +30,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     </tbody></table>
     </form>
     <br>
-    
+    <button class='btn btn-default btn-sm' type='button' id='trace' value='Trace' onClick='TRACEcall()'>Trace</button>
+    <br>
     <div id='results' class='controlBoxContent noshow'>
       <table id='resultTable' class='listTable'></table>
     </div>
@@ -50,6 +53,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <script src="libs/jquery.dataTables.min.js"></script>
 <script type='text/ecmascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Trace</b> is a diagnostics feature of network connection. User can make diagnostic with displaying the route (path) and measuring transit delays of packets across an Internet Protocol (IP) network.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
   var hidden, hide,res;
   var f = E('fe'); 
   var hidden = E('hideme'); 

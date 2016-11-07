@@ -7,7 +7,10 @@ $proxystatus = exec("uci get sabai.proxy.status");
 ?>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
-<div class='pageTitle'>Settings</div>
+<div class='pageTitle'>
+	 <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Settings
+</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Router Name</span>
 	<div class='controlBoxContent'>
@@ -17,7 +20,7 @@ $proxystatus = exec("uci get sabai.proxy.status");
 				<td><input type='text' name = 'host' id='host'></td>
 			</tr>
 		</table>
-		<input type='button' id='nameupdate' class='firstButton' onclick='system("hostname")' value='Update' />
+		<button class='btn btn-default btn-sm' type='button' id='nameupdate' class='firstButton' onclick='system("hostname")' value='Update'>Update</button>
 	</div>
 	</div>
 
@@ -29,15 +32,15 @@ $proxystatus = exec("uci get sabai.proxy.status");
 					<td class='title'>Proxy Status</td><td><div name='proxy' id='proxy'></div></td>
 				</tr>
 			</table>
-			<input type='button' id='proxyStart' class='firstButton'value='Start' onclick='proxysave("proxystart")'>
-			<input type='button' id='proxyStop' value='Stop' onclick='proxysave("proxystop")'>
+			<button class='btn btn-default btn-sm' type='button' id='proxyStart' class='firstButton'value='Start' onclick='proxysave("proxystart")'>Start</button>
+			<button class='btn btn-default btn-sm' type='button' id='proxyStop' value='Stop' onclick='proxysave("proxystop")'>Stop</button>
 		</div>
 	</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Power</span>
 	<div class='controlBoxContent'>
-			<input type='button' name='power' id='power' value='Off' class='firstButton' onclick='system("halt")'>
-			<input type='button' name='restart' id='restart' value='Restart' onclick='system("reboot")'>
+			<button class='btn btn-default btn-sm' type='button' name='power' id='power' value='Off' class='firstButton' onclick='system("halt")'>Off</button>
+			<button class='btn btn-default btn-sm' type='button' name='restart' id='restart' value='Restart' onclick='system("reboot")'>Restart</button>
 		</div>
 	</div>
 
@@ -46,14 +49,21 @@ $proxystatus = exec("uci get sabai.proxy.status");
 		<table class='fields'>
 			<tr>
 				<td class='title'>New Password</td>
-				<td><input type='password' name = 'sabaiPassword' id='sabaiPassword'></td>
+				<td><input type='password' class='adminTextBox' name = 'sabaiPassword' id='sabaiPassword'></td>
 			</tr>
+
+			<tr>	
+				<td></td>
+				<td><span  id="password_strength_prefix"></span><span id="password_strength"></span></td>				
+			</tr>			
+			
+
 			<tr>
 				<td class='title'>Confirm Password </td>
-				<td class='title'><input type='password' name='sabaiPWConfirm' id='sabaiPWConfirm'></td>
+				<td><input type='password' class='adminTextBox' name='sabaiPWConfirm' id='sabaiPWConfirm'></td>
 			</tr>
 		</table>
-		<input type='button' id='passUpdate' class='firstButton' onclick='pass("updatepass")' value='Update' />
+		<button class='btn btn-default btn-sm' type='button' id='passUpdate' class='firstButton' onclick='pass("updatepass")' value='Update'>Update</button>
 		<div id='saveError'> Passwords must match.</div>
 	</div>
 	</div>
@@ -74,6 +84,20 @@ $proxystatus = exec("uci get sabai.proxy.status");
         </div>
     </div>
 <script type="text/javascript">
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Router Name</b> and <b>Password</b> can be updated by user. <b>Password MUST be updated immediately after installation.</b></p>"
+    help += "<br>"
+    help += "<p><b>Power off</b> or <b>restart</b> your device direct from WEB UI.</p>"
+    help += "<br>"
+    help += "<p><b>Proxy</b> listening to port 8080. Turned off by default.</p>"
+    help += "<br>"
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 var f = E('fe'); 
 var hidden = E('hideme'); 
 var hide = E('hiddentext');
@@ -135,6 +159,67 @@ $("#host").val(hostname);
 		}
 
 
+	$(function () {
+        $("#sabaiPassword").bind("keyup", function () {
+            //TextBox left blank.
+            if ($(this).val().length == 0) {
+            	$("#password_strength_prefix").html("");	
+            	$("#password_strength_prefix").removeClass("adminTextBox");	
+                $("#password_strength").html("");
+                return;
+            }
+ 
+            //Regular Expressions.
+            var regex = new Array();
+            regex.push("[A-Z]"); //Uppercase Alphabet.
+            regex.push("[a-z]"); //Lowercase Alphabet.
+            regex.push("[0-9]"); //Digit.
+            regex.push("[$@$!%*#?&]"); //Special Character.
+ 
+            var passed = 0;
+ 
+            //Validate for each Regular Expression.
+            for (var i = 0; i < regex.length; i++) {
+                if (new RegExp(regex[i]).test($(this).val())) {
+                    passed++;
+                }
+            }
+ 
+ 
+            //Validate for length of Password.
+            if (passed > 2 && $(this).val().length > 8) {
+                passed++;
+            }
+ 
+            //Display status.
+            var color = "";
+            var strength = "";
+            switch (passed) {
+                case 0:
+                case 1:
+                    strength = "Weak";
+                    color = "red";
+                    break;
+                case 2:
+                    strength = "Good";
+                    color = "darkorange";
+                    break;
+                case 3:
+                case 4:
+                    strength = "Strong";
+                    color = "green";
+                    break;
+                case 5:
+                    strength = "Very Strong";
+                    color = "darkgreen";
+                    break;
+            }
+            $("#password_strength_prefix").html("Strength: ");
+            $("#password_strength_prefix").addClass("adminTextBox");	
+            $("#password_strength").html(strength);
+            $("#password_strength").css("color", color);
+        });
+    });
 
 	</script>
 	

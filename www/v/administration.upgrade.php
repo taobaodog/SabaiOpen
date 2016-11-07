@@ -7,7 +7,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <form id='fe' method="post" enctype="multipart/form-data">
 <input type='hidden' name='version' id='_version'>
 <input type='hidden' id='act' name='act'>
-<div class='pageTitle'>Settings</div>
+<div class='pageTitle'>
+	<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+Upgrade
+</div>
 <div class='controlBox'><span class='controlBoxTitle'>SabaiOpen Server Update</span>
  	<div class='controlBoxContent'>
     	<div>Current Version: <span id='cversion'></span></div><br>
@@ -66,6 +69,20 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </form>
 
 <script type='text/javascript'>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Server Update</b> is automatical upgrade process if new version of software is available.</p>"
+    help += "<br>"
+    help += "<p><b>Manual Update</b> can be made by uploading .img file. It is available to revert last update and to make factory reset of the last update.</p>"
+    help += "<br>"
+    help += "<p><b>Firmware Configuration</b> can be backed up or downloaded by user at any time. It ensures flexible switching between different settings.</p>"
+    help += "<br>"
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
 
 $('#browse').hide();
 $('#browse1').hide();	

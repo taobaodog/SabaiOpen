@@ -100,7 +100,7 @@ ul#superMenu, ul.subMenu {
 }
 
 .controlTable tr td:first-child {
- min-width: 7em;
+ min-width: 7.5em;
 }
 
 .controlTable tr td {
@@ -356,7 +356,7 @@ tr .slideToggleViewport {
 	height: 1.75em;
 	overflow: hidden;
 	position: relative;
-	width:3.8em;
+	width:4.2em;
 }
 
 .slideToggleButton {
@@ -1069,4 +1069,31 @@ textarea {
 .ui-dialog-titlebar-close {                                         
   visibility: hidden;                                                                                        
 }  
+
+.helpBtn {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    border: 0;
+    background: transparent;
+    width: 32px;
+    height: 32px;
+    background-size: 100%;
+    cursor:pointer;
+}
+
+.helpModal {
+	background-color: #ededed;
+	border: 2px solid #bdbdbd;
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.statusCellName {
+	border-right: solid 2px #bdbdbd;
+}
+.statusCellContent {
+	margin-left: 3px;
+}
 

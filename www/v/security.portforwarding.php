@@ -8,7 +8,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <form id="fe">
   <input type='hidden' id='pftable' name='pftable'>
   
-  <div class='pageTitle'>Security: Port Forwarding</div>
+  <div class='pageTitle'>
+      <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  Security: Port Forwarding
+  </div>
 
 
   <div class='controlBox'>
@@ -75,6 +78,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </form>
 
 <script>
+  
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>Port Forwarding </b>is a feature for network administration, that provides user with ability to allow external access to some ports on some LAN hosts to, for example, host your own server. Please, familiarize yourself with the concept of port forwarding prior to adding these.</p>"
+    
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
   var hidden, hide,res;
   var f = E('fe'); 
   var hidden = E('hideme'); 
@@ -227,7 +240,9 @@ $('#portTable').dataTable({
     select: 'single',
     altEditor: true,    
     responsive: true, 
-    
+    language: {
+      "emptyTable": "No ports have been forwarded."
+    }, 
     buttons: [{
             text: 'Create',
             name: 'add'        

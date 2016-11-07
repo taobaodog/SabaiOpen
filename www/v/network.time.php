@@ -24,7 +24,10 @@ Sync time and zone with computer time/zone
   <script src="libs/dataTables.select.min.js"></script>
 </head>
 <body>
-<div class='pageTitle'>Network: Time</div>
+<div class='pageTitle'>
+<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  Network: Time
+</div>
 <div class='controlBox'>
   <span class='controlBoxTitle'>NTP</span>
   <div class='controlBoxContent'>
@@ -139,6 +142,20 @@ Sync time and zone with computer time/zone
 </body>
 </html>
 <script>
+
+//Adding text to help-modal
+$(document).on('click', '#helpBtn', function (e) {
+  var help = "";
+    help += "<p><b>NTP Servers -</b> Network Time Protocol servers, that set correct time on user device. </p>"
+    help += "<br>"
+    help += "<p><b>Current Router Time and Current Computer Time</b> can be synchronized with button Synchronize. Set user Time Zone using interactive map and synchronize device to it.</p>"
+   
+
+  $('#help-modal').find('.modal-body').html("<div class='helpModal'" +help+ "</div>");
+    $('#help-modal').modal('show')
+});
+
+
 var hidden, hide, pForm = {};
 var hidden = E('hideme');
 var hide = E('hiddentext');
@@ -300,7 +317,10 @@ $('#NTPTable').dataTable({
     columns: columnDefs,
     select: 'single',
     altEditor: true,    
-    responsive: true, 
+    responsive: true,
+    language: {
+      "emptyTable": "No data available"
+    }, 
     buttons: [{
             text: 'Create',
             name: 'add'        
