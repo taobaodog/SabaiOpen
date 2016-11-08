@@ -1,0 +1,14 @@
+#!/bin/ash /etc/rc.common
+
+START=99
+
+start() {
+	echo "SABAI FSCK: Filesystem check has been started." > /dev/kmsg
+	/www/bin/fsck.sh & 
+}
+
+stop()	{
+	kill $(pidof fsck.sh)
+	echo "SABAI FSCK: Filesystem check has been stoped." > /dev/kmsg
+}
+
