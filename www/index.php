@@ -6,7 +6,7 @@ if (!isset($_SESSION['login'])){
 }
 ?>
 <!DOCTYPE html>
-<!--Sabai Technology - Apache v2 licence
+<!--Sabai Technology - Apache v2 licence 
     copyright 2014 Sabai Technology -->
 <meta charset="utf-8"><html><head>
 <title id="mainTitle">SabaiOpen</title>
