@@ -228,7 +228,7 @@ $.post('php/dhcp.php', {'act': 'get'})
       table.ajax.reload();
       }
     console.log("Datatable auto-reloaded")
-    }
+    })
   }, 5000 );
 
 
