@@ -117,8 +117,7 @@ _get(){
 	[ -s "/tmp/dhcp.leases" ] || _no_data
 	if [ -e "/tmp/dhcp.leases_backup"  ]; then
 		#compare old data
-		diff /tmp/dhcp.leases_backup /tmp/dhcp.leases > /dev/null
-		if true; then
+		if ! diff -q /tmp/dhcp.leases /tmp/dhcp.leases_backup >/dev/null 2>&1; then
 			echo -n '{"aaData": ['> /www/libs/data/dhcp.json
 			echo -n '{' > /tmp/dhcptable
 			_rewrite
