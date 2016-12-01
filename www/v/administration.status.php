@@ -61,7 +61,7 @@ $(document).on('click', '#helpBtn', function (e) {
 var data, fullinfo;
 var dnsraw='<?php
   $vpn_stat=exec("uci get sabai.vpn.status");
-  if ( ($vpn_stat == 'Connected') && (filesize('/tmp/resolv.conf.vpn') != 0) ) {
+  if ( ($vpn_stat == 'Connected') && (file_exists('/tmp/resolv.conf.vpn')) && (filesize('/tmp/resolv.conf.vpn') != 0) ) {
     $servers=exec("cat /tmp/resolv.conf.vpn | grep nameserver | awk '{print $2}' | tr '\n' ' ' ");
   } else {
     $servers=exec("cat /tmp/resolv.conf.auto | grep nameserver | awk '{print $2}' | tr '\n' ' ' ");
