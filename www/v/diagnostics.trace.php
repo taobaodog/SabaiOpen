@@ -4,17 +4,49 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-<form id='fe'>
-<div class='pageTitle'>
-    <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
-Diagnostics: Trace
-</div>
 
-<!-- TODO: Have aaData created at trace.php so that hideui gives message during trace time.-->
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
+  <form id='fe'>
+    <div class='pageTitle'>
+      <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+      Diagnostics: Trace
+    </div>
 
-<div class='controlBox'><span class='controlBoxTitle'>Traceroute</span>
-  <div class='controlBoxContent'>
-    <table class='controlTable'><tbody>
+    <!-- TODO: Have aaData created at trace.php so that hideui gives message during trace time.-->
+
+    <div class='controlBox'><span class='controlBoxTitle'>Traceroute</span>
+      <div class='controlBoxContent'>
+
+
+        <div class ='form-group' style='margin-bottom: 5px;'>
+          <label class='col-md-4 col-lg-2 col-sm-4' for='traceAddress'>Address:</label>
+          <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+            <input id='traceAddress' name='traceAddress' type='text' value='google.com' class='form-control'>
+          </div>
+        </div>    
+
+        <div class ='form-group' style='margin-bottom: 5px;'>
+          <label class='col-md-4 col-lg-2 col-sm-4' for='maxHops'>Max Hops:</label>
+          <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+            <input id='maxHops' name='maxHops' value='4' class='form-control'>
+          </div>
+        </div>    
+
+        <div class ='form-group' style='margin-bottom: 5px;'>
+          <label class='col-md-4 col-lg-2 col-sm-4' for='maxWait'>Max Wait Time:</label>
+          <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+            <input id='maxWait' name='maxWait' value='56' class='form-control'>
+          </div>
+        </div>
+
+
+<!--     <table class='controlTable'><tbody>
       <tr>
         <td>Address</td>
         <td><input id='traceAddress' name='traceAddress' value='google.com'></td>           
@@ -27,29 +59,31 @@ Diagnostics: Trace
         <td>Max Wait Time</td>
         <td><input id='maxWait' name='maxWait' class='shortinput' value='5' /><span class='smallText'></span></td>
       </tr>
-    </tbody></table>
-    </form>
-    <br>
-    <button class='btn btn-default btn-sm' type='button' id='trace' value='Trace' onClick='TRACEcall()'>Trace</button>
-    <br>
-    <div id='results' class='controlBoxContent noshow'>
-      <table id='resultTable' class='listTable'></table>
-    </div>
+    </tbody></table> -->
+  </form>
+  <br>
+  <button class='btn btn-default btn-sm' type='button' id='trace' value='Trace' onClick='TRACEcall()'>Trace</button>
+  <br>
+  <div id='results' class='controlBoxContent noshow'>
+    <table id='resultTable' class='listTable'></table>
+  </div>
 
 
 
-      <div id='hideme'><span id='messages'>&nbsp;</span>
-        <div class='centercolumncontainer'>
-          <div class='middlecontainer'>
-            <div id='hiddentext' value-'Please wait...' ></div>
-            <br>
-          </div>
-        </div>
+  <div id='hideme'><span id='messages'>&nbsp;</span>
+    <div class='centercolumncontainer'>
+      <div class='middlecontainer'>
+        <div id='hiddentext' value-'Please wait...' ></div>
+        <br>
       </div>
+    </div>
+  </div>
 
-  </div> <!--end control box content -->
+</div> <!--end control box content -->
 </div> <!--end control box  -->
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
+</body>
+</html>
 
 <script src="libs/jquery.dataTables.min.js"></script>
 <script type='text/ecmascript'>

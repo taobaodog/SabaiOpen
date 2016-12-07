@@ -8,6 +8,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 WAN PPPoE { username, password, options, mode/interval } and IPv6
 DDNS: { ip, interval, services }
 -->
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>
@@ -15,15 +21,80 @@ DDNS: { ip, interval, services }
   Network: WAN
 </div>
 <div class='controlBox'><span class='controlBoxTitle'>WAN</span>
-  <!-- this div gets populated by widget -->
   <div class='controlBoxContent' id='wansetup'>
+    <div class ='form-group'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='wan_proto'>WAN proto</label>
+      <select class='col-md-4 col-lg-4 col-sm-4' id='wan_proto' name='wan_proto' class='radioSwitchElement'>
+        <option value='dhcp'>DHCP</option>
+        <option value='static'>Static</option>
+        <option value='lan'>LAN</option>
+      </select>
+    </div>
+
+
+    <div class ='form-group wan_proto wan_proto-static' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='wan_ip'>IP</label>
+      <input id='wan_ip' name='wan_ip' type='text' class='form-control col-lg-4 '>
+      <label  id='wan_ipLabel' class='errorLabel'></label>
+    </div>
+    <div class ='form-group wan_proto wan_proto-static' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='wan_mask'>Network Mask</label>
+      <input id='wan_mask' name='wan_mask' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+      <label  id='wan_maskLabel' class='errorLabel'></label>
+    </div>
+    <div class ='form-group wan_proto wan_proto-static' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='wan_gateway'>Gateway</label>
+      <input id='wan_gateway' name='wan_gateway' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+      <label  id='wan_gatewayLabel' class='errorLabel'></label>
+    </div>
+    <div class ='form-group' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='wan_mtu'>MTU</label>
+      <input id='wan_mtu' name='wan_mtu' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+      <label  id='wan_mtuLabel' class='errorLabel'></label>
+    </div>
+    <div class ='form-group' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='wan_mac'>MAC</label>
+      <input id='wan_mac' name='wan_mac' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+      <label  id='wan_macLabel' class='errorLabel'></label>
+    </div>
   </div>
 </div>
-
 <div class='controlBox'>
   <span class='controlBoxTitle'>DNS</span>
   <div class='controlBoxContent'>
-    <table class='controlTable'>
+
+
+    <div class ='form-group' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='dns_servers'>DNS Servers</label>
+      <div>
+        <ul id='dns_servers' class='col-md-4 col-lg-4 col-sm-4' style='padding: 0px;'>
+          <li><input type='text' placeholder='DNS 1' name='dns_server1' class='form-control'><a class='dns-delete deleteDNS'>✖</a><label id='dns_server1Label' class='errorLabel'></label></li>
+          <li><input type='text' placeholder='DNS 2' name='dns_server2' class='form-control'><a class='dns-delete deleteDNS'>✖</a><label id='dns_server2Label' class='errorLabel'></label></li>
+          <li><input type='text' placeholder='DNS 3' name='dns_server3' class='form-control'><a class='dns-delete deleteDNS'>✖</a><label id='dns_server3Label' class='errorLabel'></label></li>
+          <li><input type='text' placeholder='DNS 4' name='dns_server4' class='form-control'><a class='dns-delete deleteDNS'>✖</a><label id='dns_server4Label' class='errorLabel'></label></li>
+        </ul>
+        <input type='hidden' name='dns_servers[]'>
+        <input type='hidden' name='dns_servers[]'>
+        <input type='hidden' name='dns_servers[]'>
+        <input type='hidden' name='dns_servers[]'>
+      </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div id="editableListDescription">
+      <span id='dns_stat' color="red"></span><br><br>
+      <span class ='xsmallText'>(These are the DNS servers the DHCP server will provide for devices also on the LAN)
+      </span><br><br>
+    </div>
+
+
+
+<!--     <table class='controlTable'>
       <tbody>
       <tr>
         <td>DNS Servers</td>
@@ -49,7 +120,8 @@ DDNS: { ip, interval, services }
         </td>
       </tr>
       </tbody>
-    </table>
+    </table> -->
+
   </div>
 </div>
 
@@ -72,6 +144,8 @@ DDNS: { ip, interval, services }
 </p>
 </form>
 
+</body>
+</html>
 <script>
 
 //Adding text to help-modal
@@ -294,7 +368,7 @@ $.widget("jai.wansetup", {
   _create: function(){
     //TO DO: check to see if containing element has a unique id
     
-    // BUILDING DOM ELEMENTS
+/*    // BUILDING DOM ELEMENTS
     $(this.element)
     .append( $(document.createElement('table')).addClass("controlTable")
       .append( $(document.createElement('tbody')) 
@@ -404,7 +478,7 @@ $.widget("jai.wansetup", {
           )
         ) //end Mac row
       ) // end bottom table body
-    ) // end table
+    ) // end table*/
 
     // call maskspinner widget
     $('#wan_mask').maskspinner({
