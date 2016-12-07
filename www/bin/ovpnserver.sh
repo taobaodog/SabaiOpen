@@ -86,7 +86,7 @@ _setup(){
 	uci set openvpn.sabaivpn.proto=$proto
 	uci set openvpn.sabaivpn.port=$port
 	uci set openvpn.sabaivpn.dev=tun
-        uci set openvpn.sabaivpn.crl_verify='/etc/easy-rsa/keys/crl.pem'
+	uci set openvpn.sabaivpn.crl_verify='/etc/easy-rsa/keys/crl.pem'
 	uci set openvpn.sabaivpn.server='10.8.199.0 255.255.255.0'
 	uci set openvpn.sabaivpn.push='redirect-gateway def1'
 	uci set openvpn.sabaivpn.keepalive='10 120'
@@ -99,15 +99,16 @@ _setup(){
 	/etc/init.d/openvpn start
 
 	# Prepare return messages and return
+	sleep 15
 	test=$(ps | grep -v grep | grep -ic sabaivpn)
 	if [ $test -eq 1 ]; then
 		success="true"
 		message="OpenVPN server is running with $dhsize encryption at $extip : $port with protocol $proto"
-		data="none"
+		data="\"none\""
 	else
 		success="false"
 		message="OpenVPN server could not be configured properly."
-		data="none"
+		data="\"none\""
 	fi
 	_return
 }
@@ -126,7 +127,7 @@ _client(){
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then 
 		success="false"
 		message="OpenVPN server must be setup first."
-		data="none" 
+		data="\"none\"" 
 	else
 	build-key --batch $clientname
 	cat /etc/sabai/openvpn/clientheader > /etc/sabai/openvpn/clients/$clientname.ovpn
@@ -168,14 +169,14 @@ _start(){
 		logger "Attempted to start OpenVPN server when already running"
 		success="false"
 		message="OpenVPN server already running"
-		data="none"
+		data="\"none\""
 		_return
 	fi
 
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then 
 		success="false"
 		message="OpenVPN server not yet setup"
-		data="none"
+		data="\"none\""
 	else 
 		/etc/init.d/openvpn start
 		/etc/init.d/openvpn enable
@@ -186,11 +187,11 @@ _start(){
 	if [ $test -eq 0 ]; then
 		success="false"
 		message="OpenVPN server did not start"
-		data="none"
+		data="\"none\""
 	else
 		success="true"
-		message="OpenVPN server started"
-		data="none"
+		message="'OpenVPN server started"
+		data="\"none\""
 	fi
 	_return
 }
@@ -201,14 +202,14 @@ _stop(){
 		logger "Tried to stop OpenVPN server when already stopped"
 		success="false"
 		message="OpenVPN server was already stopped"
-		data="none"
+		data="\"none\""
 		_return
 	fi
 
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then 
 		success="false"
 		message="OpenVPN server not yet setup"
-		data="none"
+		data="\"none\""
 	else 
 		/etc/init.d/openvpn stop
 		/etc/init.d/openvpn disable
@@ -219,34 +220,11 @@ _stop(){
 	if [ $test -eq 0 ]; then
 		success="true"
 		message="OpenVPN server stopped"
-		data="none"
+		data="\"none\""
 	else
 		success="false"
 		message="OpenVPN server did not stop"
-		data="none"
-	fi
-	_return
-}
-
-_client_off(){
-	clientname=$vartwo
-	test=$(cat /etc/easy-rsa/keys/index.txt | grep william | awk '{print $1}')
-	if [ test = 'R' ]; then
-		success="false"
-		message="$clientname was already disabled"
-		data="none"
-	fi
-	if [ ! -f "/etc/easy-rsa/keys/$clientname.crt" ]; then 
-		cd /etc/easy-rsa
-		source ./vars
-		revoke-full $clientname
-		success="true"
-		message="$clientname is disabled"
-		data="none"
-	else 
-		success="false"
-		message="$clientname does not exist"
-		data="none"
+		data="\"none\""
 	fi
 	_return
 }
@@ -257,17 +235,32 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 	if [ $test -eq 1 ]; then
 		success="true"
 		message="OpenVPN server is running"
-		data="none"
 	else
 		success="false"
 		message="OpenVPN server is not running"
-		data="none"
+	fi
+
+	#Get client names and whether they are active or not
+	directory="/etc/sabai/openvpn/clients"
+	rm -f /tmp/clients
+	if [ -d "$directory" ] && [ "$(ls -A $directory)" ]; then
+		ls /etc/sabai/openvpn/clients/ | sed 's/\.[^.]*$//' > /tmp/clients 
+		rm /tmp/clientdata
+		echo "{ \"clientlist\":[" >> /tmp/clientdata
+		while read c; do
+  		echo "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c | cut -c 1)\"}," >> /tmp/clientdata
+		done < /tmp/clients
+		sed -i '$ s/.$//' /tmp/clientdata
+		echo "]}" >> /tmp/clientdata
+		data=$(cat /tmp/clientdata)
+	else
+	data="\"none\""
 	fi
 	_return
 }
 
 _return(){
-	echo "res={ sabai: $success, msg: $message , data: $data };";
+	echo "res={ \"sabai\": \"$success\", \"msg\": \"$message\" , \"data\": $data };"
 	exit 0;
 }
 
@@ -275,7 +268,6 @@ case $action in
 	setup)  _setup  ;;
 	clear)  _clear  ;;
 	client)	_client	;;
-	client_off_)	_client_off ;;
 	start)	_start	;;
 	stop)	_stop	;;
 	check)	_check	;;
