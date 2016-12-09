@@ -4,6 +4,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <div class='pageTitle'>
      <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
 Diagnostics: Route
@@ -20,9 +27,10 @@ Diagnostics: Route
     </div> <!--end control box content -->
 </div> <!--end control box  -->
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
+</body>
+</html>
 
-<!-- COPIED FROM NETWORK: STATIC IP's, partially modified
-NEEDS LOTS OF WORK -->
+
 <script src="libs/jquery.dataTables.min.js"></script>
 <script type='text/ecmascript'>
 

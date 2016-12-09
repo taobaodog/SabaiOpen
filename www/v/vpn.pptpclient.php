@@ -6,20 +6,53 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 ?>
 <!DOCTYPE html>
 <html>
-<!--Sabai Technology - Apache v2 licence
+<head>
+    <!--Sabai Technology - Apache v2 licence
     Copyright 2016 Sabai Technology -->
+</head>
+<body>
+    <form id="fe">
+        <div class='pageTitle'>
+           <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+           VPN: PPTP Client
+       </div>
+       <div class='controlBox'><span class='controlBoxTitle'>PPTP Settings</span>
+        <div class='controlBoxContent'>
+            <body onload='init();' id='topmost'>
+                <input type='hidden' id='act' name='act'>
 
-<form id="fe">
-<div class='pageTitle'>
- <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
-   VPN: PPTP Client
-</div>
-<div class='controlBox'><span class='controlBoxTitle'>PPTP Settings</span>
-    <div class='controlBoxContent'>
-        <body onload='init();' id='topmost'>
-        <input type='hidden' id='act' name='act'>
- 
-            <table class="fields">
+                <div class ='form-group' style='margin-bottom: 5px;'>
+                    <label class='col-md-2 col-lg-2 col-sm-2' for='server'>Server:</label>
+                    <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+                        <input id='server' name='server' type='text' class='form-control'>
+                    </div>
+                </div>
+
+                <div class ='form-group' style='margin-bottom: 5px;'>
+                    <label class='col-md-2 col-lg-2 col-sm-2' for='user'>Username:</label>
+                    <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+                        <input id='user' name='user' type='text' class='form-control'>
+                    </div>
+                </div>
+
+                <div class ='form-group' style='margin-bottom: 5px;'>
+                    <label class='col-md-2 col-lg-2 col-sm-2' for='pass'>Password:</label>
+                    <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+                        <input id='pass' name='pass' type='password' autocomplete="off" onfocus='peekaboo("pass")' onblur='peekaboo("pass")' class='form-control'>
+                    </div>
+                </div>
+
+                <div id='mppe_conf' class ='form-group' style='margin-bottom: 5px;'>
+                    <label class='col-md-2 col-lg-2 col-sm-2' for='mppe'>MPPE-128</label>
+                    <select class='col-md-4 col-lg-4 col-sm-4' id='mppe' name='mppe' class='radioSwitch'>
+                        <option value='stateless'>Stateless</option>
+                        <option value='nomppe'>No mppe</option>
+                    </select>
+                </div>   
+                <br>
+
+
+<!--             <table class="fields">
                 <tbody>
                     <tr>
                         <td class="title indent1 shortWidth">Server</td>
@@ -46,27 +79,30 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                         </td>
                     </tr>
                 </tbody>
-            </table>
-    <button class='btn btn-default btn-sm' id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>Start</button>
-    <button class='btn btn-default btn-sm' id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>Stop</button>
-    <button class='btn btn-default btn-sm' id='save' type='button' value='Save' onclick='PPTPcall("save")'>Save</button>
-    <button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>Clear</button>
-    <span id='messages'>&nbsp;</span>
-    </div>
-</div>
-</form>
-    <div id='hideme'>
-        <div class='centercolumncontainer'>
-            <div class='middlecontainer'>
-                <div id='hiddentext'>Please wait...</div>
-                <br>
-            </div>
+            </table> -->
+
+
+            <button class='btn btn-default btn-sm' id='start' type='button' class='firstButton' value='Start' onclick='PPTPcall("start")'>Start</button>
+            <button class='btn btn-default btn-sm' id='stop' type='button' value='Stop' onclick='PPTPcall("stop")'>Stop</button>
+            <button class='btn btn-default btn-sm' id='save' type='button' value='Save' onclick='PPTPcall("save")'>Save</button>
+            <button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='PPTPcall("clear")'>Clear</button>
+            <span id='messages'>&nbsp;</span>
         </div>
     </div>
-    <p>
-        <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
-    </p>
+</form>
+<div id='hideme'>
+    <div class='centercolumncontainer'>
+        <div class='middlecontainer'>
+            <div id='hiddentext'>Please wait...</div>
+            <br>
+        </div>
+    </div>
+</div>
+<p>
+    <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
+</p>
 </body>
+</html>
 
 <script type='text/javascript'>
 
@@ -94,7 +130,7 @@ $(document).on('click', '#helpBtn', function (e) {
 
 $.widget("jai.mppe", {
     _create: function(){
-        $(this.element)
+/*        $(this.element)
             .append(
                 $(document.createElement('select'))
                     .prop("id","mppe")
@@ -108,7 +144,7 @@ $.widget("jai.mppe", {
                     .prop("value", "nomppe")
                     .prop("text", 'No mppe')
                 )
-            )
+            )*/
 
     $('#mppe').radioswitch({ value: pptp.mppe, hasChildren: true });
 },
@@ -149,6 +185,17 @@ function PPTPresp(res){
 }
 
 function PPTPcall(act){ 
+ 
+ if(act =='clear') {
+            E('server').value = "";
+            E('user').value = "";
+            E('pass').value = "";
+            // Refactor it with CSS
+            $('#mppe').val("");
+            $('#mppe option:selected').attr('selected', false);
+            $('#mpperadioSwitch').children().removeClass("buttonSelected");
+ }
+    
  if($("#mppe_stateless").hasClass("buttonSelected") || $("#mppe_nomppe").hasClass("buttonSelected")){
 	   hideUi("Adjusting PPTP settings..."); 
 	   E("act").value=act;
@@ -182,15 +229,6 @@ function PPTPcall(act){
 			}
 			showUi();
 		  });
-		if(act =='clear') {
-			E('server').value = "";
-            E('user').value = "";
-            E('pass').value = "";
-            // Refactor it with CSS
-            $('#mppe').val("");
-            $('#mppe option:selected').attr('selected', false);
-            $('#mpperadioSwitch').children().removeClass("buttonSelected");
-        }
     	}
  }else{
         alert('Please choose a MPPE-128 setting before starting')

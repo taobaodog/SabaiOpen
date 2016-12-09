@@ -4,9 +4,109 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
 <!--Sabai Technology - Apache v2 licence
     Copyright 2016 Sabai Technology -->
-	<script type='text/javascript'>
+</head>
+<body>
+	<div class='pageTitle'>
+		<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+		VPN: OpenVPN Client
+	</div>
+	<div class='controlBox'><span class='controlBoxTitle'>OpenVPN Settings</span>
+		<div class='controlBoxContent'>
+			<body onload='init();' id='topmost'>
+				<form id='new_file' method="post" enctype="multipart/form-data">
+					<input id='act' type='hidden' name='act' value='newfile'>
+					<span id='ovpn_file'></span>
+					<br>
+					<span id='upload'>
+						<p>
+							<ul class="list-inline">
+								<li><input id='browse' type='file' name='browse'></li>
+								<li><button id='submit' class='btn btn-default btn-sm' type='button' value='Upload'>Upload</button></li>
+							</ul>
+						</p>
+					</span>
+
+					<p>
+						<span id='messages'>&nbsp;</span>
+					</p>
+					<div id='hideme'>
+						<div class='centercolumncontainer'>
+							<div class='middlecontainer'>
+								<div id='hiddentext'>Please wait...</div>
+							</div>
+						</div>
+					</div>
+				</form>
+				<form id='fe'>
+					<span id='ovpn_controls'>
+						<input type='hidden' id='_act' name='act' value=''>
+						<button class='btn btn-default btn-sm' type='button' value='Start' onclick='OVPNsave("start");'>Start</button>
+						<button class='btn btn-default btn-sm' type='button' value='Stop' onclick='OVPNsave("stop");'>Stop</button>
+						<button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='OVPNsave("clear");'>Clear</button></span>
+						<button class='btn btn-default btn-sm' type='button' value='Show Log' id='logButton' onclick='toggleLog();'>Show Log</button>
+						<button class='btn btn-default btn-sm' type='button' value='Edit Config' id='editButton' onclick='toggleEdit();'>Edit Config</button>
+					</div>
+
+
+
+					<textarea id='response' class='hiddenChildMenu'></textarea>
+					<div id='edit' class='hiddenChildMenu'>
+
+						<div class ='form-group' style='margin-bottom: 5px;'>
+                    	<label class='col-md-2 col-lg-2 col-sm-2' for='VPNname'>Name:</label>
+                    		<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+                        	<input id='server' name='VPNname' type='VPNname' placeholder='(optional)' class='form-control'>
+                    		</div>
+                		</div>
+
+						<div class ='form-group' style='margin-bottom: 5px;'>
+                    	<label class='col-md-2 col-lg-2 col-sm-2' for='VPNpassword'>Password:</label>
+                    		<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+                        	<input id='server' name='VPNpassword' type='VPNpassword' placeholder='(optional)' class='form-control'>
+                    		</div>
+                		</div>
+
+<!-- 						<table>
+							<tr><td>Name: </td><td><input type='text' name='VPNname' id='VPNname' placeholder='(optional)'></td></tr>
+							<tr><td>Password:</td><td><input type='text' name='VPNpassword' id='VPNpassword' placeholder='(optional)'></td></tr>
+						</table> -->
+
+						<br>
+						<textarea id='conf' class='tall' name='conf'>
+							<?php 
+							$file = '/etc/sabai/openvpn/ovpn.current';
+							if (file_exists($file)) {
+								readfile($file);
+							} 
+							?>
+						</textarea> <br>
+						<input type='button' value='Save' onclick='saveEdit();'>
+						<input type='button' value='Cancel' onclick='window.location.reload();'>
+					</div>
+				</tbody>
+			</table>
+		</div>
+	</form>
+	<div id='hideme'>
+		<div class='centercolumncontainer'>
+			<div class='middlecontainer'>
+				<div id='hiddentext'>Please wait...</div>
+				<br>
+			</div>
+		</div>
+	</div>
+	<p>
+		<div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
+	</p>
+</body>
+</html>
+
+<script type='text/javascript'>
 
 //Adding text to help-modal
 $(document).on('click', '#helpBtn', function (e) {
@@ -217,80 +317,4 @@ $(document).ready(function(){
 });
 
 
-	</script>
-<div class='pageTitle'>
- <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
-	VPN: OpenVPN Client
-</div>
-<div class='controlBox'><span class='controlBoxTitle'>OpenVPN Settings</span>
-	<div class='controlBoxContent'>
-<body onload='init();' id='topmost'>
-<form id='new_file' method="post" enctype="multipart/form-data">
-	<input id='act' type='hidden' name='act' value='newfile'>
-		<span id='ovpn_file'></span>
-		<br>
-			<span id='upload'>
-				<p>
-				<ul class="list-inline">
-				<li><input id='browse' type='file' name='browse'></li>
-				<li><button id='submit' class='btn btn-default btn-sm' type='button' value='Upload'>Upload</button></li>
-				</ul>
-				</p>
-			</span>
-		
-		<p>
-			<span id='messages'>&nbsp;</span>
-		</p>
-		<div id='hideme'>
-			<div class='centercolumncontainer'>
-				<div class='middlecontainer'>
-					<div id='hiddentext'>Please wait...</div>
-				</div>
-			</div>
-		</div>
-</form>
-<form id='fe'>
-							<span id='ovpn_controls'>
-							<input type='hidden' id='_act' name='act' value=''>
-							<button class='btn btn-default btn-sm' type='button' value='Start' onclick='OVPNsave("start");'>Start</button>
-							<button class='btn btn-default btn-sm' type='button' value='Stop' onclick='OVPNsave("stop");'>Stop</button>
-							<button class='btn btn-default btn-sm' id='clear' type='button' value='Clear' onclick='OVPNsave("clear");'>Clear</button></span>
-							<button class='btn btn-default btn-sm' type='button' value='Show Log' id='logButton' onclick='toggleLog();'>Show Log</button>
-							<button class='btn btn-default btn-sm' type='button' value='Edit Config' id='editButton' onclick='toggleEdit();'>Edit Config</button>
-						</div>
-							
-						<textarea id='response' class='hiddenChildMenu'></textarea>
-						<div id='edit' class='hiddenChildMenu'>
-						 <table>
-						 	<tr><td>Name: </td><td><input type='text' name='VPNname' id='VPNname' placeholder='(optional)'></td></tr>
-						 	<tr><td>Password:</td><td><input type='text' name='VPNpassword' id='VPNpassword' placeholder='(optional)'></td></tr>
-						 </table>
-						 
-						 <br>
-						 <textarea id='conf' class='tall' name='conf'>
-						 <?php 
-						 	$file = '/etc/sabai/openvpn/ovpn.current';
-						 	if (file_exists($file)) {
-						 		readfile($file);
-						 	} 
-						 ?>
-						 </textarea> <br>
-						 <input type='button' value='Save' onclick='saveEdit();'>
-						 <input type='button' value='Cancel' onclick='window.location.reload();'>
-						</div>
-                </tbody>
-            </table>
-        </div>
-        </form>
-    <div id='hideme'>
-        <div class='centercolumncontainer'>
-            <div class='middlecontainer'>
-                <div id='hiddentext'>Please wait...</div>
-                <br>
-            </div>
-        </div>
-    </div>
-    <p>
-        <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
-    </p>
-</body>
+</script>

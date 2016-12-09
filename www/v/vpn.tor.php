@@ -6,42 +6,78 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 ?>
 <!DOCTYPE html>
 <html>
+<head>
 <!--Sabai Technology - Apache v2 licence
     Copyright 2016 Sabai Technology -->
-<div class='pageTitle'>
-	 <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
-  VPN: Tor - Anonymity Online
-</div>
-<form id="fe">
-<input type='hidden' id='form_tor' name='form_tor' value='tor'>
-<div class='controlBox'><span class='controlBoxTitle'>Tor Settings</span>
-	<div class='controlBoxContent' id='tor_setup_wl'>
+</head>
+<body>
+	<div class='pageTitle'>
+		<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+		VPN: Tor - Anonymity Online
 	</div>
-	<div class='controlBoxContent' id='tor_wl_config'>
+	<form id="fe">
+		<input type='hidden' id='form_tor' name='form_tor' value='tor'>
+		<div class='controlBox'><span class='controlBoxTitle'>Tor Settings</span>
+			<div class='controlBoxContent' id='tor_setup_wl'>
+				<div class ='form-group'>
+					<label class='col-md-1 col-lg-1 col-sm-1' for='tor_mode'>Mode</label>
+					<select class='col-md-4 col-lg-4 col-sm-4' id='tor_mode' name='tor_mode' class='radioSwitchElement'>
+						<option value='off'>Off</option>
+						<option value='proxy'>Proxy</option>
+						<option value='tun'>Tunnel</option>
+					</select>
+				</div>
+			</div>
+			<div class='controlBoxContent' id='tor_wl_config'>
+				<div class ='form-group' style='margin-bottom: 5px;'>
+					<label class='col-md-4 col-lg-2 col-sm-4' for='tor_ssid'>SSID:</label>
+					<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+						<input id='tor_ssid' name='tor_ssid' type='text' class='form-control'>
+					</div>
+				</div>
+
+				<div class ='form-group' style='margin-bottom: 5px;'>
+					<label class='col-md-4 col-lg-2 col-sm-4' for='tor_nw_ip'>TOR Wireless IP:</label>
+					<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+						<input id='tor_nw_ip' name='tor_nw_ip' type='text' class='form-control'>
+					</div>
+				</div>     	
+
+				<div class ='form-group' style='margin-bottom: 5px;'>
+					<label class='col-md-4 col-lg-2 col-sm-4' for='tor_nw_mask'>TOR Network Mask:</label>
+					<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+						<input id='tor_nw_mask' name='tor_nw_mask' type='text' class='form-control'>
+					</div>
+				</div>      	
+
+				<div class ='form-group' style='margin-bottom: 5px;'>
+					<label class='col-md-4 col-lg-2 col-sm-4' for='tor_server'>TOR Network IP:</label>
+					<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+						<input id='tor_server' name='tor_server' type='text' class='form-control'>
+					</div>
+				</div>
+			</div>
+			<div class='controlBoxContent'>
+				<button class='btn btn-default btn-sm' type='button' value='Save' onclick='TORcall("#fe")'>Save</button><span id='messages'>&nbsp;</span>
+			</div>
+			<div id='hideme'>
+				<div class='centercolumncontainer'>
+					<div class='middlecontainer'>
+						<div id='hiddentext'>Please wait...</div>
+						<br>
+					</div>
+				</div>
+			</div>
+			<div class='controlBoxContent'>
+				<div id='torUse'>Turn on TOR by choosing "Tunnel" and push "Save". It is possible to access TOR feature on proxy port 8080 or by setting accelerator as a gateway on the router.</div>
+			</div>
+		</form>
 	</div>
-	<div class='controlBoxContent'>
-		<button class='btn btn-default btn-sm' type='button' value='Save' onclick='TORcall("#fe")'>Save</button><span id='messages'>&nbsp;</span>
-	</div>
-    <div id='hideme'>
-        <div class='centercolumncontainer'>
-            <div class='middlecontainer'>
-                <div id='hiddentext'>Please wait...</div>
-                <br>
-            </div>
-        </div>
-    </div>
-    <div class='controlBoxContent'>
-
-
-	<div id='torUse'>Turn on TOR by choosing "Tunnel" and push "Save". It is possible to access TOR feature on proxy port 8080 or by setting accelerator as a gateway on the router.</div>
-
- 	</div>
-</form>
-</div>
-    <p>
-        <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
- 	</p>
-
+	<p>
+		<div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
+	</p>
+</body>
+</html>
 <script type='text/javascript'>
 
 //Adding text to help-modal
@@ -111,7 +147,7 @@ function TORstart(torForm){
 $.widget("jai.tor_setup_wl", {
 	_create: function(){
 
-		$(this.element)
+/*		$(this.element)
 		.append( $(document.createElement('table')).addClass("controlTable smallwidth")
 	      .append( $(document.createElement('tbody')) 
 	        
@@ -141,7 +177,7 @@ $.widget("jai.tor_setup_wl", {
 	        ) // end mode tr
 
 	      ) // end WPA tbody
-	    ) // end lower table
+	    ) // end lower table*/
 
 	    $('#tor_mode').radioswitch({ 
 			value: tor.mode
@@ -154,7 +190,7 @@ $.widget("jai.tor_setup_wl", {
 $.widget("jai.tor_wl_config", {
 	_create: function(){
 
-		$(this.element)
+/*		$(this.element)
 		.append( $(document.createElement('table')).addClass("controlTable smallwidth")
 	      .append( $(document.createElement('tbody'))
 	        .append( $(document.createElement('tr'))
@@ -209,13 +245,12 @@ $.widget("jai.tor_wl_config", {
 	  		  	  	  	                )
 	  		  	  	  	              ) // end ip tr
 	      ) // end WPA tbody
-	    ) // end lower table
+	    )*/ // end lower table
 
 	    $('#tor_ssid').val(tor.ssid);
 		$('#tor_nw_ip').ipspinner().ipspinner('value', tor.ip);//tor.gateway);
 		$('#tor_nw_mask').maskspinner().maskspinner('value', tor.netmask);//tor.mask);
 		$('#tor_server').ipspinner().ipspinner('value', tor.network);//tor.server);
-
 
 		this._super();
 	},
@@ -225,7 +260,7 @@ $(function(){
 	  //instatiate widgets on document ready
 	  $('#tor_setup_wl').tor_setup_wl({ conf: 'tor'});
 	  $('#tor_wl_config').tor_wl_config({ conf: 'tor'});
-	  $('#tor_wl_config').hide();
+
 	})
 
 </script>

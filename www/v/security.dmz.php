@@ -15,6 +15,7 @@ Security: DMZ
 <div class='controlBox'><span class='controlBoxTitle'>DMZ</span>
 	<div class='controlBoxContent'>
 
+		<div class ='form-group' style='margin-bottom: 5px;'>
 		<input type="checkbox" id="dmzToggle" name='dmzToggle' class="slideToggle"/>
 		<label class="slideToggleViewport" for="dmzToggle">
 			<div class="slideToggleSlider">
@@ -23,9 +24,20 @@ Security: DMZ
 			  <div class="slideToggleContent slideToggleRight button"><span>Off</span></div>
 			</div>
 		</label>
+		</div>
+
+		<div class ='form-group' style='margin-bottom: 5px;'>
+      		<label  for='dmz_destination'>Destination Address</label>
+      		<input id='dmz_destination' name='dmz_destination' type='text' class='form-control '>
+    	</div>
+
+<!-- 
+
 		<table>
 		 	<tr><td>Destination Address</td> <td><input id='dmz_destination' name='dmz_destination'></input><td></tr>
-		</table>
+		</table> -->
+
+
 		<div><span class='xsmallText'>
 			(optional; ex: "1.1.1.1", "1.1.1.0/24", "1.1.1.1 - 2.2.2.2" or "me.example.com")
     <div id='hideme'>

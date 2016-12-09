@@ -4,15 +4,43 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-<form id='fe'><div class='pageTitle'>
-  <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
-  Diagnostics: Ping
-</div>
 
-<!-- TODO: -->
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
+  <form id='fe'><div class='pageTitle'>
+    <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+    Diagnostics: Ping
+  </div>
 
-<div class='controlBox'><span class='controlBoxTitle'>Ping</span>
-  <div class='controlBoxContent'>
+  <div class='controlBox'><span class='controlBoxTitle'>Ping</span>
+    <div class='controlBoxContent'>
+
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-4 col-lg-2 col-sm-4' for='pingAddress'>Address:</label>
+        <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+          <input id='pingAddress' name='pingAddress' type='text' value='google.com' class='form-control'>
+        </div>
+      </div>    
+
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-4 col-lg-2 col-sm-4' for='pingCount'>Ping Count:</label>
+        <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+          <input id='pingCount' name='pingCount' value='4' class='form-control'>
+        </div>
+      </div>    
+
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-4 col-lg-2 col-sm-4' for='pingSize'>Packet Size<span class='smallText'> (bytes)</span>:</label>
+        <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+          <input id='pingSize' name='pingSize' value='56' class='form-control'>
+        </div>
+      </div>
+<!-- 
     <table class='controlTable'><tbody>
       <tr>
         <td>Address</td>
@@ -26,10 +54,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         <td>Packet Size</td>
         <td><input id='pingSize' name='pingSize' class='shortinput' value='56' /><span class='smallText'> (bytes)</span></td>
       </tr>
-    </tbody></table>
+    </tbody></table> -->
+
+
     </form>
-  <br>
-  <button class='btn btn-default btn-sm' type='button' id='ping' value='Ping' onClick='getResults()'>Ping</button>
+    <br>
+    <button class='btn btn-default btn-sm' type='button' id='ping' value='Ping' onClick='getResults()'>Ping</button>
     <br>
     <div id='results' class='controlBoxContent noshow'>
       <div id='statistics' class='smallText'></div>
@@ -38,6 +68,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   </div> <!--end control box content -->
 </div> <!--end control box  -->
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
+</body>
+</html> 
 
 <script src="libs/jquery.dataTables.min.js"></script>
 <script type='text/ecmascript'>

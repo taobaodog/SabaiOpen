@@ -978,14 +978,6 @@ textarea {
 	width: 90%;
 }
 
-/*Logs*/
-/*.tablemenu { width: 100%; border: 1px transparent double !important; border-collapse: collapse; }
-.tablemenu td { border: 1px black solid; text-align: center; }
-#log { width:200px; margin-left:5px; background:#FFF; }
-#lines { background:#FFF; }
-#findText { position: relative; top: -1px; }
-#response { width: 100%; height: 480px; margin-top:2px; box-shadow: .3px .3px .3px .3px inset; background:#FFF; }
-.pointy { cursor: pointer; }*/
 
 /*openvpn*/
 		#ovpn_file { 
@@ -1070,6 +1062,7 @@ textarea {
   visibility: hidden;                                                                                        
 }  
 
+/*help*/
 .helpBtn {
     appearance: none;
     -webkit-appearance: none;
@@ -1090,10 +1083,18 @@ textarea {
 	padding: 10px;
 }
 
+/*administration*/
 .statusCellName {
 	border-right: solid 2px #bdbdbd;
 }
 .statusCellContent {
 	margin-left: 3px;
 }
+
+/*diagnostics*/
+.logContent { 
+	width: 100%; 
+	height: 40em; 
+}
+
 

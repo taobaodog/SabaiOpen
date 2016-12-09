@@ -11,17 +11,6 @@ Sync time and zone with computer time/zone
 <!DOCTYPE html>
 <html>
 <head>
-  <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
-  <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
-  <script type='text/ecmascript' src='/libs/globalize.js'></script>
-  <script type="text/javascript" src="libs/jstimezonedetect/jstz.main.js"></script>
-  <script src="libs/bootstrap.min.js"></script>
-  <script src="libs/jquery.dataTables.min.js"></script>
-  <script src="libs/dataTables.bootstrap.min.js"></script>
-  <script src="libs/dataTables.altEditor.free.js"></script>
-  <script src="libs/dataTables.buttons.min.js"></script>
-  <script src="libs/buttons.bootstrap.min.js"></script>
-  <script src="libs/dataTables.select.min.js"></script>
 </head>
 <body>
 <div class='pageTitle'>
@@ -49,7 +38,7 @@ Sync time and zone with computer time/zone
       </table>
 </table>
 
-     <table class='controlTable'>
+<!--      <table class='controlTable'>
       <tbody>
       <tr>
         <td class="description">
@@ -58,11 +47,27 @@ Sync time and zone with computer time/zone
         </td>
       </tr>
       </tbody>
-    </table> 
+    </table>  -->
     </div>
   </div>
 
-<div class='controlBox'><span class='controlBoxTitle'>Current Router Time and Timezone</span>
+  <div class='controlBox'><span class='controlBoxTitle'>Current Router Time and Timezone</span>
+    <div class='controlBoxContent'>
+      <div class='inline' id='rt'></div>   
+      <button class='btn btn-default btn-sm' id='syncTime' name='syncTime' type='button' value='Synchronize' onclick='Sync()'>Synchronize</button>
+      <div id='hideme'>
+        <div class='centercolumncontainer'>
+          <div class='middlecontainer'>
+            <div id='hiddentext'>Please wait...</div>
+            <br>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Changed to the above -->
+<!--   <div class='controlBox'><span class='controlBoxTitle'>Current Router Time and Timezone</span>
   <div class='controlBoxContent'>
   <table class='controlTable'>
   <tbody>
@@ -82,7 +87,7 @@ Sync time and zone with computer time/zone
     </tbody>
     </table>
   </div>
-</div>
+</div> -->
 
 <div class='controlBox'><span class='controlBoxTitle'>Current Computer Time and Timezone</span>
   <div id='ct' class='controlBoxContent'>
@@ -141,6 +146,21 @@ Sync time and zone with computer time/zone
 </p>
 </body>
 </html>
+
+
+  <script type="text/javascript" src="libs/jquery.maphilight.min.js"></script>
+  <script type="text/javascript" src="libs/jquery.timezone-picker.min.js"></script>
+  <script type='text/ecmascript' src='/libs/globalize.js'></script>
+  <script type="text/javascript" src="libs/jstimezonedetect/jstz.main.js"></script>
+  <script src="libs/bootstrap.min.js"></script>
+  <script src="libs/jquery.dataTables.min.js"></script>
+  <script src="libs/dataTables.bootstrap.min.js"></script>
+  <script src="libs/dataTables.altEditor.free.js"></script>
+  <script src="libs/dataTables.buttons.min.js"></script>
+  <script src="libs/buttons.bootstrap.min.js"></script>
+  <script src="libs/dataTables.select.min.js"></script>
+
+
 <script>
 
 //Adding text to help-modal

@@ -4,70 +4,73 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-<style type='text/css'>
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 
-/*.shortInput { width: 2.5em; }
-.longInput { width: 50%; }*/
 
-#logContents { width: 100%; height: 40em; }
-
-</style>
-
-<div class='pageTitle'>
-	  <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
-Diagnostics: Logs
-</div>
-
-<div class='controlBox'>
-	<span class='controlBoxTitle'>Logs</span>
-	<div class='controlBoxContent'>
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <form id='fe' class="form-inline" role="form">
-            <div class="form-group">
-              	<select id='log' class="form-control" name='log'>
-	 				<option value='messages' selected>System log</option>
-	 				<option value='privoxy.log'>Privoxy log</option>
-	 				<option value='kernel.log'>Kernel log</option>
-	 			</select>
-            </div>
-            <div class="form-group">
-              	<select id='act' name='act' class="form-control" onchange="toggleDetail();">
-	 				<option value='all'>View all</option>
-	 				<option value='head'>View first</option>
-	 				<option value='tail' selected>View last</option>
-	 				<option value='grep'>Search for</option>
-	 				<option value='download'>Download file</option>
-	 			</select>
-            </div>
-            <div class="form-group">
-              <input type="text" name='detail' id='detail' class='form-control'><span id='detailSuffix'></span>
-            </div>
-        </form>
-    </div>
-</div>
-<br>
-	<div class='col-md-2 col-sm-2 col-lg-2 '>	
-		<button class='btn btn-default btn-sm pull-left' id='goButton' type="button" value="Go" onclick="goLog();">Show</button>
+	<div class='pageTitle'>
+		<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+		Diagnostics: Logs
 	</div>
-<br>	
-		<div id='hideme'>
-            		<div class='centercolumncontainer'>
-                		<div class='middlecontainer'>
-                    			<div id='hiddentext'>Please wait...</div>
-                    		<br>
-                		</div>
-            		</div>
-        	</div><br>
 
-		<textarea id='logContents' readonly></textarea>
+	<div class='controlBox'>
+		<span class='controlBoxTitle'>Logs</span>
+		<div class='controlBoxContent'>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<form id='fe' class="form-inline" role="form">
+						<div class="form-group">
+							<select id='log' class="form-control" name='log'>
+								<option value='messages' selected>System log</option>
+								<option value='privoxy.log'>Privoxy log</option>
+								<option value='kernel.log'>Kernel log</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<select id='act' name='act' class="form-control" onchange="toggleDetail();">
+								<option value='all'>View all</option>
+								<option value='head'>View first</option>
+								<option value='tail' selected>View last</option>
+								<option value='grep'>Search for</option>
+								<option value='download'>Download file</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<input type="text" name='detail' id='detail' class='form-control'><span id='detailSuffix'></span>
+						</div>
+					</form>
+				</div>
+			</div>
+			<br>
+			<div class='col-md-2 col-sm-2 col-lg-2 '>	
+				<button class='btn btn-default btn-sm pull-left' id='goButton' type="button" value="Go" onclick="goLog();">Show</button>
+			</div>
+			<br>	
+			<div id='hideme'>
+				<div class='centercolumncontainer'>
+					<div class='middlecontainer'>
+						<div id='hiddentext'>Please wait...</div>
+						<br>
+					</div>
+				</div>
+			</div><br>
+			<div class='logContent'>
+				<textarea id='logContent' class='logContent' readonly></textarea>
+			</div>
+		</div>
 	</div>
-</div>
-<div>
+	<div>
 
-</div>
+	</div>
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
 
+</body>
+</html>
 <script type='text/javascript'>
 
 //Adding text to help-modal

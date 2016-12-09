@@ -4,13 +4,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   header( "Location: $url" );     
 }
 ?>
-<!-- TODO:
-WINS?
-ADD VALIDATION
-Consider allowing minutes or hours for leasetime
-Allow turning on or off DHCP
-Don't allow multiple lan widgets on same page if htey are all operating on the same thing
--->
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>
@@ -19,11 +18,36 @@ Don't allow multiple lan widgets on same page if htey are all operating on the s
 </div>
 <div class='controlBox'><span class='controlBoxTitle'>Address</span>
   <div class='controlBoxContent' id='lanaddress'>
+    <div class ='form-group' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='lan_ip'>LAN IP</label>
+      <input id='lan_ip' name='lan_ip' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+      <label  id='lan_ipLabel' class='errorLabel'></label>
+    </div>
+    <div class ='form-group' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='lan_mask'>LAN Mask</label>
+      <input id='lan_mask' name='lan_mask' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+      <label  id='lan_maskLabel' class='errorLabel'></label>
+    </div>
   </div>
 </div>
 
 <div class='controlBox'><span class='controlBoxTitle'>DHCP Server</span>
-  <div class='controlBoxContent' id='dhcpserver'>   
+  <div class='controlBoxContent' id='dhcpserver'>  
+    <div class ='form-group' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='dhcp_lease'>Lease Hours</label>
+      <input id='dhcp_lease' name='dhcp_lease' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+      <label  id='dhcp_leaseLabel' class='errorLabel'></label>
+    </div>
+    <div class ='form-group' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='dhcp_start'>DHCP Range</label>
+      <input id='dhcp_start' name='dhcp_start' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+      <input id='dhcp_limit' name='dhcp_limit' type='text' class='form-control col-md-4 col-lg-4 col-sm-4'>
+    </div>    
+    <div class ='form-group' style='margin-bottom: 5px;'>
+      <label class='col-md-2 col-lg-2 col-sm-2' for='dhcp_startLabel'></label>
+      <label  id='dhcp_startLabel' class='errorLabel'></label>
+      <label  id='dhcp_limitLabel' class='errorLabel col-md-push-4'></label>
+    </div>
   </div>
 </div>
 
@@ -45,15 +69,8 @@ Don't allow multiple lan widgets on same page if htey are all operating on the s
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
-<!--   
-  ____            _       _       
- / ___|  ___ _ __(_)_ __ | |_ ___ 
- \___ \ / __| '__| | '_ \| __/ __|
-  ___) | (__| |  | | |_) | |_\__ \
- |____/ \___|_|  |_| .__/ \__|___/
-                   |_|            
--->
-
+</body>
+</html>
 <script>
 
 $(document).on('click', '#helpBtn', function (e) {
@@ -184,7 +201,7 @@ $.widget("jai.lanaddress", {
   //Adding to the built-in widget constructor method - do this when widget is instantiated
   _create: function(){
     //TO DO: check to see if containing element has a unique id
-    
+    /*
     // BUILDING DOM ELEMENTS
     $(this.element)
     .append( $(document.createElement('table')).addClass("controlTable").prop("id","lanaddress") 
@@ -223,7 +240,7 @@ $.widget("jai.lanaddress", {
           )
         )
       )
-    )
+    )*/
 
     // call ipspinner widget
     $('#lan_ip').ipspinner({
@@ -275,7 +292,7 @@ $.widget("jai.dhcpserver", {
   //Adding to the built-in widget constructor method - do this when widget is instantiated
   _create: function(){
     //TO DO: check to see if containing element has a unique id
-    $(this.element)
+   /* $(this.element)
     .append( $(document.createElement('table')).addClass("controlTable").prop("id","dhcpserver") 
       .append( $(document.createElement('tbody')) 
         
@@ -335,7 +352,7 @@ $.widget("jai.dhcpserver", {
           )
         )    
       )
-    )
+    )*/
 
     // call ipspinner widget
     var network = {}

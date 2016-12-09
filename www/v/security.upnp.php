@@ -11,7 +11,59 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </div>
 
 <div class='controlBox'><span class='controlBoxTitle'>Settings</span>
-	<div class='controlBoxContent'><table><tbody>
+	<div class='controlBoxContent'>
+		<div class ='form-group'>
+        	<label class='col-md-4 col-lg-3 col-sm-5'>Enable UPnP</label>
+        	<input type="checkbox" id="enableToggle" name='enableToggle' class="slideToggle" />
+			<label class="slideToggleViewport" for="enableToggle">
+				<div class="slideToggleSlider">
+					<div class="slideToggleButton slideToggleButtonBackground">&nbsp;</div>
+					<div class="slideToggleContent slideToggleLeft button buttonSelected"><span>On</span></div>
+					<div class="slideToggleContent slideToggleRight button"><span>Off</span></div>
+				</div>
+			</label>
+      	</div>
+
+      	<div class ='form-group'>
+			<label class='col-md-4 col-lg-3 col-sm-5'>Enable NAT-PMP</label>
+        	<input type="checkbox" id="natpmpToggle" name='natpmpToggle' class="slideToggle" />
+			<label class="slideToggleViewport" for="natpmpToggle">
+				<div class="slideToggleSlider">
+					<div class="slideToggleButton slideToggleButtonBackground">&nbsp;</div>
+					<div class="slideToggleContent slideToggleLeft button buttonSelected"><span>On</span></div>
+					<div class="slideToggleContent slideToggleRight button"><span>Off</span></div>
+				</div>
+			</label>
+      	</div>
+
+		<div class ='form-group'>
+			<label class='col-md-4 col-lg-3 col-sm-5'>Inactive Rules Cleaning</label>
+       		<input type="checkbox" id="cleanToggle" name='cleanToggle' class="slideToggle" /> 
+			<label class="slideToggleViewport" for="cleanToggle">
+				<div class="slideToggleSlider">
+					<div class="slideToggleButton slideToggleButtonBackground">&nbsp;</div>
+					<div class="slideToggleContent slideToggleLeft button buttonSelected"><span>On</span></div>
+					<div class="slideToggleContent slideToggleRight button"><span>Off</span></div>
+				</div>
+			</label>
+      	</div>
+      	
+		<div class ='form-group'>
+        	<label class='col-md-4 col-lg-3 col-sm-5'>Secure Mode</label>
+        	<input type="checkbox" id="secureToggle" name='secureToggle' class="slideToggle" /> 
+			<label class="slideToggleViewport" for="secureToggle">
+				<div class="slideToggleSlider">
+					<div class="slideToggleButton slideToggleButtonBackground">&nbsp;</div>
+					<div class="slideToggleContent slideToggleLeft button buttonSelected"><span>On</span></div>
+					<div class="slideToggleContent slideToggleRight button"><span>Off</span></div>
+				</div>
+			</label>
+      	</div>
+	</div>
+</div>
+<!-- 
+
+		<table><tbody>
 		<tr><td>Enable UPnP</td>
 			<td><input type="checkbox" id="enableToggle" name='enableToggle' class="slideToggle" />
 				 <label class="slideToggleViewport" for="enableToggle">
@@ -62,11 +114,40 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 				NAT-PMP requires UPnP to be on.</span>
 			</td>
 		</tr>
-	</tbody></table></div>
-</div>
+	</tbody></table> -->
 
 <div class='controlBox'><span class='controlBoxTitle'>Allowed UPnP Ports*</span>
 	<div class='controlBoxContent'>
+
+		<div class ='form-group' style='margin-bottom: 5px;'>
+      		<label class='col-md-4 col-lg-3 col-sm-4'  for='intmin'>Destination Address</label>
+      		<input id='intmin' name='intmin' class='shortinput'/> - 
+      		<input id='intmax' name='intmax' class='shortinput'/>
+    	</div>	
+
+		<div class ='form-group' style='margin-bottom: 5px;'>
+      		<label id='intminLabel' name='intminLabel' class='errorLabel col-md-offset-4 col-lg-offset-3 col-sm-offset-4'/>
+    	</div>	
+
+    	<div class ='form-group' style='margin-bottom: 5px;'>
+      		<label id='intmaxLabel' name='intmaxLabel' class='errorLabel col-md-offset-4 col-lg-offset-3 col-sm-offset-4'/>
+    	</div>	
+
+		<div class ='form-group' style='margin-bottom: 5px;'>
+      		<label class='col-md-4 col-lg-3 col-sm-4'  for='extmin'>External Ports</label>
+      		<input id='extmin' name='extmin' class='shortinput'/> - 
+      		<input id='extmax' name='extmax' class='shortinput'/>
+    	</div>
+
+    	<div class ='form-group' style='margin-bottom: 5px;'>
+      		<label id='extminLabel' name='extminLabel' class='errorLabel col-md-offset-4 col-lg-offset-3 col-sm-offset-4'/>
+    	</div>	
+
+    	<div class ='form-group' style='margin-bottom: 5px;'>
+      		<label id='extmaxLabel' name='extmaxLabel' class='errorLabel col-md-offset-4 col-lg-offset-3 col-sm-offset-4'/>
+    	</div>		    	    	
+
+<!-- 
 	<table>
 		<tbody>
 			<tr>
@@ -85,6 +166,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 			<tr><td></td><td><label id='extmaxLabel' name='extmaxLabel' class='errorLabel'/></td></tr>
 		</tbody>
 	</table>
+
+ -->
+
+
+
+
+
+
+
+
 		<br>
 		<span class='xsmallText'> *Values must be between 1024-65535 and startport must be less than endport</span>
 		<br>

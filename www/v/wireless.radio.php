@@ -4,62 +4,208 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   header( "Location: $url" );     
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
 <div class='pageTitle'>
-<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
+  <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
   Wireless: Radio
 </div>
-<!--  TODO: align td widths-->
+
+<!-- WL0 content -->
 <form id="fe">
-<input type='hidden' id='form_wl0' name='form_wl0' value='wl0'>
-<div class='controlBox'><span class='controlBoxTitle'>WL0</span>
-  <div class='controlBoxContent' id='wl_wl0'>
+  <input type='hidden' id='form_wl0' name='form_wl0' value='wl0'>
+  <div class='controlBox'><span class='controlBoxTitle'>WL0</span>
+    <div class='controlBoxContent controlTable smallwidth' id='wl_wl0'>
+
+      <div class ='form-group'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='wl_mode'>Mode</label>
+        <select class='col-md-4 col-lg-4 col-sm-4' id='wl_mode' name='wl_mode' class='radioSwitchElement'>
+          <option value='off'>Off</option>
+          <option value='ap'>Wireless Server</option>
+        </select>
+      </div>
+
+
+      <div class ='form-group'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='wl_ssid'>SSID</label>
+        <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+          <input id='wl_ssid' name='wl_ssid' type='text' class='form-control'>
+          <label  id='wl_ssidLabel' class='errorLabel'></label>
+        </div>
+      </div>
+
+      <div class ='form-group'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='channel_mode'>Channel mode</label>
+        <select class='col-md-4 col-lg-4 col-sm-4' id='channel_mode' name='channel_mode' class='radioSwitchElement'>
+          <option value='off'>Manual</option>
+          <option value='auto'>Auto</option>
+        </select>
+      </div>
+
+      <div class ='form-group channel control' style='height: 39px;'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='wl_channel_msg'>Channel</label>
+        <div class='input-group input-group-lg-4 input-group-md-4 input-group-sm-4'>
+          <input id='wl_channel_msg' name='wl_channel_msg' type='text' disabled='true' class='form-control col-md-4 col-lg-4 col-sm-4 channel_mode auto_on'>
+          <input id='wl_channel' name='wl_channel' type='text' class='form-control channel_mode auto_off'>
+          <label  id='wl_channelLabel' class='errorLabel channel_mode auto_off'></label>
+        </div>
+      </div>
+
+      <div class ='form-group'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='channel_width'>Channel width</label>
+        <select class='col-md-4 col-lg-4 col-sm-4' id='channel_width' name='channel_width' class='radioSwitchElement'>
+          <option value='20'>HT20</option>
+          <option value='40'>HT40</option>
+        </select>
+      </div>
+
+      <div class ='form-group'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='wl_encryption'>Encryption</label>
+        <select class='col-md-4 col-lg-4 col-sm-4' id='wl_encryption' name='wl_encryption' class='radioSwitchElement'>
+          <option value='none'>None</option>
+          <option value='wep'>WEP</option>
+          <option value='psk'>WPA</option>
+          <option value='psk2'>WPA2</option>
+          <option value='mixed-psk'>WPA/WPA2</option>
+        </select>
+      </div>    
+
+      <div class ='form-group wl_encryption wl_encryption-wep' style='margin-bottom: 5px;'>
+        <br>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='wl_wep_keys'>WEP Keys</label>
+        <div>
+          <ul id='wl_wep_keys' class='col-md-4 col-lg-4 col-sm-4' style='padding: 0px;'>
+          </ul>
+        </div>
+      </div>
+
+      <div class ='form-group wl_encryption wl_encryption-psk wl_encryption-psk2 wl_encryption-mixed-psk' style='margin-bottom: 5px;'>
+        <br>
+        <div class ='form-group'>
+          <label class='col-md-2 col-lg-2 col-sm-2' for='wl_wpa_encryption'>WPA Encryption</label>
+          <select class='col-md-4 col-lg-4 col-sm-4' id='wl_wpa_encryption' name='wl_wpa_encryption' class='radioSwitchElement'>
+            <option value='aes'>AES</option>
+            <option value='tkip'>TKIP</option>
+            <option value='tkip+aes'>AES/TKIP</option>
+          </select>
+        </div>    
+
+        <div class ='form-group' style='margin-bottom: 5px;'>
+          <label class='col-md-2 col-lg-2 col-sm-2' for='wl_wpa_psk'>Key</label>
+          <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+            <input id='wl_wpa_psk' name='wl_wpa_psk' type='password' onfocus='peekaboo("wl_wpa_psk")' onblur='peekaboo("wl_wpa_psk")' class='form-control col-md-4 col-lg-4 col-sm-4'>
+          </div>
+        </div>
+
+        <div class ='form-group' style='margin-bottom: 5px;'>
+          <label class='col-md-2 col-lg-2 col-sm-2' for='wl_ssid'>Key Duration</label>
+          <input id='wl_wpa_rekey' name='wl_wpa_rekey' class='form-control col-lg-4 '>
+          <label  id='wl_wpa_rekeyLabel' class='errorLabel'></label>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
-   <div class='controlBoxFooter'>
+
+  <!-- WL0 save/cancel buttons -->
+  <div class='controlBoxFooter'>
     <button type='button' class='btn btn-default btn-sm' id='saveButton' value='Save' onclick='WLcall("#fe")'>Save</button>
     <button type='button' class='btn btn-default btn-sm' id='cancelButton' value='Cancel' onClick="window.location.reload()" disabled>Cancel</button>
     <span id='messages'>&nbsp;</span>
   </div>
-    <div id='hideme'>
-        <div class='centercolumncontainer'>
-            <div class='middlecontainer'>
-                <div id='hiddentext'>Please wait...</div>
-                <br>
-            </div>
-        </div>
+  <div id='hideme'>
+    <div class='centercolumncontainer'>
+      <div class='middlecontainer'>
+        <div id='hiddentext'>Please wait...</div>
+        <br>
+      </div>
     </div>
+  </div>
 </form>
 
+<!-- WL1 content -->
 <form id="fe1">
-<input type='hidden' id='form_wl1' name='form_wl1' value='wl1'>
-<div class='controlBox'><span class='controlBoxTitle'>WL1 Guest access point</span>     
-  <div class='controlBoxContent' id='wl_wl1'>
+  <input type='hidden' id='form_wl1' name='form_wl1' value='wl1'>
+  <div class='controlBox'><span class='controlBoxTitle'>WL1 Guest access point</span>     
+    <div class='controlBoxContent controlTable smallwidth' id='wl_wl1'>
+
+      <div class ='form-group'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_mode'>Mode</label>
+        <select class='col-md-4 col-lg-4 col-sm-4' id='wl1_mode' name='wl1_mode' class='radioSwitchElement'>
+          <option value='off'>Off</option>
+          <option value='ap'>Wireless Server</option>
+        </select>
+      </div>
+
+
+      <div class ='form-group'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_ssid'>SSID</label>
+        <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+          <input id='wl1_ssid' name='wl1_ssid' type='text' class='form-control'>
+          <label  id='wl1_ssidLabel' class='errorLabel'></label>
+        </div>
+      </div>
+
+      <div class ='form-group'>
+        <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_encryption'>Encryption</label>
+        <select class='col-md-4 col-lg-4 col-sm-4' id='wl1_encryption' name='wl1_encryption' class='radioSwitchElement'>
+          <option value='none'>None</option>
+          <option value='psk2'>WPA2</option>
+        </select>
+      </div>    
+
+      <div class ='form-group wl1 wl1_encryption wl1_encryption-psk wl1_encryption-psk2 wl1_encryption-mixed-psk' style='margin-bottom: 5px;'>
+        <br>
+        <div class ='form-group'>
+          <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_wpa_encryption'>WPA Encryption</label>
+          <select class='col-md-4 col-lg-4 col-sm-4' id='wl1_wpa_encryption' name='wl1_wpa_encryption' class='radioSwitchElement'>
+            <option value='aes'>AES</option>
+            <option value='tkip'>TKIP</option>
+            <option value='tkip+aes'>AES/TKIP</option>
+          </select>
+        </div>    
+
+        <div class ='form-group' style='margin-bottom: 5px;'>
+          <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_wpa_psk'>Key</label>
+          <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+            <input id='wl1_wpa_psk' name='wl1_wpa_psk' type='password' onfocus='peekaboo("wl1_wpa_psk")' onblur='peekaboo("wl1_wpa_psk")' class='form-control col-md-4 col-lg-4 col-sm-4'>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
- <div class='controlBoxFooter'>
+
+  <!-- WL1 save/cancel buttons -->
+  <div class='controlBoxFooter'>
     <button type='button' class='btn btn-default btn-sm' id='saveButton1' value='Save' onclick='WLcall("#fe1")'>Save</button>
     <button type='button' class='btn btn-default btn-sm' id='cancelButton1' value='Cancel' onClick="window.location.reload()" disabled>Cancel</button>
     <span id='messages1'>&nbsp;</span>
   </div>                                                      
-    <div id='hideme'>                                                                                                                          
-        <div class='centercolumncontainer'>                                                                                                    
-            <div class='middlecontainer'>                                                                                                      
-                <div id='hiddentext'>Please wait...</div>                                                                                      
-                <br>                                                                                                                           
-            </div>                                                                                                                             
-        </div>                                                                                                                                 
-    </div>
-<p>
-  <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>                                                                         
-</p>
+  <div id='hideme'>                                                                                                                          
+    <div class='centercolumncontainer'>                                                                                                    
+      <div class='middlecontainer'>                                                                                                      
+        <div id='hiddentext'>Please wait...</div>                                                                                      
+        <br>                                                                                                                           
+      </div>                                                                                                                             
+    </div>                                                                                                                                 
+  </div>
+  <p>
+    <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>                                                                         
+  </p>
 </form>
+
+</body>
+</html>
 
 <script type='text/ecmascript'>
 
 //Adding text to help-modal
 $(document).on('click', '#helpBtn', function (e) {
   var help = "";
-    help += "<p>This page provides Wi-Fi related settings that can be customized. There are to Wi-Fi spots that can be managed by user. Guest Wi-Fi WL1 spot is isolated from main one WL0. It is supposed to protect LAN from untrusted hosts.</p>"
+    help += "<p>This page provides Wi-Fi related settings that can be customized. There are two Wi-Fi spots that can be managed by user. Guest Wi-Fi WL1 spot is isolated from main one WL0. It is supposed to protect LAN from untrusted hosts.</p>"
     help += "<br>"    
     help += "<p><b>Mode -</b> user can turn on or turn off access point(AP). By default both acess point are available.</p>"
     help += "<br>"    
@@ -235,7 +381,7 @@ $.widget("jai.wl_wl0", {
     //TO DO: check to see if containing element has a unique id
     
     // BUILDING DOM ELEMENTS
-    $(this.element)
+    /*$(this.element)
     .append( $(document.createElement('table')).addClass("controlTable smallwidth")
       .append( $(document.createElement('tbody')) 
         
@@ -464,7 +610,7 @@ $.widget("jai.wl_wl0", {
           )
         ) // end PSK tr
       ) // end WPA tbody
-    ) // end lower table
+    ) // end lower table*/
 
 
   $('#wl_encryption').change(function(){
@@ -563,7 +709,7 @@ $.widget("jai.wl_wl1", {
   //Adding to the built-in widget constructor method - do this when widget is instantiated
   _create: function(){
     // BUILDING DOM ELEMENTS
-    $(this.element)
+    /*$(this.element)
     .append( $(document.createElement('table')).addClass("controlTable smallwidth")
       .append( $(document.createElement('tbody'))
         .append( $(document.createElement('tr'))
@@ -678,7 +824,7 @@ $.widget("jai.wl_wl1", {
                       )
                   ) // end PSK tr
                 ) // end tbody
-              ) // end class
+              ) // end class*/
         
      
   $('#wl1_mode').radioswitch({ value: wl1.mode });
