@@ -357,8 +357,8 @@ $.post('php/wl.php', $(wlForm).serialize(), function(res){
       showUi();
 });
  
-// Important stops the page refreshing
-return false;
+// Refresh in case of bad data
+location.reload();
 
 }); 
 
