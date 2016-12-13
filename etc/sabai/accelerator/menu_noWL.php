@@ -34,15 +34,14 @@
 	 <li>
 	<a id='menu_administration' class='superMenuLink button'>Administration</a>
 	<ul id='submenu_administration' class='subMenu'>
-	 <li><a id='menu_settings' href='?panel=administration&section=settings' class='subMenuLink button'>Settings</a></li>
-	 <li><a id='menu_upgrade' href='?panel=administration&section=upgrade' class='subMenuLink button'>Upgrade</a></li>
-	 <li><a id='menu_about' href='?panel=administration&section=about' class='subMenuLink button'>About</a></li>
-	 <li><a id='menu_status' href='?panel=administration&section=status' class='subMenuLink button'>Status</a></li>
+	 <li><a id='menu_administration_settings' href='?panel=administration&section=settings' class='subMenuLink button'>Settings</a></li>
+	 <li><a id='menu_administration_upgrade' href='?panel=administration&section=upgrade' class='subMenuLink button'>Upgrade</a></li>
+	 <li><a id='menu_administration_status' href='?panel=administration&section=status' class='subMenuLink button'>Status</a></li>
 	</ul>
 	 </li>
 
 	 <li>
-	<a id='menu_help' href='?panel=help' class='superMenuLink button'>Help</a>
+	<a id='menu_about' href='?panel=about' class='superMenuLink button'>About</a>
 	 </li>
 
 
