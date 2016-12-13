@@ -17,7 +17,7 @@ else
 	echo ERROR 01 - Directory was not allocated.
 	exit 1
 fi
-if [ "$device" = "SabaiOpen" ]; then
+if [ "$device" == "SabaiOpen" ]; then
 	tar -C /tmp/upgrade -xf /tmp/upgrade/sabai-bundle-secured.tar
 else
 	tar -C /tmp/upgrade -xf /tmp/upgrade/sabai-acc-bundle-secured.tar
