@@ -9,6 +9,8 @@ varthree=$3
 varfour=$4
 
 _setup(){
+	# Create marker for tmp that setup is in progress
+	echo "setup" > /tmp/setup
 	# Bring in the variables with default of port=1194 and proto=udp
 	dhsize=$vartwo
 	echo $dhsize
@@ -17,13 +19,10 @@ _setup(){
 	else
 		port="1194"
 	fi
-	echo $port
 	proto="udp"
-	echo $proto
 
 	# Get the external IP
 	extip=$(php-fcgi /www/php/get_remote_ip.php | grep -E -o "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
-	echo $extip
 	
 	# Apply the diffie hellman key size
 	sed -i "s/KEY_SIZE=[0-9][0-9][0-9][0-9]/KEY_SIZE=$dhsize/g" /etc/easy-rsa/vars
@@ -82,18 +81,12 @@ _setup(){
 	echo > /etc/config/openvpn # clear the openvpn uci config
 	uci set openvpn.sabaivpn=openvpn
 	uci set openvpn.sabaivpn.enabled=1
-	uci set openvpn.sabaivpn.verb=3
-	uci set openvpn.sabaivpn.proto=$proto
-	uci set openvpn.sabaivpn.port=$port
-	uci set openvpn.sabaivpn.dev=tun
-	uci set openvpn.sabaivpn.crl_verify='/etc/easy-rsa/keys/crl.pem'
-	uci set openvpn.sabaivpn.server='10.8.199.0 255.255.255.0'
-	uci set openvpn.sabaivpn.push='redirect-gateway def1'
-	uci set openvpn.sabaivpn.keepalive='10 120'
-	uci set openvpn.sabaivpn.ca=/etc/openvpn/ca.crt
-	uci set openvpn.sabaivpn.cert=/etc/openvpn/sabai-server.crt
-	uci set openvpn.sabaivpn.key=/etc/openvpn/sabai-server.key
-	uci set openvpn.sabaivpn.dh=/etc/openvpn/dh$dhsize.pem
+	uci set openvpn.sabaivpn.config='/etc/openvpn/server.conf'
+	sed -i "s/dh.....pem/dh$dhsize.pem/" /etc/openvpn/server.conf
+	sed -i "s/port\ ..../port\ $port/" /etc/openvpn/server.conf
+	sed -i "s/proto\ .../proto\ $proto/" /etc/openvpn/server.conf
+	uci set sabai.ovpnserver.proto=$proto
+	uci set sabai.ovpnserver.port=$port
 	uci commit openvpn
 	/etc/init.d/openvpn enable
 	/etc/init.d/openvpn start
@@ -105,18 +98,20 @@ _setup(){
 		success="true"
 		message="OpenVPN server is running with $dhsize encryption at $extip : $port with protocol $proto"
 		data="\"none\""
+		rm /tmp/setup
 	else
 		success="false"
 		message="OpenVPN server could not be configured properly."
 		data="\"none\""
+		rm /tmp/setup
 	fi
 	_return
 }
 
 _client(){
 	clientname=$vartwo
-	port=$(uci get openvpn.sabaivpn.port)
-	proto=$(uci get openvpn.sabaivpn.proto)
+	port=$(uci get sabai.ovpnserver.port)
+	proto=$(uci get sabai.ovpnserver.proto)
 	dnsip=$(uci get network.wan.dns|awk '{print $1}')
 	if [ $dnsip == "" ]; then
 		dnsip='8.8.8.8'
@@ -155,6 +150,7 @@ _clear(){
 	if [ -d "$directory" ]; then
 		rm -r /etc/sabai/openvpn/clients 
 	fi
+	rm /tmp/setup
 	cd /etc/sabai/openvpn
 	logger "OpenVPN Server settings cleared."
 	success="true"
@@ -231,6 +227,12 @@ _stop(){
 
 _check(){
 cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
+	if if [ -e /tmp/setup ]; then
+		success="false"
+		message="OpenVPN server is being setup"
+		data="\"none\""
+		_return
+	fi
 	test=$(ps | grep -v grep | grep -ic sabaivpn)
 	if [ $test -eq 1 ]; then
 		success="true"
