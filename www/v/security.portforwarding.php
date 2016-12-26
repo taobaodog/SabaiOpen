@@ -4,7 +4,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
-
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <form id="fe">
   <input type='hidden' id='pftable' name='pftable'>
   
@@ -76,6 +82,9 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
   </p>
 </form>
+
+</body>
+</html>
 
 <script>
   
@@ -183,8 +192,8 @@ var columnDefs = [{
       type: "text",
       pattern: "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$",
       errorMsg: "*Invalid address - Enter valid ip.",
-      hoverMsg: "(Optional) - Ex: 82.84.86.88",
-      unique: true
+      hoverMsg: "(Optional) - Ex: 82.84.86.88"
+
     }, {
       title: "Source Port",
       id: "int",
@@ -212,8 +221,7 @@ var columnDefs = [{
       type: "text",
       pattern: "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,1}$",
       errorMsg: "*Invalid address - Enter valid ip.",
-      hoverMsg: "(Optional) - Ex: 81.83.85.87",
-      unique: true
+      hoverMsg: "(Optional) - Ex: 81.83.85.87"
     },{
       title: "Description",
       id: "description",
@@ -233,7 +241,7 @@ console.log( 'An error has been reported by DataTables: ', message );
 } ); 
 
 //Table creation
-$('#portTable').dataTable({
+$('#portTable').DataTable({
   dom: 'Bfrltip', 
   ajax: "libs/data/port_forwarding.json",
     columns: columnDefs,
