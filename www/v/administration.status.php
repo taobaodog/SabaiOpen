@@ -4,6 +4,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   header( "Location: $url" );     
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <div class='pageTitle'>
   <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
 Network: Status
@@ -45,6 +52,9 @@ Network: Status
   </div>
 </div>
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
+
+</body>
+</html>
 
 <script>
 

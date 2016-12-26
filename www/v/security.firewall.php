@@ -6,6 +6,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 ?>
 <!--  TODO:
 -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
+
 <form id="fe">
 <div class='pageTitle'>
 	 <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
@@ -133,6 +142,9 @@ Security: Firewall
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
+
+</body>
+</html>
 
 <script>
 

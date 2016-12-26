@@ -4,6 +4,14 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>
@@ -61,6 +69,9 @@ Security: DMZ
         <div id='footer'>Copyright © 2016 Sabai Technology, LLC</div>
 </p>
 </form>
+
+</body>
+</html>
 
 <script type='text/ecmascript'>
 

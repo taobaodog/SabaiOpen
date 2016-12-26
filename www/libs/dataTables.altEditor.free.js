@@ -6,7 +6,7 @@
  * @description Lightweight editor for DataTables
  * @version     1.0
  * @file        dataTables.editor.lite.js
- * @authors      kingkode (www.kingkode.com) & KasperOlesen
+ * @authors     kingkode (www.kingkode.com) & KasperOlesen
  * @contact     www.kingkode.com/contact
  * @copyright   Copyright 2016 Kingkode
  *
@@ -288,33 +288,33 @@
         */
         _openEditModal: function ( )
         {
-         var that = this;
-         var dt = this.s.dt;
-         var columnDefs = [];
+          var that = this;
+          var dt = this.s.dt;
+          var columnDefs = [];
+          var data, adata;
 
-    //Adding column attributes to object.
-    //Assuming that the first defined column is ID - Therefore skipping that
-    //and starting at index 1, because we dont wanna be able to change the ID.
-   for( var i = 1, tableLength = dt.context[0].aoColumns.length; i < tableLength; i++ )
-   {
-    columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
-      name: dt.context[0].aoColumns[i].data,
-      type: dt.context[0].aoColumns[i].type,
-      options: dt.context[0].aoColumns[i].options,
-      msg: dt.context[0].aoColumns[i].errorMsg,
-      hoverMsg: dt.context[0].aoColumns[i].hoverMsg,
-      pattern: dt.context[0].aoColumns[i].pattern,
-      special: dt.context[0].aoColumns[i].special,
-      unique: dt.context[0].aoColumns[i].unique
-    });
-  }
-  var adata = dt.rows({
-    selected: true
-  });
+          //Adding column attributes to object.
+          //Assuming that the first defined column is ID - Therefore skipping that
+          //and starting at index 1, because we dont wanna be able to change the ID.
+          for( var i = 1, tableLength = dt.context[0].aoColumns.length; i < tableLength; i++ )
+          {
+            columnDefs.push({ title: dt.context[0].aoColumns[i].sTitle,
+              name: dt.context[0].aoColumns[i].data,
+              type: dt.context[0].aoColumns[i].type,
+              options: dt.context[0].aoColumns[i].options,
+              msg: dt.context[0].aoColumns[i].errorMsg,
+              hoverMsg: dt.context[0].aoColumns[i].hoverMsg,
+              pattern: dt.context[0].aoColumns[i].pattern,
+              special: dt.context[0].aoColumns[i].special,
+              unique: dt.context[0].aoColumns[i].unique
+            });
+          }
+          adata = dt.rows({
+           selected: true
+          });
 
           //Building edit-form
-          var data = "";
-
+          data = "";
           data += "<form name='altEditor-form' role='form'>";
 
           for(var j = 0, columns = columnDefs.length; j < columns; j++){
@@ -371,55 +371,55 @@
           var that = this;
           var dt = this.s.dt;
 
-        //Data from table columns
-        var columnIds = [];
-        //Data from input-fields
-        var dataSet = [];
-        //Complete new row data 
-        var rowDataArray = {};
+          //Data from table columns
+          var columnIds = [];
+          //Data from input-fields
+          var dataSet = [];
+          //Complete new row data 
+          var rowDataArray = {};
 
-        var adata = dt.rows({
-          selected: true
-        });
+          var adata = dt.rows({
+            selected: true
+          });
 
-        //Getting the IDs and Values of the tablerow
-        for( var i = 0, allIDs = dt.context[0].aoColumns.length; i < allIDs; i++ )
-        {
-          columnIds.push({ id: dt.context[0].aoColumns[i].id,
+          //Getting the IDs and Values of the tablerow
+          for( var i = 0, allIDs = dt.context[0].aoColumns.length; i < allIDs; i++ )
+          {
+            columnIds.push({ id: dt.context[0].aoColumns[i].id,
                            dataSet: adata.data()[0][dt.context[0].aoColumns[i].data]
-          }); 
-        }
+            }); 
+          }
 
-        //Adding the ID & value of DT_RowId
-        rowDataArray[columnIds[0].id] = columnIds[0].dataSet;
+          //Adding the ID & value of DT_RowId
+          rowDataArray[columnIds[0].id] = columnIds[0].dataSet;
 
-        //Getting the inputs from the edit-modal
-        $('form[name="altEditor-form"] *').filter(':input').each(function( i )
-        {
-          dataSet.push( $(this).val() );
-        });    
+          //Getting the inputs from the edit-modal
+          $('form[name="altEditor-form"] *').filter(':input').each(function( i )
+          {
+            dataSet.push( $(this).val() );
+          });    
 
-        //Adding the inputs from the edit-modal
-        for(var i = 0, allInputs = dataSet.length; i < allInputs; i++){
-          rowDataArray[columnIds[i+1].id] = dataSet[i];
-        }
+          //Adding the inputs from the edit-modal
+          for(var i = 0, allInputs = dataSet.length; i < allInputs; i++){
+            rowDataArray[columnIds[i+1].id] = dataSet[i];
+          }
 
-        //Displaying the updated row data in the datatable
-        dt.row({ selected:true }).data(rowDataArray);
+          //Displaying the updated row data in the datatable
+          dt.row({ selected:true }).data(rowDataArray);
 
-        //Disabling the modal-edit-confirm button
-        $("#editRowBtn").prop('disabled', true); 
+          //Disabling the modal-edit-confirm button
+          $("#editRowBtn").prop('disabled', true); 
 
-        //Success message for modal
-        $('#altEditor-modal .modal-body .alert').remove();
+          //Success message for modal
+          $('#altEditor-modal .modal-body .alert').remove();
 
-        var message = '<div class="alert alert-success" role="alert">\
-        <strong>Success!</strong> This record has been updated.\
-        </div>';
+          var message = '<div class="alert alert-success" role="alert">\
+          <strong>Success!</strong> This record has been updated.\
+          </div>';
 
-        $('#altEditor-modal .modal-body').append(message);
+          $('#altEditor-modal .modal-body').append(message);
 
-  },
+        },
 
 
        /**
@@ -432,7 +432,7 @@
          var that = this;
          var dt = this.s.dt;
          var columnDefs = [];
-
+         var data, adata;
          //Adding attribute IDs and values to object
          for( var i = 1, tableLength = dt.context[0].aoColumns.length; i < tableLength; i++ )
          {
@@ -440,13 +440,12 @@
             name: dt.context[0].aoColumns[i].data
           });
         }
-        var adata = dt.rows({
+        adata = dt.rows({
           selected: true
         });
 
         //Building delete-modal
-        var data = "";
-
+        data = "";
         data += "<form name='altEditor-form' role='form'>";
         for(var j = 0, columns = columnDefs.length; j < columns; j++){
           data += "<div class='form-group'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + " :  </label><input  type='hidden'  id='" + columnDefs[j].title + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' style='overflow:hidden'  class='form-control' value='" + adata.data()[0][columnDefs[j].name] + "' >" + adata.data()[0][columnDefs[j].name] + "</input></div>";
@@ -469,7 +468,6 @@
       {
        var that = this;
        var dt = this.s.dt;
-
 
        $('#altEditor-modal .modal-body .alert').remove();
 
@@ -494,6 +492,7 @@
          var that = this;
          var dt = this.s.dt;
          var columnDefs = [];
+         var data, options = "";
 
          //Adding column attributes to object.
          for( var i = 1, tableLength = dt.context[0].aoColumns.length; i < tableLength; i++ )
@@ -511,7 +510,6 @@
         }
 
         //Building add-form
-        var data = "";
         data += "<form name='altEditor-form' role='form'>";
         for(var j = 0, columns = columnDefs.length; j < columns; j++){
          data += "<div class='form-group'><div class='col-sm-5 col-md-5 col-lg-5 text-right' style='padding-top:4px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-6 col-md-6 col-lg-6'>";
@@ -529,7 +527,6 @@
 
         //Adding select-fields
         if(columnDefs[j].type.includes("select")){
-          var options = "";
           for (var i = 0; i < columnDefs[j].options.length; i++) {
             options += "<option value='" + columnDefs[j].options[i] + "'>" + columnDefs[j].options[i] + "</option>";
           }
@@ -697,16 +694,17 @@ _getExecutionLocationFolder: function() {
 var initValidation = function(tableObj){
   var dt = tableObj.s.dt;
   var isValid = false;
-  var errorcount = 0;
-  var matchcount = 0;
+  var errorcount, matchcount = 0;
+  var ports, unique, num1, num2, input;
+  var errorLabel = ""
 
   //Looping through all inputs
   $('form[name="altEditor-form"] *').filter(':input').each(function( i ){
     
     //We only want the check text inputs.
     if($(this).attr("type") === "text"){
-      var errorLabel = "#"+ $(this).attr("id") + "label";
-      var unique = $(this).attr("data-unique");
+      errorLabel = "#"+ $(this).attr("id") + "label";
+      unique = $(this).attr("data-unique");
 
     //Inputvalidation for port range
     if($(this).attr("data-special") === "portRange"){
@@ -757,7 +755,7 @@ var initValidation = function(tableObj){
 
     //Checking for dublicate data in columns with unique attribute     
     if($(this).attr("data-unique") === "true"){
-      var input = $(this).val();
+      input = $(this).val();
       //Looping through an array with all data from the column
       $.each(dt.column(i+1).data(), function(index, value) { 
         //Skipping data from the selected row
@@ -772,15 +770,14 @@ var initValidation = function(tableObj){
         } 
       });
     }
-  }
-});  
+    }
+  });  
 
 //When no errors in input and no matches are found
-if(errorcount == 0 && matchcount == 0){
-  isValid = true;
-}
-
-return isValid;
+  if(errorcount == 0 && matchcount == 0){
+    isValid = true;
+  }
+  return isValid;
 }
 
 var undoChanges = function(tableObj){
@@ -810,7 +807,6 @@ var sendJsonData = function(tableObj){
        //Building JSON template
        var comepleteJsonData = {};
        comepleteJsonData.aaData = [];
-
        //Container for response from server
        var response = document.getElementById("messages");
 

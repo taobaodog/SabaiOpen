@@ -4,6 +4,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <form id="fe">
 <div class='pageTitle'>
 	<input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
@@ -202,6 +209,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     	<div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
 	</div>
 </form>
+
+</body>
+</html>
+
 <script type='text/javascript'>
 
 //Adding text to help-modal

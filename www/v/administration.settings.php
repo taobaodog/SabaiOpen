@@ -5,6 +5,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 }
 $proxystatus = exec("uci get sabai.proxy.status"); 
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>
@@ -103,9 +110,7 @@ Settings
 	<span id='messages'>&nbsp;</span></b>
 	<pre class='noshow' id='response'></pre>
 </form>
-</td>
-</tr>
-</table>
+
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
     <div id='hideme'>
         <div class='centercolumncontainer'>
@@ -115,6 +120,10 @@ Settings
             </div>
         </div>
     </div>
+
+</body>
+</html>
+
 <script type="text/javascript">
 
 //Adding text to help-modal

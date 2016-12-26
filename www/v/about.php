@@ -4,6 +4,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	header( "Location: $url" );     
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <div class='pageTitle'>About</div>
 
 <div class='controlBox'><span class='controlBoxTitle'>About SabaiOpen</span>
@@ -28,3 +35,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 	</div>
 </div>
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
+
+</body>
+</html>
