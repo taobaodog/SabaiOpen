@@ -53,7 +53,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       </tbody>
     </table>
   <div class='controlBoxFooter'>
-    <button type='button' class='btn btn-default btn-sm' id='saveButton' onclick="PORTcall()" value='Save'>Save</button>
+    <button type='button' class='btn btn-default btn-sm' id='saveButton' onclick="PORTcall()" value='Save' disabled='true'>Save</button>
     <button type='button' class='btn btn-default btn-sm' id='cancelButton' value='Cancel' disabled='true'>Cancel</button>
     <span id='messages'>&nbsp;</span>
   </div>
