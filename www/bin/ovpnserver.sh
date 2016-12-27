@@ -258,16 +258,17 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 	if [ -d "$directory" ] && [ "$(ls -A $directory)" ]; then
 		ls /etc/sabai/openvpn/clients/ | sed 's/\.[^.]*$//' > /tmp/clients 
 		rm /tmp/clientdata
-		echo "{ \"clients\":[" >> /tmp/clientdata
+		echo -n "{ \"clients\":[" >> /tmp/clientdata
 		while read c; do
-  		echo "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c | cut -c 1)\"}," >> /tmp/clientdata
+  		echo -n "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c | cut -c 1)\"}," >> /tmp/clientdata
 		done < /tmp/clients
 		sed -i '$ s/.$//' /tmp/clientdata
-		echo "]}" >> /tmp/clientdata
+		echo -n "]}" >> /tmp/clientdata
 		sed -i 's/\"V\"/true/g' /tmp/clientdata
                 sed -i 's/\"R\"/false/g' /tmp/clientdata
-
 		data=$(cat /tmp/clientdata)
+		echo "res={ \"sabai\": $success, \"msg\": \"$message\" , \"data\": $data };"
+                exit 0;
 	else
 	data="none"
 	fi
