@@ -20,92 +20,11 @@ _setup(){
 		port="1194"
 	fi
 	proto="udp"
-
-	# Get the external IP
 	extip=$(php-fcgi /www/php/get_remote_ip.php | grep -E -o "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
-	
-	# Apply the diffie hellman key size
-	sed -i "s/KEY_SIZE=[0-9][0-9][0-9][0-9]/KEY_SIZE=$dhsize/g" /etc/easy-rsa/vars
-
-	# Clear any existing OpenVPN configuration
-	source /etc/easy-rsa/vars; clean-all
-	test=$(ps | grep -v grep | grep -ic sabaivpn)
-	if [ $test -eq 1 ]; then
-        /etc/init.d/openvpn disable
-        /etc/init.d/openvpn stop
-	fi
-
-	# Create new OpenVPN server setup based on variables recieved
-	build-ca --batch
-	build-dh 
-	cd /etc/easy-rsa; . ./vars; build-key-server --batch sabai-server
-	cp /etc/easy-rsa/keys/ca.crt /etc/easy-rsa/keys/sabai-server.* /etc/easy-rsa/keys/dh*.* /etc/openvpn
-	mkdir -p /etc/sabai/openvpn/clients
-	touch /etc/sabai/openvpn/clients/dummy
-	rm -r /etc/sabai/openvpn/clients/*
-
-	#setup VPN interface
-	uci set network.vpn0=interface
-	uci set network.vpn0.ifname=tun0 #If you wish to use a server-bridge config, replace the tun0 with tap0
-	uci set network.vpn0.proto=none
-	uci set network.vpn0.auto=1
-	uci commit network
-	/etc/init.d/network reload
-	sleep 3
-
-	# Setup Firewall rule if it hasn't yet been setup
-	test=$(cat /etc/config/firewall | grep -ic OpenVPN)
-	if [ $test -eq 0 ]; then
-	uci add firewall rule
-	uci set firewall.@rule[-1].name=Allow-OpenVPN-Inbound
-	uci set firewall.@rule[-1].target=ACCEPT
-	uci set firewall.@rule[-1].src=*
-	uci set firewall.@rule[-1].proto="$proto"
-	uci set firewall.@rule[-1].dest_port="$port"
-	# Allow VPN Routing
-	uci add firewall zone
-	uci set firewall.@zone[-1].name=vpn
-	uci set firewall.@zone[-1].input=ACCEPT
-	uci set firewall.@zone[-1].forward=REJECT
-	uci set firewall.@zone[-1].output=ACCEPT
-	uci set firewall.@zone[-1].network=vpn0
-	uci add firewall forwarding
-	uci set firewall.@forwarding[-1].src='vpn'
-	uci set firewall.@forwarding[-1].dest='wan'
-	uci commit firewall
-	/etc/init.d/firewall restart
-	sleep 3
-	fi
-
-	# Setup the OpenVPN configuration file
-	cp /etc/sabai/openvpn/server.conf /etc/openvpn/server.conf
-	echo > /etc/config/openvpn # clear the openvpn uci config
-	uci set openvpn.sabaivpn=openvpn
-	uci set openvpn.sabaivpn.enabled=1
-	uci set openvpn.sabaivpn.config='/etc/openvpn/server.conf'
-	sed -i "s/dh.....pem/dh$dhsize.pem/" /etc/openvpn/server.conf
-	sed -i "s/port\ ..../port\ $port/" /etc/openvpn/server.conf
-	sed -i "s/proto\ .../proto\ $proto/" /etc/openvpn/server.conf
-	uci set sabai.ovpnserver.proto=$proto
-	uci set sabai.ovpnserver.port=$port
-	uci commit openvpn
-	/etc/init.d/openvpn enable
-	/etc/init.d/openvpn start
-
-	# Prepare return messages and return
-	sleep 15
-	test=$(ps | grep -v grep | grep -ic sabaivpn)
-	if [ $test -eq 1 ]; then
-		success="true"
-		message="OpenVPN server is running with $dhsize encryption at $extip : $port with protocol $proto"
-		data="none"
-		rm /tmp/setup
-	else
-		success="false"
-		message="OpenVPN server could not be configured properly."
-		data="none"
-		rm /tmp/setup
-	fi
+	success="true"
+	message="OpenVPN server is being setup with $dhsize encryption at $extip : $port with protocol $proto"
+	data="none"
+	sh /www/bin/ovpnsetup.sh setup $dhsize $port $proto >/dev/null &
 	_return
 }
 
@@ -145,7 +64,23 @@ _client(){
 	_return
 }
 
+_clientoff(){
+	clientname=$vartwo
+	cd /etc/easy-rsa
+	revoke-full $clientname
+        success="true"
+        message="OpenVPN client $clientname has been revoked"
+        data="none"
+	_return
+}
+
+
 _clear(){
+        test=$(ps | grep -v grep | grep -ic sabaivpn)
+        if [ $test -eq 1 ]; then
+	        /etc/init.d/openvpn stop
+        	/etc/init.d/openvpn disable
+        fi
 	source /etc/easy-rsa/vars; clean-all
 	directory="/etc/sabai/openvpn/clients"
 	if [ -d "$directory" ]; then
@@ -197,7 +132,7 @@ _start(){
 _stop(){
 	test=$(ps | grep -v grep | grep -ic sabaivpn)
 	if [ $test -eq 0 ]; then
-		logger "Tried to stop OpenVPN server when already stopped"
+	0	logger "Tried to stop OpenVPN server when already stopped"
 		success="false"
 		message="OpenVPN server was already stopped"
 		data="none"
@@ -207,6 +142,8 @@ _stop(){
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then 
 		success="false"
 		message="OpenVPN server not yet setup"
+                echo "res={ \"sabai\": $success, \"msg\": \"$message\" , \"data\": $data };"
+                exit 0;
 		data="none"
 	else 
 		/etc/init.d/openvpn stop
@@ -226,7 +163,7 @@ _stop(){
 	fi
 	_return
 }
-data
+
 _check(){
 cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 	if [ -e /tmp/setup ]; then
@@ -254,13 +191,13 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 
 	#Get client names and whether they are active or not
 	directory="/etc/sabai/openvpn/clients"
-	rm -f /tmp/clients
+	rm -f /tmp/clientdata
 	if [ -d "$directory" ] && [ "$(ls -A $directory)" ]; then
 		ls /etc/sabai/openvpn/clients/ | sed 's/\.[^.]*$//' > /tmp/clients 
 		rm /tmp/clientdata
 		echo -n "{ \"clients\":[" >> /tmp/clientdata
 		while read c; do
-  		echo -n "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c | cut -c 1)\"}," >> /tmp/clientdata
+  		echo -n "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c\/ | cut -c 1)\",\"data\":\"/etc/sabai/openvpn/clients/$c.ovpn\"}," >> /tmp/clientdata
 		done < /tmp/clients
 		sed -i '$ s/.$//' /tmp/clientdata
 		echo -n "]}" >> /tmp/clientdata
@@ -284,6 +221,7 @@ case $action in
 	setup)  _setup  ;;
 	clear)  _clear  ;;
 	client)	_client	;;
+	clientoff) _clientoff ;;
 	start)	_start	;;
 	stop)	_stop	;;
 	check)	_check	;;
