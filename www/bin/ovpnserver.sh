@@ -262,6 +262,9 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 		done < /tmp/clients
 		sed -i '$ s/.$//' /tmp/clientdata
 		echo "]}" >> /tmp/clientdata
+		sed -i 's/\"V\"/true/g' /tmp/clientdata
+                sed -i 's/\"R\"/false/g' /tmp/clientdata
+
 		data=$(cat /tmp/clientdata)
 	else
 	data="\"none\""
