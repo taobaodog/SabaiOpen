@@ -4,6 +4,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   header( "Location: $url" );     
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <div class='pageTitle'>
   <input id='helpBtn' name='helpBtn' class='helpBtn' title='Help' style="background-image: url('libs/img/help.png')"></input>
 Network: Status
@@ -45,6 +52,9 @@ Network: Status
   </div>
 </div>
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
+
+</body>
+</html>
 
 <script>
 
@@ -115,8 +125,6 @@ function getStats(){
                     $("#wl1_mode").text(fullinfo.wl1.mode);
                     $("#wl1_ssid").text(fullinfo.wl1.ssid);
                     $("#wl1_security").text(fullinfo.wl1.security);
-                    $("#wl1_channel").text(fullinfo.wl1.channel);
-                    $("#wl1_width").text(fullinfo.wl1.width);
                     //set VPN elements
                     $("#vpn_type").text(fullinfo.vpn.proto);
                     $("#vpn_status").text(fullinfo.vpn.status);
@@ -385,23 +393,24 @@ $.widget("jai.wireless_build_1", {
           )
         )
         .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('<b>Channel</b>').addClass('statusCellName')  
+          .append( $(document.createElement('td'))
           )
-          .append( $(document.createElement('td')).html('<div class="statusCellContent" id=wl1_channel></div>') 
-          )
-        )
-        .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('<b>Channel Width</b>').addClass('statusCellName')  
-          )
-          .append( $(document.createElement('td')).html('<div class="statusCellContent" id=wl1_width></div>') 
+          .append( $(document.createElement('td')).html('<div class="statusCellContent">&nbsp</div>') 
           )
         )
         .append( $(document.createElement('tr'))
-          .append( $(document.createElement('td')).html('<b>MAC Address</b>').addClass('statusCellName')  
+          .append( $(document.createElement('td'))
           )
-          .append( $(document.createElement('td')).html('<div class="statusCellContent" id=wl0_mac>-</div>') 
+          .append( $(document.createElement('td')).html('<div class="statusCellContent">&nbsp</div>') 
           )
         )
+        .append( $(document.createElement('tr'))
+          .append( $(document.createElement('td'))
+          )
+          .append( $(document.createElement('td')).html('<div class="statusCellContent">&nbsp</div>') 
+          )
+        )
+        
      ) //end tbody
     ) //end system table
   }

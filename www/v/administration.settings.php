@@ -5,6 +5,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 }
 $proxystatus = exec("uci get sabai.proxy.status"); 
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<!--Sabai Technology - Apache v2 licence
+    Copyright 2016 Sabai Technology -->
+</head>
+<body>
 <form id="fe">
 <input type='hidden' id='act' name='act'>
 <div class='pageTitle'>
@@ -14,24 +21,37 @@ Settings
 
 <div class='controlBox'><span class='controlBoxTitle'>Router Name</span>
 	<div class='controlBoxContent'>
-		<table class='fields'>
+
+		<div class ='form-group' style='margin-bottom: 5px;'>
+        	<label class='col-md-2 col-lg-1 col-sm-2' for='pingAddress'>Name</label>
+        	<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+          		<input id='host' name='host' type='text' class='form-control'>
+        	</div>
+      	</div> 
+<!-- 		<table class='fields'>
 			<tr>
 				<td class='title'>Name</td>
 				<td><input type='text' name = 'host' id='host'></td>
 			</tr>
-		</table>
+		</table> -->
 		<button class='btn btn-default btn-sm' type='button' id='nameupdate' class='firstButton' onclick='system("hostname")' value='Update'>Update</button>
 	</div>
-	</div>
+</div>
 
 
 <div class='controlBox'><span class='controlBoxTitle'>Proxy</span>
 	<div class='controlBoxContent'>
-			<table class='fields'>
+		<div class ='form-group' style='margin-bottom: 5px;'>
+        	<label class='col-md-3 col-lg-2 col-sm-3' for='pingAddress'>Proxy Status</label>
+        	<div name='proxy' id='proxy'></div>
+      	</div> 
+
+<!-- 			<table class='fields'>
 				<tr>
 					<td class='title'>Proxy Status</td><td><div name='proxy' id='proxy'></div></td>
 				</tr>
-			</table>
+			</table> -->
+			<br>
 			<button class='btn btn-default btn-sm' type='button' id='proxyStart' class='firstButton'value='Start' onclick='proxysave("proxystart")'>Start</button>
 			<button class='btn btn-default btn-sm' type='button' id='proxyStop' value='Stop' onclick='proxysave("proxystop")'>Stop</button>
 		</div>
@@ -46,7 +66,25 @@ Settings
 
 <div class='controlBox'><span class='controlBoxTitle'>Password</span>
 	<div class='controlBoxContent'>
-		<table class='fields'>
+
+
+		<div class ='form-group' style='margin-bottom: 5px;'>
+        	<label class='col-md-4 col-lg-2 col-sm-4' for='pingAddress'>New Password</label>
+        	<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+          		<input id='sabaiPassword' name='sabaiPassword' type='password' class='form-control adminTextBox'>
+        	</div>
+      	</div>
+      	<div class ='col-md-offset-4 col-lg-offset-2 col-sm-offset-4' style='margin-bottom: 5px;'>
+      	<span  id="password_strength_prefix"></span><span id="password_strength"></span>
+      	</div>
+      	<div class ='form-group' style='margin-bottom: 5px;'>
+        	<label class='col-md-4 col-lg-2 col-sm-4' for='pingAddress'>Confirm Password</label>
+        	<div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
+          		<input id='sabaiPWConfirm' name='sabaiPWConfirm' type='password' class='form-control adminTextBox'>
+        	</div>
+      	</div>
+
+<!-- 		<table class='fields'>
 			<tr>
 				<td class='title'>New Password</td>
 				<td><input type='password' class='adminTextBox' name = 'sabaiPassword' id='sabaiPassword'></td>
@@ -62,7 +100,8 @@ Settings
 				<td class='title'>Confirm Password </td>
 				<td><input type='password' class='adminTextBox' name='sabaiPWConfirm' id='sabaiPWConfirm'></td>
 			</tr>
-		</table>
+		</table> -->
+		<br>
 		<button class='btn btn-default btn-sm' type='button' id='passUpdate' class='firstButton' onclick='pass("updatepass")' value='Update'>Update</button>
 		<div id='saveError'> Passwords must match.</div>
 	</div>
@@ -71,9 +110,7 @@ Settings
 	<span id='messages'>&nbsp;</span></b>
 	<pre class='noshow' id='response'></pre>
 </form>
-</td>
-</tr>
-</table>
+
 <div id='footer'> Copyright © 2016 Sabai Technology, LLC </div>
     <div id='hideme'>
         <div class='centercolumncontainer'>
@@ -83,6 +120,10 @@ Settings
             </div>
         </div>
     </div>
+
+</body>
+</html>
+
 <script type="text/javascript">
 
 //Adding text to help-modal

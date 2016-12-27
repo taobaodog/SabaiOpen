@@ -210,5 +210,5 @@ jQuery.validator.addMethod("macchecker", function(value, element) {
 
 // Diagnostics Ping address validator
 jQuery.validator.addMethod('addressCheck', function(value){
-  return /^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$/.test(value);
+  return /^(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6})|((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$/.test(value);
 }, " *Invalid address.");

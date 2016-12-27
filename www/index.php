@@ -63,7 +63,7 @@ function init(){
 		   $('#status').addClass('active')
 		 }
 
-
+/*
 function toggleHelpSection() {
 	$( "#helpClose").show();
 	$( "#helpSection" ).toggle( "slide", { direction: "right" }, 500 );
@@ -76,7 +76,7 @@ function closeHelpSection() {
 	$( "#helpSection" ).toggle( "slide", { direction: "right" }, 500 );
 	$( "#helpButton" ).show();
 	return false;
-}
+}*/
 
 <?php
  $template = array_key_exists('t',$_REQUEST);
@@ -92,8 +92,8 @@ function closeHelpSection() {
 $(function(){
 	$("#goToHelp").attr("href", "?panel=help#" + section);
 	$("#goToWiki").attr("href", "?panel=help#" + section);
-	$( "#helpButton" ).click(toggleHelpSection);
-	$( "#helpClose").click(closeHelpSection)
+/*	$( "#helpButton" ).click(toggleHelpSection);
+	$( "#helpClose").click(closeHelpSection)*/
 });
 
 </script>

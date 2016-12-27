@@ -21,8 +21,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   <div class='controlBox'><span class='controlBoxTitle'>WL0</span>
     <div class='controlBoxContent controlTable smallwidth' id='wl_wl0'>
 
-      <div class ='form-group'>
-        <label class='col-md-2 col-lg-2 col-sm-2' for='wl_mode'>Mode</label>
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-3 col-lg-2 col-sm-4' for='wl_mode'>Mode</label>
         <select class='col-md-4 col-lg-4 col-sm-4' id='wl_mode' name='wl_mode' class='radioSwitchElement'>
           <option value='off'>Off</option>
           <option value='ap'>Wireless Server</option>
@@ -30,24 +30,24 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       </div>
 
 
-      <div class ='form-group'>
-        <label class='col-md-2 col-lg-2 col-sm-2' for='wl_ssid'>SSID</label>
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-3 col-lg-2 col-sm-4' for='wl_ssid'>SSID</label>
         <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
           <input id='wl_ssid' name='wl_ssid' type='text' class='form-control'>
           <label  id='wl_ssidLabel' class='errorLabel'></label>
         </div>
       </div>
 
-      <div class ='form-group'>
-        <label class='col-md-2 col-lg-2 col-sm-2' for='channel_mode'>Channel mode</label>
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-3 col-lg-2 col-sm-4' for='channel_mode'>Channel mode</label>
         <select class='col-md-4 col-lg-4 col-sm-4' id='channel_mode' name='channel_mode' class='radioSwitchElement'>
           <option value='off'>Manual</option>
           <option value='auto'>Auto</option>
         </select>
       </div>
 
-      <div class ='form-group channel control' style='height: 39px;'>
-        <label class='col-md-2 col-lg-2 col-sm-2' for='wl_channel_msg'>Channel</label>
+      <div class ='form-group channel control' style='height: 39px; margin-bottom: 5px;' >
+        <label class='col-md-3 col-lg-2 col-sm-4' for='wl_channel_msg'>Channel</label>
         <div class='input-group input-group-lg-4 input-group-md-4 input-group-sm-4'>
           <input id='wl_channel_msg' name='wl_channel_msg' type='text' disabled='true' class='form-control col-md-4 col-lg-4 col-sm-4 channel_mode auto_on'>
           <input id='wl_channel' name='wl_channel' type='text' class='form-control channel_mode auto_off'>
@@ -55,15 +55,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </div>
       </div>
 
-      <div class ='form-group'>
-        <label class='col-md-2 col-lg-2 col-sm-2' for='channel_width'>Channel width</label>
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-3 col-lg-2 col-sm-4' for='channel_width'>Channel width</label>
         <select class='col-md-4 col-lg-4 col-sm-4' id='channel_width' name='channel_width' class='radioSwitchElement'>
           <option value='20'>HT20</option>
           <option value='40'>HT40</option>
         </select>
       </div>
 
-      <div class ='form-group'>
+      <div class ='form-group' style='margin-bottom: 5px;'>
         <label class='col-md-2 col-lg-2 col-sm-2' for='wl_encryption'>Encryption</label>
         <select class='col-md-4 col-lg-4 col-sm-4' id='wl_encryption' name='wl_encryption' class='radioSwitchElement'>
           <option value='none'>None</option>
@@ -86,7 +86,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       <div class ='form-group wl_encryption wl_encryption-psk wl_encryption-psk2 wl_encryption-mixed-psk' style='margin-bottom: 5px;'>
         <br>
         <div class ='form-group'>
-          <label class='col-md-2 col-lg-2 col-sm-2' for='wl_wpa_encryption'>WPA Encryption</label>
+          <label class='col-md-3 col-lg-2 col-sm-4' for='wl_wpa_encryption'>WPA Encryption</label>
           <select class='col-md-4 col-lg-4 col-sm-4' id='wl_wpa_encryption' name='wl_wpa_encryption' class='radioSwitchElement'>
             <option value='aes'>AES</option>
             <option value='tkip'>TKIP</option>
@@ -132,8 +132,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
   <div class='controlBox'><span class='controlBoxTitle'>WL1 Guest access point</span>     
     <div class='controlBoxContent controlTable smallwidth' id='wl_wl1'>
 
-      <div class ='form-group'>
-        <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_mode'>Mode</label>
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-3 col-lg-2 col-sm-4' for='wl1_mode'>Mode</label>
         <select class='col-md-4 col-lg-4 col-sm-4' id='wl1_mode' name='wl1_mode' class='radioSwitchElement'>
           <option value='off'>Off</option>
           <option value='ap'>Wireless Server</option>
@@ -141,16 +141,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       </div>
 
 
-      <div class ='form-group'>
-        <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_ssid'>SSID</label>
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-3 col-lg-2 col-sm-4' for='wl1_ssid'>SSID</label>
         <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
           <input id='wl1_ssid' name='wl1_ssid' type='text' class='form-control'>
           <label  id='wl1_ssidLabel' class='errorLabel'></label>
         </div>
       </div>
 
-      <div class ='form-group'>
-        <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_encryption'>Encryption</label>
+      <div class ='form-group' style='margin-bottom: 5px;'>
+        <label class='col-md-3 col-lg-2 col-sm-4' for='wl1_encryption'>Encryption</label>
         <select class='col-md-4 col-lg-4 col-sm-4' id='wl1_encryption' name='wl1_encryption' class='radioSwitchElement'>
           <option value='none'>None</option>
           <option value='psk2'>WPA2</option>
@@ -160,7 +160,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       <div class ='form-group wl1 wl1_encryption wl1_encryption-psk wl1_encryption-psk2 wl1_encryption-mixed-psk' style='margin-bottom: 5px;'>
         <br>
         <div class ='form-group'>
-          <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_wpa_encryption'>WPA Encryption</label>
+          <label class='col-md-3 col-lg-2 col-sm-4' for='wl1_wpa_encryption'>WPA Encryption</label>
           <select class='col-md-4 col-lg-4 col-sm-4' id='wl1_wpa_encryption' name='wl1_wpa_encryption' class='radioSwitchElement'>
             <option value='aes'>AES</option>
             <option value='tkip'>TKIP</option>
@@ -169,7 +169,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </div>    
 
         <div class ='form-group' style='margin-bottom: 5px;'>
-          <label class='col-md-2 col-lg-2 col-sm-2' for='wl1_wpa_psk'>Key</label>
+          <label class='col-md-3 col-lg-2 col-sm-4' for='wl1_wpa_psk'>Key</label>
           <div class='input-group input-group-lg-5 input-group-md-5 input-group-sm-5'>
             <input id='wl1_wpa_psk' name='wl1_wpa_psk' type='password' onfocus='peekaboo("wl1_wpa_psk")' onblur='peekaboo("wl1_wpa_psk")' class='form-control col-md-4 col-lg-4 col-sm-4'>
           </div>
