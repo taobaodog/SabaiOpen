@@ -78,6 +78,7 @@ _setup(){
 	fi
 
 	# Setup the OpenVPN configuration file
+	cp /etc/sabai/openvpn/server.conf /etc/openvpn/server.conf
 	echo > /etc/config/openvpn # clear the openvpn uci config
 	uci set openvpn.sabaivpn=openvpn
 	uci set openvpn.sabaivpn.enabled=1
@@ -150,7 +151,8 @@ _clear(){
 	if [ -d "$directory" ]; then
 		rm -r /etc/sabai/openvpn/clients 
 	fi
-	rm /tmp/setup
+	rm -f /tmp/setup
+	rm -f /etc/openvpn/server.conf
 	cd /etc/sabai/openvpn
 	logger "OpenVPN Server settings cleared."
 	success="true"
