@@ -227,19 +227,27 @@ _stop(){
 
 _check(){
 cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
-	if if [ -e /tmp/setup ]; then
+	if [ -e /tmp/setup ]; then
 		success="false"
 		message="OpenVPN server is being setup"
-		data="\"none\""
+		data="\"setup\""
 		_return
 	fi
+	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then
+                success="false"
+                message="OpenVPN server is not setup"
+                data="\"none\""
+                _return
+        fi
 	test=$(ps | grep -v grep | grep -ic sabaivpn)
 	if [ $test -eq 1 ]; then
 		success="true"
 		message="OpenVPN server is running"
 	else
 		success="false"
-		message="OpenVPN server is not running"
+		message="OpenVPN server is stopped"
+		data="\"stop"\"
+		_return
 	fi
 
 	#Get client names and whether they are active or not
