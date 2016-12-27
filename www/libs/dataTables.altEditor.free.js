@@ -200,7 +200,8 @@
               e.preventDefault();
               e.stopPropagation();
               that._editRowData();
-              $("#cancelButton").prop('disabled', false);            
+              $("#cancelButton").prop('disabled', false); 
+              $("#saveButton").prop('disabled', false);            
             }
           });
 
@@ -224,6 +225,7 @@
             that._deleteRow();
             $(this).prop('disabled', true);
             $("#cancelButton").prop('disabled', false);
+            $("#saveButton").prop('disabled', false); 
           });
         }
 
@@ -249,6 +251,7 @@
               e.stopPropagation();
               that._addRowData();
               $("#cancelButton").prop('disabled', false);               
+              $("#saveButton").prop('disabled', false);               
             }
           });
         }
@@ -798,6 +801,7 @@ var undoChanges = function(tableObj){
   {
     dt.ajax.reload();
     $('#cancelButton').attr('disabled', 'disabled')
+    $('#saveButton').attr('disabled', 'disabled')
   });
 }
 
@@ -835,7 +839,8 @@ var sendJsonData = function(tableObj){
         })
         .done (function(data) { 
          response.innerHTML = data; 
-         $("#cancelButton").prop('disabled', 'disabled');  
+         $("#cancelButton").prop('disabled', 'disabled');
+         $('#saveButton').attr('disabled', 'disabled')  
 
         })
         .fail (function(error)  {
