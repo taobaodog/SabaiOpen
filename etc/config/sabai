@@ -112,4 +112,7 @@ config settings 'vpn'
 	option ip ''
 	option req_mppe_128 'required,no40,no56'
 	option mppe_mode 'stateless'
+	
+config settings 'ovpnserver'
+
 

@@ -18,6 +18,12 @@ function setVar($prefix, $option){
 	$freq=trim($_POST['channel_freq']);
 	$width=trim($_POST['channel_width']);
 	$channel=trim($_POST[$prefix.'_channel']);
+	if ($channel >= 1 && $channel <= 14) {
+                // all is well
+        } else {
+                $channel=1;
+        }
+
 	//if ($freq == '2') {
 	//$width=trim($_POST['channel_width_2']);
 	//$channel=trim($_POST[$prefix.'_channel']);

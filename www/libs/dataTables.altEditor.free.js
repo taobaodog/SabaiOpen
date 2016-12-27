@@ -812,13 +812,13 @@ var sendJsonData = function(tableObj){
 
         //Adding data from each row to JSON array
         for( var i = 0, all = dt.context[0].aoData.length; i < all; i++ ){
-         comepleteJsonData.aaData.push(dt.row(i).data());
+         completeJsonData.aaData.push(dt.row(i).data());
         }
 
         //Adding default route setting
         $('input', $('#defaultButtons')).each(function () {
           if($(this).parent().hasClass('active')) {
-          comepleteJsonData.defSetting = $(this).attr('name');
+          completeJsonData.defSetting = $(this).attr('name');
           }
         });
 
@@ -830,7 +830,7 @@ var sendJsonData = function(tableObj){
           cache: false,
           data: {
             table: dt.context[0].sTableId,
-            row: comepleteJsonData
+            row: completeJsonData
           }
         })
         .done (function(data) { 
