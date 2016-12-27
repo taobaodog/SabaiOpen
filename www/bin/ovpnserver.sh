@@ -262,7 +262,7 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 }
 
 _return(){
-	echo "res={ \"sabai\": \"$success\", \"msg\": \"$message\" , \"data\": $data };"
+	echo "res={ \"sabai\": $success, \"msg\": \"$message\" , \"data\": $data };"
 	exit 0;
 }
 
