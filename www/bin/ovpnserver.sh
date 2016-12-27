@@ -98,12 +98,12 @@ _setup(){
 	if [ $test -eq 1 ]; then
 		success="true"
 		message="OpenVPN server is running with $dhsize encryption at $extip : $port with protocol $proto"
-		data="\"none\""
+		data="none"
 		rm /tmp/setup
 	else
 		success="false"
 		message="OpenVPN server could not be configured properly."
-		data="\"none\""
+		data="none"
 		rm /tmp/setup
 	fi
 	_return
@@ -123,7 +123,7 @@ _client(){
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then 
 		success="false"
 		message="OpenVPN server must be setup first."
-		data="\"none\"" 
+		data="none" 
 	else
 	build-key --batch $clientname
 	cat /etc/sabai/openvpn/clientheader > /etc/sabai/openvpn/clients/$clientname.ovpn
@@ -167,14 +167,14 @@ _start(){
 		logger "Attempted to start OpenVPN server when already running"
 		success="false"
 		message="OpenVPN server already running"
-		data="\"none\""
+		data="none"
 		_return
 	fi
 
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then 
 		success="false"
 		message="OpenVPN server not yet setup"
-		data="\"none\""
+		data="none"
 	else 
 		/etc/init.d/openvpn start
 		/etc/init.d/openvpn enable
@@ -185,11 +185,11 @@ _start(){
 	if [ $test -eq 0 ]; then
 		success="false"
 		message="OpenVPN server did not start"
-		data="\"none\""
+		data="none"
 	else
 		success="true"
 		message="'OpenVPN server started"
-		data="\"none\""
+		data="none"
 	fi
 	_return
 }
@@ -200,14 +200,14 @@ _stop(){
 		logger "Tried to stop OpenVPN server when already stopped"
 		success="false"
 		message="OpenVPN server was already stopped"
-		data="\"none\""
+		data="none"
 		_return
 	fi
 
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then 
 		success="false"
 		message="OpenVPN server not yet setup"
-		data="\"none\""
+		data="none"
 	else 
 		/etc/init.d/openvpn stop
 		/etc/init.d/openvpn disable
@@ -218,27 +218,27 @@ _stop(){
 	if [ $test -eq 0 ]; then
 		success="true"
 		message="OpenVPN server stopped"
-		data="\"none\""
+		data="none"
 	else
 		success="false"
 		message="OpenVPN server did not stop"
-		data="\"none\""
+		data="none"
 	fi
 	_return
 }
-
+data
 _check(){
 cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 	if [ -e /tmp/setup ]; then
 		success="false"
 		message="OpenVPN server is being setup"
-		data="\"setup\""
+		data="setup"
 		_return
 	fi
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then
                 success="false"
                 message="OpenVPN server is not setup"
-                data="\"none\""
+                data="none"
                 _return
         fi
 	test=$(ps | grep -v grep | grep -ic sabaivpn)
@@ -248,7 +248,7 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 	else
 		success="false"
 		message="OpenVPN server is stopped"
-		data="\"stop"\"
+		data="stop"
 		_return
 	fi
 
@@ -269,7 +269,7 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 
 		data=$(cat /tmp/clientdata)
 	else
-	data="\"none\""
+	data="none"
 	fi
 	_return
 }
