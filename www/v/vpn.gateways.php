@@ -71,12 +71,14 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
       </div>
     </div>
 		<div class="smallText">
-			<br><b>Make Static</b>- Choose "on" to make lease permanent. </li>
-      <br><b>Route</b>- Choose the default route for this device.  "vpn_fallback" will continue access through internet if VPN is down. </li>
-			<br><b>Address</b> - The IP address assigned to the device.  You can click in this field and change the IP address. </li>
-			<br><b>MAC Address</b> - The hardware address of the unit. This is hardcoded into the device. </li>
-			<br><b>Name</b> - The name of the device. You can click in this field and change the name.  </li>
-			<br><b>Lease Ends</b>- The time when the lease expires. </li>
+			<br><b>Click a device entry and click Edit to adjust the information provided:</b></li>
+			<br><b>IP Address: </b> The IP address assigned to the device. You can click in this field and change the IP address. </li>
+      			<br><b>MAC: </b> The hardware address of the unit. This is hardcoded into the device. </li>
+			<br><b>Name: </b> The name of the device. You can click in this field and change the name. </li>
+			<br><b>Static: </b> Choose "on" to make lease permanent. </li>
+			<br><b>Expiration time: </b> The time when the lease expires.  </li>
+			<br><b>Status: </b> Current status of the device. </li>
+			<br><b>Routing option: </b>Choose the default route for this device. "vpn_fallback" will continue access through internet if VPN is down. </li>
 		</div>
 	</div>	
 </div>
