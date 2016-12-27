@@ -256,7 +256,7 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 	if [ -d "$directory" ] && [ "$(ls -A $directory)" ]; then
 		ls /etc/sabai/openvpn/clients/ | sed 's/\.[^.]*$//' > /tmp/clients 
 		rm /tmp/clientdata
-		echo "{ \"clientlist\":[" >> /tmp/clientdata
+		echo "{ \"clients\":[" >> /tmp/clientdata
 		while read c; do
   		echo "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c | cut -c 1)\"}," >> /tmp/clientdata
 		done < /tmp/clients
