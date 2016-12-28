@@ -142,7 +142,7 @@ _stop(){
 	if [ ! -f "/etc/easy-rsa/keys/ca.crt" ]; then 
 		success="false"
 		message="OpenVPN server not yet setup"
-                echo "res={ \"sabai\": $success, \"msg\": \"$message\" , \"data\": $data };"
+                echo "{ \"sabai\": $success, \"msg\": \"$message\" , \"data\": $data }"
                 exit 0;
 		data="none"
 	else 
@@ -197,14 +197,14 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 		rm /tmp/clientdata
 		echo -n "{ \"clients\":[" >> /tmp/clientdata
 		while read c; do
-  		echo -n "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c\/ | cut -c 1)\",\"data\":\"/etc/sabai/openvpn/clients/$c.ovpn\"}," >> /tmp/clientdata
+  		echo -n "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c\/ | cut -c 1)\",\"data\":"none"}," >> /tmp/clientdata
 		done < /tmp/clients
 		sed -i '$ s/.$//' /tmp/clientdata
 		echo -n "]}" >> /tmp/clientdata
 		sed -i 's/\"V\"/true/g' /tmp/clientdata
                 sed -i 's/\"R\"/false/g' /tmp/clientdata
 		data=$(cat /tmp/clientdata)
-		echo "res={ \"sabai\": $success, \"msg\": \"$message\" , \"data\": $data };"
+		echo "{ \"sabai\": $success, \"msg\": \"$message\" , \"data\": $data }"
                 exit 0;
 	else
 	data="none"
@@ -213,7 +213,7 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 }
 
 _return(){
-	echo "res={ \"sabai\": $success, \"msg\": \"$message\" , \"data\": \"$data\" };"
+	echo "{ \"sabai\": $success, \"msg\": \"$message\" , \"data\": \"$data\" }"
 	exit 0;
 }
 
