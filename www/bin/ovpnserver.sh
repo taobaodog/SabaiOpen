@@ -46,7 +46,7 @@ _client(){
 	else
 	build-key --batch $clientname
 	cat /etc/sabai/openvpn/clientheader > /etc/sabai/openvpn/clients/$clientname.ovpn
-	echo -e "\n<ca>" >> /etc/sabai/openvpn/clients/$clientname.ovpn
+	echo -e "<ca>" >> /etc/sabai/openvpn/clients/$clientname.ovpn
 	sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' /etc/easy-rsa/keys/ca.crt >> /etc/sabai/openvpn/clients/$clientname.ovpn
 	echo -e "</ca>\n<key>" >> /etc/sabai/openvpn/clients/$clientname.ovpn
 	sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' /etc/easy-rsa/keys/$clientname.key >> /etc/sabai/openvpn/clients/$clientname.ovpn
