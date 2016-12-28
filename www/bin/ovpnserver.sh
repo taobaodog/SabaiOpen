@@ -208,7 +208,7 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 		echo "{ \"sabai\": $success, \"msg\": \"$message\" , \"data\": $data }"
                 exit 0;
 	else
-	data="none"
+	data="noclient"
 	fi
 	_return
 }
