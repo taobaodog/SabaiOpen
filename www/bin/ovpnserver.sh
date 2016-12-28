@@ -198,7 +198,7 @@ cat /etc/easy-rsa/keys/index.txt | grep fred | awk '{print $1}'
 		rm /tmp/clientdata
 		echo -n "{ \"clients\":[" >> /tmp/clientdata
 		while read c; do
-  		echo -n "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c\/ | cut -c 1)\",\"data\":"none"}," >> /tmp/clientdata
+  		echo -n "{\"name\":\"$c\",\"status\":\"$(sudo cat /etc/easy-rsa/keys/index.txt | grep CN=$c\/ | cut -c 1)\",\"data\":\"none\"}," >> /tmp/clientdata
 		done < /tmp/clients
 		sed -i '$ s/.$//' /tmp/clientdata
 		echo -n "]}" >> /tmp/clientdata
